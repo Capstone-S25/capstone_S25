@@ -72,7 +72,7 @@ uv run pytest
 To run a single test file:
 
 ```bash
-uv run pytest tests/video_ingestion/test_recording_worker.py
+uv run pytest tests/video_ingestion/recording_worker/test_prepare_session.py
 ```
 
 To see which parts of the pipeline were exercised by tests:
