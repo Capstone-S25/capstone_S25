@@ -241,3 +241,96 @@ MiniCPM-V is the only model whose accuracy CI excludes chance (chance = 1/6 ≈ 
 ### 5.5 SmolVLM-500M: systematic abstention
 
 SmolVLM produced **80/80 abstentions** — prediction coverage 0.0, zero usable scores, and therefore no accuracy, F1, or AUC (its rows in Sections 5.2–5.4 are degenerate by construction). The diagnostic in `improvements.json` shows every one of the 80 raw responses was the literal string `"unknown."`: a single distinct response across the whole test set. This is not random failure — it is systematic. With greedy decoding (`do_sample=False`, max_new_tokens=32) and the shared classification prompt (Section 4), the model consistently concluded "evidence insufficient" rather than committing to any label, including `normal`. The abstention path in `parse_vlm_response` maps such responses to no prediction, so all downstream metrics are undefined. SmolVLM-500M is therefore **unusable as configured** for this task; its latency and memory numbers (Sections 5.6–5.7) remain valid measurements of the model's cost, but say nothing about its accuracy.
+
+### 5.6 Latency and throughput
+
+![Latency and throughput](figures/fig04_latency_throughput.png)
+
+| Model | Mean latency (s) | p50 (s) | p95 (s) | Active throughput (samples/s) |
+|---|---|---|---|---|
+| MobileCLIP2-S2 | **0.109** | 0.112 | 0.141 | **9.13** |
+| SigLIP2-B/16-224 | 0.183 | 0.177 | 0.205 | 5.46 |
+| SmolVLM-500M | 2.933 | 2.931 | 3.063 | 0.34 |
+| MiniCPM-V | 17.340 | 16.508 | 20.839 | 0.058 |
+
+All measurements are on the same CPU-only worker (threads=2, one untimed warmup pass, max_side 512). The two CLIP-style scorers run in the same order of magnitude: SigLIP2 is 1.67× slower than MobileCLIP2-S2 per frame. The VLMs are another two orders of magnitude away — SmolVLM-500M takes ~26.8× longer than MobileCLIP2-S2, and MiniCPM-V takes ~158× (mean 17.3 s/frame; p95 20.8 s). At these rates, real-time screening of a camera feed at 1 fps is only feasible with the CLIP scorers on this hardware; MiniCPM-V processes one frame every ~17 seconds, which constrains it to asynchronous/batch use cases (Section 8).
+
+### 5.7 Memory and load cost
+
+![Peak RSS](figures/fig05_peak_rss.png)
+
+| Model | Peak RSS (GiB) | Load time (s) |
+|---|---|---|
+| MobileCLIP2-S2 | **1.09** | 2.73 |
+| SigLIP2-B/16-224 | 1.17 | 2.16 |
+| SmolVLM-500M | 2.98 | 2.00 |
+| MiniCPM-V | 18.24 | 4.79 |
+
+Peak RSS is the maximum resident set size of the isolated worker process during load + inference (psutil sampling). The CLIP scorers fit in ~1.1 GiB; SmolVLM-500M needs ~3× that despite being the smallest VLM tested; MiniCPM-V dominates at 18.24 GiB — about 17× MobileCLIP2-S2 — which is a hard constraint for edge deployment but trivial on this 251 GiB host. Load times are all under 5 s and not a differentiator.
+
+### 5.8 Synthesis: cost vs quality matrix
+
+| Model | Accuracy (macro-F1) | Scoring quality (AUC) | Latency (s/frame) | Memory (GiB) | Verdict |
+|---|---|---|---|---|---|
+| MobileCLIP2-S2 | 0.086 | 0.459 (below chance) | 0.109 | 1.09 | Fastest/cheapest; weakest signal |
+| SigLIP2-B/16-224 | 0.213 | **0.626** | 0.183 | 1.17 | Best quality-per-cost for frame screening |
+| SmolVLM-500M | — (abstained on all) | — | 2.933 | 2.98 | Unusable as configured |
+| MiniCPM-V | **0.266** | n/a (hard labels) | 17.340 | 18.24 | Best multi-class accuracy; async only |
+
+The quality/cost frontier is clear: SigLIP2-B/16-224 delivers the best threshold-free scoring quality at a cost within 1.7× of the cheapest model, while MiniCPM-V buys ~0.05 macro-F1 and one strong per-class cell (rough_sleeping) at ~95× the latency and ~16× the memory. Section 8 turns this into deployment recommendations.
+
+## 6 VadCLIP: weakly supervised video anomaly detection
+
+### 6.1 What was implemented
+
+VadCLIP ("Adapting Vision-Language Models for Weakly Supervised Video Anomaly Detection," AAAI 2024) is the only model in this benchmark that learns from data; all four Section-5 models are reference-free inference over frozen weights. The original repository (github.com/nwpu-zxr/VadCLIP) targets crime/violence detection, and its native class taxonomy contains none of the six anomalies defined for this benchmark — so we ported it into `scripts/vadclip/` rather than running it as-is. The port is a clean reimplementation of the paper's architecture:
+
+- **Frozen vision backbone.** OpenAI CLIP ViT-B/16 (`data/models/openai_clip_vitb16.pt`, SHA-256 verified against the official OpenAI hash; deliberately loaded with `weights_only=False` because the checkpoint carries non-tensor metadata). Every backbone parameter is frozen.
+- **LGT-Adapter.** A temporal attention Transformer (default 2 layers) over per-frame CLIP features, with a block-diagonal windowed attention mask (window size default 8 frames) plus a temporal-distance GCN encoding pairwise frame distances within each window — the paper's local-global-temporal adapter.
+- **Dual scoring branches.** `logits1`: visual classifier head on adapted features; `logits2`: language–visual alignment between adapted video features and learnable prompt-spliced text embeddings of normal/anomaly prompts. Frame scores are combined as dual_mean (average) or dual_max (per-frame max).
+- **Trainable parameters: 12.64M** (`trainable_params_M=12.642` in every run's metrics.json) — adapter, heads, and prompt splices only; the ViT is untouched.
+
+The port comprises nine modules under `scripts/vadclip/` (model, layers, data, extract_features, train, evaluate, baselines, metrics, clip_b16). It is evaluated on the smoking corpus (Section 2), the only corpus with dense per-frame labels — a prerequisite for frame-level detection metrics.
+
+### 6.2 Adaptation decisions
+
+Two adaptations were required to make the port trainable and evaluable on this corpus. Both are deliberate deviations from the original repository, documented here with their rationale.
+
+**Frame-level supervision instead of video-MIL.** The original VadCLIP trains with multiple-instance learning: each clip carries a single label, and an attention network learns to weight frames so that the aggregated clip score matches it. That setup presupposes negative clips — clips labeled normal — against which positive ones can be contrasted. Our smoking corpus has none: every one of its 16 sessions contains at least one smoking frame (Section 2), so all clips are positive and MIL degenerates into a trivial "everything is anomalous" solution. The corpus does, however, provide dense per-frame smoke labels for every session — strictly stronger supervision than WSVAD normally has. We therefore train both branches with frame-level binary cross-entropy: `vis_loss = BCEWithLogits(logits1, y)` and `al_loss = BCE(softmax(logits2_raw)[:, :, 1], y)`, masked to valid frames by clip length and averaged per batch.
+
+The soft targets come from the feature-extraction step. `build_clip` compresses each session to a fixed visual length L (default 256) with uniform linspace blocks, carrying through each block's mean label as its target — a block covering 40% smoking frames gets target 0.4 rather than a hard 0/1. This keeps supervision aligned with the averaged feature: a block mixing smoking and non-smoking frames is genuinely ambiguous, and a soft target expresses exactly that.
+
+**Gradient-saturation fix on the alignment branch.** The original repository scales `logits2` by 1/0.07 before softmax to sharpen the normal/anomaly contrast. On this corpus that scaling saturates the two-class softmax: cosine similarities are already near ±1 after prompt splicing, and dividing by 0.07 pushes every logit deep into the tails where gradients are numerically zero — the alignment branch stopped learning within a few steps. We therefore train on `logits2_raw`, the unscaled cosine in [−1, 1], passed through an ordinary two-class softmax with clamping to [1e-6, 1−1e-6] before BCE. The same raw logits are used for inference scoring (p_align = softmax(logits2_raw)[:, :, 1]), so training and evaluation operate on the identical quantity; the scaled version is retained in the model only for faithful reporting of the original architecture's output.
+
+**Prompts.** The two learnable prompt-spliced text embeddings are fixed to:
+- normal: "a normal scene with no one doing anything unusual" (index 0)
+- anomaly: "a person smoking a cigarette in a public place" (index 1)
+
+These match the binary task; the six-class taxonomy of Section 4 does not apply here because only the smoking corpus has frame-level labels.
+
+### 6.3 Feature cache and splits
+
+All six training runs share a single precomputed feature cache, so the ablation suite varies only adapter configuration — never features or splits. Features are extracted once with:
+
+```
+python -m scripts.vadclip.extract_features --root data/raw/datasets \
+    --weights data/models/openai_clip_vitb16.pt --cache-dir results/vadclip/features
+```
+
+This runs the frozen ViT-B/16 in batched `encode_image` calls over every frame of all 16 smoking sessions, storing raw (unnormalized) features. Per session it writes one `.npz` containing:
+
+- `feat`: float32 `[T, 512]` — per-frame CLIP image features in temporal order;
+- `labels`: int8 `[T]` — dense per-frame smoke label (0/1).
+
+A top-level `manifest.json` records the deterministic session-level split (seed 234, valid fraction 0.25) and per-session frame counts:
+
+| Split | Sessions | Raw frames | Positive frames |
+|---|---|---|---|
+| train | 12 | 2562 | 1097 |
+| valid | 4 | 716 | 325 |
+
+The four validation sessions are c1:2025-09-14 (3 frames), c1:2025-09-15 (33), c4:2025-10-16 (91), and c4:2025-10-28 (589). The split is at session level — no session straddles train and valid — which prevents temporal leakage between the two sets. One long session, c4:2025-10-28, dominates the validation set (589 of 716 raw frames); this matters when interpreting results in Section 6.5.
+
+Because `build_clip` compresses each session to a fixed visual length L, the number of frame-representations used for training and evaluation depends on L: at L=256 (the default), train = 1653 reps and valid = 383 reps (n_pos = 115); at L=128, valid = 255; at L=512, valid = 639. Sessions longer than L frames are compressed into L uniform blocks; shorter sessions keep all of their frames and zero-pad the tail up to L, with a per-clip length field marking valid positions (the training loss masks on exactly this).
+
+All six runs use identical optimization settings: AdamW (lr = 1e-3, weight_decay = 0.01), batch size 4, seed 234, at most 200 epochs, and early stopping with patience 50 on validation dual AUPR. The only differences between runs are the adapter configuration (GCN on/off, attention window) and visual length — see Section 6.5.
