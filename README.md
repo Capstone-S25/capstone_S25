@@ -16,10 +16,17 @@ The CPU wheel index avoids CUDA dependencies. `anomaly-eval` and `python -m anom
 
 ```bash
 anomaly-eval run --prepare-only
+anomaly-eval run --mode quick --threads 8
 anomaly-eval run --threads 4 --max-rss-mb 24576 --camera-fps 1
 # Include the supervised smoking adapter when the original COCO corpus is available:
 anomaly-eval run --vadclip
 ```
+
+Full evaluation and quick mode run without pacing sleeps. Quick mode uses at most
+8 inputs per task/split and frame inputs by default. `--mode deployment` enables
+camera-rate pacing on a smaller cohort (16 inputs per task/split by default).
+Override these with `--limit`; see the evaluation guide for full settings and
+the current five-task coverage gaps.
 
 For another server, configure independent data, results and cache roots. From the
 checkout, this example uses your existing `data/` and directories owned by your user:

@@ -12,9 +12,80 @@ The first command validates/prepares datasets and prints a report without loadin
 For a first pipeline check:
 
 ```bash
-anomaly-eval run --models mobileclip2-s2 --tasks unattended_items \
-  --protocols frame --threads 2 --bootstrap 200
+anomaly-eval run --mode quick --models mobileclip2-s2 --tasks unattended_items --threads 4
 ```
+
+## Evaluation speed and deployment pacing
+
+| `run --mode` | Inference pacing | Default input cap per task/protocol/split | Default protocols | Bootstrap draws |
+|---|---|---:|---|---:|
+| `evaluation` (default) | No deliberate sleeps | All prepared inputs | Frame and past-window sheet | 2000 |
+| `quick` | No deliberate sleeps | 8 | Frame | 200 |
+| `deployment` | At most `--camera-fps` inputs/sec; optional duty-cycle sleeps | 16 | Frame | 200 |
+
+Use quick mode to screen the shortlist, then evaluate promising models on the full
+cohorts. Both unpaced modes retain the configured CPU thread and memory limits.
+`--camera-fps` is only a resource-budget comparison in those modes; it does not
+slow inference. `--duty-cycle` below 1 requires deployment mode. The standalone
+`benchmark` command also defaults to duty cycle 1 with no rate cap; its pacing
+flags are explicit opt-ins.
+
+```bash
+# Small, unpaced first pass across the four default CLIP/VLM candidates:
+anomaly-eval run --mode quick --threads 8
+# Faster CLIP-only screen; all requested tasks with confirmed data remain eligible:
+anomaly-eval run --mode quick --models mobileclip2-s2 siglip2-b16-224 --threads 8
+# Full quality evaluation of promising candidates, using prepared data:
+anomaly-eval run --skip-prepare --models mobileclip2-s2 siglip2-b16-224 --threads 8
+# Small paced resource check of one candidate on the actual deployment host:
+anomaly-eval run --mode deployment --models mobileclip2-s2 \
+  --tasks unattended_items --threads 4 --camera-fps 1 --duty-cycle 0.5
+```
+
+Override presets with `--limit N` (0 means all), `--protocols frame window` or
+`--bootstrap N`. The cap applies separately to each task, input protocol and
+dev/test split, before repeating the chosen inputs. It limits model inference,
+not downloaded files or preparation of the full dataset. Selection approximates
+the original label proportions, retains both available event/normal labels,
+and cycles through source groups with a fixed seed. Every model receives the
+same subset; `run.json`, `evaluation.json` and the report record selected versus
+available counts. Quick/subset results are pilot diagnostics, not a final model
+ranking. A tiny negative sample also makes false-positive calibration coarse.
+
+Limiting inputs, models and protocols is the main way to shorten a run. More CPU
+threads can help some models but are not guaranteed to help every CPU/runtime;
+compare settings on development data. Cached weights avoid repeated downloads,
+and `--skip-prepare` avoids rebuilding prepared data. Models still load in
+isolated processes per cohort, and large generative VLMs remain expensive on CPU.
+
+Deployment mode paces sequential prepared inputs, including contact sheets if
+explicitly requested. It is not a live camera/decoder/queue simulation and cannot
+emulate another processor. Active inference latency excludes pacing sleeps;
+wall throughput and pacing sleep seconds are separate measurements. A slow
+model is not sped up to the requested camera rate. `--limit` applies to image
+cohorts only; optional offline VadCLIP extraction/training uses its own complete
+source-session split and is not supported in deployment mode.
+
+## Which anomalies are actually tested?
+
+All five task names are requested by default: `smoking`, `loitering`, `littering`,
+`unattended_items` and `rough_sleeping`. Only confirmed task-specific data is run.
+With the current curated bundle:
+
+| Anomaly | Confirmed evaluation support |
+|---|---|
+| Smoking | Development frames; historical source groups are not untouched test data |
+| Unattended items | Preliminary dev/test endpoint frames and past-window sheets from CAVIAR |
+| Loitering | Needs reviewed duration/event and matched normal labels |
+| Littering | Needs review of the action against the defined rubbish-disposal event and matched normals |
+| Rough sleeping | Needs reviewed event and matched normals; lying posture alone is a proxy |
+
+The runner prints each requested task's coverage and records missing tasks in the
+report. Specifying `--tasks` does not create missing labels. Use
+`anomaly-eval run --prepare-only --require-all-tasks` to check coverage; when a
+requested task lacks dev/test support in the requested protocols, it returns
+exit code 2 before loading any model. Add reviewed positives and task-specific
+normal cases through the CSV workflow below to enable the missing evaluations.
 
 ## Fetch the sources
 
@@ -71,7 +142,7 @@ Use `normal` or the named task as the label, `human_review` or `sequence_annotat
 anomaly-eval run --review-csv data/reviewed_events.csv --require-all-tasks
 ```
 
-The runner merges identical image bytes, rejects contradictory labels, keeps connected source groups together, and applies per-group caps without relaxing them. Exact hashes cannot detect every transformed/near duplicate; review source genealogy and similarity candidates before importing data. `dataset.json` lists task/split support and limits. `--require-all-tasks` returns exit code 2 if requested task coverage remains incomplete. The default completes available tasks and records gaps instead of presenting missing tasks as zero performance.
+The runner merges identical image bytes, rejects contradictory labels, keeps connected source groups together, and applies per-group caps without relaxing them. Exact hashes cannot detect every transformed/near duplicate; review source genealogy and similarity candidates before importing data. `dataset.json` lists task/split support and limits. `--require-all-tasks` returns exit code 2 before inference if requested task coverage remains incomplete. The default completes available tasks and records gaps instead of presenting missing tasks as zero performance.
 
 ## Metrics and fair comparisons
 
@@ -85,7 +156,7 @@ For continuous scores, `calibration.json` reports thresholds fitted on developme
 
 Frame and past-window contact-sheet results are separate. Contact sheets provide four chronological frames ending at the labeled time, over six seconds, for both CLIP and VLM adapters. They are a common image-input experiment, not native video inference or proof of arbitrary-duration loitering. They may lose small-object detail through resizing. More frames, longer operational windows, person/object crops and tracking require separate development protocols; ground-truth boxes cannot be used as a free deployment detector.
 
-A single stream sampled at one inference frame/sec is the default resource screen. The report compares p95 and sampled RSS with that budget; camera decoding/queueing are excluded and must be measured in deployment. `throttle.py` limits threads/affinity and adds pacing; it does not emulate a Ryzen CPU. Run the same frozen command on the actual deployment box.
+A single stream sampled at one inference frame/sec is the default resource screen. The report compares p95 and sampled RSS with that budget; deployment mode also accounts for the selected duty-cycle overhead. Camera decoding/queueing are excluded and must be measured in deployment. Resource controls in `anomaly_eval/resources.py` limit threads/affinity and add pacing only when requested; they do not emulate a Ryzen CPU. Run the same frozen command on the actual deployment box.
 
 ## VadCLIP
 

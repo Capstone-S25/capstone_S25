@@ -175,6 +175,7 @@ def calibrate(dev_dir: Path, test_dir: Path, target_fpr=0.05):
         "seed",
         "threads",
         "duty_cycle",
+        "max_samples_per_second",
         "max_side",
         "image_policy",
         "max_new_tokens",
@@ -307,16 +308,32 @@ def generate(results_dir: Path, out_dir: Path):
 
 
 def write_report(output, state, args):
+    mode = getattr(args, "mode", "evaluation")
+    mode_note = (
+        f"Deployment simulation: sequential sampled inputs paced at {args.camera_fps:g}/s, "
+        f"with duty cycle {args.duty_cycle:g}. This is not a camera capture/queue test."
+        if mode == "deployment"
+        else "Unpaced inference: no duty-cycle or camera-rate sleeps. CPU threads and memory limits still apply."
+    )
     lines = [
         "# Corrected evaluation run",
         "",
         f"Run: `{output.name}`. Execution status: **{state['status']}**.",
         "",
+        f"Mode: **{mode}**. {mode_note}",
+        "",
+        (
+            f"Requested tasks: {', '.join(args.tasks)}. Input protocols: {', '.join(args.protocols)}. "
+            f"Sample cap per task/protocol/split: {getattr(args, 'limit', 0) or 'all'}."
+        ),
+        "",
         "Measurements describe the recorded host. CPU throttling does not emulate a Ryzen AI Max+ 395.",
         "",
         "All models in each task/protocol see the same images and source groups. Quality scores include failures and abstentions. Continuous-score operating thresholds are chosen on development data; VLM hard decisions have no invented AUC.",
         "",
-        "| Task / input | Coverage |",
+        "Available dataset coverage below describes prepared data, before any inference sample cap. Unrequested tasks/protocols are not evaluated.",
+        "",
+        "| Task / input | Available data |",
         "|---|---|",
     ]
     for task, protocols in state["dataset"]["coverage"].items():
@@ -326,6 +343,25 @@ def write_report(output, state, args):
             lines.append(
                 f"| {task} / {protocol} | {'Dev/test available' if c['eligible_for_calibrated_test'] else 'Development only'}; counts {c['counts']} |"
             )
+    if mode != "evaluation" or getattr(args, "limit", 0):
+        lines += [
+            "",
+            "This is a subset/pilot measurement. Reduced label and recording counts limit quality conclusions, confidence intervals and false-positive calibration; use an uncapped evaluation for model selection.",
+        ]
+    if state["benchmarks"]:
+        lines += [
+            "",
+            "| Task / input / split | Selected / available inputs | Selected labels | Source groups |",
+            "|---|---:|---|---:|",
+        ]
+        for record in state["benchmarks"]:
+            selection = record.get("selection")
+            if selection:
+                lines.append(
+                    f"| {record['cohort']} / {record['split']} | "
+                    f"{selection['selected_samples']} / {selection['available_samples']} | "
+                    f"{selection['selected_label_counts']} | {selection['selected_groups']} |"
+                )
     lines += [
         "",
         "## Measured model comparisons",
@@ -360,7 +396,8 @@ def write_report(output, state, args):
             feasible = (
                 lat is not None
                 and rss is not None
-                and lat <= 1 / args.camera_fps
+                and lat / (args.duty_cycle if mode == "deployment" else 1)
+                <= 1 / args.camera_fps
                 and rss <= args.max_rss_mb
                 and model["status"] == "ok"
             )
@@ -387,6 +424,8 @@ def write_report(output, state, args):
     lines += [
         "",
         f"Resource screen: one stream sampled at {args.camera_fps:g} frames/s, p95 inference ≤ {1 / args.camera_fps:g}s, worker/process-tree RSS cap {args.max_rss_mb:g} MiB. This excludes queueing and camera decoding; verify on the deployment box.",
+        "",
+        "Inference latency excludes pacing sleeps. Active throughput, wall throughput and pacing sleep seconds are saved separately in `results.json` and `comparison.csv`; deployment duty-cycle overhead is included in the host-budget screen.",
         "",
         "Raw model argmax and development-calibrated operating points are separate in `calibration.json`. Group-bootstrap intervals and paired differences are in each run's `improvements.json`. Unsupported tasks are not zero-scored or pooled into a model ranking.",
         "",

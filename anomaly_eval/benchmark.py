@@ -28,6 +28,7 @@ from anomaly_eval.data import (
     read_manifest,
     sample_identity,
     select_test_samples,
+    selection_summary,
 )
 from anomaly_eval.metrics import detection_metrics, percentile
 from anomaly_eval.models import DEFAULT_MODELS, MODELS, create_adapter, load_image
@@ -346,6 +347,7 @@ def write_comparison(output: Path, summaries: list[dict]) -> None:
         "latency_p95_seconds",
         "active_samples_per_second",
         "wall_samples_per_second",
+        "throttle_sleep_seconds",
         "peak_rss_mb",
         "load_seconds",
         "errors",
@@ -401,7 +403,7 @@ def main(argv: list[str] | None = None) -> int:
         "--limit",
         type=int,
         default=50,
-        help="Maximum test images, randomly selected (0 means all)",
+        help="Maximum inputs from the selected split; retain labels and source groups (0 means all)",
     )
     parser.add_argument(
         "--image-policy",
@@ -518,6 +520,7 @@ def main(argv: list[str] | None = None) -> int:
             "manifest_sha256": file_sha256(args.manifest),
             "definitions_sha256": file_sha256(args.definitions),
             "samples": serialized_samples,
+            "selection": selection_summary(split_samples, tests),
             "models": names,
             "evaluation_split": args.split,
             "sample_identity": sample_identity(references + tests),

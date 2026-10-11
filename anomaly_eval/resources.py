@@ -20,7 +20,7 @@ class CPUSettings:
     """Resource limits on the host CPU; these do not emulate another processor."""
 
     threads: int = 2
-    duty_cycle: float = 0.5
+    duty_cycle: float = 1.0
     max_samples_per_second: float | None = None
     cpu_cores: tuple[int, ...] = ()
 
@@ -95,8 +95,8 @@ def add_cpu_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--duty-cycle",
         type=float,
-        default=0.5,
-        help="Active/sleep ratio in (0, 1] (default: 0.5)",
+        default=1.0,
+        help="Active/sleep ratio in (0, 1]; default 1 adds no pacing sleeps",
     )
     parser.add_argument(
         "--max-samples-per-second", type=float, help="Optional maximum operation rate"

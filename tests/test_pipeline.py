@@ -30,6 +30,17 @@ DEFINITIONS = {"normal": "Ordinary activity", "smoking": "A person smoking"}
 
 
 class ThrottleTests(unittest.TestCase):
+    def test_default_has_no_pacing_sleeps(self):
+        throttle = Throttler(CPUSettings())
+        with (
+            patch("anomaly_eval.resources.time.perf_counter", side_effect=[10.0, 12.0]),
+            patch("anomaly_eval.resources.time.sleep") as sleep,
+            throttle.operation(),
+        ):
+            pass
+        sleep.assert_not_called()
+        self.assertEqual(throttle.total_sleep_seconds, 0)
+
     def test_paces_active_time(self):
         throttle = Throttler(CPUSettings(duty_cycle=0.5))
         with (
@@ -142,6 +153,35 @@ class DataTests(unittest.TestCase):
         self.assertEqual(selected, select_test_samples(samples, 4, 42))
         self.assertEqual(len(selected), 4)
         self.assertTrue(all(sample.split == "test" for sample in selected))
+
+    def test_cap_retains_a_rare_positive_and_does_not_exhaust_one_recording(self):
+        samples = [
+            Sample(Path(f"normal/{i}.jpg"), "normal", "test", f"g{i % 4}")
+            for i in range(40)
+        ]
+        samples += [Sample(Path("positive.jpg"), "smoking", "test", "event")]
+        selected = select_test_samples(samples, 8, 42)
+        self.assertEqual(len(selected), 8)
+        self.assertEqual({s.label for s in selected}, {"normal", "smoking"})
+        self.assertEqual(len({s.group_id for s in selected if s.label == "normal"}), 4)
+        self.assertEqual(selected, select_test_samples(list(reversed(samples)), 8, 42))
+        with self.assertRaisesRegex(ValueError, "retain all"):
+            select_test_samples(samples, 1, 42)
+
+    def test_cap_keeps_paired_event_and_control_groups_when_supported(self):
+        samples = [
+            Sample(Path(f"{group}/{label}.jpg"), label, "test", group)
+            for group in (f"recording{i}" for i in range(16))
+            for label in ("normal", "smoking")
+        ]
+        selected = select_test_samples(samples, 8, 42)
+        groups = {sample.group_id for sample in selected}
+        self.assertEqual(len(groups), 4)
+        for group in groups:
+            self.assertEqual(
+                {s.label for s in selected if s.group_id == group},
+                {"normal", "smoking"},
+            )
 
     def test_manifest_keeps_folder_hint_separate_and_preserves_labels(self):
         image = self.root / "raw/smoking/image.jpg"

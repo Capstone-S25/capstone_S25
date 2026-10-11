@@ -271,5 +271,127 @@ class WorkspaceTests(unittest.TestCase):
             np.testing.assert_array_equal(first[group]["feat"], second[group]["feat"])
 
 
+class RunnerModeTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name)
+        env = patch.dict(os.environ, {}, clear=True)
+        env.start()
+        self.addCleanup(env.stop)
+
+    def run_mode(self, *arguments):
+        # Prepare real bundle cohorts; capture child commands without model weights.
+        with (
+            patch(
+                "anomaly_eval.runner.run_stage", return_value={"status": "ok"}
+            ) as stage,
+            patch("anomaly_eval.runner.analyze"),
+            patch("anomaly_eval.analysis.generate"),
+            patch("anomaly_eval.runner.calibrate"),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            code = cli_main(
+                [
+                    "--data-root",
+                    str(self.root / "data"),
+                    "--results-root",
+                    str(self.root / "results"),
+                    "--cache-root",
+                    str(self.root / "cache"),
+                    "run",
+                    "--models",
+                    "mobileclip2-s2",
+                    *arguments,
+                ]
+            )
+        run = next((self.root / "results").iterdir())
+        return (
+            code,
+            json.loads((run / "evaluation.json").read_text()),
+            [call.args[0] for call in stage.call_args_list],
+        )
+
+    def test_full_evaluation_never_passes_a_rate_cap_and_uses_all_inputs(self):
+        code, state, commands = self.run_mode()
+        self.assertEqual(code, 0)
+        self.assertEqual(state["options"]["protocols"], ["frame", "window"])
+        self.assertEqual(state["options"]["bootstrap"], 2000)
+        self.assertTrue(commands)
+        for command in commands:
+            self.assertNotIn("--max-samples-per-second", command)
+            self.assertEqual(command[command.index("--duty-cycle") + 1], "1.0")
+            self.assertEqual(command[command.index("--limit") + 1], "0")
+        for record in state["benchmarks"]:
+            selection = record["selection"]
+            self.assertEqual(
+                selection["selected_samples"], selection["available_samples"]
+            )
+
+    def test_quick_mode_preserves_both_classes_with_a_shared_small_cohort(self):
+        code, state, commands = self.run_mode("--mode", "quick")
+        self.assertEqual(code, 0)
+        self.assertEqual(state["options"]["protocols"], ["frame"])
+        self.assertEqual(state["options"]["bootstrap"], 200)
+        self.assertEqual(len(commands), 3)  # smoking dev, unattended dev/test
+        for command in commands:
+            self.assertNotIn("--max-samples-per-second", command)
+            self.assertEqual(command[command.index("--limit") + 1], "8")
+        for record in state["benchmarks"]:
+            selection = record["selection"]
+            self.assertEqual(selection["selected_samples"], 8)
+            self.assertEqual(len(selection["selected_label_counts"]), 2)
+        self.assertFalse(state["full_task_coverage"])
+
+    def test_deployment_explicitly_passes_rate_and_duty_on_a_capped_cohort(self):
+        code, state, commands = self.run_mode(
+            "--mode", "deployment", "--camera-fps", "2", "--duty-cycle", "0.5"
+        )
+        self.assertEqual(code, 0)
+        self.assertEqual(state["options"]["limit"], 16)
+        for command in commands:
+            self.assertEqual(
+                command[command.index("--max-samples-per-second") + 1], "2.0"
+            )
+            self.assertEqual(command[command.index("--duty-cycle") + 1], "0.5")
+
+    def test_explicit_options_override_the_quick_preset(self):
+        code, state, commands = self.run_mode(
+            "--mode",
+            "quick",
+            "--limit",
+            "4",
+            "--protocols",
+            "window",
+            "--bootstrap",
+            "40",
+        )
+        self.assertEqual(code, 0)
+        self.assertEqual(state["options"]["bootstrap"], 40)
+        self.assertEqual(len(commands), 2)
+        self.assertTrue(
+            all(r["selection"]["selected_samples"] == 4 for r in state["benchmarks"])
+        )
+
+    def test_missing_five_task_coverage_stops_before_any_model_is_started(self):
+        code, state, commands = self.run_mode("--require-all-tasks")
+        self.assertEqual(code, 2)
+        self.assertEqual(state["status"], "incomplete_data")
+        self.assertFalse(commands)
+        self.assertEqual(len(state["requested_task_coverage"]), 5)
+        self.assertEqual(
+            state["requested_task_coverage"]["rough_sleeping"]["available_protocols"],
+            [],
+        )
+
+    def test_coverage_only_counts_requested_input_protocols(self):
+        code, state, commands = self.run_mode(
+            "--tasks", "smoking", "--protocols", "window", "--require-all-tasks"
+        )
+        self.assertEqual(code, 2)
+        self.assertFalse(state["full_task_coverage"])
+        self.assertFalse(commands)
+
+
 if __name__ == "__main__":
     unittest.main()

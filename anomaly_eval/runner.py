@@ -21,12 +21,15 @@ from pathlib import Path
 
 from anomaly_eval.analysis import analyze, calibrate, write_report
 from anomaly_eval.data import (
+    Sample,
     code_hashes,
     experiment_options,
     file_sha256,
     fingerprint,
     read_definitions,
     read_manifest,
+    select_test_samples,
+    selection_summary,
 )
 from anomaly_eval.datasets.fetch import download, fetch
 from anomaly_eval.datasets.prepare import prepare
@@ -72,6 +75,17 @@ def main(argv=None):
     p.add_argument("--roboflow-version", action="append", default=[])
     p.add_argument("--prepare-only", action="store_true")
     p.add_argument("--skip-prepare", action="store_true")
+    p.add_argument(
+        "--mode",
+        choices=["evaluation", "quick", "deployment"],
+        default="evaluation",
+        help="Full unpaced evaluation, small unpaced pilot, or paced deployment simulation",
+    )
+    p.add_argument(
+        "--limit",
+        type=int,
+        help="Inputs per task/protocol/split; 0 means all. Defaults: evaluation=0, quick=8, deployment=16",
+    )
     p.add_argument("--models", nargs="+", default=DEFAULT_MODELS)
     p.add_argument(
         "--tasks",
@@ -86,13 +100,23 @@ def main(argv=None):
         "--protocols",
         nargs="+",
         choices=["frame", "window"],
-        default=["frame", "window"],
+        help="Defaults to frame/window for evaluation, frame only for quick/deployment",
     )
     p.add_argument("--threads", type=int, default=4)
     p.add_argument("--cpu-cores", help="Optional CPU affinity list, e.g. 0,1,2,3")
-    p.add_argument("--duty-cycle", type=float, default=1.0)
+    p.add_argument(
+        "--duty-cycle",
+        type=float,
+        default=1.0,
+        help="Active fraction in deployment mode; default 1.0",
+    )
     p.add_argument("--max-rss-mb", type=float, default=24576)
-    p.add_argument("--camera-fps", type=float, default=1)
+    p.add_argument(
+        "--camera-fps",
+        type=float,
+        default=1,
+        help="Deployment frame budget; adds pacing only in deployment mode",
+    )
     p.add_argument(
         "--timeout-seconds",
         type=float,
@@ -106,7 +130,11 @@ def main(argv=None):
     )
     p.add_argument("--max-side", type=int, default=768)
     p.add_argument("--max-new-tokens", type=int, default=64)
-    p.add_argument("--bootstrap", type=int, default=2000)
+    p.add_argument(
+        "--bootstrap",
+        type=int,
+        help="Group-bootstrap draws; evaluation defaults to 2000, quick/deployment to 200",
+    )
     p.add_argument("--target-fpr", type=float, default=0.05)
     p.add_argument("--offline", action="store_true")
     p.add_argument("--require-all-tasks", action="store_true")
@@ -118,6 +146,20 @@ def main(argv=None):
     p.add_argument("--vadclip-epochs", type=int, default=100)
     p.add_argument("--vadclip-timeout", type=float, default=14400)
     a = resolve_arguments(p.parse_args(argv))
+    if a.protocols is None:
+        a.protocols = ["frame", "window"] if a.mode == "evaluation" else ["frame"]
+    if a.limit is None:
+        a.limit = {"evaluation": 0, "quick": 8, "deployment": 16}[a.mode]
+    if a.bootstrap is None:
+        a.bootstrap = 2000 if a.mode == "evaluation" else 200
+    if a.limit < 0 or a.limit == 1:
+        p.error("limit must be 0 (all) or at least 2 to retain event/normal support")
+    if a.mode != "deployment" and a.duty_cycle != 1.0:
+        p.error("--duty-cycle below 1 requires --mode deployment")
+    if a.mode == "deployment" and a.vadclip:
+        p.error(
+            "VadCLIP is an offline study; use --vadclip in evaluation or quick mode"
+        )
     a.data_dir = resolve_path(a.data_dir)
     a.cache_dir = resolve_path(a.cache_dir)
     if a.output:
@@ -253,7 +295,47 @@ def main(argv=None):
             )
         state["dataset"] = dataset
         state["dataset_fingerprint"] = dataset["fingerprint"]
+        state["requested_task_coverage"] = {
+            task: {
+                "available_protocols": [
+                    protocol
+                    for protocol in a.protocols
+                    if protocol in dataset["coverage"].get(task, {})
+                ],
+                "test_eligible_protocols": [
+                    protocol
+                    for protocol in a.protocols
+                    if dataset["coverage"]
+                    .get(task, {})
+                    .get(protocol, {})
+                    .get("eligible_for_calibrated_test", False)
+                ],
+            }
+            for task in a.tasks
+        }
+        state["full_task_coverage"] = all(
+            c["test_eligible_protocols"]
+            for c in state["requested_task_coverage"].values()
+        )
+        for task, coverage in state["requested_task_coverage"].items():
+            status = (
+                "dev/test data available"
+                if coverage["test_eligible_protocols"]
+                else "development only"
+                if coverage["available_protocols"]
+                else "no confirmed data for requested protocols"
+            )
+            print(f"{task}: {status}", flush=True)
         save()
+        if a.require_all_tasks and not state["full_task_coverage"]:
+            state["status"] = "incomplete_data"
+            save()
+            write_report(output, state, a)
+            print(
+                "Requested tasks lack verified dev/test coverage; inference was not started."
+            )
+            print(f"Report: {output / 'report.md'}")
+            return 2
         definitions = read_definitions(Workspace.current().definitions)
         for task in a.tasks:
             for protocol in a.protocols:
@@ -284,6 +366,13 @@ def main(argv=None):
                     ):
                         continue
                     runout = output / cohort / split
+                    available = [
+                        Sample(s.path, s.label, "test", s.group_id)
+                        for s in samples
+                        if s.split == split
+                    ]
+                    selected = select_test_samples(available, a.limit or None, a.seed)
+                    selection = selection_summary(available, selected)
                     command = [
                         sys.executable,
                         "-m",
@@ -300,7 +389,7 @@ def main(argv=None):
                         "--output",
                         str(runout),
                         "--limit",
-                        "0",
+                        str(a.limit),
                         "--threads",
                         str(a.threads),
                         "--duty-cycle",
@@ -324,10 +413,17 @@ def main(argv=None):
                     ]
                     if a.cpu_cores:
                         command += ["--cpu-cores", a.cpu_cores]
+                    if a.mode == "deployment":
+                        command += ["--max-samples-per-second", str(a.camera_fps)]
                     if a.offline:
                         command.append("--offline")
                     print(
-                        f"Running {cohort}/{split} on {len([s for s in samples if s.split == split])} images...",
+                        f"Running {cohort}/{split}: {len(selected)}/{len(available)} inputs, mode={a.mode}, "
+                        + (
+                            f"paced at {a.camera_fps:g}/s..."
+                            if a.mode == "deployment"
+                            else "no pacing sleeps..."
+                        ),
                         flush=True,
                     )
                     step = run_stage(
@@ -342,6 +438,7 @@ def main(argv=None):
                             "cohort": cohort,
                             "split": split,
                             "output": portable_path(runout, output),
+                            "selection": selection,
                         }
                     )
                     directories[split] = runout
@@ -463,13 +560,6 @@ def main(argv=None):
                         break
                 else:
                     state["vadclip"]["status"] = "ok"
-        state["full_task_coverage"] = all(
-            any(
-                c["eligible_for_calibrated_test"]
-                for c in dataset["coverage"].get(task, {}).values()
-            )
-            for task in a.tasks
-        )
         failed = (
             any(s["status"] != "ok" for s in state["steps"])
             or bool(state.get("analysis_errors"))

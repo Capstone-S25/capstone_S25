@@ -6,6 +6,7 @@ import csv
 import hashlib
 import json
 import random
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -117,9 +118,75 @@ def read_manifest(path: Path, definitions: dict[str, str]) -> list[Sample]:
 def select_test_samples(
     samples: list[Sample], limit: int | None, seed: int
 ) -> list[Sample]:
-    selected = [sample for sample in samples if sample.split == "test"]
-    random.Random(seed).shuffle(selected)
-    return selected[:limit] if limit is not None else selected
+    """Repeatable capped cohort retaining label support and source-group diversity.
+
+    Label quotas approximate the original proportions, with at least one example
+    per present label. Within each label, source groups contribute in round-robin
+    order so a long recording cannot crowd out all other recordings.
+    """
+    selected = sorted(
+        (sample for sample in samples if sample.split == "test"),
+        key=lambda sample: (sample.group_id, portable_path(sample.path)),
+    )
+    rng = random.Random(seed)
+    if limit is None or limit >= len(selected):
+        rng.shuffle(selected)
+        return selected
+    if limit < 1:
+        raise ValueError("Sample limit must be positive or unset")
+    counts = Counter(s.label for s in selected)
+    labels = sorted(counts, key=lambda label: label or "")
+    if limit < len(labels):
+        raise ValueError(
+            f"Sample limit {limit} cannot retain all {len(labels)} present labels"
+        )
+    quotas = dict.fromkeys(labels, 1)
+    targets = {label: counts[label] * limit / len(selected) for label in labels}
+    for _ in range(limit - len(labels)):
+        label = max(
+            (label for label in labels if quotas[label] < counts[label]),
+            key=lambda label: targets[label] - quotas[label],
+        )
+        quotas[label] += 1
+    capped = []
+    group_order = sorted({s.group_id for s in selected})
+    rng.shuffle(group_order)
+    for label in labels:
+        groups = defaultdict(list)
+        for sample in selected:
+            if sample.label == label:
+                groups[sample.group_id].append(sample)
+        # A shared order retains matched event/control recordings when both
+        # labels have support in the same groups and their quotas permit it.
+        order = [group for group in group_order if group in groups]
+        for pool in groups.values():
+            rng.shuffle(pool)
+        remaining = quotas[label]
+        while remaining:
+            for group in order:
+                if groups[group]:
+                    capped.append(groups[group].pop())
+                    remaining -= 1
+                    if not remaining:
+                        break
+    rng.shuffle(capped)
+    return capped
+
+
+def selection_summary(available: list[Sample], selected: list[Sample]) -> dict:
+    return {
+        "available_samples": len(available),
+        "selected_samples": len(selected),
+        "available_label_counts": dict(
+            Counter(s.label or "unlabeled" for s in available)
+        ),
+        "selected_label_counts": dict(
+            Counter(s.label or "unlabeled" for s in selected)
+        ),
+        "available_groups": len({s.group_id for s in available}),
+        "selected_groups": len({s.group_id for s in selected}),
+        "policy": "label_proportional_group_round_robin_v1",
+    }
 
 
 def file_sha256(path: Path) -> str:
