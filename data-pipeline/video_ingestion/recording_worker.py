@@ -1,4 +1,6 @@
 import csv
+import json
+import math
 import subprocess
 import time
 from dataclasses import dataclass
@@ -124,10 +126,10 @@ def _build_ffmpeg_command(
         "-segment_format"   , "mp4",
         "-segment_time"     , str(segment_seconds),
         # Record completed segments and set the output filename
-        "-reset_timestamps" , "1",                                 # Restart each segment’s timestamps near zero
+        "-reset_timestamps" , "1",                                        # Restart each segment’s timestamps near zero
         "-segment_list"     , str(session_dir / _SEGMENT_LIST_FILENAME),  # Write a list containing segment filenames and timing
         "-segment_list_type", "csv",                               
-        str(session_dir / "%06d.mp4.part"),                        # Number files as 000000.mp4.part, etc
+        str(session_dir / "%06d.mp4.part"),                               # Number files as 000000.mp4.part, etc
     ]  # fmt: skip
 
     return command
@@ -213,6 +215,54 @@ def _read_segment_entries(
     return entries, offset
 
 
+def _probe_segment_duration(segment_path: Path) -> float:
+    """Validate a segment with FFprobe and return its file duration.
+
+    Args:
+        segment_path: Path to the recorded segment to inspect.
+
+    Returns:
+        A finite, positive file duration in seconds.
+
+    Raises:
+        ValueError: If no video stream exists or the duration is missing,
+            nonnumeric, nonfinite, or nonpositive.
+        json.JSONDecodeError: If FFprobe's output is not valid JSON.
+        subprocess.CalledProcessError: If FFprobe exits with a nonzero code.
+        subprocess.TimeoutExpired: If FFprobe does not finish within 10 seconds.
+        OSError: If FFprobe cannot be launched, e.g. the executable is missing.
+    """
+
+    command = [
+        "ffprobe",
+        "-v"             , "error",                         # Show only error messages (for stderr)
+        "-select_streams", "v:0",
+        "-show_entries"  , "stream=index:format=duration",  # Request stream index and file duration
+        "-of"            , "json",                          # Output metadata as JSON
+        str(segment_path),
+    ]  # fmt: skip
+
+    result = subprocess.run(
+        command,
+        capture_output=True,  # Capture FFprobe's output and error messages
+        text=True,  # Return strings rather than bytes
+        check=True,  # Raise CalledProcessError if FFprobe fails
+        timeout=10,
+    )
+
+    metadata = json.loads(result.stdout)
+
+    if not metadata.get("streams"):
+        raise ValueError(f"No video stream found: {segment_path}")
+
+    duration = float(metadata.get("format", {}).get("duration", "nan"))
+
+    if not math.isfinite(duration) or duration <= 0:
+        raise ValueError(f"Invalid segment duration: {segment_path}")
+
+    return duration
+
+
 def run_recording_worker(
     source: VideoSource,
     storage_root: Path,
@@ -237,6 +287,8 @@ def run_recording_worker(
             for entry in entries:
                 # TODO: produce the video segment metadata
                 print(entry, flush=True)
+                duration = _probe_segment_duration(session_dir / entry.filename)
+                print(duration, flush=True)
 
             time.sleep(0.25)
 
@@ -267,6 +319,8 @@ def run_recording_worker(
     for entry in entries:
         # TODO: produce the video segment metadata
         print(entry, flush=True)
+        duration = _probe_segment_duration(session_dir / entry.filename)
+        print(duration, flush=True)
 
     if process.returncode != 0 and not stopped_by_user:
         raise RuntimeError(f"FFmpeg exited with code {process.returncode}")
