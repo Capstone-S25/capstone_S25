@@ -1,10 +1,10 @@
 from pathlib import Path
 from uuid import uuid4
 
-from video_ingestion.sources import VideoSource
+from video_ingestion.sources import SourceType, VideoSource
 
 
-def prepare_session(
+def _prepare_session(
     source: VideoSource,
     storage_root: Path,
 ) -> tuple[str, Path]:
@@ -36,3 +36,29 @@ def prepare_session(
     session_dir.mkdir(parents=True, exist_ok=True)
 
     return session_id, session_dir
+
+
+def _build_input_args(source: VideoSource) -> list[str]:
+    """Build FFmpeg input arguments according to the given video source.
+
+    Args:
+        source: Video source providing the input type and file path or RTSP URL.
+
+    Returns:
+        Arguments to include in an FFmpeg command.
+
+    Raises:
+        ValueError: If the source type is unsupported.
+    """
+
+    if source.source_type == SourceType.FILE:
+        return [
+            "-re",  # Read the file at its original speed, simulating a live stream
+            "-i",
+            source.location,
+        ]
+
+    if source.source_type == SourceType.RTSP:
+        return ["-rtsp_transport", "tcp", "-i", source.location]
+
+    raise ValueError(f"Unsupported source type: {source.source_type}")
