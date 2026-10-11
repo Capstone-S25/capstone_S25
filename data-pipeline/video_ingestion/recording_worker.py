@@ -25,6 +25,14 @@ class SegmentEntry:
     end_seconds: float
 
 
+@dataclass(frozen=True)
+class FinalizedSegment:
+    path: Path
+    start_seconds: float
+    end_seconds: float
+    duration_seconds: float
+
+
 def _prepare_session(
     source: VideoSource,
     storage_root: Path,
@@ -261,6 +269,55 @@ def _probe_segment_duration(segment_path: Path) -> float:
         raise ValueError(f"Invalid segment duration: {segment_path}")
 
     return duration
+
+
+def _finalize_segment(
+    entry: SegmentEntry,
+    session_dir: Path,
+) -> FinalizedSegment:
+    """Validate and rename one temporary segment, then return its metadata.
+
+    Args:
+        entry: Completed CSV entry containing the temporary filename and its
+            start/end times on the recording timeline.
+        session_dir: Directory containing the recorded segment.
+
+    Returns:
+        A FinalizedSegment with the renamed file path, the entry's start/end
+        times, and the duration reported by FFprobe in seconds.
+        File rename example: 000000.mp4.part becomes 000000.mp4.
+
+    Raises:
+        ValueError: If the filename does not end in .part, no video stream
+            exists, or the probed duration is missing or invalid.
+        FileExistsError: If the finalized destination already exists.
+        json.JSONDecodeError: If FFprobe's output is not valid JSON.
+        subprocess.CalledProcessError: If FFprobe exits with a nonzero code.
+        subprocess.TimeoutExpired: If FFprobe does not finish within 10 seconds.
+        OSError: If FFprobe cannot be launched or the file cannot be renamed,
+            e.g. the temporary file is missing or permission is denied.
+    """
+    part_path = session_dir / entry.filename
+
+    if part_path.suffix != ".part":
+        raise ValueError(f"Expected a temporary segment: {part_path}")
+
+    # Remove only ".part": 000000.mp4.part becomes 000000.mp4
+    final_path = part_path.with_suffix("")
+
+    if final_path.exists():
+        raise FileExistsError(f"Final segment already exists: {final_path}")
+
+    duration = _probe_segment_duration(part_path)
+
+    part_path.rename(final_path)
+
+    return FinalizedSegment(
+        path=final_path,
+        start_seconds=entry.start_seconds,
+        end_seconds=entry.end_seconds,
+        duration_seconds=duration,
+    )
 
 
 def run_recording_worker(
