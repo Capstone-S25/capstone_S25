@@ -1,7 +1,26 @@
+import csv
+import subprocess
+import time
+from dataclasses import dataclass
 from pathlib import Path
 from uuid import uuid4
 
 from video_ingestion.sources import SourceType, VideoSource
+
+_SEGMENT_LIST_FILENAME = "completed.csv"
+
+
+@dataclass(frozen=True)
+class SegmentEntry:
+    """One row from FFmpeg's segment-list CSV.
+
+    filename is the segment name as written in the CSV.
+    start_seconds and end_seconds mark its interval on the recording timeline.
+    """
+
+    filename: str
+    start_seconds: float
+    end_seconds: float
 
 
 def _prepare_session(
@@ -106,9 +125,148 @@ def _build_ffmpeg_command(
         "-segment_time"     , str(segment_seconds),
         # Record completed segments and set the output filename
         "-reset_timestamps" , "1",                                 # Restart each segment’s timestamps near zero
-        "-segment_list"     , str(session_dir / "completed.csv"),  # Write a list containing segment filenames and timing
+        "-segment_list"     , str(session_dir / _SEGMENT_LIST_FILENAME),  # Write a list containing segment filenames and timing
         "-segment_list_type", "csv",                               
         str(session_dir / "%06d.mp4.part"),                        # Number files as 000000.mp4.part, etc
     ]  # fmt: skip
 
     return command
+
+
+def _start_ffmpeg(command: list[str]) -> subprocess.Popen:
+    """Start FFmpeg without waiting for recording to finish.
+
+    Args:
+        command: Argument list from _build_ffmpeg_command. The FFmpeg executable
+            must be available, and the output directory must already exist.
+
+    Returns:
+        A process handle for monitoring and controlling FFmpeg.
+
+    Raises:
+        OSError: If the executable cannot be launched, e.g. FFmpeg is missing.
+    """
+
+    return subprocess.Popen(
+        command,
+        stdin=subprocess.PIPE,  # Lets Python send commands to FFmpeg later
+        text=True,  # Allows writing strings to that input pipe
+    )
+
+
+def _read_segment_entries(
+    csv_path: Path,
+    offset: int = 0,
+) -> tuple[list[SegmentEntry], int]:
+    """Read complete new rows from FFmpeg's segment-list CSV while it grows.
+
+    Args:
+        csv_path: Segment-list file, e.g. session_dir / "completed.csv".
+            Each row contains a filename, start time, and end time in seconds.
+        offset: Read position returned by the previous call; use 0 initially.
+
+    Returns:
+        A (entries, next_offset) tuple. Entries contain filenames as written in
+        the CSV and start/end times converted to floats. Pass next_offset to
+        the next call to avoid rereading rows. A missing file returns an empty
+        list and the original offset. An unfinished row without a trailing
+        newline is deferred until a later call, without advancing past it.
+
+    Raises:
+        ValueError: If a complete row has other than three fields or a time
+            cannot be converted to float.
+        csv.Error: If a complete row contains malformed CSV syntax.
+        OSError: If the file cannot be read, except when it does not exist.
+    """
+    entries: list[SegmentEntry] = []
+
+    try:
+        file = csv_path.open("r", encoding="utf-8", newline="")
+    except FileNotFoundError:
+        return entries, offset
+
+    with file:
+        file.seek(offset)
+
+        while True:
+            line = file.readline()
+
+            # Stop at EOF or a row FFmpeg has not finished writing
+            if not line or not line.endswith("\n"):
+                break
+
+            row = next(csv.reader([line], strict=True))
+
+            if len(row) != 3:
+                raise ValueError(f"Invalid segment-list row: {row!r}")
+
+            entries.append(
+                SegmentEntry(
+                    filename=row[0],
+                    start_seconds=float(row[1]),
+                    end_seconds=float(row[2]),
+                )
+            )
+
+            offset = file.tell()
+
+    return entries, offset
+
+
+def run_recording_worker(
+    source: VideoSource,
+    storage_root: Path,
+    segment_seconds: int = 5,
+):
+    # Create a recording session and its output directory
+    session_id, session_dir = _prepare_session(source, storage_root)
+
+    # Build the command and launch FFmpeg in the background
+    command = _build_ffmpeg_command(source, session_dir, segment_seconds)
+    process = _start_ffmpeg(command)
+
+    stopped_by_user = False
+    csv_path = session_dir / _SEGMENT_LIST_FILENAME
+    csv_offset = 0
+
+    try:
+        # poll() returns None while FFmpeg is still running
+        while process.poll() is None:
+            entries, csv_offset = _read_segment_entries(csv_path, csv_offset)
+
+            for entry in entries:
+                # TODO: produce the video segment metadata
+                print(entry, flush=True)
+
+            time.sleep(0.25)
+
+    except KeyboardInterrupt:
+        stopped_by_user = True
+
+        if process.poll() is None:
+            try:
+                process.communicate(input="q\n", timeout=10)
+            except subprocess.TimeoutExpired:
+                # Force FFmpeg to stop if it does not respond in time
+                process.kill()
+                process.wait()
+                raise RuntimeError("FFmpeg did not stop within 10 seconds") from None
+    finally:
+        if process.poll() is None:
+            process.kill()
+
+        # Wait for process termination
+        process.wait()
+
+        # Release Python's end of the input pipe
+        if process.stdin is not None:
+            process.stdin.close()
+
+    # Edge case: FFmpeg may write the final rows between the last poll and process exit
+    entries, csv_offset = _read_segment_entries(csv_path, csv_offset)
+    for entry in entries:
+        # TODO: produce the video segment metadata
+        print(entry, flush=True)
+
+    if process.returncode != 0 and not stopped_by_user:
+        raise RuntimeError(f"FFmpeg exited with code {process.returncode}")
