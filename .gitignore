@@ -8,3 +8,8 @@ __pycache__/
 .ruff_cache/
 cookies.txt
 cookies*.txt
+
+*.egg-info/
+build/
+dist/
+config/server.json

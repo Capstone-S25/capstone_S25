@@ -9,3 +9,7 @@ sentencepiece>=0.2,<1
 Pillow>=10.4,<13
 psutil>=6,<8
 gdown==6.4.1
+numpy>=1.26,<3
+scikit-learn>=1.5,<2
+matplotlib>=3.9,<4
+requests>=2.32,<3

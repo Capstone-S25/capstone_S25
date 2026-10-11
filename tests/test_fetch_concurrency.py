@@ -14,7 +14,7 @@ from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-from scripts import fetch_data
+from anomaly_eval.datasets import drive as fetch_data
 
 
 class LinkError(RuntimeError):
@@ -265,7 +265,7 @@ class ConcurrentFetchTests(unittest.TestCase):
             self.assertTrue(loose_finished.is_set())
             return original_extract(archive)
 
-        with patch("scripts.fetch_data.extract_zip", side_effect=extract):
+        with patch("anomaly_eval.datasets.drive.extract_zip", side_effect=extract):
             code, receipt = self.run_fetch(entries, download, "--extract-zip")
         self.assertEqual(code, 0)
         self.assertEqual((self.root / "dataset/one.txt").read_text(), "archive member")

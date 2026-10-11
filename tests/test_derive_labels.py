@@ -2,24 +2,19 @@
 
 from __future__ import annotations
 
-import csv
 import json
-import random
 import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.derive_labels import (
-    LabeledImage,
-    build_manifest,
+from anomaly_eval.datasets.labels import (
+    coco_positive_image_ids,
     collect_littering,
     collect_loitering,
     collect_rough_sleeping,
     collect_smoking,
-    coco_positive_image_ids,
-    diverse_sample,
-    load_coco,
     littering_group,
+    load_coco,
     smoking_video_group,
     yolo_class_tokens,
     yolo_has_box,
@@ -108,7 +103,11 @@ class FixtureBase(unittest.TestCase):
 class CocoParsingTests(FixtureBase):
     def test_load_coco_returns_core_tables(self) -> None:
         coco_path = (
-            self.root / "smoking" / "smoking-video.v1i.coco" / "train" / "_annotations.coco.json"
+            self.root
+            / "smoking"
+            / "smoking-video.v1i.coco"
+            / "train"
+            / "_annotations.coco.json"
         )
         categories, images, annotations = load_coco(coco_path)
         self.assertEqual(categories, {0: "Not Smoking", 1: "Smoking"})
@@ -117,11 +116,17 @@ class CocoParsingTests(FixtureBase):
 
     def test_positive_image_ids_by_category_name(self) -> None:
         coco_path = (
-            self.root / "smoking" / "smoking-video.v1i.coco" / "train" / "_annotations.coco.json"
+            self.root
+            / "smoking"
+            / "smoking-video.v1i.coco"
+            / "train"
+            / "_annotations.coco.json"
         )
         categories, _, annotations = load_coco(coco_path)
         smoking_ids = coco_positive_image_ids(categories, annotations, {"Smoking"})
-        not_smoking_ids = coco_positive_image_ids(categories, annotations, {"Not Smoking"})
+        not_smoking_ids = coco_positive_image_ids(
+            categories, annotations, {"Not Smoking"}
+        )
         # image ids 2 (b), 3 (c mixed), 4 (d) carry a Smoking box
         self.assertEqual(smoking_ids, {2, 3, 4})
         # image ids 1 (a), 3 (c mixed), 5 (e), 6 (f) carry a Not Smoking box
@@ -180,62 +185,6 @@ class CollectorTests(FixtureBase):
         self.assertEqual(
             names, ["test_0.jpg", "train_0.jpg", "train_1.jpg", "valid_0.jpg"]
         )
-
-
-class DiverseSampleTests(unittest.TestCase):
-    def _items(self, groups: list[str]) -> list[LabeledImage]:
-        return [
-            LabeledImage(Path(f"/x/{g}_{i}.jpg"), "smoking", g)
-            for i, g in enumerate(groups)
-        ]
-
-    def test_respects_max_per_group_cap(self) -> None:
-        items = self._items(["a"] * 10)  # one group only
-        chosen = diverse_sample(items, k=5, max_per_group=2, rng=random.Random(0))
-        self.assertEqual(len(chosen), 5)  # cap relaxed to still reach k
-
-    def test_spreads_across_groups_round_robin(self) -> None:
-        items = self._items(["a", "b", "c"] * 4)  # 12 items, 3 groups of 4
-        chosen = diverse_sample(items, k=6, max_per_group=2, rng=random.Random(0))
-        per_group: dict[str, int] = {}
-        for item in chosen:
-            per_group[item.group_id] = per_group.get(item.group_id, 0) + 1
-        self.assertEqual(len(chosen), 6)
-        self.assertTrue(all(count <= 2 for count in per_group.values()))
-        self.assertEqual(set(per_group), {"a", "b", "c"})  # spread across all groups
-
-    def test_returns_min_k_len(self) -> None:
-        items = self._items(["a", "b"])
-        self.assertEqual(len(diverse_sample(items, k=10, max_per_group=5, rng=random.Random(0))), 2)
-        self.assertEqual(len(diverse_sample([], k=3, max_per_group=1, rng=random.Random(0))), 0)
-
-    def test_deterministic_for_seed(self) -> None:
-        items = self._items([f"g{i % 5}" for i in range(40)])
-        first = [i.path.name for i in diverse_sample(items, k=12, max_per_group=3, rng=random.Random(7))]
-        second = [i.path.name for i in diverse_sample(items, k=12, max_per_group=3, rng=random.Random(7))]
-        self.assertEqual(first, second)
-
-
-class BuildManifestTests(FixtureBase):
-    def test_writes_balanced_test_manifest(self) -> None:
-        out_path = self.root / "out" / "manifest.csv"
-        summary = build_manifest(out_path, per_class=3, seed=42, root=self.root)
-
-        # every class that has >=3 candidates yields exactly 3 rows
-        self.assertEqual(summary["rows"], 15)
-        for label in ("smoking", "littering", "rough_sleeping", "loitering", "normal"):
-            self.assertEqual(summary["per_class"][label], 3, label)
-
-        with out_path.open(newline="", encoding="utf-8") as handle:
-            rows = list(csv.DictReader(handle))
-        self.assertEqual(len(rows), 15)
-        self.assertEqual(set(rows[0]), {"path", "label", "split", "group_id"})
-        self.assertTrue(all(row["split"] == "test" for row in rows))
-
-        # no duplicate image paths, and every referenced file exists on disk
-        paths = [Path(row["path"]) for row in rows]
-        self.assertEqual(len(paths), len(set(paths)))
-        self.assertTrue(all(p.is_file() for p in paths))
 
 
 if __name__ == "__main__":

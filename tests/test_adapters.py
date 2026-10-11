@@ -8,7 +8,7 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
-from scripts.models import (
+from anomaly_eval.models import (
     DEFAULT_MODELS,
     MODELS,
     MiniCPMAdapter,
@@ -26,7 +26,8 @@ ML_AVAILABLE = all(
 class RegistryTests(unittest.TestCase):
     def test_default_shortlist_and_selected_checkpoints(self):
         self.assertEqual(
-            DEFAULT_MODELS, ["mobileclip2-s2", "siglip2-b16-224", "smolvlm-500m"]
+            DEFAULT_MODELS,
+            ["mobileclip2-s2", "siglip2-b16-224", "smolvlm-500m", "minicpm-v4"],
         )
         self.assertEqual(MODELS["minicpm-v4"].checkpoint, "openbmb/MiniCPM-V-4")
         self.assertEqual(
@@ -133,6 +134,10 @@ class AdapterTests(unittest.TestCase):
             return model
 
         with (
+            patch(
+                "huggingface_hub.snapshot_download",
+                return_value="/tmp/pinned-mobileclip",
+            ) as snapshot,
             patch("open_clip.create_model_and_transforms", factory),
             patch(
                 "open_clip.get_tokenizer",
@@ -151,6 +156,10 @@ class AdapterTests(unittest.TestCase):
         self.assertEqual(factory.call_args.kwargs["device"], "cpu")
         self.assertEqual(factory.call_args.kwargs["precision"], "fp32")
         fusion.assert_called_once()
+        self.assertEqual(
+            snapshot.call_args.kwargs["revision"], MODELS["mobileclip2-s2"].revision
+        )
+        self.assertEqual(factory.call_args.args[0], "local-dir:/tmp/pinned-mobileclip")
 
     def test_minicpm_uses_cached_processor_and_bounded_greedy_chat(self):
         import torch
