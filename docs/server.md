@@ -16,6 +16,18 @@ Install the package in the server's Python environment as described in README. U
 
 Defaults locate checkout data/results/bundle dynamically and use the user's Hugging Face cache. Packaged defaults live in `anomaly_eval/config/` and are included in a wheel. Configuration precedence is explicit flags, server JSON, environment, then defaults. Existing `HF_HOME`/`HF_HUB_CACHE` are respected unless a cache root is configured.
 
+Run under your own account in the activated virtual environment. For a checkout
+with its data already under `data/`, `python -m anomaly_eval run --threads 4`
+uses checkout `data/` and `results/`, plus your Hugging Face cache. Inspect the
+resolved locations with `python -m anomaly_eval paths`.
+
+Paths such as `/srv/...`, `/mnt/...` and `/scratch/...` are deployment examples,
+not directories the program installs or automatically grants access to. Choose
+existing readable data and writable result/cache locations. A permission error
+creating `/srv/runs` means your account cannot create that system directory.
+`sudo` typically uses a different PATH without the virtual environment's
+`anomaly-eval` executable; use your account's writable directories instead.
+
 ```bash
 cp config/server.example.json config/server.json
 # Edit paths, then:

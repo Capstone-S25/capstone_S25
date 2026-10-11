@@ -166,6 +166,23 @@ class WorkspaceTests(unittest.TestCase):
         self.assertEqual(result, 0)
         self.assertEqual(json.loads(out.getvalue())["data_dir"], str(self.root / "run"))
 
+    def test_cli_permission_error_identifies_path_and_returns_failure(self):
+        denied = self.root / "restricted" / "runs"
+        stderr = io.StringIO()
+        with (
+            patch(
+                "anomaly_eval.runner.main",
+                side_effect=PermissionError(13, "Permission denied", str(denied)),
+            ),
+            contextlib.redirect_stderr(stderr),
+        ):
+            result = cli_main(["run", "--prepare-only"])
+        self.assertEqual(result, 1)
+        self.assertIn(str(denied), stderr.getvalue())
+        self.assertIn("--results-root", stderr.getvalue())
+        self.assertIn("--prepared-dir", stderr.getvalue())
+        self.assertNotIn("Traceback", stderr.getvalue())
+
     def test_checkout_launcher_works_from_an_unrelated_directory(self):
         command = [
             sys.executable,

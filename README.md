@@ -21,13 +21,19 @@ anomaly-eval run --threads 4 --max-rss-mb 24576 --camera-fps 1
 anomaly-eval run --vadclip
 ```
 
-For another server, configure independent data, results and cache roots:
+For another server, configure independent data, results and cache roots. From the
+checkout, this example uses your existing `data/` and directories owned by your user:
 
 ```bash
-anomaly-eval --data-root /srv/datasets/capstone \
-  --results-root /srv/experiments/capstone \
-  --cache-root /srv/cache/capstone run --threads 4 --max-rss-mb 24576
+python -m anomaly_eval --data-root "$PWD/data" \
+  --results-root "$PWD/results" \
+  --cache-root "$HOME/.cache/huggingface" run --threads 4 --max-rss-mb 24576
 ```
+
+Point `--data-root` at the directory containing your actual `raw/` and
+`additional/` data. `/srv/...`, `/mnt/...` and `/scratch/...` paths in deployment
+examples are placeholders for locations already provisioned on your server.
+Run inside the activated virtual environment without `sudo`.
 
 Alternatively, copy [server.example.json](config/server.example.json) to `config/server.json`, edit its locations and use `anomaly-eval --workspace-config config/server.json run`. Relative paths in that JSON resolve against the JSON file. Environment variables `CAPSTONE_DATA_DIR`, `CAPSTONE_RESULTS_DIR`, `CAPSTONE_CACHE_DIR`, `CAPSTONE_BUNDLE_DIR` and `CAPSTONE_CONFIG_DIR` are supported. `anomaly-eval paths` shows the resolved locations.
 

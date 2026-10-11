@@ -138,4 +138,14 @@ def main(argv=None):
     else:
         module, function, _ = COMMANDS[args.command]
     # Scientific/model dependencies are loaded only by the selected operation.
-    return getattr(importlib.import_module(module), function)(rest) or 0
+    try:
+        return getattr(importlib.import_module(module), function)(rest) or 0
+    except PermissionError as exc:
+        print(
+            f"anomaly-eval: permission denied: {exc.filename or str(exc)}\n"
+            "Choose paths your account can access with --data-root, --results-root "
+            "and --cache-root; results and cache directories must be writable.\n"
+            "For a read-only dataset, use run --prepared-dir with a writable directory.",
+            file=sys.stderr,
+        )
+        return 1
