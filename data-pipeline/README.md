@@ -1,4 +1,4 @@
-﻿# Data pipeline
+# Data pipeline
 
 A Python project for the YOLO-VLM anomaly detection pipeline.
 
@@ -8,7 +8,7 @@ A Python project for the YOLO-VLM anomaly detection pipeline.
 
 uv installs the Python version and packages this project needs.
 
-**macOS/Linux:**
+**Linux/macOS:**
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -21,8 +21,6 @@ powershell -ExecutionPolicy Bypass -c "irm https://astral.sh/uv/install.ps1 | ie
 ```
 
 Close and reopen your terminal, then run `uv --version` to check the installation.
-See the [uv installation guide](https://docs.astral.sh/uv/getting-started/installation/)
-for other installation options.
 
 ### 2. Install Python and dependencies
 
@@ -32,9 +30,39 @@ uv python install 3.12
 uv sync --locked
 ```
 
-Use `uv run` before Python commands to use this environment; no manual
-activation is needed. Run `uv sync --locked` again after pulling changes that
-update dependencies.
+Use `uv run` before Python commands to use this environment; no manual activation is needed. Run `uv sync --locked` again after pulling changes that update dependencies.
+
+### 3. Install FFmpeg
+
+Video ingestion uses `ffmpeg` to record video segments and `ffprobe` to inspect their duration. Both executables must be available on `PATH`.
+
+**Linux (Ubuntu/Debian):**
+
+```bash
+sudo apt update
+sudo apt install ffmpeg
+```
+
+**macOS (Homebrew):**
+
+Install [Homebrew](https://brew.sh/) if needed, then run:
+
+```bash
+brew install ffmpeg
+```
+
+**Windows (PowerShell):**
+
+```powershell
+winget install --id Gyan.FFmpeg --exact --source winget
+```
+
+Verify that both tools are available:
+
+```powershell
+ffmpeg -version
+ffprobe -version
+```
 
 ## Add dependencies
 
