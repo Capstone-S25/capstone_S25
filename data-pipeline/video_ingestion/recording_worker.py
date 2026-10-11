@@ -16,8 +16,10 @@ _SEGMENT_LIST_FILENAME = "completed.csv"
 class SegmentEntry:
     """One row from FFmpeg's segment-list CSV.
 
-    filename is the segment name as written in the CSV.
-    start_seconds and end_seconds mark its interval on the recording timeline.
+    Attributes:
+        filename: Segment filename as written in the CSV, e.g. "000000.mp4.part".
+        start_seconds: Segment start on the recording timeline, in seconds.
+        end_seconds: Segment end on the recording timeline, in seconds.
     """
 
     filename: str
@@ -27,6 +29,18 @@ class SegmentEntry:
 
 @dataclass(frozen=True)
 class FinalizedSegment:
+    """Metadata for a segment after successful probing and renaming.
+
+    Attributes:
+        path: Finalized file path with the .part suffix removed.
+        start_seconds: Start time in seconds on the recording timeline, from CSV.
+        end_seconds: End time in seconds on the recording timeline, from CSV.
+    duration_seconds: Finite, positive duration in seconds reported by
+        FFprobe; may differ from end_seconds - start_seconds because the MP4's
+        reported duration excludes a gap between the segment's start time
+        in the CSV and its first video frame.
+    """
+
     path: Path
     start_seconds: float
     end_seconds: float
