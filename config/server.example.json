@@ -1,0 +1,7 @@
+{
+  "data_dir": "../data",
+  "results_dir": "../results",
+  "cache_dir": "~/.cache/huggingface",
+  "bundle_dir": "../test_data",
+  "config_dir": "../anomaly_eval/config"
+}

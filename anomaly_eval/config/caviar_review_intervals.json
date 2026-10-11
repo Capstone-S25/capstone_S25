@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "task": "unattended_items",
+  "review_scope": "Sequence XML roles/groups plus chronological frame inspection; preliminary small single-camera evaluation. Independent event-boundary review recommended.",
+  "definition": "A previously carried or deposited bag remains visible after its associated carrier has left the vicinity. Retrieval and attended placement are negative. These are endpoint state labels, not a universal duration rule.",
+  "intervals": [
+    {"sequence": "LeftBag", "start": 45.0, "end": 50.0, "label": "unattended_items", "note": "XML object 4 left behind; carrier 3 no longer present; bag persists across this interval."},
+    {"sequence": "LeftBag", "start": 38.0, "end": 39.2, "label": "normal", "note": "Bag object 4 remains grouped with depositing carrier 3; attended placement hard negative."},
+    {"sequence": "LeftBag_AtChair", "start": 28.0, "end": 31.0, "label": "unattended_items", "note": "Bag object 6 persists after carrier 4 has departed; later retrieval by person 5 is excluded."},
+    {"sequence": "LeftBag_AtChair", "start": 19.6, "end": 19.8, "label": "normal", "note": "Object 6 grouped with carrier 4 during attended placement."},
+    {"sequence": "LeftBag_PickedUp", "start": 40.0, "end": 40.4, "label": "normal", "note": "Object 4 grouped with returning carrier 2; attended retrieval."},
+    {"sequence": "LeftBag_PickedUp", "start": 44.0, "end": 47.0, "label": "normal", "note": "Bag has been picked up; owner walks away with item."},
+    {"sequence": "Walk1", "start": 8.0, "end": 18.0, "label": "normal", "note": "Walking control; no leaving-object role in sequence XML."},
+    {"sequence": "Walk2", "start": 8.0, "end": 30.0, "label": "normal", "note": "Walking control; no leaving-object role in sequence XML."},
+    {"sequence": "Walk3", "start": 12.0, "end": 40.0, "label": "normal", "note": "Walking control; no leaving-object role in sequence XML."}
+  ]
+}

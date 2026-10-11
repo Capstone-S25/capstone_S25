@@ -1,11 +1,13 @@
-# Test data bundle — vetted head-to-head anomaly frames
+# Portable evaluation data
 
-The 80 vetted test frames used in the frame-level model benchmark (report Section 5, `reports/anomaly_benchmark_report.md`). One subdirectory per label: `normal/`, `littering/`, `loitering/`, `rough_sleeping/`, `smoking/` — 16 frames each. There is no `unattended_items/` directory because the corpus provides zero test support for that class (it contributes a structural zero to macro-F1).
+`MANIFEST.csv` retains the original 80-image bundle for provenance. Its split is now **dev**: these images and recording groups already informed model comparisons. The five folders each contain 16 historical frames. Rough-sleeping and loitering labels are proxies, and littering action labels need event review; they are not verified held-out task labels.
 
-Filenames are the original dataset basenames, which encode provenance (e.g. littering video id, loitering frame id, smoking camera + date). `MANIFEST.csv` maps every file to its label, group_id, split, absolute source path in `data/raw/datasets/`, and SHA-256 digest so the bundle can be re-verified against the original datasets:
+`EVALUATION.csv` is the portable confirmed-task manifest, with paths relative to this directory, SHA-256, task, evidence, source group and review notes. It contains 32 historical smoking/normal development frames and 72 additional CAVIAR inputs. The latter comprise 36 endpoint frames and 36 chronological past-frame contact sheets under `caviar/`.
 
-```
-sha256sum -c <(awk -F, 'NR>1 {print $7"  test_data/"$1}' MANIFEST.csv)
-```
+For each unattended-item input protocol, development has 20 examples (4 positive, 16 normal) and test has 16 (4 positive, 12 normal), with three source sequences per split. Positives cover a deposited bag persisting after its carrier departs; negatives include attended placement/retrieval and walking controls. Frame/window versions of one sequence remain in the same split. `unattended_items_frame.csv`, `unattended_items_window.csv` and `smoking_frame.csv` can be read directly by the benchmark.
 
-The set matches the `samples` list in `results/anomaly_headtohead/run.json` exactly (manifest_sha256 `18087c4d…`, definitions_sha256 `589882c0…`). Selection: one frame per group where a corpus provides multiple frames, plus smoking/normal paired hard negatives drawn from the same camera and date. Full provenance is documented in report Section 2; the bundle was produced by `scripts/make_test_data.py`.
+The CAVIAR selection is preliminary sequence-annotation review from a staged single camera. It does not establish new-camera/general deployment performance. Exact hashes verify files, not semantic correctness or independence of transformed duplicates. There is no confirmed held-out five-event test set yet. See [evaluation instructions](../docs/evaluation.md) and [interval provenance](../anomaly_eval/config/caviar_review_intervals.json).
+
+Source: [CAVIAR Test Case Scenarios](https://groups.inf.ed.ac.uk/vision/DATASETS/CAVIAR/CAVIARDATA1/), EC CAVIAR project / IST 2001 37540. CAVIAR specifies CC BY-SA and requests this acknowledgment; preserve attribution and applicable share-alike terms when redistributing these derived frames.
+
+From the repository root, verify the bundle by running `anomaly-eval run --prepare-only`; every manifest image hash is checked. The old manifest has six CSV columns, with SHA-256 in column six; parsing CSV with Python avoids path/quoting problems.

@@ -17,13 +17,14 @@ from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-from scripts import benchmark, fetch_data
-from scripts.data import Sample, read_manifest, select_test_samples
-from scripts.init import main as prepare_main
-from scripts.init import sample_video
-from scripts.metrics import detection_metrics, roc_auc
-from scripts.models import Prediction, parse_vlm_response
-from scripts.throttle import CPUSettings, Throttler
+from anomaly_eval import benchmark
+from anomaly_eval.data import Sample, read_manifest, select_test_samples
+from anomaly_eval.datasets import drive as fetch_data
+from anomaly_eval.datasets.tools import inventory_main as prepare_main
+from anomaly_eval.datasets.tools import sample_video
+from anomaly_eval.metrics import detection_metrics, roc_auc
+from anomaly_eval.models import Prediction, parse_vlm_response
+from anomaly_eval.resources import CPUSettings, Throttler
 
 DEFINITIONS = {"normal": "Ordinary activity", "smoking": "A person smoking"}
 
@@ -32,8 +33,8 @@ class ThrottleTests(unittest.TestCase):
     def test_paces_active_time(self):
         throttle = Throttler(CPUSettings(duty_cycle=0.5))
         with (
-            patch("scripts.throttle.time.perf_counter", side_effect=[10.0, 12.0]),
-            patch("scripts.throttle.time.sleep") as sleep,
+            patch("anomaly_eval.resources.time.perf_counter", side_effect=[10.0, 12.0]),
+            patch("anomaly_eval.resources.time.sleep") as sleep,
             throttle.operation(),
         ):
             pass
@@ -43,8 +44,8 @@ class ThrottleTests(unittest.TestCase):
     def test_rate_cap_and_full_duty(self):
         throttle = Throttler(CPUSettings(duty_cycle=1.0, max_samples_per_second=0.2))
         with (
-            patch("scripts.throttle.time.perf_counter", side_effect=[10.0, 12.0]),
-            patch("scripts.throttle.time.sleep") as sleep,
+            patch("anomaly_eval.resources.time.perf_counter", side_effect=[10.0, 12.0]),
+            patch("anomaly_eval.resources.time.sleep") as sleep,
             throttle.operation(),
         ):
             pass
@@ -52,7 +53,7 @@ class ThrottleTests(unittest.TestCase):
 
     def test_failure_does_not_delay_cancellation(self):
         with (
-            patch("scripts.throttle.time.sleep") as sleep,
+            patch("anomaly_eval.resources.time.sleep") as sleep,
             self.assertRaises(KeyboardInterrupt),
             Throttler(CPUSettings()).operation(),
         ):
@@ -350,7 +351,7 @@ class FetchTests(unittest.TestCase):
         with (
             tempfile.TemporaryDirectory() as temp,
             patch.dict("sys.modules", {"gdown": fake}),
-            patch("scripts.fetch_data.time.sleep"),
+            patch("anomaly_eval.datasets.drive.time.sleep"),
             redirect_stdout(io.StringIO()),
         ):
             destination = Path(temp) / "dataset/image.jpg"
@@ -396,7 +397,7 @@ class FetchTests(unittest.TestCase):
             error_output = io.StringIO()
             with (
                 patch.dict("sys.modules", {"gdown": fake}),
-                patch("scripts.fetch_data.time.sleep") as sleep,
+                patch("anomaly_eval.datasets.drive.time.sleep") as sleep,
                 redirect_stdout(io.StringIO()),
                 redirect_stderr(error_output),
             ):
@@ -548,8 +549,11 @@ class FetchTests(unittest.TestCase):
     def test_pacer_spaces_network_attempts(self):
         pacer = fetch_data.DownloadPacer(1)
         with (
-            patch("scripts.fetch_data.time.monotonic", side_effect=[0.0, 0.25, 1.0]),
-            patch("scripts.fetch_data.time.sleep") as sleep,
+            patch(
+                "anomaly_eval.datasets.drive.time.monotonic",
+                side_effect=[0.0, 0.25, 1.0],
+            ),
+            patch("anomaly_eval.datasets.drive.time.sleep") as sleep,
         ):
             pacer.wait()
             pacer.wait()
@@ -860,8 +864,8 @@ class WorkerTests(unittest.TestCase):
                 )
             )
             with (
-                patch("scripts.benchmark.create_adapter", return_value=adapter),
-                patch("scripts.throttle.CPUSettings.configure_worker"),
+                patch("anomaly_eval.benchmark.create_adapter", return_value=adapter),
+                patch("anomaly_eval.resources.CPUSettings.configure_worker"),
                 patch.dict(os.environ),
             ):
                 self.assertEqual(benchmark.worker(config), 1)
@@ -895,7 +899,7 @@ class WorkerTests(unittest.TestCase):
             # Start a real sleeper process to test termination, without a model download.
             original = subprocess.Popen
             with patch(
-                "scripts.benchmark.subprocess.Popen",
+                "anomaly_eval.benchmark.subprocess.Popen",
                 side_effect=lambda *args, **kwargs: original(
                     [os.sys.executable, "-c", "import time; time.sleep(30)"], **kwargs
                 ),

@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "capstone-anomaly-evaluation"
+version = "0.1.0"
+description = "CPU CLIP/VLM anomaly evaluation with portable dataset provenance"
+requires-python = ">=3.12"
+dynamic = ["dependencies"]
+
+[project.scripts]
+anomaly-eval = "anomaly_eval.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["anomaly_eval*"]
+
+[tool.setuptools.package-data]
+anomaly_eval = ["config/*.json"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}

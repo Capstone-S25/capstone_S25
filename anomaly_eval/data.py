@@ -1,0 +1,215 @@
+"""Shared manifest and anomaly-definition validation."""
+
+from __future__ import annotations
+
+import csv
+import hashlib
+import json
+import random
+from dataclasses import dataclass
+from pathlib import Path
+
+from anomaly_eval.paths import (
+    PACKAGE_ROOT,
+    portable_path,
+    resolve_path,
+)
+
+DEFAULT_DEFINITIONS = PACKAGE_ROOT / "config" / "anomalies.json"
+IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".bmp", ".webp", ".tif", ".tiff"}
+VIDEO_EXTENSIONS = {".mp4", ".avi", ".mov", ".mkv", ".mpg", ".mpeg", ".webm", ".m4v"}
+
+
+@dataclass(frozen=True)
+class Sample:
+    path: Path
+    label: str | None
+    split: str
+    group_id: str
+
+
+def read_definitions(path: Path) -> dict[str, str]:
+    definitions = json.loads(path.read_text(encoding="utf-8"))
+    if (
+        not isinstance(definitions, dict)
+        or "normal" not in definitions
+        or len(definitions) < 2
+    ):
+        raise ValueError(
+            "Definitions must map 'normal' and at least one anomaly to descriptions"
+        )
+    if any(
+        not isinstance(key, str)
+        or not key.strip()
+        or key != key.strip()
+        or not isinstance(value, str)
+        or not value.strip()
+        for key, value in definitions.items()
+    ):
+        raise ValueError("Definition names and descriptions must be nonempty strings")
+    return definitions
+
+
+def read_manifest(path: Path, definitions: dict[str, str]) -> list[Sample]:
+    samples = []
+    seen_paths: set[Path] = set()
+    content_splits: dict[str, set[str]] = {}
+    groups: dict[str, set[str]] = {}
+    with path.open(newline="", encoding="utf-8-sig") as handle:
+        reader = csv.DictReader(handle)
+        if not {"path", "label", "split"} <= set(reader.fieldnames or []):
+            raise ValueError(
+                "Manifest needs path,label,split columns (group_id is recommended)"
+            )
+        for line, row in enumerate(reader, start=2):
+            if None in row or any(
+                row[key] is None for key in ("path", "label", "split")
+            ):
+                raise ValueError(f"Manifest line {line}: malformed CSV row")
+            if not row["path"].strip():
+                raise ValueError(f"Manifest line {line}: empty image path")
+            image_path = resolve_path(row["path"].strip(), path.parent)
+            label = row["label"].strip() or None
+            split = row["split"].strip() or "test"
+            group_id = (row.get("group_id") or "").strip() or portable_path(
+                image_path, path.parent
+            )
+            if split not in {"train", "dev", "test", "reference", "ignore"}:
+                raise ValueError(
+                    f"Manifest line {line}: split must be train, dev, test, reference, or ignore"
+                )
+            if label is not None and label not in definitions:
+                raise ValueError(f"Manifest line {line}: unknown label {label!r}")
+            if split == "ignore":
+                continue
+            if (
+                not image_path.is_file()
+                or image_path.suffix.lower() not in IMAGE_EXTENSIONS
+            ):
+                raise ValueError(
+                    f"Manifest line {line}: missing or unsupported image {image_path}"
+                )
+            if image_path in seen_paths:
+                raise ValueError(f"Manifest line {line}: duplicate image {image_path}")
+            if split == "reference" and label is None:
+                raise ValueError(
+                    f"Manifest line {line}: reference images need verified labels"
+                )
+            digest = file_sha256(image_path)
+            if row.get("sha256") and row["sha256"].strip() != digest:
+                raise ValueError(f"Manifest line {line}: image SHA-256 mismatch")
+            content_splits.setdefault(digest, set()).add(split)
+            seen_paths.add(image_path)
+            groups.setdefault(group_id, set()).add(split)
+            samples.append(Sample(image_path, label, split, group_id))
+    leaking = [group for group, splits in groups.items() if len(splits) > 1]
+    if leaking:
+        raise ValueError(
+            f"Reference/test leakage or train/dev/test leakage: source groups cross splits: {leaking[:3]}"
+        )
+    if any(len(splits) > 1 for splits in content_splits.values()):
+        raise ValueError("Content leakage: identical image bytes cross splits")
+    if not any(sample.split in {"test", "dev"} for sample in samples):
+        raise ValueError("Manifest has no test or development images")
+    return samples
+
+
+def select_test_samples(
+    samples: list[Sample], limit: int | None, seed: int
+) -> list[Sample]:
+    selected = [sample for sample in samples if sample.split == "test"]
+    random.Random(seed).shuffle(selected)
+    return selected[:limit] if limit is not None else selected
+
+
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def resolve_original(path: Path) -> Path | None:
+    """Resolve an original remote path; conflicting contents require manual review."""
+    path = path.resolve()
+    candidates = [path] if path.is_file() else []
+    for parent in path.parents:
+        receipt = parent / "download_receipt.json"
+        if not receipt.is_file():
+            continue
+        entries = json.loads(receipt.read_text()).get("renamed_files", [])
+        for entry in entries:
+            original = Path(entry["original_path"].replace("\\", "/"))
+            actual = Path(entry["path"].replace("\\", "/"))
+            if (parent / original).resolve() == path:
+                local = (parent / actual).resolve()
+                if local.is_file():
+                    candidates.append(local)
+        break
+    unique = {file_sha256(p): p for p in sorted(set(candidates))}
+    if len(unique) > 1:
+        raise ValueError(f"Ambiguous original filename has differing contents: {path}")
+    return next(iter(unique.values()), None)
+
+
+def original_name(path: Path) -> str:
+    for parent in path.resolve().parents:
+        receipt = parent / "download_receipt.json"
+        if receipt.is_file():
+            for entry in json.loads(receipt.read_text()).get("renamed_files", []):
+                actual = (parent / entry["path"].replace("\\", "/")).resolve()
+                if actual == path.resolve():
+                    return Path(entry["original_path"].replace("\\", "/")).name
+            break
+    return path.name
+
+
+def fingerprint(value) -> str:
+    return hashlib.sha256(
+        json.dumps(
+            value, sort_keys=True, separators=(",", ":"), allow_nan=False
+        ).encode()
+    ).hexdigest()
+
+
+def code_hashes() -> dict:
+    return {
+        "anomaly_eval/" + p.relative_to(PACKAGE_ROOT).as_posix(): file_sha256(p)
+        for p in sorted(PACKAGE_ROOT.rglob("*"))
+        if p.suffix in {".py", ".json"}
+    }
+
+
+def sample_identity(samples) -> list[dict]:
+    return [
+        {
+            "path": portable_path(s.path),
+            "sha256": file_sha256(s.path),
+            "label": s.label,
+            "split": s.split,
+            "group_id": s.group_id,
+        }
+        for s in samples
+    ]
+
+
+def experiment_options(options: dict) -> dict:
+    """Locations and CLI plumbing are provenance, not scoring/runtime parameters."""
+    location_keys = {
+        "prepared_dir",
+        "output",
+        "manifest",
+        "definitions",
+        "cache_dir",
+        "data_dir",
+        "worker_config",
+        "workspace",
+        "list_models",
+    }
+    return {key: value for key, value in options.items() if key not in location_keys}
+
+
+def read_csv(path: Path) -> list[dict]:
+    with path.open(newline="", encoding="utf-8-sig") as handle:
+        return list(csv.DictReader(handle))
