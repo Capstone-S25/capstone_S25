@@ -62,3 +62,53 @@ def _build_input_args(source: VideoSource) -> list[str]:
         return ["-rtsp_transport", "tcp", "-i", source.location]
 
     raise ValueError(f"Unsupported source type: {source.source_type}")
+
+
+def _build_ffmpeg_command(
+    source: VideoSource, session_dir: Path, segment_seconds: int = 5
+) -> list[str]:
+    """Build a command to copy the first video stream into MP4 segments.
+
+    Args:
+        source: File or RTSP input; audio is omitted from the output.
+        session_dir: Output directory.
+            The caller must create it before running the command.
+        segment_seconds: Target segment duration in seconds; defaults to 5.
+            Stream copying cuts at keyframes (frames that can be decoded
+            without earlier frames), so actual durations can vary.
+
+    Returns:
+        Argument list for subprocess, starting with "ffmpeg". When executed,
+        writes numbered files such as 000000.mp4.part and completed.csv with
+        segment filenames, start times, and end times in seconds.
+
+    Raises:
+        ValueError: If segment_seconds is nonpositive or the source type is
+            unsupported.
+    """
+
+    if segment_seconds <= 0:
+        raise ValueError("Segment duration must be positive")
+
+    session_dir = session_dir.resolve()
+
+    command = ["ffmpeg", "-hide_banner"]
+
+    command += _build_input_args(source)
+
+    command += [
+        "-map"              , "0:v:0",  # Select the first video stream from the first input
+        "-c:v"              , "copy",   # Copy compressed video without decoding and re-encoding
+        "-an"               ,           # Omit audio
+        # Split video into MP4 segments
+        "-f"                , "segment",
+        "-segment_format"   , "mp4",
+        "-segment_time"     , str(segment_seconds),
+        # Record completed segments and set the output filename
+        "-reset_timestamps" , "1",                                 # Restart each segment’s timestamps near zero
+        "-segment_list"     , str(session_dir / "completed.csv"),  # Write a list containing segment filenames and timing
+        "-segment_list_type", "csv",                               
+        str(session_dir / "%06d.mp4.part"),                        # Number files as 000000.mp4.part, etc
+    ]  # fmt: skip
+
+    return command
