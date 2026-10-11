@@ -222,3 +222,22 @@ MiniCPM-V is the only model whose accuracy CI excludes chance (chance = 1/6 ≈ 
 | MiniCPM-V | 0.400 [0.2588, 0.5238] | not computed (hard labels only) |
 
 **Base-rate caveat.** The test set is 64/80 anomalous (prevalence 0.80). A degenerate always-anomaly classifier therefore scores binary F1 = 2·0.8·1/(0.8+1) = **0.889**. SigLIP2's headline 0.827 is ≈ 93% of that ceiling — it is largely a base-rate artifact, not strong discrimination. The threshold-free ROC-AUC is the honest measure: 0.626 [0.4859, 0.7591] indicates only moderate separation, and its CI includes values near chance. MobileCLIP2-S2's AUC of 0.459 is *below* chance (anti-predictive at this operating point). MiniCPM-V emits hard labels rather than calibrated scores, so its binary F1 (0.40) reflects label assignment only and no AUC was computed for it.
+
+### 5.4 Per-class breakdown
+
+![Per-class F1 heatmap](figures/fig03_perclass_f1_heatmap.png)
+
+| Class (support) | MobileCLIP2-S2 | SigLIP2-B/16-224 | SmolVLM-500M | MiniCPM-V |
+|---|---|---|---|---|
+| normal (16) | 0.356 | 0.148 | — | 0.400 |
+| littering (16) | 0 | **0.400** | — | 0.316 |
+| loitering (16) | 0 | 0.238 | — | 0.111 |
+| rough_sleeping (16) | 0.080 | 0.489 | — | **0.769** |
+| smoking (16) | 0.077 | 0 | — | 0 |
+| unattended_items (0) | 0 | 0 | — | 0 |
+
+(Full precision/recall per class in Appendix C.) Two patterns stand out. First, **smoking is missed by every model**: recall is 0 for SigLIP2 and MiniCPM-V, and only 0.0625 (1/16) for MobileCLIP2-S2 — the one frame-level signal that exists in this corpus at all comes from a CLIP similarity score, not from any VLM reading of the image. Second, **rough_sleeping is the strongest per-class cell anywhere**: MiniCPM-V reaches F1 0.769 (P 1.0, R 0.625), and SigLIP2's 0.489 (R 0.6875) is its best class — both consistent with the "person lying down" cue being visually salient in a single frame. Littering is the only other class where two models score meaningfully (SigLIP2 F1 0.40 at P 1.0 / R 0.25; MiniCPM-V 0.316). Loitering and unattended_items are effectively unsolved: loitering requires duration evidence across time that a single frame cannot provide, and unattended_items has no test support (Section 9), so its F1 of 0 is structural rather than empirical for every model.
+
+### 5.5 SmolVLM-500M: systematic abstention
+
+SmolVLM produced **80/80 abstentions** — prediction coverage 0.0, zero usable scores, and therefore no accuracy, F1, or AUC (its rows in Sections 5.2–5.4 are degenerate by construction). The diagnostic in `improvements.json` shows every one of the 80 raw responses was the literal string `"unknown."`: a single distinct response across the whole test set. This is not random failure — it is systematic. With greedy decoding (`do_sample=False`, max_new_tokens=32) and the shared classification prompt (Section 4), the model consistently concluded "evidence insufficient" rather than committing to any label, including `normal`. The abstention path in `parse_vlm_response` maps such responses to no prediction, so all downstream metrics are undefined. SmolVLM-500M is therefore **unusable as configured** for this task; its latency and memory numbers (Sections 5.6–5.7) remain valid measurements of the model's cost, but say nothing about its accuracy.
