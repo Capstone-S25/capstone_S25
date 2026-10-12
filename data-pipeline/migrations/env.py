@@ -1,6 +1,9 @@
+import os
 from logging.config import fileConfig
+from pathlib import Path
 
 from alembic import context
+from dotenv import load_dotenv
 from sqlalchemy import engine_from_config, pool
 
 from database import models  # noqa: F401 -- Register models with shared metadata.
@@ -9,6 +12,13 @@ from database.base import Base
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+# Explicit process environment (including CI) takes precedence over local .env.
+load_dotenv(Path(__file__).resolve().parents[1] / ".env", override=False)
+database_url = os.environ.get("DATABASE_URL")
+if database_url:
+    # ConfigParser treats '%' as interpolation syntax (URLs may contain it).
+    config.set_main_option("sqlalchemy.url", database_url.replace("%", "%%"))
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

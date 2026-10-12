@@ -75,7 +75,20 @@ docker info
 docker compose version
 ```
 
-See [Local development database](#local-development-database) for startup and connection instructions.
+See [Setup local development database](#setup-local-development-database) for startup and connection instructions.
+
+## Environment configuration
+
+Copy the development environment template once, then edit `.env` if needed:
+
+```bash
+cp .env.example .env
+```
+
+| Variable            | Description                                       |
+| ------------------- | ------------------------------------------------- |
+| `DATABASE_URL`      | PostgreSQL connection used by Alembic migrations. |
+| `TEST_DATABASE_URL` | PostgreSQL connection used by database tests.     |
 
 ## Setup local development database
 
@@ -109,7 +122,7 @@ To stop and remove the container:
 ```bash
 docker compose -f infra/compose.yaml down
 # To delete database volume:
-docker compose -v -f infra/compose.yaml down
+# docker compose -v -f infra/compose.yaml down
 ```
 
 ## Database migrations
@@ -169,6 +182,17 @@ uv run ruff format .
 ```
 
 ## Testing
+
+Start the local database and create `.env` as above to run PostgreSQL tests:
+
+```bash
+uv run --locked pytest tests/database -q
+```
+
+Without a test URL, database integration tests skip locally. GitHub Actions
+starts a disposable PostgreSQL service and sets its database URLs directly in
+the workflow; CI does not need a `.env` file. Missing `TEST_DATABASE_URL` fails
+database tests in CI instead of silently skipping them.
 
 Run the test suite with:
 
