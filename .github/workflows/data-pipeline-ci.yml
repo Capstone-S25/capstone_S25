@@ -3,12 +3,12 @@ name: Data pipeline CI
 on:
   push:
     paths:
-      - "data-pipeline/**"
-      - ".github/workflows/data-pipeline-ci.yml"
+      - 'data-pipeline/**'
+      - '.github/workflows/data-pipeline-ci.yml'
   pull_request:
     paths:
-      - "data-pipeline/**"
-      - ".github/workflows/data-pipeline-ci.yml"
+      - 'data-pipeline/**'
+      - '.github/workflows/data-pipeline-ci.yml'
   workflow_dispatch:
 
 permissions:
@@ -19,6 +19,23 @@ jobs:
     name: Data pipeline / ${{ matrix.check }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: capstone_test
+          POSTGRES_USER: capstone
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U capstone -d capstone_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://capstone:password@127.0.0.1:5432/capstone_test
+      TEST_DATABASE_URL: postgresql+psycopg://capstone:password@127.0.0.1:5432/capstone_test
     strategy:
       fail-fast: false
       matrix:
@@ -41,13 +58,19 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
         with:
-          version: "0.13.0"
+          version: '0.13.0'
 
       - name: Install Python
         run: uv python install 3.12
 
       - name: Install dependencies
         run: uv sync --locked --dev
+
+      - name: Verify database migrations
+        if: matrix.check == 'tests'
+        run: |
+          uv run --locked alembic upgrade head
+          uv run --locked alembic check
 
       - name: Run ${{ matrix.check }}
         run: uv run --locked ${{ matrix.command }}
