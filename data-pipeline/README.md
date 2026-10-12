@@ -77,7 +77,7 @@ docker compose version
 
 See [Local development database](#local-development-database) for startup and connection instructions.
 
-## Local development database
+## Setup local development database
 
 Run these commands from the project root (`data-pipeline/`).
 Start the PostgreSQL 18 development container in the background:
@@ -110,6 +110,37 @@ To stop and remove the container:
 docker compose -f infra/compose.yaml down
 # To delete database volume:
 docker compose -v -f infra/compose.yaml down
+```
+
+## Database migrations
+
+Run these commands from the project root with the local PostgreSQL container running. The development connection is configured in `alembic.ini`.
+
+Apply all migrations after initial setup or pulling or creating new migration files:
+
+```bash
+uv run --locked alembic upgrade head
+```
+
+Check the database revision and available migration history:
+
+```bash
+uv run --locked alembic current
+uv run --locked alembic history
+```
+
+After changing a SQLAlchemy model in `database/models/`, import any new model in `database/models/__init__.py` so Alembic can discover it. Generate a migration:
+
+```bash
+uv run --locked alembic revision --autogenerate -m "describe schema change"
+```
+
+and apply the migration.
+
+Check whether the migrated database matches the models:
+
+```bash
+uv run --locked alembic check
 ```
 
 ## Add dependencies

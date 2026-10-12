@@ -7,3 +7,6 @@ recordings
 .coverage.*
 htmlcov/
 coverage.xml
+
+!database/models/
+!database/models/**
