@@ -1,6 +1,4 @@
 import csv
-import json
-import math
 import subprocess
 import time
 from dataclasses import dataclass
@@ -29,22 +27,21 @@ class SegmentEntry:
 
 @dataclass(frozen=True)
 class FinalizedSegment:
-    """Metadata for a segment after successful probing and renaming.
+    """Metadata for a segment after its .part suffix is removed.
+
+    Note:
+    Times add CSV offsets to the FFmpeg startup reference; startup delay and
+    buffering affect accuracy. They are not packet arrival or capture times.
 
     Attributes:
         path: Finalized file path with the .part suffix removed.
-        start_seconds: Start time in seconds on the recording timeline, from CSV.
-        end_seconds: End time in seconds on the recording timeline, from CSV.
-    duration_seconds: Finite, positive duration in seconds reported by
-        FFprobe; may differ from end_seconds - start_seconds because the MP4's
-        reported duration excludes a gap between the segment's start time
-        in the CSV and its first video frame.
+        start_at_ms: Approximate segment start as UTC epoch milliseconds.
+        end_at_ms: Approximate segment end as UTC epoch milliseconds.
     """
 
     path: Path
-    start_seconds: float
-    end_seconds: float
-    duration_seconds: float
+    start_at_ms: int
+    end_at_ms: int
 
 
 def _prepare_session(
@@ -237,79 +234,31 @@ def _read_segment_entries(
     return entries, offset
 
 
-def _probe_segment_duration(segment_path: Path) -> float:
-    """Validate a segment with FFprobe and return its file duration.
-
-    Args:
-        segment_path: Path to the recorded segment to inspect.
-
-    Returns:
-        A finite, positive file duration in seconds.
-
-    Raises:
-        ValueError: If no video stream exists or the duration is missing,
-            nonnumeric, nonfinite, or nonpositive.
-        json.JSONDecodeError: If FFprobe's output is not valid JSON.
-        subprocess.CalledProcessError: If FFprobe exits with a nonzero code.
-        subprocess.TimeoutExpired: If FFprobe does not finish within 10 seconds.
-        OSError: If FFprobe cannot be launched, e.g. the executable is missing.
-    """
-
-    command = [
-        "ffprobe",
-        "-v"             , "error",                         # Show only error messages (for stderr)
-        "-select_streams", "v:0",
-        "-show_entries"  , "stream=index:format=duration",  # Request stream index and file duration
-        "-of"            , "json",                          # Output metadata as JSON
-        str(segment_path),
-    ]  # fmt: skip
-
-    result = subprocess.run(
-        command,
-        capture_output=True,  # Capture FFprobe's output and error messages
-        text=True,  # Return strings rather than bytes
-        check=True,  # Raise CalledProcessError if FFprobe fails
-        timeout=10,
-    )
-
-    metadata = json.loads(result.stdout)
-
-    if not metadata.get("streams"):
-        raise ValueError(f"No video stream found: {segment_path}")
-
-    duration = float(metadata.get("format", {}).get("duration", "nan"))
-
-    if not math.isfinite(duration) or duration <= 0:
-        raise ValueError(f"Invalid segment duration: {segment_path}")
-
-    return duration
-
-
 def _finalize_segment(
     entry: SegmentEntry,
     session_dir: Path,
+    *,
+    session_started_at_utc: int,
 ) -> FinalizedSegment:
-    """Validate and rename one temporary segment, then return its metadata.
+    """Rename a completed temporary segment and return approximate UTC metadata.
 
     Args:
         entry: Completed CSV entry containing the temporary filename and its
             start/end times on the recording timeline.
         session_dir: Directory containing the recorded segment.
+        session_started_at_utc: UTC epoch milliseconds captured before FFmpeg
+            startup; reused unchanged for every segment and retry.
 
     Returns:
-        A FinalizedSegment with the renamed file path, the entry's start/end
-        times, and the duration reported by FFprobe in seconds.
-        File rename example: 000000.mp4.part becomes 000000.mp4.
+        A FinalizedSegment with the renamed path and UTC epoch milliseconds
+        calculated as the session reference plus rounded CSV offsets. Only
+        .part is removed: 000000.mp4.part becomes 000000.mp4.
 
     Raises:
-        ValueError: If the filename does not end in .part, no video stream
-            exists, or the probed duration is missing or invalid.
+        ValueError: If the filename does not end in .part.
         FileExistsError: If the finalized destination already exists.
-        json.JSONDecodeError: If FFprobe's output is not valid JSON.
-        subprocess.CalledProcessError: If FFprobe exits with a nonzero code.
-        subprocess.TimeoutExpired: If FFprobe does not finish within 10 seconds.
-        OSError: If FFprobe cannot be launched or the file cannot be renamed,
-            e.g. the temporary file is missing or permission is denied.
+        OSError: If the file cannot be renamed, e.g. it is missing or permission
+            is denied.
     """
     part_path = session_dir / entry.filename
 
@@ -322,15 +271,12 @@ def _finalize_segment(
     if final_path.exists():
         raise FileExistsError(f"Final segment already exists: {final_path}")
 
-    duration = _probe_segment_duration(part_path)
-
     part_path.rename(final_path)
 
     return FinalizedSegment(
         path=final_path,
-        start_seconds=entry.start_seconds,
-        end_seconds=entry.end_seconds,
-        duration_seconds=duration,
+        start_at_ms=session_started_at_utc + round(entry.start_seconds * 1000),
+        end_at_ms=session_started_at_utc + round(entry.end_seconds * 1000),
     )
 
 
@@ -338,14 +284,21 @@ def _finalize_segment_with_retry(
     entry: SegmentEntry,
     session_dir: Path,
     max_attempts: int = 3,
+    *,
+    session_started_at_utc: int,
 ) -> FinalizedSegment:
     attempts = 0
 
     while True:
         try:
-            return _finalize_segment(entry, session_dir)
+            return _finalize_segment(
+                entry, session_dir, session_started_at_utc=session_started_at_utc
+            )
 
-        except (PermissionError, subprocess.CalledProcessError):
+        # On Windows, an open file handle that does not allow renaming can cause
+        # Path.rename to raise PermissionError. A short delay lets a temporary file
+        # lock clear before another attempt
+        except PermissionError:
             attempts += 1
 
             if attempts >= max_attempts:
@@ -364,6 +317,9 @@ def run_recording_worker(
 
     # Build the command and launch FFmpeg in the background
     command = _build_ffmpeg_command(source, session_dir, segment_seconds)
+    # TODO: Map video timestamps to the CCTV camera's synchronized UTC clock
+    # for more accurate capture times; FFmpeg startup time is an approximation.
+    session_started_at_utc = time.time_ns() // 1_000_000
     process = _start_ffmpeg(command)
 
     stopped_by_user = False
@@ -377,7 +333,9 @@ def run_recording_worker(
 
             for entry in entries:
                 # TODO: produce the video segment metadata
-                segment = _finalize_segment_with_retry(entry, session_dir)
+                segment = _finalize_segment_with_retry(
+                    entry, session_dir, session_started_at_utc=session_started_at_utc
+                )
 
                 print(segment, flush=True)
 
@@ -409,7 +367,9 @@ def run_recording_worker(
     entries, csv_offset = _read_segment_entries(csv_path, csv_offset)
     for entry in entries:
         # TODO: produce the video segment metadata
-        segment = _finalize_segment_with_retry(entry, session_dir)
+        segment = _finalize_segment_with_retry(
+            entry, session_dir, session_started_at_utc=session_started_at_utc
+        )
 
         print(segment, flush=True)
 

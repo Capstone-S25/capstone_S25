@@ -34,7 +34,7 @@ Use `uv run` before Python commands to use this environment; no manual activatio
 
 ### 3. Install FFmpeg
 
-Video ingestion uses `ffmpeg` to record video segments and `ffprobe` to inspect their duration. Both executables must be available on `PATH`.
+Video ingestion uses `ffmpeg` to record video segments. The executable must be available on `PATH`.
 
 **Linux (Ubuntu/Debian):**
 
@@ -57,11 +57,10 @@ brew install ffmpeg
 winget install --id Gyan.FFmpeg --exact --source winget
 ```
 
-Verify that both tools are available:
+Verify that FFmpeg is available:
 
 ```powershell
 ffmpeg -version
-ffprobe -version
 ```
 
 ## Add dependencies
