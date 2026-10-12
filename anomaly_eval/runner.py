@@ -16,12 +16,13 @@ import json
 import math
 import os
 import sys
+from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
 
 from anomaly_eval.analysis import analyze, calibrate, write_report
 from anomaly_eval.data import (
-    Sample,
+    DEDUPLICATION_POLICY,
     code_hashes,
     experiment_options,
     file_sha256,
@@ -32,7 +33,7 @@ from anomaly_eval.data import (
     selection_summary,
 )
 from anomaly_eval.datasets.fetch import download, fetch
-from anomaly_eval.datasets.prepare import prepare
+from anomaly_eval.datasets.prepare import PREPARED_SCHEMA, prepare
 from anomaly_eval.models import DEFAULT_MODELS
 from anomaly_eval.paths import (
     Workspace,
@@ -284,6 +285,14 @@ def main(argv=None):
         )
         if a.skip_prepare:
             dataset = json.loads((evaluation / "dataset.json").read_text())
+            if (
+                dataset.get("schema") != PREPARED_SCHEMA
+                or dataset.get("deduplication", {}).get("policy")
+                != DEDUPLICATION_POLICY
+            ):
+                raise ValueError(
+                    "Prepared data predates source/pixel deduplication; rerun without --skip-prepare"
+                )
         else:
             print("Preparing reviewed task cohorts...", flush=True)
             dataset = prepare(
@@ -367,9 +376,7 @@ def main(argv=None):
                         continue
                     runout = output / cohort / split
                     available = [
-                        Sample(s.path, s.label, "test", s.group_id)
-                        for s in samples
-                        if s.split == split
+                        replace(s, split="test") for s in samples if s.split == split
                     ]
                     selected = select_test_samples(available, a.limit or None, a.seed)
                     selection = selection_summary(available, selected)

@@ -6,8 +6,10 @@ import csv
 import hashlib
 import json
 import random
+import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
 from anomaly_eval.paths import (
@@ -27,6 +29,46 @@ class Sample:
     label: str | None
     split: str
     group_id: str
+    origin: str | None = None
+    pixel_sha256: str | None = None
+    protocol: str = "frame"
+
+
+DEDUPLICATION_POLICY = "source_moment_and_exif_rgb_v1"
+
+
+def image_pixel_sha256(path: Path) -> str:
+    """Hash model-visible decoded RGB pixels, independently of image encoding."""
+    from PIL import Image, ImageOps
+
+    with Image.open(path) as source:
+        image = ImageOps.exif_transpose(source).convert("RGB")
+        digest = hashlib.sha256(f"exif_rgb_v1:{image.width}:{image.height}:".encode())
+        digest.update(image.tobytes())
+    return digest.hexdigest()
+
+
+def source_moment_identity(origin: str | None, protocol: str = "frame"):
+    """Recognize CAVIAR's checksum-qualified source time at exporter precision.
+
+    Other provenance strings remain descriptive; a path to a whole video alone
+    is not an identity for a frame. Window inputs use the fixed exporter protocol.
+    """
+    if not origin or not origin.startswith("caviar://"):
+        return None
+    match = re.fullmatch(r"(caviar://[^#@]+)#([0-9a-fA-F]{64})@([^@]+)", origin)
+    if not match:
+        raise ValueError(
+            "CAVIAR origins require source URI, video SHA-256 and timestamp"
+        )
+    try:
+        timestamp = Decimal(match[3])
+        if not timestamp.is_finite() or timestamp < 0:
+            raise ValueError("CAVIAR source timestamp must be finite and nonnegative")
+        timestamp = timestamp.quantize(Decimal("0.000001"))
+    except InvalidOperation as exc:
+        raise ValueError("Invalid CAVIAR source timestamp") from exc
+    return protocol, match[1] + "#" + match[2].lower(), str(timestamp)
 
 
 def read_definitions(path: Path) -> dict[str, str]:
@@ -48,6 +90,8 @@ def read_definitions(path: Path) -> dict[str, str]:
         for key, value in definitions.items()
     ):
         raise ValueError("Definition names and descriptions must be nonempty strings")
+    if len({key.casefold() for key in definitions}) != len(definitions):
+        raise ValueError("Definition names must be unique ignoring capitalization")
     return definitions
 
 
@@ -55,6 +99,8 @@ def read_manifest(path: Path, definitions: dict[str, str]) -> list[Sample]:
     samples = []
     seen_paths: set[Path] = set()
     content_splits: dict[str, set[str]] = {}
+    pixel_inputs = {}
+    source_moments = {}
     groups: dict[str, set[str]] = {}
     with path.open(newline="", encoding="utf-8-sig") as handle:
         reader = csv.DictReader(handle)
@@ -99,10 +145,38 @@ def read_manifest(path: Path, definitions: dict[str, str]) -> list[Sample]:
             digest = file_sha256(image_path)
             if row.get("sha256") and row["sha256"].strip() != digest:
                 raise ValueError(f"Manifest line {line}: image SHA-256 mismatch")
+            pixel_digest = image_pixel_sha256(image_path)
+            if row.get("pixel_sha256") and row["pixel_sha256"].strip() != pixel_digest:
+                raise ValueError(
+                    f"Manifest line {line}: decoded pixel SHA-256 mismatch"
+                )
+            origin = (row.get("origin") or "").strip() or None
+            protocol = (row.get("protocol") or "frame").strip()
+            moment = source_moment_identity(origin, protocol)
+            for identity, known, kind in (
+                (pixel_digest, pixel_inputs, "decoded image pixels"),
+                (moment, source_moments, "source moment"),
+            ):
+                if identity is None:
+                    continue
+                if identity in known:
+                    prefix = (
+                        "Content leakage"
+                        if known[identity] != split
+                        else "Duplicate input"
+                    )
+                    raise ValueError(
+                        f"{prefix}: repeated {kind}; rebuild dataset preparation"
+                    )
+                known[identity] = split
             content_splits.setdefault(digest, set()).add(split)
             seen_paths.add(image_path)
             groups.setdefault(group_id, set()).add(split)
-            samples.append(Sample(image_path, label, split, group_id))
+            samples.append(
+                Sample(
+                    image_path, label, split, group_id, origin, pixel_digest, protocol
+                )
+            )
     leaking = [group for group, splits in groups.items() if len(splits) > 1]
     if leaking:
         raise ValueError(
@@ -185,6 +259,18 @@ def selection_summary(available: list[Sample], selected: list[Sample]) -> dict:
         ),
         "available_groups": len({s.group_id for s in available}),
         "selected_groups": len({s.group_id for s in selected}),
+        "available_groups_per_label": {
+            label: len(
+                {s.group_id for s in available if (s.label or "unlabeled") == label}
+            )
+            for label in sorted({s.label or "unlabeled" for s in available})
+        },
+        "selected_groups_per_label": {
+            label: len(
+                {s.group_id for s in selected if (s.label or "unlabeled") == label}
+            )
+            for label in sorted({s.label or "unlabeled" for s in selected})
+        },
         "policy": "label_proportional_group_round_robin_v1",
     }
 
@@ -253,6 +339,10 @@ def sample_identity(samples) -> list[dict]:
         {
             "path": portable_path(s.path),
             "sha256": file_sha256(s.path),
+            "pixel_sha256": s.pixel_sha256 or image_pixel_sha256(s.path),
+            "origin": s.origin,
+            "source_moment": source_moment_identity(s.origin, s.protocol),
+            "protocol": s.protocol,
             "label": s.label,
             "split": s.split,
             "group_id": s.group_id,

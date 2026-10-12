@@ -18,10 +18,13 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 from anomaly_eval.data import (
+    DEDUPLICATION_POLICY,
     file_sha256,
     fingerprint,
+    image_pixel_sha256,
     read_csv,
     read_definitions,
+    source_moment_identity,
 )
 from anomaly_eval.datasets.fetch import CAVIAR_SEQUENCES
 from anomaly_eval.datasets.labels import (
@@ -46,11 +49,114 @@ FIELDS = [
     "task",
     "evidence",
     "sha256",
+    "pixel_sha256",
     "review_note",
     "protocol",
     "timestamp_seconds",
     "origin",
 ]
+PREPARED_SCHEMA = 3
+
+
+def deduplicate_examples(rows, historical_groups=()):
+    """Merge encoding aliases/source moments and connect their recording groups.
+
+    Prefer checksum-verified bundle images when both sources contain a moment,
+    so decoder/PNG differences on another host do not change the chosen input.
+    """
+    rows = [dict(row) for row in rows]
+    parents = list(range(len(rows)))
+    group_parents = {r["group_id"]: r["group_id"] for r in rows}
+
+    def find(parents, key):
+        while parents[key] != key:
+            parents[key] = parents[parents[key]]
+            key = parents[key]
+        return key
+
+    def join(parents, first, second):
+        a, b = find(parents, first), find(parents, second)
+        parents[max(a, b)] = min(a, b)
+
+    known = {}
+    recordings = {}
+    pixels = {}
+    for index, row in enumerate(rows):
+        path = Path(row["path"]).resolve()
+        if path not in pixels:
+            pixels[path] = image_pixel_sha256(path)
+        row["pixel_sha256"] = pixels[path]
+        moment = source_moment_identity(row.get("origin"), row["protocol"])
+        if moment:
+            if moment[1] in recordings:
+                join(group_parents, row["group_id"], recordings[moment[1]])
+            recordings[moment[1]] = row["group_id"]
+        for kind, value in (
+            ("bytes", row["sha256"]),
+            ("pixels", row["pixel_sha256"]),
+            ("moment", moment),
+        ):
+            if value is None:
+                continue
+            key = row["task"], row["protocol"], kind, value
+            if key in known:
+                other = rows[known[key]]
+                if other["label"] != row["label"]:
+                    raise ValueError(
+                        f"Conflicting task labels for duplicate {kind} identity"
+                    )
+                join(parents, index, known[key])
+                join(group_parents, row["group_id"], other["group_id"])
+            else:
+                known[key] = index
+    components = defaultdict(list)
+    for index, row in enumerate(rows):
+        row["group_id"] = find(group_parents, row["group_id"])
+        components[find(parents, index)].append(row)
+    bundle = Workspace.current().bundle_dir
+    kept, aliases = [], []
+    for members in components.values():
+        representative = min(
+            members,
+            key=lambda row: (
+                not Path(row["path"]).resolve().is_relative_to(bundle),
+                portable_path(Path(row["path"])),
+            ),
+        )
+        kept.append(representative)
+        for row in members:
+            if row is not representative:
+                aliases.append(
+                    {
+                        "kept": portable_path(Path(representative["path"])),
+                        "dropped": portable_path(Path(row["path"])),
+                        "task": row["task"],
+                        "protocol": row["protocol"],
+                        "origin": row.get("origin"),
+                    }
+                )
+    kept.sort(
+        key=lambda row: (
+            row["task"],
+            row["protocol"],
+            row["group_id"],
+            row["pixel_sha256"],
+        )
+    )
+    historical = {
+        find(group_parents, g) for g in historical_groups if g in group_parents
+    }
+    return (
+        kept,
+        historical,
+        {
+            "policy": DEDUPLICATION_POLICY,
+            "input_rows": len(rows),
+            "unique_rows": len(kept),
+            "removed_rows": len(aliases),
+            "aliases": aliases,
+        },
+    )
 
 
 def write_manifest(path, rows):
@@ -160,6 +266,7 @@ def caviar_examples(root, output, intervals, per_interval=4):
     from PIL import Image, ImageDraw
 
     rows = []
+    video_hashes = {}
     reviewed = json.loads(intervals.read_text())
     for index, interval in enumerate(reviewed["intervals"]):
         sequence = interval["sequence"]
@@ -167,6 +274,8 @@ def caviar_examples(root, output, intervals, per_interval=4):
         annotation = root / "caviar" / sequence / CAVIAR_SEQUENCES[sequence]
         if not video.is_file() or not annotation.is_file():
             continue
+        if video not in video_hashes:
+            video_hashes[video] = file_sha256(video)
         # XML uses zero-based frame indices at 25 fps; ffmpeg samples at PTS.
         xml = ET.parse(annotation).getroot()
         for i in range(per_interval):
@@ -223,7 +332,7 @@ def caviar_examples(root, output, intervals, per_interval=4):
                         + "/"
                         + video.name
                         + "#"
-                        + file_sha256(video)
+                        + video_hashes[video]
                         + "@"
                         + str(t),
                     }
@@ -315,29 +424,7 @@ def prepare(
     for row in rows:
         if row.get("timestamp_seconds") not in (None, ""):
             row["timestamp_seconds"] = str(float(row["timestamp_seconds"]))
-    # Source byte duplicates can connect groups: unify components before splitting.
-    parent = {r["group_id"]: r["group_id"] for r in rows}
-
-    def find(k):
-        while parent[k] != k:
-            k = parent[k]
-        return k
-
-    seen = {}
-    for r in rows:
-        key = (r["task"], r["protocol"], r["sha256"])
-        if key in seen:
-            other = seen[key]
-            if other["label"] != r["label"]:
-                raise ValueError("Same image has conflicting task labels")
-            a, b = find(r["group_id"]), find(other["group_id"])
-            parent[a] = b
-        else:
-            seen[key] = r
-    hist = {find(g) for g in historical if g in parent}
-    rows = list(seen.values())
-    for r in rows:
-        r["group_id"] = find(r["group_id"])
+    rows, hist, deduplication = deduplicate_examples(rows, historical)
     # Make one common group assignment across endpoint and window protocols/tasks.
     assign_splits(rows, seed, hist)
     rng = random.Random(seed)
@@ -376,6 +463,19 @@ def prepare(
                 split: len({r["group_id"] for r in subset if r["split"] == split})
                 for split in ("dev", "test")
             }
+            groups_per_label = {
+                split: {
+                    label: len(
+                        {
+                            r["group_id"]
+                            for r in subset
+                            if r["split"] == split and r["label"] == label
+                        }
+                    )
+                    for label in ("normal", task)
+                }
+                for split in ("dev", "test")
+            }
             eligible = all(
                 bysplit[s].get(task, 0) > 0 and bysplit[s].get("normal", 0) > 0
                 for s in ("dev", "test")
@@ -383,10 +483,12 @@ def prepare(
             coverage[task][protocol] = {
                 "counts": bysplit,
                 "groups": groups,
+                "groups_per_label": groups_per_label,
                 "eligible_for_calibrated_test": eligible,
             }
     result = {
-        "schema": 2,
+        "schema": PREPARED_SCHEMA,
+        "deduplication": deduplication,
         "seed": seed,
         "manifests": manifests,
         "coverage": coverage,

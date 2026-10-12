@@ -95,8 +95,10 @@ class DataTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
-        (self.root / "one.jpg").touch()
-        (self.root / "two.jpg").touch()
+        from PIL import Image
+
+        Image.new("RGB", (8, 8), "red").save(self.root / "one.jpg")
+        Image.new("RGB", (8, 8), "blue").save(self.root / "two.jpg")
 
     def manifest(self, rows):
         path = self.root / "manifest.csv"
@@ -750,6 +752,46 @@ class FetchTests(unittest.TestCase):
 
 
 class EvaluationTests(unittest.TestCase):
+    def test_observed_smolvlm_capitalization_is_a_label_not_an_abstention(self):
+        definitions = {"normal": "Ordinary", "unattended_items": "A left bag"}
+        for response, expected in (
+            (" Normal.", "normal"),
+            (" Unattended_items.", "unattended_items"),
+            ('{"label":"UNATTENDED_ITEMS"}', "unattended_items"),
+        ):
+            with self.subTest(response=response):
+                prediction = parse_vlm_response(response, definitions)
+                self.assertEqual(prediction.label, expected)
+                self.assertIsNone(prediction.abstention_reason)
+                self.assertEqual(prediction.raw_response, response)
+        self.assertEqual(
+            parse_vlm_response(" Normal.", definitions).response_format, "plain_label"
+        )
+        self.assertEqual(
+            parse_vlm_response('{"label":"NORMAL"}', definitions).response_format,
+            "json_label",
+        )
+
+    def test_true_unknown_invalid_prose_and_ambiguous_definitions_stay_separate(self):
+        for response in (" Unknown.", '{"label":"UNKNOWN"}'):
+            prediction = parse_vlm_response(response, DEFINITIONS)
+            self.assertIsNone(prediction.label)
+            self.assertEqual(prediction.abstention_reason, "explicit_unknown")
+        for response in (
+            "Normal or Smoking",
+            "I think normal.",
+            "Smoking is not visible",
+            '{"label":[]}',
+        ):
+            prediction = parse_vlm_response(response, DEFINITIONS)
+            self.assertIsNone(prediction.label)
+            self.assertEqual(prediction.abstention_reason, "invalid_response")
+            self.assertEqual(prediction.response_format, "invalid")
+        ambiguous = {"normal": "one class", "NORMAL": "another class"}
+        self.assertEqual(
+            parse_vlm_response("Normal", ambiguous).abstention_reason, "ambiguous_label"
+        )
+
     def test_vlm_accepts_an_unambiguous_exact_label(self):
         for response in ("normal", '"normal".', "'normal'.", '"normal"', "smoking."):
             with self.subTest(response=response):
@@ -846,6 +888,78 @@ class EvaluationTests(unittest.TestCase):
     "ML dependencies not installed",
 )
 class WorkerTests(unittest.TestCase):
+    def test_worker_preserves_response_format_and_abstention_diagnostics(self):
+        from PIL import Image
+
+        predictions = iter(
+            parse_vlm_response(text, DEFINITIONS)
+            for text in (" Normal.", '{"label":"unknown"}', "normal or smoking")
+        )
+        adapter = types.SimpleNamespace(
+            predict=lambda image: next(predictions), prepare=Mock()
+        )
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            image = root / "image.png"
+            Image.new("RGB", (8, 8)).save(image)
+            options = {
+                "threads": 1,
+                "duty_cycle": 1,
+                "max_samples_per_second": None,
+                "cpu_cores": None,
+                "max_rss_mb": None,
+                "offline": True,
+                "seed": 42,
+                "cache_dir": None,
+                "max_new_tokens": 32,
+                "max_side": 512,
+                "warmup": 0,
+                "repeats": 1,
+            }
+            config = root / "config.json"
+            config.write_text(
+                json.dumps(
+                    {
+                        "model": "smolvlm-500m",
+                        "output": temp,
+                        "options": options,
+                        "definitions": DEFINITIONS,
+                        "samples": [
+                            {
+                                "path": str(image),
+                                "label": "normal",
+                                "split": "test",
+                                "group_id": str(i),
+                            }
+                            for i in range(3)
+                        ],
+                    }
+                )
+            )
+            with (
+                patch("anomaly_eval.benchmark.create_adapter", return_value=adapter),
+                patch("anomaly_eval.resources.CPUSettings.configure_worker"),
+                patch.dict(os.environ),
+            ):
+                self.assertEqual(benchmark.worker(config), 0)
+            summary = json.loads((root / "summary.json").read_text())
+            diagnostics = summary["response_diagnostics"]
+            self.assertEqual(
+                diagnostics["formats"],
+                {"plain_label": 1, "json_label": 1, "invalid": 1},
+            )
+            self.assertEqual(
+                diagnostics["abstention_reasons"],
+                {"explicit_unknown": 1, "invalid_response": 1},
+            )
+            self.assertEqual(diagnostics["json_label_fraction"], 1 / 3)
+            self.assertEqual(summary["metrics"]["prediction_coverage"], 1 / 3)
+            benchmark.write_comparison(root, [summary])
+            with (root / "comparison.csv").open(newline="") as f:
+                recorded = next(csv.DictReader(f))
+            self.assertEqual(recorded["explicit_unknowns"], "1")
+            self.assertEqual(recorded["invalid_responses"], "1")
+
     def test_worker_streams_errors_abstentions_and_metrics(self):
         from PIL import Image
 

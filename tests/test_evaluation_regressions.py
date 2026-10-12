@@ -13,9 +13,14 @@ import torch
 from sklearn.metrics import f1_score
 
 from anomaly_eval.analysis import analyze, calibrate
-from anomaly_eval.data import file_sha256, read_manifest, resolve_original
+from anomaly_eval.data import (
+    file_sha256,
+    image_pixel_sha256,
+    read_manifest,
+    resolve_original,
+)
 from anomaly_eval.datasets.fetch import extract_safe
-from anomaly_eval.datasets.prepare import assign_splits
+from anomaly_eval.datasets.prepare import assign_splits, deduplicate_examples
 from anomaly_eval.metrics import detection_metrics, frame_metrics, select_threshold
 from anomaly_eval.vadclip.data import (
     build_clip,
@@ -273,10 +278,12 @@ class SelectionAndCacheTests(unittest.TestCase):
                 resolve_original(root / "datasets/images/sample.jpg")
 
     def test_identical_image_bytes_cannot_cross_dev_test(self):
+        from PIL import Image
+
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
-            (root / "a.jpg").write_bytes(b"same")
-            (root / "b.jpg").write_bytes(b"same")
+            Image.new("RGB", (8, 8), "red").save(root / "a.jpg")
+            (root / "b.jpg").write_bytes((root / "a.jpg").read_bytes())
             manifest = root / "m.csv"
             manifest.write_text(
                 "path,label,split,group_id\na.jpg,normal,dev,g1\nb.jpg,smoking,test,g2\n"
@@ -332,6 +339,116 @@ class SelectionAndCacheTests(unittest.TestCase):
                 t.addfile(member)
             with self.assertRaises(ValueError):
                 extract_safe(p, root / "extract")
+
+
+class DuplicateIdentityTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name)
+        env = patch.dict(
+            "os.environ", {"CAPSTONE_BUNDLE_DIR": str(self.root / "bundle")}
+        )
+        env.start()
+        self.addCleanup(env.stop)
+
+    def example(
+        self,
+        name,
+        color="red",
+        group="recording",
+        label="unattended_items",
+        origin=None,
+        compression=6,
+        protocol="frame",
+    ):
+        from PIL import Image
+
+        path = self.root / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        Image.new("RGB", (12, 8), color).save(path, compress_level=compression)
+        return {
+            "path": str(path),
+            "label": label,
+            "group_id": group,
+            "task": "unattended_items",
+            "protocol": protocol,
+            "origin": origin,
+            "sha256": file_sha256(path),
+        }
+
+    def test_reencoded_pixels_merge_before_selection_and_prefer_the_bundle(self):
+        raw = self.example("raw.png", group="raw", compression=0)
+        bundled = self.example("bundle/frame.png", group="bundle", compression=9)
+        self.assertNotEqual(raw["sha256"], bundled["sha256"])
+        self.assertEqual(
+            image_pixel_sha256(Path(raw["path"])),
+            image_pixel_sha256(Path(bundled["path"])),
+        )
+        rows, _, evidence = deduplicate_examples([raw, bundled])
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["path"], bundled["path"])
+        self.assertEqual(evidence["removed_rows"], 1)
+
+    def test_source_moment_merges_decoder_variants_without_merging_protocols(self):
+        origin = "caviar://Clip/Clip.mpg#" + "a" * 64 + "@40"
+        raw = self.example("raw.png", color=(250, 0, 0), origin=origin)
+        bundled = self.example("bundle/frame.png", origin=origin + ".000000")
+        window = self.example(
+            "window.png", color="blue", origin=origin, protocol="window"
+        )
+        self.assertNotEqual(
+            image_pixel_sha256(Path(raw["path"])),
+            image_pixel_sha256(Path(bundled["path"])),
+        )
+        rows, _, _ = deduplicate_examples([raw, bundled, window])
+        self.assertEqual(len(rows), 2)
+        self.assertEqual({r["protocol"] for r in rows}, {"frame", "window"})
+
+    def test_conflicting_labels_on_reencoded_input_fail_before_scoring(self):
+        first = self.example("a.png", compression=0)
+        second = self.example("b.png", compression=9, label="normal")
+        with self.assertRaisesRegex(ValueError, "Conflicting task labels"):
+            deduplicate_examples([first, second])
+
+    def test_duplicate_alias_keeps_the_entire_historical_recording_in_development(self):
+        old = self.example("old.png", label="normal", group="old")
+        alias = self.example("new.png", label="normal", group="new", compression=9)
+        event = self.example("event.png", color="blue", group="new")
+        rows, historical, _ = deduplicate_examples([old, alias, event], ["old"])
+        assign_splits(rows, historical_groups=historical)
+        self.assertEqual({r["split"] for r in rows}, {"dev"})
+
+    def test_manifest_rejects_pixel_aliases_within_and_across_splits(self):
+        self.example("a.png", compression=0)
+        self.example("b.png", compression=9)
+        for split, message in (("dev", "Duplicate input"), ("test", "Content leakage")):
+            manifest = self.root / "manifest.csv"
+            manifest.write_text(
+                f"path,label,split,group_id\na.png,normal,dev,g1\nb.png,normal,{split},g2\n"
+            )
+            with self.assertRaisesRegex(ValueError, message):
+                read_manifest(manifest, {"normal": "n", "unattended_items": "u"})
+
+    def test_manifest_rejects_same_source_moment_even_when_decoded_pixels_differ(self):
+        origin = "caviar://Clip/Clip.mpg#" + "a" * 64 + "@40.0"
+        self.example("a.png", origin=origin)
+        self.example("b.png", color="blue", origin=origin)
+        manifest = self.root / "manifest.csv"
+        manifest.write_text(
+            f"path,label,split,group_id,origin\na.png,normal,dev,g1,{origin}\nb.png,normal,test,g2,{origin}\n"
+        )
+        with self.assertRaisesRegex(ValueError, "Content leakage.*source moment"):
+            read_manifest(manifest, {"normal": "n", "unattended_items": "u"})
+
+    def test_a_whole_video_path_does_not_collapse_distinct_frames(self):
+        rows, _, _ = deduplicate_examples(
+            [
+                self.example("a.png", origin="/videos/recording.mp4"),
+                self.example("b.png", color="blue", origin="/videos/recording.mp4"),
+            ]
+        )
+        self.assertEqual(len(rows), 2)
 
 
 class StatisticalPipelineTests(unittest.TestCase):

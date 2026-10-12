@@ -28,6 +28,9 @@ camera-rate pacing on a smaller cohort (16 inputs per task/split by default).
 Override these with `--limit`; see the evaluation guide for full settings and
 the current five-task coverage gaps.
 
+If prepared data was created before the source/pixel duplicate correction, run
+without `--skip-prepare` to rebuild it. Older prepared schemas are rejected.
+
 For another server, configure independent data, results and cache roots. From the
 checkout, this example uses your existing `data/` and directories owned by your user:
 

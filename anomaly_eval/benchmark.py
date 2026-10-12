@@ -14,7 +14,8 @@ import subprocess
 import sys
 import time
 import traceback
-from dataclasses import asdict
+from collections import Counter
+from dataclasses import asdict, replace
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -83,6 +84,9 @@ def worker(config_path: Path) -> int:
             row["label"],
             row["split"],
             row["group_id"],
+            row.get("origin"),
+            row.get("pixel_sha256"),
+            row.get("protocol", "frame"),
         )
         for row in config["samples"]
     ]
@@ -165,6 +169,9 @@ def worker(config_path: Path) -> int:
                             "path": portable_path(sample.path),
                             "group_id": sample.group_id,
                             "label": sample.label,
+                            "origin": sample.origin,
+                            "pixel_sha256": sample.pixel_sha256,
+                            "protocol": sample.protocol,
                             "repeat": repeat,
                             "prediction": None,
                             "anomaly_score": None,
@@ -185,6 +192,8 @@ def worker(config_path: Path) -> int:
                                     scores=prediction.scores,
                                     raw_response=prediction.raw_response,
                                     generated_tokens=prediction.generated_tokens,
+                                    response_format=prediction.response_format,
+                                    abstention_reason=prediction.abstention_reason,
                                     status="ok" if prediction.label else "abstain",
                                 )
                             except (MemoryError, KeyboardInterrupt):
@@ -201,6 +210,10 @@ def worker(config_path: Path) -> int:
                 row["latency_seconds"] for row in rows if row["status"] != "error"
             ]
             completed = len(latencies)
+            responses = [row for row in rows if row.get("raw_response") is not None]
+            formats = Counter(
+                row.get("response_format") or "unrecorded" for row in responses
+            )
             summary.update(
                 status="ok"
                 if all(row["status"] != "error" for row in rows)
@@ -228,6 +241,23 @@ def worker(config_path: Path) -> int:
                 else None,
                 peak_rss_mb=monitor.peak_rss_mb,
                 metrics=detection_metrics(rows, list(definitions)),
+                prediction_counts=dict(
+                    Counter(row["prediction"] or "__unanswered__" for row in rows)
+                ),
+                response_diagnostics={
+                    "returned_responses": len(responses),
+                    "formats": dict(formats),
+                    "abstention_reasons": dict(
+                        Counter(
+                            row["abstention_reason"]
+                            for row in responses
+                            if row.get("abstention_reason")
+                        )
+                    ),
+                    "json_label_fraction": formats["json_label"] / len(responses)
+                    if responses
+                    else None,
+                },
                 naive_baselines={
                     name: detection_metrics(
                         [
@@ -348,6 +378,9 @@ def write_comparison(output: Path, summaries: list[dict]) -> None:
         "active_samples_per_second",
         "wall_samples_per_second",
         "throttle_sleep_seconds",
+        "json_label_fraction",
+        "explicit_unknowns",
+        "invalid_responses",
         "peak_rss_mb",
         "load_seconds",
         "errors",
@@ -364,6 +397,12 @@ def write_comparison(output: Path, summaries: list[dict]) -> None:
         writer.writeheader()
         for summary in summaries:
             row = {column: summary.get(column) for column in columns}
+            diagnostics = summary.get("response_diagnostics", {})
+            row["json_label_fraction"] = diagnostics.get("json_label_fraction")
+            row["explicit_unknowns"] = diagnostics.get("abstention_reasons", {}).get(
+                "explicit_unknown", 0
+            )
+            row["invalid_responses"] = diagnostics.get("formats", {}).get("invalid", 0)
             metrics = summary.get("metrics", {})
             for column in (
                 "prediction_coverage",
@@ -481,9 +520,7 @@ def main(argv: list[str] | None = None) -> int:
         definitions = read_definitions(args.definitions)
         samples = read_manifest(args.manifest.resolve(), definitions)
         split_samples = [
-            Sample(s.path, s.label, "test", s.group_id)
-            for s in samples
-            if s.split == args.split
+            replace(s, split="test") for s in samples if s.split == args.split
         ]
         tests = select_test_samples(split_samples, args.limit or None, args.seed)
         if not tests:

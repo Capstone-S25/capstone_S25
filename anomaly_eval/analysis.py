@@ -343,6 +343,12 @@ def write_report(output, state, args):
             lines.append(
                 f"| {task} / {protocol} | {'Dev/test available' if c['eligible_for_calibrated_test'] else 'Development only'}; counts {c['counts']} |"
             )
+    deduplication = state["dataset"].get("deduplication")
+    if deduplication:
+        lines += [
+            "",
+            f"Input deduplication: {deduplication['removed_rows']} aliases removed from {deduplication['input_rows']} collected rows, using source moments and decoded RGB pixels. Provenance is saved in `evaluation.json`.",
+        ]
     if mode != "evaluation" or getattr(args, "limit", 0):
         lines += [
             "",
@@ -351,8 +357,8 @@ def write_report(output, state, args):
     if state["benchmarks"]:
         lines += [
             "",
-            "| Task / input / split | Selected / available inputs | Selected labels | Source groups |",
-            "|---|---:|---|---:|",
+            "| Task / input / split | Selected / available inputs | Selected labels | Source groups | Groups per label |",
+            "|---|---:|---|---:|---|",
         ]
         for record in state["benchmarks"]:
             selection = record.get("selection")
@@ -360,7 +366,7 @@ def write_report(output, state, args):
                 lines.append(
                     f"| {record['cohort']} / {record['split']} | "
                     f"{selection['selected_samples']} / {selection['available_samples']} | "
-                    f"{selection['selected_label_counts']} | {selection['selected_groups']} |"
+                    f"{selection['selected_label_counts']} | {selection['selected_groups']} | {selection.get('selected_groups_per_label', 'unrecorded')} |"
                 )
     lines += [
         "",
@@ -373,6 +379,8 @@ def write_report(output, state, args):
     def fmt(v):
         return "NA" if v is None else f"{v:.3f}"
 
+    response_rows = []
+
     for record in state["benchmarks"]:
         path = resolve_path(record["output"], output) / "results.json"
         if not path.is_file():
@@ -382,6 +390,12 @@ def write_report(output, state, args):
             b = m.get("binary") or {}
             lat = model.get("latency_p95_seconds")
             rss = model.get("peak_rss_mb")
+            diagnostics = model.get("response_diagnostics", {})
+            decisions = model.get("prediction_counts", {})
+            response_rows.append(
+                f"| {record['cohort']} / {record['split']} | {model['model']} | {decisions or 'unrecorded'} | "
+                f"{fmt(diagnostics.get('json_label_fraction'))} | {diagnostics.get('abstention_reasons', {})} |"
+            )
             baselines = model.get("naive_baselines", {})
             if baselines:
                 state.setdefault("naive_baselines", {})[
@@ -412,6 +426,17 @@ def write_report(output, state, args):
                 "passes sampled frame budget" if feasible else "fails/unknown",
             ]
             lines.append("| " + " | ".join(values) + " |")
+    if response_rows:
+        lines += [
+            "",
+            "## Response diagnostics",
+            "",
+            "Counts cover measured inference attempts, including repeats. Exact labels are case-insensitive; unknown and invalid responses remain separate. JSON label compliance includes structured `unknown` answers. Constant categorical predictions do not demonstrate event discrimination.",
+            "",
+            "| Task / input / split | Model | Categorical prediction counts | JSON label fraction | Abstention reasons |",
+            "|---|---|---|---:|---|",
+            *response_rows,
+        ]
     if state.get("naive_baselines"):
         lines += [
             "",

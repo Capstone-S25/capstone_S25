@@ -55,6 +55,8 @@ class Prediction:
     scores: dict[str, float] = field(default_factory=dict)
     raw_response: str | None = None
     generated_tokens: int | None = None
+    response_format: str | None = None
+    abstention_reason: str | None = None
 
 
 def classification_prompt(definitions: dict[str, str]) -> str:
@@ -73,7 +75,30 @@ def classification_prompt(definitions: dict[str, str]) -> str:
 
 
 def parse_vlm_response(text: str, definitions: dict[str, str]) -> Prediction:
-    """Accept JSON or an exact label; ambiguous prose remains an abstention."""
+    """Accept case-insensitive exact labels; never search for labels inside prose."""
+
+    def exact_label(value):
+        if not isinstance(value, str):
+            return None, "invalid_response"
+        candidate = value.strip().casefold()
+        if candidate == "unknown":
+            return None, "explicit_unknown"
+        matches = [label for label in definitions if label.casefold() == candidate]
+        if len(matches) == 1:
+            return matches[0], None
+        return None, "ambiguous_label" if matches else "invalid_response"
+
+    def result(value, response_format):
+        label, reason = exact_label(value)
+        return Prediction(
+            label,
+            raw_response=text,
+            response_format=response_format
+            if reason in (None, "explicit_unknown")
+            else "invalid",
+            abstention_reason=reason,
+        )
+
     cleaned = text.strip()
     if cleaned.startswith("```") and cleaned.endswith("```"):
         cleaned = "\n".join(cleaned.splitlines()[1:-1]).strip()
@@ -85,16 +110,15 @@ def parse_vlm_response(text: str, definitions: dict[str, str]) -> Prediction:
         and candidate[-1] == candidate[0]
     ):
         candidate = candidate[1:-1].strip()
-    if candidate in definitions:
-        return Prediction(candidate, raw_response=text)
+    label, reason = exact_label(candidate)
+    if label is not None or reason == "explicit_unknown":
+        return result(candidate, "plain_label")
     try:
         value = json.loads(cleaned)
     except (ValueError, TypeError):
-        return Prediction(None, raw_response=text)
+        return result(candidate, "invalid")
     label = value.get("label") if isinstance(value, dict) else None
-    if not isinstance(label, str) or label not in definitions:
-        label = None
-    return Prediction(label, raw_response=text)
+    return result(label, "json_label")
 
 
 def load_image(path: Path, max_side: int, policy: str = "native"):

@@ -52,6 +52,16 @@ same subset; `run.json`, `evaluation.json` and the report record selected versus
 available counts. Quick/subset results are pilot diagnostics, not a final model
 ranking. A tiny negative sample also makes false-positive calibration coarse.
 
+Prepared datasets now use schema 3. Preparation merges duplicate file bytes,
+identical decoded EXIF-corrected RGB pixels and matching checksum-qualified
+CAVIAR source moments. Frame and fixed past-window protocols remain distinct.
+Conflicting labels fail validation, merged recording aliases stay in one split,
+and bundled images take precedence over equivalent newly decoded copies.
+`dataset.json` records removed aliases. Regenerate older prepared datasets by
+running without `--skip-prepare`; they cannot be reused under the corrected
+pipeline. JPEG/PNG decoding changes can also change pixel identity, so rebuild
+preparation when changing image-decoder versions.
+
 Limiting inputs, models and protocols is the main way to shorten a run. More CPU
 threads can help some models but are not guaranteed to help every CPU/runtime;
 compare settings on development data. Cached weights avoid repeated downloads,
@@ -150,6 +160,45 @@ Every model receives the same ordered cohort within a task/input/split. End-to-e
 
 Primary categorical accuracy and class recall/F1 include failed and unanswered positive cases. Conditional accuracy is a separate diagnostic. Unknown normal cases are not true negatives; unanswered normal count and coverage are explicit. Macro classes come from ground-truth support, never from a model's predicted classes. Unsupported events are reported as untested.
 
+VLM parsing accepts case-insensitive exact labels, including `Normal.` and
+`Unattended_items.`, and preserves the raw response. It never finds a label by
+searching arbitrary prose. Explicit `unknown`, invalid responses and ambiguous
+labels have separate abstention reasons. `response_diagnostics` in model summaries
+records JSON-label versus plain-label formats and their counts; `comparison.csv`
+also records JSON-label fraction, explicit unknowns and invalid responses.
+Formatting compliance is separate from detection quality. The report shows
+categorical prediction counts so an always-normal or always-anomaly response
+pattern is visible.
+
+New manifests and saved sample identities include decoded pixel hashes and source
+origins. Selection and coverage records include recording-group counts per label,
+so three source groups cannot be mistaken for three independent positive events.
+Manifest loading rejects repeated decoded pixels/source moments, including
+re-encoded copies crossing dev/test splits, before any model weights are loaded.
+
+## What a comprehensive model decision still requires
+
+Unit tests validate code behavior; they do not establish the accuracy or suitability
+of pretrained models. A quick run checks execution, output behavior and rough
+resource cost. Its per-frame metrics and small group-bootstrap intervals do not
+replace an event-level deployment evaluation.
+
+| Requirement | Current limitation / necessary next evidence |
+|---|---|
+| All five defined events | Add reviewed positive events and task-specific normals for missing tasks, plus untouched smoking recordings |
+| Independent held-out data | Use more recordings/cameras, conditions and people; keep related frames, views and augmentations in the same split |
+| Useful operating point | Fit thresholds/prompts on development only; measure recall and false alerts with enough independent positives and negatives |
+| Temporal behavior | Evaluate past-context windows and operational duration/ownership criteria; measure event recall and detection delay |
+| Native model grounding | Use reviewed sanity examples and inspect raw responses/native preprocessing; successful execution alone does not prove the model uses the needed visual evidence |
+| Deployment hardware | Repeat on the actual CPU/RAM configuration; include camera decoding, queueing, sustained throughput, alert aggregation and memory over a longer run |
+| VadCLIP comparison | Run the separately trained smoking study if desired; account for feature extraction and its offline/future-context limitation |
+
+The current runner records per-image quality and resource metrics. It does not yet
+measure event detection delay, alerts per hour or a live camera capture/queue
+pipeline. Deployment mode is a paced replay of prepared inputs. Human review and
+additional data are required to fill the task-coverage gaps; relabeling proxies or
+reshuffling previously inspected recordings cannot create an untouched test set.
+
 For continuous scores, `calibration.json` reports thresholds fitted on development data for maximum F1 and a requested false-positive budget (`--target-fpr`, default 0.05). Test labels never tune thresholds. It includes AP/AUROC, recall, specificity and false-positive rate at those frozen thresholds. A low-FPR calibration with 16 negatives has resolution 1/16; it cannot establish a reliable 5% false-alert operating point. VLMs that only emit labels have no invented continuous-score AUC or threshold.
 
 `improvements.json` resamples source recording groups, uses fixed macro classes and reports paired differences using shared resampling draws. It requires complete matched cohorts and metrics consistent with saved predictions. With three source groups the intervals are exploratory, not strong statistical evidence. Missing scores remain NA, not zero. No weighted fitness score converts incomparable or missing metrics into a winner.
@@ -171,6 +220,54 @@ Alignment training uses the author-scaled cosine temperature (0.07) with stable 
 ## Outputs and checks
 
 The command `anomaly-eval analyze --results-dir RUN --dev-dir DEV_RUN` recalculates statistics, calibration and figures from saved predictions. Each run contains `evaluation.json`, `report.md`, logs and one task/protocol directory with `dev/` and `test/` results. Each benchmark contains `run.json`, `comparison.csv`, per-model predictions/summaries, `improvements.json`, plots and test `calibration.json`. The notebooks are thin front ends to this same runner and contain no saved old scores.
+
+### Collecting evidence for a report or paper
+
+Use the corrected code on the computation server before preparing a new dataset.
+Preparation alone produces coverage and provenance, not new model results:
+
+```bash
+# Fetch additional sources and rebuild/validate the prepared data:
+anomaly-eval run --fetch --prepare-only
+# Run the four default models on all prepared confirmed cohorts, without pacing:
+anomaly-eval run --mode evaluation --skip-prepare --threads 8 --repeats 3
+```
+
+Use the same configured data, results, cache and bundle roots for both commands.
+Fetching does not automatically review candidates or fill missing event labels.
+"All" means all prepared confirmed inputs, subject to the preparation caps; it
+does not mean every downloaded image. Each command creates its own run folder.
+Share the complete **inference** folder as well as the preparation folder; a
+status of `prepared` does not indicate an inference experiment. Reanalyzing an
+old run recomputes its saved predictions; it does not apply the new parser or
+rerun deduplication.
+
+Keep these materials with the experiment:
+
+- Both complete run folders, including raw predictions, response text, summaries,
+  calibration, bootstrap results, figures and execution logs where generated.
+- `DATA_ROOT/evaluation/dataset.json` and its prepared CSV manifests. Their paths
+  remain relative to the original prepared-data directory or use workspace
+  aliases; copying them elsewhere does not automatically make them runnable.
+- The source-fetch receipts under `DATA_ROOT/additional`, any human-review CSV,
+  anomaly definitions and CAVIAR review-interval configuration used for the run.
+- The exact source-code revision, including any local changes, and notes on
+  manual label review or development experiments that are not recorded in code.
+
+These artifacts support a detailed methods and exploratory-results paper:
+checkpoint choices, prompts, preprocessing, source selection, split rules,
+calibration, uncertainty and CPU resource measurements can be traced to the
+implementation. They do not supply evidence for untested events or explain
+undocumented decisions. State task-coverage gaps and the distinction between
+development, previously inspected test data and untouched test data explicitly.
+After inspecting test results to change models or protocols, use fresh recordings
+for subsequent final claims.
+
+If the paper includes VadCLIP, add `--vadclip` to the inference command and retain
+its adapter and baseline artifacts. Its supervised smoking adaptation and
+offline temporal context must be reported separately from the four pretrained
+image models. Measure the frozen selected configuration on the actual deployment
+host before making hardware or live-stream claims.
 
 ```bash
 python -m unittest discover -s tests -v

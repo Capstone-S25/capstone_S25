@@ -237,6 +237,48 @@ class WorkspaceTests(unittest.TestCase):
         )
         self.assertTrue(all(s.path.is_relative_to(moved) for s in images))
 
+    def test_raw_caviar_plus_bundle_does_not_double_the_confirmed_cohort(self):
+        from PIL import Image
+        from PIL.PngImagePlugin import PngInfo
+
+        from anomaly_eval.data import file_sha256, read_csv
+
+        bundle = PACKAGE_ROOT.parent / "test_data"
+        configure(overrides={"bundle_dir": bundle, "data_dir": self.root / "data"})
+        baseline = prepare(
+            self.root / "missing_raw",
+            self.root / "missing_additional",
+            self.root / "baseline",
+        )
+        aliases = []
+        for row in read_csv(bundle / "EVALUATION.csv"):
+            if (
+                row["source"] != "caviar_inria_single_camera"
+                or row["protocol"] != "frame"
+            ):
+                continue
+            source = resolve_path(row["path"], bundle)
+            target = self.root / "reencoded" / source.name
+            target.parent.mkdir(exist_ok=True)
+            info = PngInfo()
+            info.add_text("encoder", "alternate server encoding")
+            with Image.open(source) as image:
+                image.save(target, compress_level=0, pnginfo=info)
+            self.assertNotEqual(file_sha256(target), row["sha256"])
+            aliases.append({**row, "path": str(target), "sha256": file_sha256(target)})
+        with patch(
+            "anomaly_eval.datasets.prepare.caviar_examples", return_value=aliases
+        ):
+            combined = prepare(
+                self.root / "missing_raw",
+                self.root / "missing_additional",
+                self.root / "combined",
+            )
+        self.assertEqual(combined["confirmed_rows"], 104)
+        self.assertEqual(combined["fingerprint"], baseline["fingerprint"])
+        self.assertEqual(combined["deduplication"]["removed_rows"], 36)
+        self.assertEqual(combined["coverage"], baseline["coverage"])
+
     def test_copied_feature_cache_keeps_content_fingerprint(self):
         import numpy as np
 
@@ -391,6 +433,20 @@ class RunnerModeTests(unittest.TestCase):
         self.assertEqual(code, 2)
         self.assertFalse(state["full_task_coverage"])
         self.assertFalse(commands)
+
+    def test_legacy_preparation_cannot_be_reused_after_the_deduplication_fix(self):
+        self.run_mode("--prepare-only")
+        path = self.root / "data" / "evaluation" / "dataset.json"
+        legacy = json.loads(path.read_text())
+        legacy["schema"] = 2
+        path.write_text(json.dumps(legacy))
+        with (
+            patch("anomaly_eval.runner.run_stage") as stage,
+            contextlib.redirect_stdout(io.StringIO()),
+            self.assertRaisesRegex(ValueError, "rerun without --skip-prepare"),
+        ):
+            cli_main(["run", "--skip-prepare"])
+        stage.assert_not_called()
 
 
 if __name__ == "__main__":
