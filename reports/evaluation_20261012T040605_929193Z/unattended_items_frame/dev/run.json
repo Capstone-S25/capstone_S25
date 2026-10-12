@@ -1,0 +1,663 @@
+{
+  "created_at": "2026-10-12T05:37:16.879547+00:00",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "platform": "Linux-7.0.0-28-generic-x86_64-with-glibc2.39",
+  "cpu_model": "AMD Ryzen Threadripper PRO 7975WX 32-Cores",
+  "physical_cpus": 32,
+  "logical_cpus": 64,
+  "total_ram_mb": 257066.55859375,
+  "available_cpu_cores": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63
+  ],
+  "options": {
+    "manifest": "${DATA_ROOT}/evaluation/unattended_items_frame.csv",
+    "definitions": "${RESULTS_ROOT}/evaluation_20261012T040605_929193Z/unattended_items_frame_definitions.json",
+    "models": [
+      "mobileclip2-s2",
+      "siglip2-b16-224",
+      "smolvlm-500m",
+      "minicpm-v4"
+    ],
+    "list_models": false,
+    "output": "${RESULTS_ROOT}/evaluation_20261012T040605_929193Z/unattended_items_frame/dev",
+    "limit": 0,
+    "image_policy": "letterbox",
+    "split": "dev",
+    "repeats": 3,
+    "warmup": 1,
+    "seed": 42,
+    "max_side": 768,
+    "max_new_tokens": 64,
+    "timeout_seconds": 3600.0,
+    "max_rss_mb": 24576.0,
+    "cache_dir": "${CACHE_ROOT}/hub",
+    "offline": false,
+    "worker_config": null,
+    "threads": 32,
+    "duty_cycle": 1.0,
+    "max_samples_per_second": null,
+    "cpu_cores": null
+  },
+  "workspace": {
+    "data_dir": "/home/g31/projects/test_here/capstone_S25/data",
+    "results_dir": "/home/g31/projects/test_here/capstone_S25/results",
+    "cache_dir": "/home/g31/.cache/huggingface",
+    "bundle_dir": "/home/g31/projects/test_here/capstone_S25/test_data",
+    "config_dir": "/home/g31/projects/test_here/capstone_S25/anomaly_eval/config"
+  },
+  "definitions": {
+    "normal": "An ordinary scene with no evidence of unattended items.",
+    "unattended_items": "A bag, box, or other personal item apparently left behind without its owner nearby. Ownership and duration require evidence across time."
+  },
+  "manifest_sha256": "ad970d37103f6ae8388a7cb850f85ef15daf8ca25069566a14e0a4df887e972e",
+  "definitions_sha256": "34631f1ce812e0676c3ccbe57123373a4452896f6c67f31435e4d64b107fd546",
+  "samples": [
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk3_8_3_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:Walk3",
+      "origin": "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407@40.0",
+      "pixel_sha256": "8de3f9ed602e92e024da550fcda4a5858a24b640a515e99191ffb57aaf33bcca",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_1_1_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@38.4",
+      "pixel_sha256": "e993f4b3afc13673ae442cd78c861d7b91e3f68055c51ce89610abe9c0af4723",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_5_2_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@46.0",
+      "pixel_sha256": "f29a114356cf2268679db3aa3d4cb76186bc948c2414ac221ee2c52a47b74007",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_1_0_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@38.0",
+      "pixel_sha256": "e5c765f843cd20dbc5cb2e57a5647deecdbc34d67286418d67ae56be8e04325c",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_4_1_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@40.13333333333333",
+      "pixel_sha256": "555f09ca6dea881af089260ddb42f591b4fce340f0555671f4b0d40b1b660e74",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_5_1_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@45.0",
+      "pixel_sha256": "b8d7856046adfca57b7e75415d89b10579054bbde0e56fb40539d3a6e58085d3",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_5_3_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@47.0",
+      "pixel_sha256": "2c317faa927371d5ae31edc406d34ed07798fe0262f4513d19c68ab535fc5e1a",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk3_8_2_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:Walk3",
+      "origin": "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407@30.666666666666668",
+      "pixel_sha256": "92ead63fa5121579c03dbf9f64a60eb1e40a1fb69514071189a207e582be80e3",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_1_2_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@38.800000000000004",
+      "pixel_sha256": "87cfda5412bec126fa4eda0071b2355a76e44fe4052cd6dd28b136c74edb526b",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_5_0_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@44.0",
+      "pixel_sha256": "315dd3b51e8205df2d003b553a0aba764dd27a50829bec7a8e0f9466c66bf8cb",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk3_8_1_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:Walk3",
+      "origin": "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407@21.333333333333336",
+      "pixel_sha256": "9aed861516cec078f67b37556a052e70f5c9c47e7cbc8eada30d7f570eb23b52",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_4_2_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@40.266666666666666",
+      "pixel_sha256": "94223fe24b2d48c4d9f89946068485eb545cd8d35715ad4abcfbbf2a0f32d959",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_0_1_3.png",
+      "label": "unattended_items",
+      "split": "test",
+      "group_id": "caviar:LeftBag",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@46.666666666666664",
+      "pixel_sha256": "6db6f15605140b8957da9c8326c39ec82c032a493280512e0801b7004d81f8ac",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_4_3_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@40.4",
+      "pixel_sha256": "84f18143074eb9a8aee1a10690f661bab96f1d110950d4e78bb2f611250df9c9",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_0_2_3.png",
+      "label": "unattended_items",
+      "split": "test",
+      "group_id": "caviar:LeftBag",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@48.333333333333336",
+      "pixel_sha256": "650700b25875c4cbc9c8d83a738230c4d895b84cb972782c82496c31c70af3a5",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk3_8_0_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:Walk3",
+      "origin": "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407@12.0",
+      "pixel_sha256": "f97d8a029e6043d90cfa0391ba3d76d8e265abe59b50f59863505426a543e3cb",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_1_3_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@39.2",
+      "pixel_sha256": "32af79783a51150c97c22fb96298d3a17a1da401da6bcd806b5b23165ef7927f",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_4_0_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@40.0",
+      "pixel_sha256": "640ce03f0703f093d3a01673e7a767d957ecac091e4cbca78c73e174b62d95cd",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_0_0_3.png",
+      "label": "unattended_items",
+      "split": "test",
+      "group_id": "caviar:LeftBag",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@45.0",
+      "pixel_sha256": "433658443c0b35bf0bbfa0c40fff2e924f04c9a6da4d8336d402e0204df238e2",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_0_3_3.png",
+      "label": "unattended_items",
+      "split": "test",
+      "group_id": "caviar:LeftBag",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@50.0",
+      "pixel_sha256": "ca7ef83bb83070f09c5c54421d34c7393654ae211e58ab2161afa6eb2e3def64",
+      "protocol": "frame"
+    }
+  ],
+  "selection": {
+    "available_samples": 20,
+    "selected_samples": 20,
+    "available_label_counts": {
+      "normal": 16,
+      "unattended_items": 4
+    },
+    "selected_label_counts": {
+      "normal": 16,
+      "unattended_items": 4
+    },
+    "available_groups": 3,
+    "selected_groups": 3,
+    "available_groups_per_label": {
+      "normal": 3,
+      "unattended_items": 1
+    },
+    "selected_groups_per_label": {
+      "normal": 3,
+      "unattended_items": 1
+    },
+    "policy": "label_proportional_group_round_robin_v1"
+  },
+  "models": [
+    "mobileclip2-s2",
+    "siglip2-b16-224",
+    "smolvlm-500m",
+    "minicpm-v4"
+  ],
+  "evaluation_split": "dev",
+  "sample_identity": [
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk3_8_3_3.png",
+      "sha256": "ee231736bc787b70fe6e2bfba15575425b9f72eca2d74bfcc4b66efd6cc5d03a",
+      "pixel_sha256": "8de3f9ed602e92e024da550fcda4a5858a24b640a515e99191ffb57aaf33bcca",
+      "origin": "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407@40.0",
+      "source_moment": [
+        "frame",
+        "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407",
+        "40.000000"
+      ],
+      "protocol": "frame",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:Walk3"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_1_1_3.png",
+      "sha256": "39899b8b78bf7a2f0cd0cac0baf5a73fc37c2e0f2bae8e1dcaca6134f5adfe92",
+      "pixel_sha256": "e993f4b3afc13673ae442cd78c861d7b91e3f68055c51ce89610abe9c0af4723",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@38.4",
+      "source_moment": [
+        "frame",
+        "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7",
+        "38.400000"
+      ],
+      "protocol": "frame",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_5_2_3.png",
+      "sha256": "61965047c0c246478d58f6672b799a1ea5c270c3479ce79f3c7a6d97ab3ab28e",
+      "pixel_sha256": "f29a114356cf2268679db3aa3d4cb76186bc948c2414ac221ee2c52a47b74007",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@46.0",
+      "source_moment": [
+        "frame",
+        "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2",
+        "46.000000"
+      ],
+      "protocol": "frame",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_1_0_3.png",
+      "sha256": "cb486a91ba370b823b8f35d53911a6c2a48706034bd77ec92a0f95b8c21a7ea8",
+      "pixel_sha256": "e5c765f843cd20dbc5cb2e57a5647deecdbc34d67286418d67ae56be8e04325c",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@38.0",
+      "source_moment": [
+        "frame",
+        "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7",
+        "38.000000"
+      ],
+      "protocol": "frame",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_4_1_3.png",
+      "sha256": "d10ba44440b152867e934dd50395d177d2ce526228706774afb5813b01149dd5",
+      "pixel_sha256": "555f09ca6dea881af089260ddb42f591b4fce340f0555671f4b0d40b1b660e74",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@40.13333333333333",
+      "source_moment": [
+        "frame",
+        "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2",
+        "40.133333"
+      ],
+      "protocol": "frame",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_5_1_3.png",
+      "sha256": "57936b1f038dbc4e888283994c009442a3e00f3925f3496d0548ab680472ec7d",
+      "pixel_sha256": "b8d7856046adfca57b7e75415d89b10579054bbde0e56fb40539d3a6e58085d3",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@45.0",
+      "source_moment": [
+        "frame",
+        "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2",
+        "45.000000"
+      ],
+      "protocol": "frame",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_5_3_3.png",
+      "sha256": "2bc3ad69e7fe73caca9c3e7ee650a4f536a222ff3139dbd5e730d591c53b3c05",
+      "pixel_sha256": "2c317faa927371d5ae31edc406d34ed07798fe0262f4513d19c68ab535fc5e1a",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@47.0",
+      "source_moment": [
+        "frame",
+        "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2",
+        "47.000000"
+      ],
+      "protocol": "frame",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk3_8_2_3.png",
+      "sha256": "e35b347e7df8ae2f59bcaf9b98170e4140b97c5c04226e3430ceb02bd8096834",
+      "pixel_sha256": "92ead63fa5121579c03dbf9f64a60eb1e40a1fb69514071189a207e582be80e3",
+      "origin": "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407@30.666666666666668",
+      "source_moment": [
+        "frame",
+        "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407",
+        "30.666667"
+      ],
+      "protocol": "frame",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:Walk3"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_1_2_3.png",
+      "sha256": "d4ad00dd5fe884e40b09d287ce17477ae035876a92d7a5124c9cb8922ce20efc",
+      "pixel_sha256": "87cfda5412bec126fa4eda0071b2355a76e44fe4052cd6dd28b136c74edb526b",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@38.800000000000004",
+      "source_moment": [
+        "frame",
+        "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7",
+        "38.800000"
+      ],
+      "protocol": "frame",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_5_0_3.png",
+      "sha256": "f88f65e87dfa3739a236097e7995a6183f9c16b8aba7d73d3c764d2ea3d35bd8",
+      "pixel_sha256": "315dd3b51e8205df2d003b553a0aba764dd27a50829bec7a8e0f9466c66bf8cb",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@44.0",
+      "source_moment": [
+        "frame",
+        "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2",
+        "44.000000"
+      ],
+      "protocol": "frame",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk3_8_1_3.png",
+      "sha256": "6e155144d5bdfbbf1c2efb142a04e84bf92751fc9d4f064ca6a40e6a38639f37",
+      "pixel_sha256": "9aed861516cec078f67b37556a052e70f5c9c47e7cbc8eada30d7f570eb23b52",
+      "origin": "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407@21.333333333333336",
+      "source_moment": [
+        "frame",
+        "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407",
+        "21.333333"
+      ],
+      "protocol": "frame",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:Walk3"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_4_2_3.png",
+      "sha256": "93e84025dd2ae9ed38d90cd37c614064302f9fe961ad021281fa28977c37be2b",
+      "pixel_sha256": "94223fe24b2d48c4d9f89946068485eb545cd8d35715ad4abcfbbf2a0f32d959",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@40.266666666666666",
+      "source_moment": [
+        "frame",
+        "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2",
+        "40.266667"
+      ],
+      "protocol": "frame",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_0_1_3.png",
+      "sha256": "0a0eaea8a1e7b1dd4607f153306e94d36b8e7b6fed4f7aa2892a24321c2ca3c5",
+      "pixel_sha256": "6db6f15605140b8957da9c8326c39ec82c032a493280512e0801b7004d81f8ac",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@46.666666666666664",
+      "source_moment": [
+        "frame",
+        "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7",
+        "46.666667"
+      ],
+      "protocol": "frame",
+      "label": "unattended_items",
+      "split": "test",
+      "group_id": "caviar:LeftBag"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_4_3_3.png",
+      "sha256": "c3b3098aedcce8298227cab628762c841119731e00c9858d876981828725e7c0",
+      "pixel_sha256": "84f18143074eb9a8aee1a10690f661bab96f1d110950d4e78bb2f611250df9c9",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@40.4",
+      "source_moment": [
+        "frame",
+        "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2",
+        "40.400000"
+      ],
+      "protocol": "frame",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_0_2_3.png",
+      "sha256": "5535c34c7df362540e4015264ec290d86293852342a69f0c0e80868c3f1d137f",
+      "pixel_sha256": "650700b25875c4cbc9c8d83a738230c4d895b84cb972782c82496c31c70af3a5",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@48.333333333333336",
+      "source_moment": [
+        "frame",
+        "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7",
+        "48.333333"
+      ],
+      "protocol": "frame",
+      "label": "unattended_items",
+      "split": "test",
+      "group_id": "caviar:LeftBag"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk3_8_0_3.png",
+      "sha256": "2184e3cf970c6bf2f6224b236d312db030b3579a7d79deb0d4083c17e295c14f",
+      "pixel_sha256": "f97d8a029e6043d90cfa0391ba3d76d8e265abe59b50f59863505426a543e3cb",
+      "origin": "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407@12.0",
+      "source_moment": [
+        "frame",
+        "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407",
+        "12.000000"
+      ],
+      "protocol": "frame",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:Walk3"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_1_3_3.png",
+      "sha256": "0df61928a76bca723b1857854cf45ae9de260c7a81dc8065aba8dbbbcc63b1b3",
+      "pixel_sha256": "32af79783a51150c97c22fb96298d3a17a1da401da6bcd806b5b23165ef7927f",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@39.2",
+      "source_moment": [
+        "frame",
+        "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7",
+        "39.200000"
+      ],
+      "protocol": "frame",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_4_0_3.png",
+      "sha256": "1f188dec4ee787cee1a375ef6a16da567366bcfbb678983ee588c44e69dc3c5a",
+      "pixel_sha256": "640ce03f0703f093d3a01673e7a767d957ecac091e4cbca78c73e174b62d95cd",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@40.0",
+      "source_moment": [
+        "frame",
+        "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2",
+        "40.000000"
+      ],
+      "protocol": "frame",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_0_0_3.png",
+      "sha256": "68262f477d44f8fe9ae538c2ef5f44ec09bcb0d8a4d4c10fdb3fa54f304ead3f",
+      "pixel_sha256": "433658443c0b35bf0bbfa0c40fff2e924f04c9a6da4d8336d402e0204df238e2",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@45.0",
+      "source_moment": [
+        "frame",
+        "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7",
+        "45.000000"
+      ],
+      "protocol": "frame",
+      "label": "unattended_items",
+      "split": "test",
+      "group_id": "caviar:LeftBag"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_0_3_3.png",
+      "sha256": "30581f809cc56293cac9a37acf2e0eab56ccf18e5b4eb682499b2924bbdfae02",
+      "pixel_sha256": "ca7ef83bb83070f09c5c54421d34c7393654ae211e58ab2161afa6eb2e3def64",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@50.0",
+      "source_moment": [
+        "frame",
+        "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7",
+        "50.000000"
+      ],
+      "protocol": "frame",
+      "label": "unattended_items",
+      "split": "test",
+      "group_id": "caviar:LeftBag"
+    }
+  ],
+  "code_sha256": {
+    "anomaly_eval/__init__.py": "ebf262f97615be95b2bf3279450d241d22fffa559c07002ee12fce877018e8e9",
+    "anomaly_eval/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "anomaly_eval/analysis.py": "d4d1b0cf44b8fdf117c1d657bc4878a9c2498ca333dd1f78a6b3d6eda29716fb",
+    "anomaly_eval/audit.py": "da6434126cacd43c8a69aed816154d89cc8cdc10d75e233da7185abaf55adfe6",
+    "anomaly_eval/benchmark.py": "0cedfd5570b57501dd9c9eaa2466d6c52ee5958088039226959e74969b3e0e1f",
+    "anomaly_eval/cli.py": "462ed3487cfaab2774437ab8ce4f6792a064d71535107ceaf8543ff7e3178674",
+    "anomaly_eval/config/anomalies.json": "589882c0a43d846b9ad6c6d88073129bb666a15014919f585849ab830a95038c",
+    "anomaly_eval/config/caviar_review_intervals.json": "14893df2f779cadf2313279117fc0fc20b6e8c76d5ad0509013fcb3283a54d8d",
+    "anomaly_eval/data.py": "0c7d2435d84376984a1f588ba45a19f35e01b55da3dcdc1fc633a946018b0e35",
+    "anomaly_eval/datasets/__init__.py": "63f341a36e2bbbe47168e1204ee7c0d702969be07a971a1c098d13ff1dd6f98f",
+    "anomaly_eval/datasets/drive.py": "b53907ec66ca147557727af0aa35a22eafbf8d8d6c695c06774f88049ea85853",
+    "anomaly_eval/datasets/fetch.py": "224e6289c89334aa9f4aaa5c7319ac412f6a87b477bf5aefc835a35b38d53a11",
+    "anomaly_eval/datasets/labels.py": "a8042a5c0edeebb189beab519e25e9166476dda66871f2a65f7967238c4a9ca6",
+    "anomaly_eval/datasets/prepare.py": "07611b3720d85580800441495e109d5444985084c42c72556b466069405cbf83",
+    "anomaly_eval/datasets/tools.py": "0dec4c56fcd3b47b97fe36afc15a2a95e8cb0b5fe84142beb378ab18ec711c48",
+    "anomaly_eval/metrics.py": "d33bb68d0cdde2fd3c7f89fde41475dc76e10159905f5ff8e334b94a0e4f2e3e",
+    "anomaly_eval/models.py": "ec5696afb12e3bf23765d98dec39b81a753608de2753244480549e4e20bbbe21",
+    "anomaly_eval/paths.py": "90c2ba6ecbefba8da90ae072912c277a73ed05cb3b66d9809f6523ba233fee14",
+    "anomaly_eval/resources.py": "f71f2004bafbbd8d8c99e53a2ea111799efb3450aa5c8380772f35cf54bcb3f9",
+    "anomaly_eval/runner.py": "73c74508d6ec4d8d9bae44cd0dc8bc6754cf11c4ad5309602bc1bfd1f1d37be5",
+    "anomaly_eval/vadclip/__init__.py": "e49e2f18d1b7db331d7d49553af57222f5bad1b6a81f761e4fb2231b5f73cd7c",
+    "anomaly_eval/vadclip/baselines.py": "1432c6343e15b2f7b0828262e334858ed2e73483b7de388aa87be8708d132d40",
+    "anomaly_eval/vadclip/clip_b16.py": "ecd3b7963b703c3ddf48c93ac4dacdf5051df7c9159657b0174e2c8868bb9c4f",
+    "anomaly_eval/vadclip/data.py": "cae28cda5deb6aac393a8b553f7b578172f3648f765f5488b257f3757e049344",
+    "anomaly_eval/vadclip/evaluate.py": "d8b698b8611b62b5d44d5792cbe018bf4a47bff5b9fe390e71583632d6b4fd5e",
+    "anomaly_eval/vadclip/extract_features.py": "316a6d757984856cea51012c4f1451c239f5d520a07132483596b0775c5e7262",
+    "anomaly_eval/vadclip/model.py": "27c5fac657ceceb0fa5ea9116ef19e0c12c1b6558311dd6d38a6ff0aa03c87ce",
+    "anomaly_eval/vadclip/train.py": "b38e51e2e8cd0f8f81f6d4a640b8cbb3077f34962ff816d9d4fd0426c4c714b9"
+  },
+  "metric_version": 2,
+  "experiment_fingerprint": "e48d90bc166f5fe74f278085b1fe7e0cd77e6070f88f0236ea0445a97978bdfc"
+}

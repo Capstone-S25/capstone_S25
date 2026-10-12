@@ -1,0 +1,2163 @@
+{
+  "model": "siglip2-b16-224",
+  "output": "${RESULTS_ROOT}/evaluation_20261012T040605_929193Z/smoking_frame/dev/siglip2-b16-224",
+  "options": {
+    "manifest": "${DATA_ROOT}/evaluation/smoking_frame.csv",
+    "definitions": "${RESULTS_ROOT}/evaluation_20261012T040605_929193Z/smoking_frame_definitions.json",
+    "models": [
+      "mobileclip2-s2",
+      "siglip2-b16-224",
+      "smolvlm-500m",
+      "minicpm-v4"
+    ],
+    "list_models": false,
+    "output": "${RESULTS_ROOT}/evaluation_20261012T040605_929193Z/smoking_frame/dev",
+    "limit": 0,
+    "image_policy": "letterbox",
+    "split": "dev",
+    "repeats": 3,
+    "warmup": 1,
+    "seed": 42,
+    "max_side": 768,
+    "max_new_tokens": 64,
+    "timeout_seconds": 3600.0,
+    "max_rss_mb": 24576.0,
+    "cache_dir": "${CACHE_ROOT}/hub",
+    "offline": false,
+    "worker_config": null,
+    "threads": 32,
+    "duty_cycle": 1.0,
+    "max_samples_per_second": null,
+    "cpu_cores": null
+  },
+  "definitions": {
+    "normal": "An ordinary scene with no evidence of smoking.",
+    "smoking": "A person visibly smoking a cigarette, cigar, or pipe, with a smoking object near the mouth or visible smoke."
+  },
+  "samples": [
+    {
+      "path": "${BUNDLE_ROOT}/normal/frame_c1_000412_2025-10-07_03-19-01-241_PM_jpg.rf.f7e8b035338962e1cd61561ed3bf481a.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "ff8c0a21d37c32bcdafdc1348f75a7ca7cad856557c3c84ef4cae25b6a39b3d9",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_004122_2025-10-16_11-21-01-593_AM_jpg.rf.0d793799c475cbe5071557d9020ec3b0.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-16",
+      "origin": null,
+      "pixel_sha256": "9765fb4643a7664d741442025999a9ac96d392b853524807d4800facaeb04e0e",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c1_003779_2025-09-11_12-51-24-199_PM_jpg.rf.608d02732051e297edf373d290ddc7fd.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "1f6e149e9a2d1456166da280b01ac657dc25cbfecf51d9c722370ac59c12bf6f",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_010975_2025-10-26_03-18-15-496_PM_jpg.rf.526a3c81314cabe60043e57b23bed388.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "9b8fc6677807e47542e98e42d8b5f259bca88b0065503a678cdb455a3f79b2d2",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000328_2025-10-26_12-12-26-527_PM_jpg.rf.104b2c56ac3df79815416aed31bce964.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "5d39734abe92fc81ebca5b0015a5d0bbeb247ce198ed6afccf988eef7bb5f135",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_005095_2025-10-13_12-58-27-689_PM_jpg.rf.991e655899a584452ca61646b1d52f41.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13",
+      "origin": null,
+      "pixel_sha256": "fe559d61fa096b91c67c994f61cafc22977e34c2b26e7b1720af0b27a38f1b36",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_001971_2025-10-29_09-44-29-767_AM_jpg.rf.360f54cb7967335bc16a06934dfd1314.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-29",
+      "origin": null,
+      "pixel_sha256": "136ce18bb1b051c257aa110bd080b2cf6ad5912cc2ad1e0b02b656af45b495f6",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000500_2025-10-07_03-20-33-344_PM_jpg.rf.bb6c9057e928068407cdfcb203c930e3.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "4706531c9ceeff955675c72d12ffd78c360174d8f1f5d4c9a12198a305b8c959",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_005999_2025-10-26_01-50-51-977_PM_jpg.rf.3100bb8bdd46be6219fb608aa83ba158.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "201aab5c755db0e2d2b9332de75141441350027e94f741d1b4aea9ef5137a893",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_011422_2025-09-14_01-40-33-443_PM_jpg.rf.41e7efdce0ce0ecc046aa0509f359b1c.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-14",
+      "origin": null,
+      "pixel_sha256": "ef8efab6ac9fbc9d02db279a3d2a35ed601d872db6e4f797b092516a28ad9123",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_002218_2025-10-29_09-48-47-338_AM_jpg.rf.1f5629beb90314ff64976a44fdac95b6.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-29",
+      "origin": null,
+      "pixel_sha256": "10df9cafa1a80ab4767c517d196feab8fff8ef0469daa4803d6771e360557631",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_003567_2025-10-16_11-11-21-834_AM_jpg.rf.6582b335ecdc801f80c019a38fed5692.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-16",
+      "origin": null,
+      "pixel_sha256": "5d4dd3de480f75a648cfe7b9e912c66db911d6c605caa79c8eba5476cf48f574",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/smoking/frame_c1_004205_2025-09-18_10-43-34-993_AM_jpg.rf.c1efab7ea84f2dd89cde590ff9185676.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-18",
+      "origin": null,
+      "pixel_sha256": "b8226a31ccc688ac03828c8291ece537513742eb5495ef4beb1ef79024bad4b2",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_002549_2025-10-29_09-54-33-111_AM_jpg.rf.cf4494e85194678b78557be33a8b5a11.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-29",
+      "origin": null,
+      "pixel_sha256": "c9eba74b3926f82257ef1d436abd6fe7b37c44e8df21cdf043701771f964e0a9",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_011355_2025-09-14_01-39-23-527_PM_jpg.rf.97af2554a5b489e4b42149746a272f64.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-14",
+      "origin": null,
+      "pixel_sha256": "937ba04e600850bac55d48d68d4ef7f4dcef7c0c22f5a4f12596bdcae844126a",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_002883_2025-10-14_12-34-56-104_PM_jpg.rf.0d9681631b6629f33625b9336bf9dc81.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-14",
+      "origin": null,
+      "pixel_sha256": "837dfd5c8d01d964664fe7abdf898babf41d757356fbb74220060c141d9a6632",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_022418_2025-09-15_03-41-22-889_PM_jpg.rf.c941a009903e49443b8f2b3b7b4ec3b8.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "d94b1997cedc1663845b7a509f89fad22620d402e9c6a962504bd96ee3b1065c",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001678_2025-10-14_12-13-59-388_PM_jpg.rf.f3b391ac9276d0f8a71e47ef42695a3d.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-14",
+      "origin": null,
+      "pixel_sha256": "bb8153ca795d13c9a32ae40e2b1277611059c9403240afda103459d4491c98f8",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_002782_2025-10-29_09-58-36-296_AM_jpg.rf.b1eca797412cb389970aaac924d6fde2.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-29",
+      "origin": null,
+      "pixel_sha256": "c02786f787f6ef72cd32adc26d580bdb1a2ae239521c827a3ce95762e37faef9",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_011423_2025-09-14_01-40-34-480_PM_jpg.rf.174bce0b857cd4ab205ba6fcfa693ef5.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-14",
+      "origin": null,
+      "pixel_sha256": "ff0fdfea40c957b65b2b2494295154810b82cda8e3e19de9bbc17971899c5530",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_001433_2025-10-07_03-36-49-242_PM_jpg.rf.7fdd2c192137d6d85f3388b8ae00609a.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "3711eb35cf109b13f79c61efa499a2ca0f7cfcbdf15c9fd922997aa2009daa4b",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_001897_2025-10-13_12-02-39-100_PM_jpg.rf.621624bc18e36a8aba98de364a18d82e.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13",
+      "origin": null,
+      "pixel_sha256": "f30756fdab303b51e78eddfded03e9dc2f07a029d6b259a9ed19d98eb24042ad",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_004586_2025-10-16_11-29-06-147_AM_jpg.rf.7ec0fd8001bc8af52b871bd0bbc18065.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-16",
+      "origin": null,
+      "pixel_sha256": "ac6ff1058887a9eed414a2d6be8f6eb6d7e4d588cb36ed9826d1eac4d10eead7",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_011409_2025-09-14_01-40-19-919_PM_jpg.rf.49dec4f5594adcf0ca48c3dceff5ab52.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-14",
+      "origin": null,
+      "pixel_sha256": "bbcafa96e98eca5e52f472847d1426791b301114c2d1222adf5e97c5c2c286c4",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001705_2025-10-14_12-14-27-539_PM_jpg.rf.b139161a23660085e46d72a429dd76a4.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-14",
+      "origin": null,
+      "pixel_sha256": "8219befeec551e852bb42c36f87a61b189b1d025cdd11ea9e7493f0b0046c948",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/smoking/frame_c2_001084_2025-09-15_09-28-51-640_AM_jpg.rf.50d91ae794812f143870b595e2fe8ed0.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "95360fda41bc072a004ed2cc5afd256895f80c92a2a8e985a54051ef5891f093",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_004177_2025-09-11_12-58-17-520_PM_jpg.rf.84c3b594c96e047fd513ff2fdb685b91.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "4136cd87093b88ab0eaea5e81dc00e01bb9d359e5ad6ced4a2f0efdbc375b78b",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_010923_2025-10-26_03-17-21-135_PM_jpg.rf.5b905e84283d39e2469768093dc75e20.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "af5e89dd18e696aca3b63096a80822e3f6a82679133fbe509c55b344a7405ac4",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_003757_2025-10-16_11-14-40-369_AM_jpg.rf.35cee9eaa683346fd943dc8dc482d958.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-16",
+      "origin": null,
+      "pixel_sha256": "430b67c3d4a60dd1f5378bdc3c5235fee6eecb339977ca660d7fe404368023a2",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_003876_2025-10-07_04-19-17-543_PM_jpg.rf.aa07789b9c1dd7f9b8a0a4516c1afc04.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "48b24b89a12b9b42222aa59cb594d51d9f2f62c161f152288a07ce7a8098b056",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_006002_2025-10-26_01-50-55-095_PM_jpg.rf.11dca6d43df6669ad79f8a5ee8777548.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "6e2f6f1ca6737a25746bd05baf63de158d7e9691bf62680c08ec7021cfc2cee4",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/smoking/frame_c1_000975_2025-10-13_11-46-33-731_AM_jpg.rf.0d2a005a1f9575fbee07f218b72e4f6c.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13",
+      "origin": null,
+      "pixel_sha256": "e4c3920b5eaa490646c4dc66fcd6e7cb71d379c3d59ea26f887fadb8058b450d",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001292_2025-10-29_09-32-41-230_AM_jpg.rf.5f5229f56806d8248236e6380e5f41db.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-29",
+      "origin": null,
+      "pixel_sha256": "81ecc16ebe06068da819deb3f3e0963cc0dada1e9f5850e9829a4549c0dd1ed8",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000752_2025-10-13_11-42-39-940_AM_jpg.rf.557593919d217a06972bd89f617234e6.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13",
+      "origin": null,
+      "pixel_sha256": "572d829bf36bcf8e40016c72423a116bb1d461bcac85480eb3635131ae9d5f4b",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/smoking/frame_c1_003406_2025-09-14_11-21-08-646_AM_jpg.rf.dcd7a5b9450630750d3316278bfd6dad.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-14",
+      "origin": null,
+      "pixel_sha256": "2fd1666cbf661b83929571f46a6e08e6628c409613d8db5e4f1823f1b0d41c09",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_003947_2025-09-11_12-54-17-549_PM_jpg.rf.8ccef4b2d9635e6c7df9a717c0b2d8e2.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "e105b2a3e57a65f554feb185720b5f59fb53cf53e94416a76b587ca0a1a59804",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_005489_2025-10-13_01-05-19-654_PM_jpg.rf.04808bc9bb852955fa78174fae2a71f2.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13",
+      "origin": null,
+      "pixel_sha256": "04c7f38e1e6564a263377eff9bc97dbcc85dfe1a41917a4546ac57c89aeb5db0",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_022728_2025-09-15_03-46-47-783_PM_jpg.rf.9d43404b58a8a94b67af9a66e584001f.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "1d4fb003161f400f78354a1ce5d2b37e767ef9b95d6b9e9ab8094987e057ba57",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000269_2025-10-26_12-11-24-866_PM_jpg.rf.ec18564e97b224222dc8a54ceacca4ce.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "50887f480dc06bf2aec55b0a98be70ee388a9e9ac048c61a22d6f4e3164ce352",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_000378_2025-10-28_12-06-28-707_PM_jpg.rf.4bad446fec943679dde10f28616a8332.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-28",
+      "origin": null,
+      "pixel_sha256": "1a70ac8b60f885307c0d81cd87eba3e83956d783ac0cb84fc928f98cb0ddb749",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c1_004344_2025-09-11_01-01-14-179_PM_jpg.rf.f00e372e3ca98cfa4d8f238f87ceb1d5.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "48201ad8d2452b16fbcdc2f718e456fbb2f89a99e2c65ac4efc96ef520a4e496",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001229_2025-09-15_09-31-22-904_AM_jpg.rf.6375d1c859ae996575a0f8f65011185d.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "4e2f7635c330589b2ef6b02e57bd20175dd75d11803dfd325ee00cb8d4998b09",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004001_2025-09-18_10-40-01-770_AM_jpg.rf.f40fb9de92bd27bf3f030c9340f3e3c4.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-18",
+      "origin": null,
+      "pixel_sha256": "c80b40e22bc5a361ba916c6bc406b34a399c85f8eb1893806ab21e6dafb1d92a",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c1_004189_2025-09-18_10-43-18-299_AM_jpg.rf.4125bc83ab5e382c86590d2cb1f52fc5.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-18",
+      "origin": null,
+      "pixel_sha256": "704e06ae70907a79cea7703fa34113e62065baf96db0b8209e27b2645a0e3956",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000121_2025-10-07_03-13-51-652_PM_jpg.rf.8d63070f9c9d8770c629138ceb7a5cbf.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "c9b4b259e8c5a20dd534aca70ce20c66cd98b1b43d2ae939fd13c3b6195b8544",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_003961_2025-09-11_12-54-32-189_PM_jpg.rf.96752e44564af39394f608d0d609e82d.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "97e2fab05929acafd2b09ba2b07e44e8010dca341c52ff27a88e0eb4c71019a6",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_003642_2025-10-16_11-12-40-183_AM_jpg.rf.8ac65afa0438de51a031af260b012f0b.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-16",
+      "origin": null,
+      "pixel_sha256": "8ef7eb385bb552c698b19e0d4496c4bbb06da7bdff8b90c16d685d4fc744d9b8",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004283_2025-09-11_01-00-10-633_PM_jpg.rf.858687c27da9bd3b0e7cb3d5c4f534da.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "515c59965c566fa71a4a79b476ee1fc785322080e01aed5bcd847d95b8bdfb1e",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_000175_2025-09-15_09-13-03-128_AM_jpg.rf.48c22476b34655cd4a483c0100e503ac.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "2145627fb7be2a6dc4ae6c35b33b44f0a5e35ad96ea1b07223c896d2e5e4d706",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_011483_2025-09-14_01-41-37-196_PM_jpg.rf.f771877d47292de70cdee3f9113a9acc.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-14",
+      "origin": null,
+      "pixel_sha256": "56716b7e7ea237c523a2fa9b093d5e11997705121cf3328469c15ae4241004c6",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_001114_2025-10-28_12-19-15-546_PM_jpg.rf.71ff09719159c824b460f96c3ecb4d28.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-28",
+      "origin": null,
+      "pixel_sha256": "153e666b6b400a7d59a27f00fa43915e791e40be00c12b96c5dc9154621155f6",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004338_2025-09-11_01-01-07-893_PM_jpg.rf.ffb16e5338849cc1090fa53a68192a61.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "819e064d3e5a8f638f593b123042a9dd6d3e2c1a416a9bab0d69c72e06422bb4",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_012125_2025-10-26_03-37-13-713_PM_jpg.rf.ec9302d0b943774587b407543977a581.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "03e4e69d773359e3d583ea563941e7f09f67bbc506f6178fd4d4e9b61cc11181",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_001471_2025-10-26_12-32-23-934_PM_jpg.rf.af585becfda064bad47c3d3e79816dd4.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "84bb839b0dcd29fd8c9f433108fee7e1c02e63831321453de707c747a4102940",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_003643_2025-09-11_12-49-02-315_PM_jpg.rf.8eda5acf6f1500e34ed0d779538d5b82.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "b0bef1c22453e3421129cc8fb0b8e1723353a4900f378d995dcc579b5abe8220",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/smoking/frame_c1_022509_2025-09-15_03-42-58-216_PM_jpg.rf.967ef825c3d591954ad326656ccb1375.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "a00dc217a0ea4f1d355e6301acffcce63be60fdd8192a28117a0e8095fb1cc51",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001715_2025-10-07_03-41-43-523_PM_jpg.rf.67a6a4ee73a3a6de09bbd480aeaa5273.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "fbf3398a7e4dea55fe2692c423f6dc6a18f0a7cff10ca1381c09534ad05b6aad",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_002148_2025-10-29_09-47-34-308_AM_jpg.rf.f1101a4f564e4de2e895658584c8e038.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-29",
+      "origin": null,
+      "pixel_sha256": "7f9bfd00f2b2eb53376cb91393920b163887bde612e6c3adf85a197197a5fadf",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_001620_2025-10-07_03-40-04-381_PM_jpg.rf.f0854489ff4a6087277a477fbd5d4930.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "a1aa674bcf8421d097ade7096ecbccac8f79441e13596747c386cff6e687d2d2",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001543_2025-10-07_03-38-44-027_PM_jpg.rf.8b18b95fb1fdf4f60cbcf73c3373d467.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "29b4c0d81a651fb0800bf80a3d574973c1c8cd014eac22dde799622161a44b22",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_000661_2025-10-28_12-11-23-432_PM_jpg.rf.648ee9940f6cdf75b657a14f5883dca9.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-28",
+      "origin": null,
+      "pixel_sha256": "6f83353a23667f1d9793799735a1a4ab24a459493d077a777ab6ded4de31203c",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_011791_2025-09-14_01-46-58-344_PM_jpg.rf.ee9576f9e5e9a5ed4d128d41eb5fdd31.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-14",
+      "origin": null,
+      "pixel_sha256": "4c0aee116f4f7e43c15644c3ac5199bf8399ae9f511639e8a6ea48b30830b2df",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c4_012437_2025-10-26_03-42-38-952_PM_jpg.rf.e6c3885ad4295bb93d81af0a0279ace1.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "ea00baf16dd5c1d5110d4dea326a1936f8530b024937377c64f7ce9593421336",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_003595_2025-09-11_12-48-12-239_PM_jpg.rf.6411d014677d24b6d66ac751ff705470.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "747e634ee749274f3e947f2bc65cdbabe958f69867a0b3519b976ebe3e2533ca",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c4_003915_2025-10-16_11-17-25-424_AM_jpg.rf.826fc8e33fb4a3e563a324e46e500225.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-16",
+      "origin": null,
+      "pixel_sha256": "d600032c4a7e525845d1f9d58419fad537aa7a35d07c74c3f43a3b02dcbfda5a",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_004066_2025-10-07_04-22-35-760_PM_jpg.rf.8ed435e653e22fdd161df060c2281294.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "f2ad344c3e38dc0000d4d13fcd6804fdef214375abbafed5b7ad9db8a3348599",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000293_2025-10-26_12-11-50-019_PM_jpg.rf.a83a6f43cc0bd8de28f97ebc4be70f78.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "533ec5ab3a9f5301f2e4931ec82ea29ffa9f351a16f5924b80b0017ded594b66",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_004235_2025-09-11_12-59-18-070_PM_jpg.rf.8f6172bfbd67ca96532df03cb4f37103.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "6fcc40b87cfce4d89c3e822a51b962a5aa45d1348684afcefbb48fdf96cf1e28",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000400_2025-10-07_03-18-48-706_PM_jpg.rf.6a6dde1284f525619017842bddc19e0c.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "66682eedca61124307895e96031c5d6a2dec2eee550ce810bc0cf75bff0604d4",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_004324_2025-09-11_01-00-50-937_PM_jpg.rf.f87952f527efecb946464b54a178fc88.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "3a84775512dcfc9ef4c3ddcdef26c434319995e354b756f90f05a0dcdf96130d",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c4_001553_2025-10-28_12-26-53-250_PM_jpg.rf.11d00d3fe484f560f9436df5c64d5ded.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-28",
+      "origin": null,
+      "pixel_sha256": "f125c4884a2b10c4a3b2973a525fe9abd4873c1684375ed68406bce479302bae",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001016_2025-09-15_09-27-40-684_AM_jpg.rf.42c4d7a22f6417d66c233cd8bf90b7f7.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "d66c9216bf4f096a59e0523bbc2715626c3f49fc7b51cde161415da920e30184",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004203_2025-09-18_10-43-32-918_AM_jpg.rf.d385d37b15d63edb7213f8b92cac49e0.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-18",
+      "origin": null,
+      "pixel_sha256": "3a24b980252f327560f9decd171c6b6c174ac11c701dbeae210fbaf434a74157",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_003422_2025-09-14_11-21-25-309_AM_jpg.rf.6412f8a31bd5099283e9c5dd0594bbaf.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-14",
+      "origin": null,
+      "pixel_sha256": "ff5b5442c978a2ee3226bdf75944e538f117463243b6799f904296aa047d818e",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_011351_2025-09-14_01-39-19-361_PM_jpg.rf.bfa276b4cadda31c24ef8da8ad67cbd6.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-14",
+      "origin": null,
+      "pixel_sha256": "671b314856a45fc2e82e48a5049c37deaf5eff1cb2cf148b85b5ae357f1a3654",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_000380_2025-10-28_12-06-30-778_PM_jpg.rf.7e35f9b50b0f933c4188950d6f049bb0.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-28",
+      "origin": null,
+      "pixel_sha256": "79404e54a17e6e209216d34396be797e93c61a4ebff8bf84cddfc060afff199f",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_001193_2025-10-13_11-50-21-843_AM_jpg.rf.5b1d08b13ee1ddc6e5e691d7a683ac2d.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13",
+      "origin": null,
+      "pixel_sha256": "85669071845e9accd737b627dccba5ccb0c8717f0d2e56657e72c379e2f92e0c",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_011790_2025-09-14_01-46-57-306_PM_jpg.rf.909218d28a885601441e912dbfabfb88.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-14",
+      "origin": null,
+      "pixel_sha256": "6e91211ec1ea31be0755d3b74b9678a621d47dbaa8e33b2bc79f22d36190cff1",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/normal/frame_c1_004363_2025-09-11_01-01-33-934_PM_jpg.rf.850b22ec914153b5f88e497cdc15398f.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "cf6db622e98789e1dd95b7ced910feca6d542f940a26e66d5282511a648a282e",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_002567_2025-10-29_09-54-51-841_AM_jpg.rf.d6be1a0ea7a496d9b1169abedf6a3e58.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-29",
+      "origin": null,
+      "pixel_sha256": "0cbebafaaf990a63aa6533d12345885654449934e5627af7a964f643a69c7437",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_004192_2025-09-11_12-58-33-202_PM_jpg.rf.71c0bbe563c3c554aef42d070a6a2b9a.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "acfd12add06c8d49b181501d6f6264de9f7c4615223064dfa7bd652c8cb4860f",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_003736_2025-10-16_11-14-18-412_AM_jpg.rf.963155f91811cf61cfcbb98e149e322f.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-16",
+      "origin": null,
+      "pixel_sha256": "84082810e57919889b7f5583d8fcdaa9a691ff5ea3e7eb59c4f751701235d1c5",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004196_2025-09-18_10-43-25-571_AM_jpg.rf.ef6c6071ad45e813ebe73ba707b59dd3.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-18",
+      "origin": null,
+      "pixel_sha256": "939200d88bb1038e9dba0d352a2be7f1d981c068ffe319751406192eb625d1c0",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c1_010907_2025-10-26_03-17-04-265_PM_jpg.rf.8bd411b6399b7bd13f25c2479481cc82.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "29164a0c21601a769e15c7b7887393e104d5fcff33d38140e5d8fccd6dcbae20",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_001418_2025-10-07_03-36-33-640_PM_jpg.rf.663f50d157f7571de682a627a0f94485.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "640b4535f4b04fdd27a08e4957e1a0ff2ff5d7ac28fac4888ed84beb0fb1282a",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_001529_2025-10-26_12-33-24-676_PM_jpg.rf.4d73960c2c42170475488076e922bd54.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "0c4c3262c85fe1b55ebfba127c8c6d551d0c17f8c163e2f1b401257c94b378aa",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004172_2025-09-18_10-43-00-514_AM_jpg.rf.c3306433b0d9a4d06b5c66eaedb9818c.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-18",
+      "origin": null,
+      "pixel_sha256": "9de0cb5ca354ec82185a14b9a69c041450948b710d3348d4fbe580e54ff5b8e0",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_011950_2025-09-14_01-49-44-158_PM_jpg.rf.d5253ef9f1a05c1fb29aab5d388792ea.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-14",
+      "origin": null,
+      "pixel_sha256": "c87bb88e9daf6d0e7647a6e798ff6c6ca316c1a8486196799f0df0dca701e4aa",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001677_2025-10-14_12-13-58-345_PM_jpg.rf.ea122166437536e4df2910da40032dc1.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-14",
+      "origin": null,
+      "pixel_sha256": "2458bd717dca518e372ad8b65a659f916c7b0b6b5e25b5cf157d0e0939c9ee5e",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_003234_2025-10-26_01-02-50-620_PM_jpg.rf.5ff1e7e5cb0d522273903f1ab7b7d673.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "a664b9bdc8f9a733251ef7e9709f6d9bd1dd5c07e3271e3ff9b76fee467cf443",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_001401_2025-09-15_09-34-22-314_AM_jpg.rf.d6e71837f819253f3dbcaa695e6c44d7.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "160b354504b9b1c118bad8f568764bdcbd115112337f3e68e212b9b5f5e41cbc",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c4_003607_2025-10-16_11-12-03-453_AM_jpg.rf.076e0a4b1f41b2f9c69eb655460104b8.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-16",
+      "origin": null,
+      "pixel_sha256": "ad9575cbf9e6fafda55d42dda8e75bf518c82e827d6151d03633f036c5022e32",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_002444_2025-10-28_12-42-21-088_PM_jpg.rf.bfcc0ba034f2da6671980c5a46bc1ebb.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-28",
+      "origin": null,
+      "pixel_sha256": "91662c5f1d6cc2e89f1f47d0c96d92761d5a9260afe6a6036dfee796e81e0bbe",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004143_2025-09-18_10-42-30-063_AM_jpg.rf.850cc263fce38a799008d866a0d2c3fb.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-18",
+      "origin": null,
+      "pixel_sha256": "0095dda1e7bb9ed25c0d6c33c1fe8ca37eef9eae4077227abacad3bbae77f987",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_000322_2025-09-15_09-15-36-465_AM_jpg.rf.445fe3dcd49bbf3231e3e016e98f9f46.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "ab5ed165a54ffbfbecbde4315cc47ff29404345785c8845730f95540e58afd3a",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_002298_2025-10-14_12-24-46-024_PM_jpg.rf.ac7e4ce31113c8b1c2d195e1c5366c41.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-14",
+      "origin": null,
+      "pixel_sha256": "64ccbb6fe03a61089c107943a1c6f21b3e7c8ae9661b9f0ff5f987abad8b9d75",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_004004_2025-09-11_12-55-17-063_PM_jpg.rf.0a89c79364666675b9942b116721e987.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "a894734a263a6725236bb84c137bc46edfbd9a841c5d5986ed278db3e4235da3",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000408_2025-10-07_03-18-57-039_PM_jpg.rf.c8092ff0624428a53827f1cdf1bd6f98.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "c227b94d7e70690dd1c1ab36ea11bf53cfce310734c5c36e2cd8da1182bd61aa",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_002179_2025-10-14_12-22-41-963_PM_jpg.rf.d1f7c85d8ed2c2a1b5bdc9d399b6e8fa.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-14",
+      "origin": null,
+      "pixel_sha256": "e23e3420bbbda65b35a275e4bdc1acad9881b4a4faa9ba1b949624725378dc15",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/smoking/frame_c2_001599_2025-10-07_03-39-42-494_PM_jpg.rf.5ce7b983c25bd74474bfc0f8edb2670f.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "9791ec474e61d6cbcf8b15d6f4e2f32c27db8f46feb9cff5ac5dbd12f0285bfe",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000230_2025-10-26_12-10-43-967_PM_jpg.rf.49acba8a61b9ad2f62a0e060a9c4ae75.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "b6007506bb75b253aa6f4bef1bf9aa5041b6b2c7302c7d80a51ac99afe7c05c6",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_011783_2025-09-14_01-46-49-945_PM_jpg.rf.8759c7fada0acc177e51de3d9b6e872a.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-14",
+      "origin": null,
+      "pixel_sha256": "0ac946215afe9726d10a7088aae115c6c33ad5a85c920180a04bcd95b835c5ba",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_004019_2025-10-16_11-19-14-111_AM_jpg.rf.bdbc4e5bc1f8bf9a91bba48eb8a3cf2e.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-16",
+      "origin": null,
+      "pixel_sha256": "81db58181a15ab81891c81b55d19ef743144c16bfa59973144ad70b27fd87c8c",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001082_2025-09-15_09-28-49-544_AM_jpg.rf.e90f0711ce7bd2c7eeac5183988a0fe8.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "4745ee31db40d22d30181d9ef6fc369b3531fe5e17795d9ed70946828a338dc4",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_002571_2025-10-14_12-29-30-782_PM_jpg.rf.ff1c798d8d22bd6d70ee884f91315f0c.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-14",
+      "origin": null,
+      "pixel_sha256": "4d49cc8370538ff701609584c85d72aee540ab3066041df5d3ba95ee4248fcb7",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_021675_2025-09-15_03-27-09-436_PM_jpg.rf.ec0918d1b617dd1edc28069866123130.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "8056ab3eb5cf63e7a28ce4eade4facf30e6818dfd114cf1867b0c43cfb77c418",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_022408_2025-09-15_03-41-12-377_PM_jpg.rf.a2cf21853567ae450bcaf408de1f1b1b.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "8cda7e6f107c15d95412adc51dd79cbf931de09317755fd8f4aebbc729561b37",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001633_2025-10-07_03-40-17-929_PM_jpg.rf.f3a50d37614b0c646068ed53eecd8976.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "6353f0d530e905afc43b929d18e378407b90b5925f6224fd6bccf8690f44e9f1",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_006095_2025-10-26_01-52-31-958_PM_jpg.rf.33e3153b9f45f3735174bde4db466af8.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "c6fe5c3589c2051eb8e53b885e2465a6bd1dd2446e20fbbc9c4caa93e5ab6b9f",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_004476_2025-10-16_11-27-11-149_AM_jpg.rf.fff74b50cd79b441f88f12e6020816ae.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-16",
+      "origin": null,
+      "pixel_sha256": "354de9485e28d979296838e4d722e9dc85a7d09b79611ff107b227a4a245ce87",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_001861_2025-10-14_12-17-10-243_PM_jpg.rf.a2dac2f0dc1341232036d1977a9bb9aa.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-14",
+      "origin": null,
+      "pixel_sha256": "0e4a9b6a4d69429684b40305d328a8343e9ad53e7e440b84e65f921c32774a45",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000977_2025-10-13_11-46-35-843_AM_jpg.rf.c3949c085ad06a21f655c5a77c8db801.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13",
+      "origin": null,
+      "pixel_sha256": "9528fe69ce0d46196b6633bac724843159381f3462fe6046460c0f6cf2abde5b",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_001749_2025-10-13_12-00-04-048_PM_jpg.rf.d52dd8d9adb97abdc48d88423281388e.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13",
+      "origin": null,
+      "pixel_sha256": "45e097436cd2fa1a8c4660462c0e40fb3dd0a5a1b9e3d21d16b88c541b954fd1",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_001906_2025-10-14_12-17-57-196_PM_jpg.rf.3255bebe852743034e626ebfa33331e7.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-14",
+      "origin": null,
+      "pixel_sha256": "718e05de946ceba377e6f371473961c81310b496576b652d49d1188e10fb134d",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c4_001007_2025-10-28_12-17-24-134_PM_jpg.rf.87e317069f633229314384f1aa5e2545.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-28",
+      "origin": null,
+      "pixel_sha256": "fef6b681784f7adaf70a7e0280ba400756ed45d0f4a47bf2e100c7612118f397",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000396_2025-10-07_03-18-44-495_PM_jpg.rf.0e34bdc8aa8d58fad42d40229cd65c27.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "ec5929bfeb15c80c0b5bbc8ec4f3e80cac3b69961e3be650bba1a6d520438a20",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000485_2025-10-07_03-20-17-593_PM_jpg.rf.5978c6ab912d90dbf587eb7159d34bc8.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "80af72f2bb7b175d0197157a677233f2ee7359fca49204eedd96e2a9a223a142",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_011784_2025-09-14_01-46-51-057_PM_jpg.rf.dc99f9cf9a436affc4e87a2b35f1de1a.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-14",
+      "origin": null,
+      "pixel_sha256": "9a1ae7f7495d7c31735a561136cb25ce965bde0a9773a90f67eb9bb18634cb8a",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c4_004158_2025-10-16_11-21-39-257_AM_jpg.rf.de96695ee7e855e16d422b30308ab81d.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-16",
+      "origin": null,
+      "pixel_sha256": "15509f359201d2b01199522d908c79a5bacb4bf752f967a43add37fb2daf5fdb",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001309_2025-09-15_09-32-46-328_AM_jpg.rf.e90664837534729b0b55361190b7bcb2.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "a881c5ba7b4c4137cfd97192d6bd426336a610ca9288cb64fd6340d1d4e56368",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_005625_2025-10-26_01-44-22-292_PM_jpg.rf.12c25255f24621dfe98b6295a1f13836.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "c3e7966dbc0c3e17dd839fef4689a97bc05e6a170395eb864ca383ea30482345",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_000104_2025-09-15_09-11-49-141_AM_jpg.rf.72c535c2c007aedb0eabda3df7bf290b.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "78d5d65af9ce1bfd0c5c7126408b41116d785837ac31c00b755114acf8866162",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004167_2025-09-18_10-42-55-312_AM_jpg.rf.bed9fcd5d880c7625eb34a4f95370a1e.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-18",
+      "origin": null,
+      "pixel_sha256": "f68e419ad27a0c2a3dfca888acfe8c962edb8eab47f9e8f5a11c73b78956093d",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_003016_2025-10-29_10-02-41-146_AM_jpg.rf.df334a2d6cbf3fca350bf7431a085819.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-29",
+      "origin": null,
+      "pixel_sha256": "aa88273421ca87b9b4b1013f637eddd68e25dd6bf3c2d80a65466fd91e54e367",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001818_2025-10-14_12-16-25-370_PM_jpg.rf.2c11c9620655997ebd7d4c0c7f5d93d2.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-14",
+      "origin": null,
+      "pixel_sha256": "693d8189a2a01bc58dc5fc934a4b9e6164237242d8f1b3695bbfafcaa1bdc94f",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_003674_2025-09-11_12-49-32-705_PM_jpg.rf.058a08c4b0fb40798608ff4016bf8f64.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "f1b55a7478e376f63cd68b6c758ccf933417bd6ff07b15d1bde4319cec5f334e",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_005407_2025-10-26_01-40-35-190_PM_jpg.rf.4842a7977d682643bff8c06affc783a2.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "5de09f3f532826edfa78dd66c51bc9c4a256c8f4098a9f7168d041f11a866456",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_001050_2025-10-28_12-18-08-861_PM_jpg.rf.ffd7a532d804e699a48fc416683a46c9.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-28",
+      "origin": null,
+      "pixel_sha256": "79326ae932c152a866c44a4beb88e802af86d04e400379bd345d3c68a0b19ca2",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_005853_2025-10-26_01-48-19-934_PM_jpg.rf.fc8602b1ca414d8fcf2b115a7819a495.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "f62456b753e4808f0bee28653d2f27b13bfcf48cb8f358b3fd7a935ed35b0b8c",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004194_2025-09-18_10-43-23-510_AM_jpg.rf.b6f169af0806fa5cfb2b133529ef9a8d.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-18",
+      "origin": null,
+      "pixel_sha256": "c7f07218a31fc7db659afa41c40c665ae1337f2e581201506d7fb8521b9aa100",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_003253_2025-10-29_10-06-48-404_AM_jpg.rf.f5fc37ceedcfd7b79ab1daed3350524a.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-29",
+      "origin": null,
+      "pixel_sha256": "73cf86b4a5769d164a1e7b3ce23855084f5f8b770a9e08be33f1c3e935c9ebd6",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_004101_2025-09-11_12-56-58-244_PM_jpg.rf.ddd2120317150244b551cf68c22990e5.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "11c4d5defcf4d482785935473b0bc1f974977310ceca6483bc80f9e693514e86",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_000310_2025-09-15_09-15-23-910_AM_jpg.rf.f7a7b7a690a1739979dd47e08165190b.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "ae261c25a844e0e525501ad0f1b0e44517d39c6788d156cbc15bb59d0ea9799b",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_022007_2025-09-15_03-32-55-794_PM_jpg.rf.efff8f71b975473fe76fa2a7ce6d3b31.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "8f8c30367bc8c618b56b1f12aba8c655c586fffe06a6f90cc44abb015b6c61ae",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_005288_2025-10-26_01-38-31-262_PM_jpg.rf.45fcefbdcdcacd9c53d0429e18589310.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "cbc66acfa528bc8de7398e6f85de0999792a48244aad5c5fa93688d23fedbc38",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000710_2025-10-07_03-24-17-300_PM_jpg.rf.607b2ba12f3d80d493f7911be46d2783.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "fd88848420f1d784d7ecb531ffd728a5384d64765f4378a0c6884813522a67a7",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_022402_2025-09-15_03-41-06-131_PM_jpg.rf.6dd0f76bc7aedf10ae37ba18ae06da2e.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "c94df4af99a4e4ba86b04aded1c3e0648e48f834cf375030e3a870fc5ae01c5d",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_001596_2025-10-29_09-37-58-304_AM_jpg.rf.ce72f4c14117f0803bd17ca5d0723e68.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-29",
+      "origin": null,
+      "pixel_sha256": "81dfc3c22bd03d0ac02da4a020ac94f874b241877c51a142133fc8d5db26169d",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_004166_2025-09-11_12-58-06-093_PM_jpg.rf.0b0245a5e97e9038cee8ac405eb8686d.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "e392ff87725956274647d70ec44bfbd9921dee0673e05715c06a1045bdda4dad",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_001174_2025-10-26_12-27-12-784_PM_jpg.rf.e558fa5cf7b344f433dc51aa20a6e0ee.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "db1efaf23009e99fce7e7ec955796cf447ee96e59918c01246c98703fa6a7fe7",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c4_012530_2025-10-26_03-44-15-817_PM_jpg.rf.cd5e24431d111557b5db11e2a968a658.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "d23bbfe2a77001a68169cc95695a54e4629ee82288dc0b415f82198f28f00766",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_001665_2025-10-14_12-13-45-794_PM_jpg.rf.d0d09c2e6c3c1793025a8624f1ef79ad.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-14",
+      "origin": null,
+      "pixel_sha256": "2cea795aa0862a5250aeed7701c1bfe0f1fd0521f5c31296559af0f866563005",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/normal/frame_c1_022409_2025-09-15_03-41-13-431_PM_jpg.rf.fad046b89912a618f75ac6af1b130f58.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "fac4d6ba181d5a6b96a4600feb9a833ce363ae3bdeaa370e17fac21b52088a47",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_002303_2025-10-26_12-46-54-695_PM_jpg.rf.e981538619be361bc9265b709476e24c.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "978ed96cbe2fe815b0f1255367ebbaf5b20d7cb5e2737a6589bd5eebd15ed0e8",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_002888_2025-10-26_12-56-50-478_PM_jpg.rf.367ef47c4f796a24d7085349802a5908.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "497b54f77bfb9932b26ae47a0f33cc692bc5b01d21ce1db017b25aee9751b3ea",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001521_2025-10-07_03-38-21-073_PM_jpg.rf.7bd945cc9e4ad699e2373e3854641d57.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "8e63bfda18493b438f750960e329c9e3197a2cc76711288804e7fd9a835b0c5d",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004651_2025-10-13_12-50-42-887_PM_jpg.rf.2c3d095246f1ade0828b699b6cd31714.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13",
+      "origin": null,
+      "pixel_sha256": "2729ac242dd02a5c25fc6bcb6c34ae95c4d5045ef2bc8f3755b72c85b933194c",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001891_2025-10-14_12-17-41-600_PM_jpg.rf.13f4e3b24362fdbfa1a14427d6483a77.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-14",
+      "origin": null,
+      "pixel_sha256": "d34cf0ac42156f629f97a7a817fafd0c1fa615139d24f5f463f43f07111ad211",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_011782_2025-09-14_01-46-48-901_PM_jpg.rf.a3f1c6ae5054027b48852c73c56040cc.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-14",
+      "origin": null,
+      "pixel_sha256": "4902f3246aa57464fa15b8d17f6072617bf58b48523e30016f3aa64a37f5fda6",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_000873_2025-10-28_12-15-04-631_PM_jpg.rf.23f398f2a012f1cf8b7ac0c2a4b9245e.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-28",
+      "origin": null,
+      "pixel_sha256": "71d0ac543ae7bd369b5d86f6b4d7e995bf35d0f3387e2c1ecf36e8286c164f9b",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_001536_2025-10-28_12-26-35-366_PM_jpg.rf.5070d8399f7bbd0f1d8c706f0b56fc0f.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-28",
+      "origin": null,
+      "pixel_sha256": "938da6c93df66d542bed9f5ca5eca1d2945caefc0cc57041de563d58dd6565b9",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_022405_2025-09-15_03-39-51-100_PM_jpg.rf.211bb312864c59f29547e8996d318249.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "852b796c2cae15c2728d722ba527dee7eae3c6e617f5e44844d217d0403c49e7",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c1_004195_2025-09-18_10-43-24-555_AM_jpg.rf.a9e46416f685b26e0fd22639a3136d6a.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-18",
+      "origin": null,
+      "pixel_sha256": "b0ed6e2dc094ef431b89a35b2f02beae34f7a5f8fa7fe20395b649230b376fce",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_022406_2025-09-15_03-41-10-294_PM_jpg.rf.beeb68edc71981b3f06c6ee83e2769bf.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "f88962548a8acdf07f7ac280b9d46e79ddd5202bacff8d6c96d62632102cafcb",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004531_2025-10-13_12-48-37-599_PM_jpg.rf.0d8b47f477364f90382a4e9baebc2c36.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13",
+      "origin": null,
+      "pixel_sha256": "d573c89623bf5f66ff5fa1e69b8b02338429c9c3e9ebe648cd3aae37578f79d4",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000541_2025-10-07_03-21-16-392_PM_jpg.rf.4cb4259ec66ef20b2ab22da0742c553f.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "41781e5e66aeb029023c431719d0b40136b303d0a390e81d1ce2e7bb842657dc",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c1_011020_2025-10-26_03-19-02-393_PM_jpg.rf.fea63e0ed20cc951ca542e8e29dc6b61.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "8cac2df79e975f6b6faae6d56158934956dac20333b9ccf1986af1c8e49ecefb",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_003665_2025-09-11_12-49-23-356_PM_jpg.rf.a5bf1793301b2082ffbd78e42fb0cb51.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "5f754ccca73bd33c9095c416d6e9efd0b698f605db8bcd9c43d04c39340ae9a0",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c1_004141_2025-09-18_10-42-27-973_AM_jpg.rf.60ff6425a10f104a2a5bbb2013053629.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-18",
+      "origin": null,
+      "pixel_sha256": "a3b7beff4731ed6a015c33461699e25e6836f3f1bc6e0f1c549436dceff31450",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_003653_2025-09-11_12-49-10-793_PM_jpg.rf.bf4b5b19ae97443cba3f6f00b3494378.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "708b06337886a856258f5d41b3abca7f983011eb0309d8d2ae159c4c67fc4a5f",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_011485_2025-09-14_01-41-39-279_PM_jpg.rf.aff419f9b9d4bbcc2e34fe0c05f14802.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-14",
+      "origin": null,
+      "pixel_sha256": "1ce0c6ef25fca30eddf2d737a1f73cddd8e4fc9980d404617aeab3148a075c75",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c4_003598_2025-10-16_11-11-54-113_AM_jpg.rf.b18689a5bf903c3c77f248047cd5309d.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-16",
+      "origin": null,
+      "pixel_sha256": "56ee873b80b65f3781324b3530a851ac6a4f42f80cb6a2a6fd577457ffe64ad8",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_000908_2025-10-28_12-15-41-045_PM_jpg.rf.a2d9a50feb3b3f631fedfe327f0d1f5f.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-28",
+      "origin": null,
+      "pixel_sha256": "ef493033e26caa2b6126621f0ec888736e56d93e799870f72560cd70c22dbabb",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_022725_2025-09-15_03-46-44-692_PM_jpg.rf.6e95e7528d3d5f2f991620e187402611.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "8eba0455ba58f65d3a1614ca2f0d5fd60838b98f891b52f17ebeac6b13ccd2e5",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c4_005421_2025-10-26_01-40-49-778_PM_jpg.rf.a04af4881629b035d9f284bb98f99e32.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "709ac4174f23258b7a34c68dd7214071ce85fe47d9f7a364dade86f8c89cdf4c",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_002838_2025-10-29_09-59-34-687_AM_jpg.rf.953d2b975f5f4d67ad05990953bdf33d.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-29",
+      "origin": null,
+      "pixel_sha256": "f21767cb6cc8cfd18dda5cd4a73d376821233b2ba73624e0820e16dc7c946705",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c1_000881_2025-10-13_11-44-55-255_AM_jpg.rf.4ab33988aca356a9a7af72f05617d1ab.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13",
+      "origin": null,
+      "pixel_sha256": "76986200753f211652f9c7140d0ec62d2231e861ab27817bb16a044f256899f0",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c1_001124_2025-10-07_03-31-32-171_PM_jpg.rf.69982800c98ec9d5e2f6f1a6d3462427.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "51f4b1cfbab88fa3dd2ec17ae83b9979a6b018e177dd0cae7e76232c04e9ced4",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_000841_2025-10-29_09-24-50-409_AM_jpg.rf.a0dc1fca8b98521919480e50170fa5d8.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-29",
+      "origin": null,
+      "pixel_sha256": "509ab36781e079d48e0436bd5500a6603cbf88e35ae22d04ad40fb2f2afd8cf6",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_022405_2025-09-15_03-41-09-241_PM_jpg.rf.886d45b085ab07d5c16fb83845a2c74b.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "aca92e8e8776a67daebf1c22a66fd63489ca8199f7bc62f715b374db9a8bfe5a",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000410_2025-10-07_03-18-59-160_PM_jpg.rf.2f061d4cc0371197d31e1e21e399eed3.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "c5b3b742da1d177218639c5341ad53b3f589b6cdca11e6656d686f37f9f4c7c9",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001820_2025-10-07_03-43-32-944_PM_jpg.rf.54079d63dc81d7ceec76b9a4c08d1434.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "305393d58e47647fd7102d70e448a1dbfe1d6e18ecd657fec4f1dac20d05f7c3",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_003633_2025-09-11_12-48-49-995_PM_jpg.rf.60dbca0b1f66bf2ebb68625cadf6e2db.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "ad3440d5055b651b2976750aed5a1f854f8c7364342502f1721d6e03104cde97",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001690_2025-10-14_12-14-11-869_PM_jpg.rf.a964f870d4517c4a8858767225c81d47.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-14",
+      "origin": null,
+      "pixel_sha256": "c4aeb8ff74d28563a9ae0c83d5613663d00daaad8a35cb7295423b193bfc20b3",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001717_2025-10-14_12-14-40-073_PM_jpg.rf.92e57c9f7ee308b6ce079c54d89b2491.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-14",
+      "origin": null,
+      "pixel_sha256": "962ecc59e36dbab3bd0a4771c7d11c53cc804aa3f7f75139e35ebc01cc0eb5db",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c1_004916_2025-10-13_12-55-20-093_PM_jpg.rf.2c9ebfa8bbe10b0dbb5ff6e1ed8076b6.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13",
+      "origin": null,
+      "pixel_sha256": "6c6809ce948a3bedd5f6e379cb07398e1789d2d36db00ee780bd057127b312a0",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001518_2025-10-07_03-38-17-957_PM_jpg.rf.90d85ef21b3fb133ee9b20c30337eb30.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "a230fccdbe2b2d136d909617c767d96898cd1c1dcb033c9169db1053290acc67",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_022414_2025-09-15_03-41-18-683_PM_jpg.rf.650b5c04de97425297e82f16b9158df5.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "3cea65862ffdd06edc4f502c7e2d0d30fb90ec96285d7cf59e0434443d587869",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_003680_2025-09-11_12-49-39-028_PM_jpg.rf.4d85377898076220060f91b245e1e246.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "d664a00bafd4b827f154372ed747b91a4b99d30324ce8571e8ceff368aa6d8cc",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004140_2025-09-18_10-42-26-932_AM_jpg.rf.21ef10461143c1526d19fab1561fd389.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-18",
+      "origin": null,
+      "pixel_sha256": "70ccd31301b64e017fd86759010ea9b54a61b8a495bedf060b3757c28b78ce5c",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_000984_2025-09-15_09-27-07-252_AM_jpg.rf.44ca80be7d597777ce29784746091007.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "4f965d5a8800efe18e4bc8b7487a7d177af36343f69aae42e82e363e99b7baea",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_011517_2025-09-14_01-42-12-628_PM_jpg.rf.0ecc6edda288be0694b2d8ddaab9a41d.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-14",
+      "origin": null,
+      "pixel_sha256": "d8981b333c0a0148f5a632c72fc72c991098d5aea65b14e0d6404d256bf28b5b",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/normal/frame_c1_004010_2025-09-14_11-31-39-326_AM_jpg.rf.510b797c8950162e8402397a4922a612.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-14",
+      "origin": null,
+      "pixel_sha256": "a3756f29ff5156b1336e14a3c45154c36512274c3d7fe49e2493e94166c8d7d7",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004528_2025-10-13_12-48-34-501_PM_jpg.rf.4dd28d7e082ba2d2dbf8b564b10b5718.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13",
+      "origin": null,
+      "pixel_sha256": "0773ab40e5feb2fdbe66e536e208fc71f8c8a5646cba5708fe657d691063fecc",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_011882_2025-10-26_03-33-00-495_PM_jpg.rf.88b3464aedf14df9ed3c5ab447d9c43d.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "e5a8292f436c2e15b3b6f9fb590d915f9a59303b50448815c9929d340f1cfbc2",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c1_001668_2025-10-26_12-35-50-094_PM_jpg.rf.2b4f966d42f080647ec51ab36a1a39bc.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "0e5a9dd10d47dae6e6750c2bf28e1eff8b25bff02df92a28a6be55da2fb5510a",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c1_011102_2025-10-26_03-20-28-348_PM_jpg.rf.09524565c3c456577dd39eff7d0266be.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "fd80037ae050c63d91c71c5ec3e27f3242087a9bbfd91d4c33cd52d757747424",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_022506_2025-09-15_03-42-55-089_PM_jpg.rf.2fa3af6f52e14c180d4406e88346386f.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "66ee7ce289fc66acec904ddb53e3524ae731ec0f765afcc6c4036953c77dfc05",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_003880_2025-09-11_12-53-07-647_PM_jpg.rf.f8c3c1fb85b45ba7573b136157e6bc11.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "d5d67dbe78916d275fdfaf49fc44dbfa46524c36cc2d2f20b6b13237c2c600a4",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c4_005734_2025-10-26_01-46-16-003_PM_jpg.rf.03345603aefce8cf904e373e62a661ec.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "89edb737f7adab1d793902a196e2e7c442ce677f8366468590afb36a98b31f92",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_000899_2025-10-28_03-28-07-083_PM_jpg.rf.012c0d5d1b9ec70b0934bb1151d53888.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-28",
+      "origin": null,
+      "pixel_sha256": "a7ff41cc792f51a40fd1fdb7d0308fda0c99c376cbc7cb85c60891c9b284a0f2",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_011188_2025-10-26_03-21-58-668_PM_jpg.rf.e19ef03f475f6bb21b2f2ec65ae2116e.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "7defcfbd1eb95b0c0153b906b91172acf29499677bc3bca65ef3a7ec1937e900",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c4_005612_2025-10-26_01-44-08-801_PM_jpg.rf.8e8a6fe598d44030852c95ff5fa7a40d.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "d6f078d127e2cb0781408e65b828d03e5ff0e183bfb70af747557e0429bdea97",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004890_2025-09-18_10-55-32-584_AM_jpg.rf.b593ab59e5675a96c77d8be9eccc0071.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-18",
+      "origin": null,
+      "pixel_sha256": "a0ce77786a0eff0bb4a3b13503f6c058f932bb8d471e3b978f5cc106d2d7d1d7",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c4_003789_2025-10-16_11-15-13-890_AM_jpg.rf.b2c52ddee858e2f2bde94d955e9f11c5.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-16",
+      "origin": null,
+      "pixel_sha256": "da5cacb1ce4e5a91a7cec5743908169faf29244432c2081281ffc6ce647eecf0",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_011205_2025-10-26_03-22-16-464_PM_jpg.rf.6cb97661779d0265123c7ba997caef36.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26",
+      "origin": null,
+      "pixel_sha256": "ff0d4eff1f4c82b38a3a4471b77dddcd295d1bc5450a94f3d8fbd7e58bafaaa6",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_000375_2025-10-28_12-06-25-582_PM_jpg.rf.bc2d779b85ee052053f953649dd48b4d.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-28",
+      "origin": null,
+      "pixel_sha256": "48d70ee4b95ee9ac1ed26aee3e04cd480a210255ca680fe58645d80a97ca145c",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_002882_2025-10-29_10-00-20-691_AM_jpg.rf.993535480411f80719ec218ebd594356.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-29",
+      "origin": null,
+      "pixel_sha256": "58877ffa74a80638211035db6afeb0c5f44bfbe8e05465bf820e7dcef9dccdb1",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_005333_2025-09-18_11-03-17-173_AM_jpg.rf.6a379d600039e2c80f9d3d47af1bc5f8.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-18",
+      "origin": null,
+      "pixel_sha256": "b539139e448b76e220e54761c0a21adae2d3c202c49bb573001a104556274365",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_003928_2025-10-16_11-17-39-083_AM_jpg.rf.3614921880758dc549ad21e42f8309d4.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-16",
+      "origin": null,
+      "pixel_sha256": "922a97784118da3fadafcc905a760278cabf5852578bb376a1a53a72c3d156bb",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/smoking/frame_c1_003730_2025-09-11_12-50-33-021_PM_jpg.rf.3ba238c9d8fa1f18174f05762ef22650.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "831ccb22c21e1add425bec5f0de728509408f0cec782b9c919ca0c795c2f144f",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004814_2025-10-13_12-53-33-287_PM_jpg.rf.82340222c2e64c45a41ae68c50aa4cbe.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13",
+      "origin": null,
+      "pixel_sha256": "3325c7efd10f300c039e4d984bed71d508615870eef8bb73532f513ec9061563",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_004160_2025-10-07_04-24-13-823_PM_jpg.rf.8f3d6b1b0885657ab4c7cec1b637f36b.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "c16047faafc32fbfa05a53012038421319fc57302246536b7faf075f23df5236",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_011438_2025-09-14_01-40-50-154_PM_jpg.rf.800df623534ba205ef6551cc73ee17b0.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-14",
+      "origin": null,
+      "pixel_sha256": "bb98a1c516dc438aeb29a03d32b9564c7df4028d5917e476b31a621552c39494",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_001135_2025-10-07_03-31-43-647_PM_jpg.rf.60a3ea7dfd5738ab7fc0c6c97e37bc03.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "4b667563fd18ef7b7324de80d367326cda5579730550f8b302d3c312619c5bbf",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_003572_2025-09-11_12-47-46-337_PM_jpg.rf.dff36e0dae8729ce5cdc3205a4b48aaa.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "d193621f64881af8cb56ca6de6f159ba5da20fb50821370bee4c6547c08e602d",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_000529_2025-10-28_12-09-05-933_PM_jpg.rf.1e6bfd705ee97bbfbad96b162ffa1dd4.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-28",
+      "origin": null,
+      "pixel_sha256": "a0d3c55af1eb3ef0d5e0bc36b810a1b00a04b9c7b6ba7becb2c4884fbaac63bc",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_002937_2025-10-29_10-01-18-514_AM_jpg.rf.8a272287be29016ef30253c1ef7aabe4.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-29",
+      "origin": null,
+      "pixel_sha256": "d9e5503e9382e3d66b779442ea27cbfbfc4e722250adfe5eb908d1fd8bff0372",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_001584_2025-10-14_12-12-21-317_PM_jpg.rf.0cfd77955f08e6f8894f020eebff7b1e.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-14",
+      "origin": null,
+      "pixel_sha256": "8714b6447de4c60380ec6736d4cd3324ca0f369e70d2bf43103acfe2aafb527a",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_000854_2025-10-29_09-25-04-014_AM_jpg.rf.82efbe36e677918c0b6e5401d6cf8168.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-29",
+      "origin": null,
+      "pixel_sha256": "8959753bcf4f21968315a363a41dc3085e7358912a52fd88d6841e16081d0feb",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000473_2025-10-07_03-20-05-084_PM_jpg.rf.3a5b2bf4b997bb566691366d36d1bbe5.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "0ad8cb92cd60e96fe3606bb4862e09206439537a6b4313ec006e432bde1f2571",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001537_2025-10-07_03-38-37-777_PM_jpg.rf.ac07f52f5a2c1d0f4d9824c662c4648f.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "67b27ac64258e89a6937caba2cfb2a4bc42736273c4f63676c7bd30eeadd394f",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c4_000824_2025-10-28_12-14-13-522_PM_jpg.rf.b02cfe05bd9eaae021d63509221116f2.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-28",
+      "origin": null,
+      "pixel_sha256": "6d0289b845d7a511a6f50d67f3b46e36077ec515dd4be83edf1588a69a433a68",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_001535_2025-10-07_03-38-35-707_PM_jpg.rf.78890ddb4bbb7110f9a9b6174584a685.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "0074affb86068909d9f05e142c0d57b163f7f70dea8fe0935dc54cda8da383d0",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_000376_2025-09-15_09-16-32-782_AM_jpg.rf.9b9cd9d762299be8272e0f9828441dd4.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "cc4d717a30e50dabb599133603e206ea54dd84a5dbafd2471302781ff862614f",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c1_001144_2025-10-07_03-31-53-046_PM_jpg.rf.05aa201d2525fcb7dbd40aa005a54836.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "c8a3061491313ad9de2289e1cf7486757fa5cbeda8b00ede4af4c3d7a8e88c43",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_001123_2025-10-07_03-31-31-150_PM_jpg.rf.4ac1746b057b76ed1f95641dd19d915f.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "c197789a3c0158dac94f74ced29879023486f955b47f825ea12d7b741450f501",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_022484_2025-09-15_03-42-32-041_PM_jpg.rf.454eefb443310f8c116a5eea20579044.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "22521f2edf84422e7c5709471767c08e90b2c953322cd5be2d4e42b2fa8ae223",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004359_2025-09-11_01-01-29-792_PM_jpg.rf.138059a300d6a79756c7e5518bc133c5.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "300f01d855d554634b82fb9ababe6c32071e883877ab359596638e73ae662a7f",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c1_003772_2025-09-11_12-51-16-823_PM_jpg.rf.e81a466a1d827db9f2f6e22d283aad3c.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "498d647fb6c56b9ec028394fb8b26f601fdbaf54c78795e8f1cea38f55a8a56f",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/normal/frame_c2_011421_2025-09-14_01-40-32-402_PM_jpg.rf.e66af77d01729e7a3d6fb010639730ce.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-14",
+      "origin": null,
+      "pixel_sha256": "e2fdefe76fc2816489cd920bc5886e6db6eb271811882b4f337216b2d001a73d",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_004238_2025-10-07_04-25-35-218_PM_jpg.rf.ee8dfac793d5543527fcc2cf53e3ba0b.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "6cc2115a9debe5779b18be80faaf81ee516c9b3afde0d906cb88bd96e640c624",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_022481_2025-09-15_03-42-28-882_PM_jpg.rf.9238e2a3fc106b9633a19f0ebffe5e03.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "a18fdbb40cf6fc957c6513a16aa4c24c422718ac958a7ca63a95a780da53ff4c",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c2_022104_2025-09-15_03-34-37-058_PM_jpg.rf.b5264a8e355ac940c5e4b202f87afd53.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "9c3731dd238eb3d5e9185b0be1c51f7d59c845d1d8718c206d9397da8ac79bb1",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c4_000476_2025-10-28_12-08-10-748_PM_jpg.rf.569abab5abeae3a9eccc18c03729f91a.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-28",
+      "origin": null,
+      "pixel_sha256": "fbee61a5a2f12a42621de1322bd948004bc5d1bacfa8ea16ab410d83f7721ed0",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001457_2025-10-29_09-35-33-363_AM_jpg.rf.84d4dfcc5c6f5280bf078f08da2b4186.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-29",
+      "origin": null,
+      "pixel_sha256": "3f8de016d416297bf2120c2df015287e553997fa8030c8a7ac9ad6e6c72f5f7e",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_022726_2025-09-15_03-46-45-708_PM_jpg.rf.eee8f5e892d7f7db9a1723e540e7b3af.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "5e45171e8abbfa2d37bf4c1b3991bdfcdbd033eb0dd5975e24b20d0856cd849c",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_003536_2025-10-16_11-10-49-199_AM_jpg.rf.e5be194411b4074f2498abcfdc4cd34c.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-16",
+      "origin": null,
+      "pixel_sha256": "8e4020b3011e7ea8708a98001745a10c5708ddd0bffac36a054c264ed2c54c68",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004188_2025-09-18_10-43-17-261_AM_jpg.rf.b38686db766cd1db91d4d225ea2aa1a0.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-18",
+      "origin": null,
+      "pixel_sha256": "5ef36dac2aa591ee22cbef708011576e8a94a34dbecc9bf12a0c4fdde14a4c3e",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_001143_2025-10-07_03-31-52-030_PM_jpg.rf.3d9c37367164c26d801d3a1d5f8f6c70.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-07",
+      "origin": null,
+      "pixel_sha256": "afc0d9ae997127a3cc023899a989dc52d6536dfecc9e7a993de6bd65fc58ea78",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000754_2025-10-13_11-42-42-044_AM_jpg.rf.0c99a2c90af2bc452bce15de78bb8f1d.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13",
+      "origin": null,
+      "pixel_sha256": "516774fb98d13c3846c2cf3582016829efa1d85a7d7a97db591c2830e0c39f1f",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004736_2025-10-13_12-52-12-006_PM_jpg.rf.48a1317e68c528ca3dd49fcee20bd39f.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13",
+      "origin": null,
+      "pixel_sha256": "044be1df1fbb8d155ec14b40b991729f24e395faf4b726b79756b0a7df20197b",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_003554_2025-10-16_11-11-08-193_AM_jpg.rf.199b7f655663b6dad7028685ba99fd62.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c4:2025-10-16",
+      "origin": null,
+      "pixel_sha256": "7d9bef2aa27ef25044bc50920dfa77ed8a79ad09306b429c580fb5f6db0cbc5d",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004353_2025-09-11_01-01-23-582_PM_jpg.rf.a3a9a47366e99c504f4662a56fc6bea3.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-11",
+      "origin": null,
+      "pixel_sha256": "0de6f08c2c932d38f597cf183b247605f05178f642003707004929cbdfdf3fc8",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c1_022727_2025-09-15_03-46-46-734_PM_jpg.rf.abd1297229480ebc3a92a2b20ad8a88d.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-09-15",
+      "origin": null,
+      "pixel_sha256": "49d2ac950d414d055d5a78cbb213ef19f9098641d670ad12f957e6760408c917",
+      "protocol": "frame"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_002292_2025-10-14_12-24-39-781_PM_jpg.rf.b316b9254f5b03673f18cdb42422c6f1.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-10-14",
+      "origin": null,
+      "pixel_sha256": "527fbd4fb9c0aa20012608f57d5e09c98cded389a568882eaef282da3667545a",
+      "protocol": "frame"
+    }
+  ]
+}

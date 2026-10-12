@@ -1,0 +1,219 @@
+{
+  "model": "mobileclip2-s2",
+  "output": "${RESULTS_ROOT}/evaluation_20261012T040605_929193Z/unattended_items_frame/dev/mobileclip2-s2",
+  "options": {
+    "manifest": "${DATA_ROOT}/evaluation/unattended_items_frame.csv",
+    "definitions": "${RESULTS_ROOT}/evaluation_20261012T040605_929193Z/unattended_items_frame_definitions.json",
+    "models": [
+      "mobileclip2-s2",
+      "siglip2-b16-224",
+      "smolvlm-500m",
+      "minicpm-v4"
+    ],
+    "list_models": false,
+    "output": "${RESULTS_ROOT}/evaluation_20261012T040605_929193Z/unattended_items_frame/dev",
+    "limit": 0,
+    "image_policy": "letterbox",
+    "split": "dev",
+    "repeats": 3,
+    "warmup": 1,
+    "seed": 42,
+    "max_side": 768,
+    "max_new_tokens": 64,
+    "timeout_seconds": 3600.0,
+    "max_rss_mb": 24576.0,
+    "cache_dir": "${CACHE_ROOT}/hub",
+    "offline": false,
+    "worker_config": null,
+    "threads": 32,
+    "duty_cycle": 1.0,
+    "max_samples_per_second": null,
+    "cpu_cores": null
+  },
+  "definitions": {
+    "normal": "An ordinary scene with no evidence of unattended items.",
+    "unattended_items": "A bag, box, or other personal item apparently left behind without its owner nearby. Ownership and duration require evidence across time."
+  },
+  "samples": [
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk3_8_3_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:Walk3",
+      "origin": "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407@40.0",
+      "pixel_sha256": "8de3f9ed602e92e024da550fcda4a5858a24b640a515e99191ffb57aaf33bcca",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_1_1_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@38.4",
+      "pixel_sha256": "e993f4b3afc13673ae442cd78c861d7b91e3f68055c51ce89610abe9c0af4723",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_5_2_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@46.0",
+      "pixel_sha256": "f29a114356cf2268679db3aa3d4cb76186bc948c2414ac221ee2c52a47b74007",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_1_0_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@38.0",
+      "pixel_sha256": "e5c765f843cd20dbc5cb2e57a5647deecdbc34d67286418d67ae56be8e04325c",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_4_1_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@40.13333333333333",
+      "pixel_sha256": "555f09ca6dea881af089260ddb42f591b4fce340f0555671f4b0d40b1b660e74",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_5_1_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@45.0",
+      "pixel_sha256": "b8d7856046adfca57b7e75415d89b10579054bbde0e56fb40539d3a6e58085d3",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_5_3_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@47.0",
+      "pixel_sha256": "2c317faa927371d5ae31edc406d34ed07798fe0262f4513d19c68ab535fc5e1a",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk3_8_2_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:Walk3",
+      "origin": "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407@30.666666666666668",
+      "pixel_sha256": "92ead63fa5121579c03dbf9f64a60eb1e40a1fb69514071189a207e582be80e3",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_1_2_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@38.800000000000004",
+      "pixel_sha256": "87cfda5412bec126fa4eda0071b2355a76e44fe4052cd6dd28b136c74edb526b",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_5_0_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@44.0",
+      "pixel_sha256": "315dd3b51e8205df2d003b553a0aba764dd27a50829bec7a8e0f9466c66bf8cb",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk3_8_1_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:Walk3",
+      "origin": "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407@21.333333333333336",
+      "pixel_sha256": "9aed861516cec078f67b37556a052e70f5c9c47e7cbc8eada30d7f570eb23b52",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_4_2_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@40.266666666666666",
+      "pixel_sha256": "94223fe24b2d48c4d9f89946068485eb545cd8d35715ad4abcfbbf2a0f32d959",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_0_1_3.png",
+      "label": "unattended_items",
+      "split": "test",
+      "group_id": "caviar:LeftBag",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@46.666666666666664",
+      "pixel_sha256": "6db6f15605140b8957da9c8326c39ec82c032a493280512e0801b7004d81f8ac",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_4_3_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@40.4",
+      "pixel_sha256": "84f18143074eb9a8aee1a10690f661bab96f1d110950d4e78bb2f611250df9c9",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_0_2_3.png",
+      "label": "unattended_items",
+      "split": "test",
+      "group_id": "caviar:LeftBag",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@48.333333333333336",
+      "pixel_sha256": "650700b25875c4cbc9c8d83a738230c4d895b84cb972782c82496c31c70af3a5",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk3_8_0_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:Walk3",
+      "origin": "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407@12.0",
+      "pixel_sha256": "f97d8a029e6043d90cfa0391ba3d76d8e265abe59b50f59863505426a543e3cb",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_1_3_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@39.2",
+      "pixel_sha256": "32af79783a51150c97c22fb96298d3a17a1da401da6bcd806b5b23165ef7927f",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_4_0_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp",
+      "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@40.0",
+      "pixel_sha256": "640ce03f0703f093d3a01673e7a767d957ecac091e4cbca78c73e174b62d95cd",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_0_0_3.png",
+      "label": "unattended_items",
+      "split": "test",
+      "group_id": "caviar:LeftBag",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@45.0",
+      "pixel_sha256": "433658443c0b35bf0bbfa0c40fff2e924f04c9a6da4d8336d402e0204df238e2",
+      "protocol": "frame"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_0_3_3.png",
+      "label": "unattended_items",
+      "split": "test",
+      "group_id": "caviar:LeftBag",
+      "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@50.0",
+      "pixel_sha256": "ca7ef83bb83070f09c5c54421d34c7393654ae211e58ab2161afa6eb2e3def64",
+      "protocol": "frame"
+    }
+  ]
+}

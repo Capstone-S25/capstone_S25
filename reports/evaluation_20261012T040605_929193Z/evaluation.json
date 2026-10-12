@@ -1,0 +1,1418 @@
+{
+  "status": "error",
+  "benchmarks": [
+    {
+      "cohort": "smoking_frame",
+      "split": "dev",
+      "output": "smoking_frame/dev",
+      "selection": {
+        "available_samples": 236,
+        "selected_samples": 236,
+        "available_label_counts": {
+          "normal": 120,
+          "smoking": 116
+        },
+        "selected_label_counts": {
+          "normal": 120,
+          "smoking": 116
+        },
+        "available_groups": 16,
+        "selected_groups": 16,
+        "available_groups_per_label": {
+          "normal": 16,
+          "smoking": 16
+        },
+        "selected_groups_per_label": {
+          "normal": 16,
+          "smoking": 16
+        },
+        "policy": "label_proportional_group_round_robin_v1"
+      }
+    },
+    {
+      "cohort": "unattended_items_frame",
+      "split": "dev",
+      "output": "unattended_items_frame/dev",
+      "selection": {
+        "available_samples": 20,
+        "selected_samples": 20,
+        "available_label_counts": {
+          "normal": 16,
+          "unattended_items": 4
+        },
+        "selected_label_counts": {
+          "normal": 16,
+          "unattended_items": 4
+        },
+        "available_groups": 3,
+        "selected_groups": 3,
+        "available_groups_per_label": {
+          "normal": 3,
+          "unattended_items": 1
+        },
+        "selected_groups_per_label": {
+          "normal": 3,
+          "unattended_items": 1
+        },
+        "policy": "label_proportional_group_round_robin_v1"
+      }
+    },
+    {
+      "cohort": "unattended_items_frame",
+      "split": "test",
+      "output": "unattended_items_frame/test",
+      "selection": {
+        "available_samples": 16,
+        "selected_samples": 16,
+        "available_label_counts": {
+          "normal": 12,
+          "unattended_items": 4
+        },
+        "selected_label_counts": {
+          "normal": 12,
+          "unattended_items": 4
+        },
+        "available_groups": 3,
+        "selected_groups": 3,
+        "available_groups_per_label": {
+          "normal": 3,
+          "unattended_items": 1
+        },
+        "selected_groups_per_label": {
+          "normal": 3,
+          "unattended_items": 1
+        },
+        "policy": "label_proportional_group_round_robin_v1"
+      }
+    },
+    {
+      "cohort": "unattended_items_window",
+      "split": "dev",
+      "output": "unattended_items_window/dev",
+      "selection": {
+        "available_samples": 20,
+        "selected_samples": 20,
+        "available_label_counts": {
+          "normal": 16,
+          "unattended_items": 4
+        },
+        "selected_label_counts": {
+          "normal": 16,
+          "unattended_items": 4
+        },
+        "available_groups": 3,
+        "selected_groups": 3,
+        "available_groups_per_label": {
+          "normal": 3,
+          "unattended_items": 1
+        },
+        "selected_groups_per_label": {
+          "normal": 3,
+          "unattended_items": 1
+        },
+        "policy": "label_proportional_group_round_robin_v1"
+      }
+    },
+    {
+      "cohort": "unattended_items_window",
+      "split": "test",
+      "output": "unattended_items_window/test",
+      "selection": {
+        "available_samples": 16,
+        "selected_samples": 16,
+        "available_label_counts": {
+          "normal": 12,
+          "unattended_items": 4
+        },
+        "selected_label_counts": {
+          "normal": 12,
+          "unattended_items": 4
+        },
+        "available_groups": 3,
+        "selected_groups": 3,
+        "available_groups_per_label": {
+          "normal": 3,
+          "unattended_items": 1
+        },
+        "selected_groups_per_label": {
+          "normal": 3,
+          "unattended_items": 1
+        },
+        "policy": "label_proportional_group_round_robin_v1"
+      }
+    }
+  ],
+  "steps": [
+    {
+      "command": [
+        "/home/g31/projects/test_here/capstone_S25/.venv/bin/python3",
+        "-m",
+        "anomaly_eval",
+        "benchmark",
+        "--manifest",
+        "/home/g31/projects/test_here/capstone_S25/data/evaluation/smoking_frame.csv",
+        "--definitions",
+        "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261012T040605_929193Z/smoking_frame_definitions.json",
+        "--models",
+        "mobileclip2-s2",
+        "siglip2-b16-224",
+        "smolvlm-500m",
+        "minicpm-v4",
+        "--split",
+        "dev",
+        "--output",
+        "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261012T040605_929193Z/smoking_frame/dev",
+        "--limit",
+        "0",
+        "--threads",
+        "32",
+        "--duty-cycle",
+        "1.0",
+        "--max-rss-mb",
+        "24576",
+        "--timeout-seconds",
+        "3600",
+        "--repeats",
+        "3",
+        "--seed",
+        "42",
+        "--cache-dir",
+        "/home/g31/.cache/huggingface/hub",
+        "--image-policy",
+        "letterbox",
+        "--max-side",
+        "768",
+        "--max-new-tokens",
+        "64"
+      ],
+      "returncode": 1,
+      "seconds": 5469.828724777326,
+      "peak_process_tree_rss_mb": 17382.4609375,
+      "status": "error",
+      "error": null,
+      "log": "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261012T040605_929193Z/logs/smoking_frame_dev.log"
+    },
+    {
+      "command": [
+        "/home/g31/projects/test_here/capstone_S25/.venv/bin/python3",
+        "-m",
+        "anomaly_eval",
+        "benchmark",
+        "--manifest",
+        "/home/g31/projects/test_here/capstone_S25/data/evaluation/unattended_items_frame.csv",
+        "--definitions",
+        "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261012T040605_929193Z/unattended_items_frame_definitions.json",
+        "--models",
+        "mobileclip2-s2",
+        "siglip2-b16-224",
+        "smolvlm-500m",
+        "minicpm-v4",
+        "--split",
+        "dev",
+        "--output",
+        "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261012T040605_929193Z/unattended_items_frame/dev",
+        "--limit",
+        "0",
+        "--threads",
+        "32",
+        "--duty-cycle",
+        "1.0",
+        "--max-rss-mb",
+        "24576",
+        "--timeout-seconds",
+        "3600",
+        "--repeats",
+        "3",
+        "--seed",
+        "42",
+        "--cache-dir",
+        "/home/g31/.cache/huggingface/hub",
+        "--image-policy",
+        "letterbox",
+        "--max-side",
+        "768",
+        "--max-new-tokens",
+        "64"
+      ],
+      "returncode": 0,
+      "seconds": 364.33522373996675,
+      "peak_process_tree_rss_mb": 18932.78515625,
+      "status": "ok",
+      "error": null,
+      "log": "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261012T040605_929193Z/logs/unattended_items_frame_dev.log"
+    },
+    {
+      "command": [
+        "/home/g31/projects/test_here/capstone_S25/.venv/bin/python3",
+        "-m",
+        "anomaly_eval",
+        "benchmark",
+        "--manifest",
+        "/home/g31/projects/test_here/capstone_S25/data/evaluation/unattended_items_frame.csv",
+        "--definitions",
+        "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261012T040605_929193Z/unattended_items_frame_definitions.json",
+        "--models",
+        "mobileclip2-s2",
+        "siglip2-b16-224",
+        "smolvlm-500m",
+        "minicpm-v4",
+        "--split",
+        "test",
+        "--output",
+        "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261012T040605_929193Z/unattended_items_frame/test",
+        "--limit",
+        "0",
+        "--threads",
+        "32",
+        "--duty-cycle",
+        "1.0",
+        "--max-rss-mb",
+        "24576",
+        "--timeout-seconds",
+        "3600",
+        "--repeats",
+        "3",
+        "--seed",
+        "42",
+        "--cache-dir",
+        "/home/g31/.cache/huggingface/hub",
+        "--image-policy",
+        "letterbox",
+        "--max-side",
+        "768",
+        "--max-new-tokens",
+        "64"
+      ],
+      "returncode": 0,
+      "seconds": 300.4226485444233,
+      "peak_process_tree_rss_mb": 17117.3671875,
+      "status": "ok",
+      "error": null,
+      "log": "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261012T040605_929193Z/logs/unattended_items_frame_test.log"
+    },
+    {
+      "command": [
+        "/home/g31/projects/test_here/capstone_S25/.venv/bin/python3",
+        "-m",
+        "anomaly_eval",
+        "benchmark",
+        "--manifest",
+        "/home/g31/projects/test_here/capstone_S25/data/evaluation/unattended_items_window.csv",
+        "--definitions",
+        "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261012T040605_929193Z/unattended_items_window_definitions.json",
+        "--models",
+        "mobileclip2-s2",
+        "siglip2-b16-224",
+        "smolvlm-500m",
+        "minicpm-v4",
+        "--split",
+        "dev",
+        "--output",
+        "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261012T040605_929193Z/unattended_items_window/dev",
+        "--limit",
+        "0",
+        "--threads",
+        "32",
+        "--duty-cycle",
+        "1.0",
+        "--max-rss-mb",
+        "24576",
+        "--timeout-seconds",
+        "3600",
+        "--repeats",
+        "3",
+        "--seed",
+        "42",
+        "--cache-dir",
+        "/home/g31/.cache/huggingface/hub",
+        "--image-policy",
+        "letterbox",
+        "--max-side",
+        "768",
+        "--max-new-tokens",
+        "64"
+      ],
+      "returncode": 0,
+      "seconds": 498.6708869365975,
+      "peak_process_tree_rss_mb": 18267.984375,
+      "status": "ok",
+      "error": null,
+      "log": "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261012T040605_929193Z/logs/unattended_items_window_dev.log"
+    },
+    {
+      "command": [
+        "/home/g31/projects/test_here/capstone_S25/.venv/bin/python3",
+        "-m",
+        "anomaly_eval",
+        "benchmark",
+        "--manifest",
+        "/home/g31/projects/test_here/capstone_S25/data/evaluation/unattended_items_window.csv",
+        "--definitions",
+        "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261012T040605_929193Z/unattended_items_window_definitions.json",
+        "--models",
+        "mobileclip2-s2",
+        "siglip2-b16-224",
+        "smolvlm-500m",
+        "minicpm-v4",
+        "--split",
+        "test",
+        "--output",
+        "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261012T040605_929193Z/unattended_items_window/test",
+        "--limit",
+        "0",
+        "--threads",
+        "32",
+        "--duty-cycle",
+        "1.0",
+        "--max-rss-mb",
+        "24576",
+        "--timeout-seconds",
+        "3600",
+        "--repeats",
+        "3",
+        "--seed",
+        "42",
+        "--cache-dir",
+        "/home/g31/.cache/huggingface/hub",
+        "--image-policy",
+        "letterbox",
+        "--max-side",
+        "768",
+        "--max-new-tokens",
+        "64"
+      ],
+      "returncode": 0,
+      "seconds": 428.1647002687678,
+      "peak_process_tree_rss_mb": 16737.83984375,
+      "status": "ok",
+      "error": null,
+      "log": "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261012T040605_929193Z/logs/unattended_items_window_test.log"
+    }
+  ],
+  "options": {
+    "output": null,
+    "data_dir": "/home/g31/projects/test_here/capstone_S25/data",
+    "cache_dir": "/home/g31/.cache/huggingface/hub",
+    "prepared_dir": null,
+    "review_csv": null,
+    "fetch": false,
+    "fetch_drive": false,
+    "use_cookies": false,
+    "drive_workers": 2,
+    "fetch_timeout": 72000,
+    "d2_shards": [],
+    "roboflow_version": [],
+    "prepare_only": false,
+    "skip_prepare": true,
+    "mode": "evaluation",
+    "limit": 0,
+    "models": [
+      "mobileclip2-s2",
+      "siglip2-b16-224",
+      "smolvlm-500m",
+      "minicpm-v4"
+    ],
+    "tasks": [
+      "littering",
+      "loitering",
+      "rough_sleeping",
+      "smoking",
+      "unattended_items"
+    ],
+    "protocols": [
+      "frame",
+      "window"
+    ],
+    "threads": 32,
+    "cpu_cores": null,
+    "duty_cycle": 1.0,
+    "max_rss_mb": 24576,
+    "camera_fps": 1,
+    "timeout_seconds": 3600,
+    "seed": 42,
+    "repeats": 3,
+    "image_policy": "letterbox",
+    "max_side": 768,
+    "max_new_tokens": 64,
+    "bootstrap": 2000,
+    "target_fpr": 0.05,
+    "offline": false,
+    "require_all_tasks": false,
+    "vadclip": false,
+    "vadclip_epochs": 100,
+    "vadclip_timeout": 14400
+  },
+  "code_sha256": {
+    "anomaly_eval/__init__.py": "ebf262f97615be95b2bf3279450d241d22fffa559c07002ee12fce877018e8e9",
+    "anomaly_eval/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "anomaly_eval/analysis.py": "d4d1b0cf44b8fdf117c1d657bc4878a9c2498ca333dd1f78a6b3d6eda29716fb",
+    "anomaly_eval/audit.py": "da6434126cacd43c8a69aed816154d89cc8cdc10d75e233da7185abaf55adfe6",
+    "anomaly_eval/benchmark.py": "0cedfd5570b57501dd9c9eaa2466d6c52ee5958088039226959e74969b3e0e1f",
+    "anomaly_eval/cli.py": "462ed3487cfaab2774437ab8ce4f6792a064d71535107ceaf8543ff7e3178674",
+    "anomaly_eval/config/anomalies.json": "589882c0a43d846b9ad6c6d88073129bb666a15014919f585849ab830a95038c",
+    "anomaly_eval/config/caviar_review_intervals.json": "14893df2f779cadf2313279117fc0fc20b6e8c76d5ad0509013fcb3283a54d8d",
+    "anomaly_eval/data.py": "0c7d2435d84376984a1f588ba45a19f35e01b55da3dcdc1fc633a946018b0e35",
+    "anomaly_eval/datasets/__init__.py": "63f341a36e2bbbe47168e1204ee7c0d702969be07a971a1c098d13ff1dd6f98f",
+    "anomaly_eval/datasets/drive.py": "b53907ec66ca147557727af0aa35a22eafbf8d8d6c695c06774f88049ea85853",
+    "anomaly_eval/datasets/fetch.py": "224e6289c89334aa9f4aaa5c7319ac412f6a87b477bf5aefc835a35b38d53a11",
+    "anomaly_eval/datasets/labels.py": "a8042a5c0edeebb189beab519e25e9166476dda66871f2a65f7967238c4a9ca6",
+    "anomaly_eval/datasets/prepare.py": "07611b3720d85580800441495e109d5444985084c42c72556b466069405cbf83",
+    "anomaly_eval/datasets/tools.py": "0dec4c56fcd3b47b97fe36afc15a2a95e8cb0b5fe84142beb378ab18ec711c48",
+    "anomaly_eval/metrics.py": "d33bb68d0cdde2fd3c7f89fde41475dc76e10159905f5ff8e334b94a0e4f2e3e",
+    "anomaly_eval/models.py": "ec5696afb12e3bf23765d98dec39b81a753608de2753244480549e4e20bbbe21",
+    "anomaly_eval/paths.py": "90c2ba6ecbefba8da90ae072912c277a73ed05cb3b66d9809f6523ba233fee14",
+    "anomaly_eval/resources.py": "f71f2004bafbbd8d8c99e53a2ea111799efb3450aa5c8380772f35cf54bcb3f9",
+    "anomaly_eval/runner.py": "73c74508d6ec4d8d9bae44cd0dc8bc6754cf11c4ad5309602bc1bfd1f1d37be5",
+    "anomaly_eval/vadclip/__init__.py": "e49e2f18d1b7db331d7d49553af57222f5bad1b6a81f761e4fb2231b5f73cd7c",
+    "anomaly_eval/vadclip/baselines.py": "1432c6343e15b2f7b0828262e334858ed2e73483b7de388aa87be8708d132d40",
+    "anomaly_eval/vadclip/clip_b16.py": "ecd3b7963b703c3ddf48c93ac4dacdf5051df7c9159657b0174e2c8868bb9c4f",
+    "anomaly_eval/vadclip/data.py": "cae28cda5deb6aac393a8b553f7b578172f3648f765f5488b257f3757e049344",
+    "anomaly_eval/vadclip/evaluate.py": "d8b698b8611b62b5d44d5792cbe018bf4a47bff5b9fe390e71583632d6b4fd5e",
+    "anomaly_eval/vadclip/extract_features.py": "316a6d757984856cea51012c4f1451c239f5d520a07132483596b0775c5e7262",
+    "anomaly_eval/vadclip/model.py": "27c5fac657ceceb0fa5ea9116ef19e0c12c1b6558311dd6d38a6ff0aa03c87ce",
+    "anomaly_eval/vadclip/train.py": "b38e51e2e8cd0f8f81f6d4a640b8cbb3077f34962ff816d9d4fd0426c4c714b9"
+  },
+  "workspace": {
+    "data_dir": "/home/g31/projects/test_here/capstone_S25/data",
+    "results_dir": "/home/g31/projects/test_here/capstone_S25/results",
+    "cache_dir": "/home/g31/.cache/huggingface",
+    "bundle_dir": "/home/g31/projects/test_here/capstone_S25/test_data",
+    "config_dir": "/home/g31/projects/test_here/capstone_S25/anomaly_eval/config"
+  },
+  "dataset": {
+    "schema": 3,
+    "deduplication": {
+      "policy": "source_moment_and_exif_rgb_v1",
+      "input_rows": 3454,
+      "unique_rows": 3350,
+      "removed_rows": 104,
+      "aliases": [
+        {
+          "kept": "${BUNDLE_ROOT}/smoking/frame_c1_001128_2025-10-07_03-31-36-352_PM_jpg.rf.3acc19aa5d79feae05406d4e428b7a8f.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c1_001128_2025-10-07_03-31-36-352_PM_jpg.rf.3acc19aa5d79feae05406d4e428b7a8f.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/smoking/frame_c2_002952_2025-10-29_10-01-34-193_AM_jpg.rf.84e3ff2267fd7a6ea3a96da20f99ecc1.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_002952_2025-10-29_10-01-34-193_AM_jpg.rf.84e3ff2267fd7a6ea3a96da20f99ecc1.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/normal/frame_c1_004197_2025-09-18_10-43-26-612_AM_jpg.rf.d048e93a33b81491994efe04e344bbea.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004197_2025-09-18_10-43-26-612_AM_jpg.rf.d048e93a33b81491994efe04e344bbea.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/normal/frame_c1_005140_2025-10-13_12-59-14-541_PM_jpg.rf.96b4eb86672674fcd39df9ac70e3ad97.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c1_005140_2025-10-13_12-59-14-541_PM_jpg.rf.96b4eb86672674fcd39df9ac70e3ad97.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/smoking/frame_c4_000707_2025-10-28_12-12-11-434_PM_jpg.rf.208a479d5340ed6e5faa5d59f841754e.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_000707_2025-10-28_12-12-11-434_PM_jpg.rf.208a479d5340ed6e5faa5d59f841754e.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/normal/frame_c1_000412_2025-10-07_03-19-01-241_PM_jpg.rf.f7e8b035338962e1cd61561ed3bf481a.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000412_2025-10-07_03-19-01-241_PM_jpg.rf.f7e8b035338962e1cd61561ed3bf481a.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/normal/frame_c1_004010_2025-09-14_11-31-39-326_AM_jpg.rf.510b797c8950162e8402397a4922a612.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004010_2025-09-14_11-31-39-326_AM_jpg.rf.510b797c8950162e8402397a4922a612.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/smoking/frame_c1_022509_2025-09-15_03-42-58-216_PM_jpg.rf.967ef825c3d591954ad326656ccb1375.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c1_022509_2025-09-15_03-42-58-216_PM_jpg.rf.967ef825c3d591954ad326656ccb1375.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/normal/frame_c4_003543_2025-10-16_11-10-56-623_AM_jpg.rf.21b74f1886e153f7ce08c256c816f89e.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_003543_2025-10-16_11-10-56-623_AM_jpg.rf.21b74f1886e153f7ce08c256c816f89e.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/smoking/frame_c2_001753_2025-10-14_12-15-17-615_PM_jpg.rf.8ebcf5c4b7b1d2f031684d761198a244.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001753_2025-10-14_12-15-17-615_PM_jpg.rf.8ebcf5c4b7b1d2f031684d761198a244.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/smoking/frame_c1_004205_2025-09-18_10-43-34-993_AM_jpg.rf.c1efab7ea84f2dd89cde590ff9185676.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004205_2025-09-18_10-43-34-993_AM_jpg.rf.c1efab7ea84f2dd89cde590ff9185676.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/smoking/frame_c1_003730_2025-09-11_12-50-33-021_PM_jpg.rf.3ba238c9d8fa1f18174f05762ef22650.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_003730_2025-09-11_12-50-33-021_PM_jpg.rf.3ba238c9d8fa1f18174f05762ef22650.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/normal/frame_c2_001773_2025-10-14_12-15-38-493_PM_jpg.rf.87abf481353f03bb8de2a0357bb2579e.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001773_2025-10-14_12-15-38-493_PM_jpg.rf.87abf481353f03bb8de2a0357bb2579e.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/smoking/frame_c2_001084_2025-09-15_09-28-51-640_AM_jpg.rf.50d91ae794812f143870b595e2fe8ed0.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001084_2025-09-15_09-28-51-640_AM_jpg.rf.50d91ae794812f143870b595e2fe8ed0.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/normal/frame_c2_004506_2025-09-11_01-04-00-827_PM_jpg.rf.8a102e94da84e2f36a5253f205e9e90d.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_004506_2025-09-11_01-04-00-827_PM_jpg.rf.8a102e94da84e2f36a5253f205e9e90d.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/smoking/frame_c1_000975_2025-10-13_11-46-33-731_AM_jpg.rf.0d2a005a1f9575fbee07f218b72e4f6c.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000975_2025-10-13_11-46-33-731_AM_jpg.rf.0d2a005a1f9575fbee07f218b72e4f6c.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/smoking/frame_c4_003490_2025-10-16_11-10-01-045_AM_jpg.rf.4c83b53a26942ad78a97fa0b927c1dbb.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_003490_2025-10-16_11-10-01-045_AM_jpg.rf.4c83b53a26942ad78a97fa0b927c1dbb.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/normal/frame_c1_004363_2025-09-11_01-01-33-934_PM_jpg.rf.850b22ec914153b5f88e497cdc15398f.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_004363_2025-09-11_01-01-33-934_PM_jpg.rf.850b22ec914153b5f88e497cdc15398f.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/normal/frame_c4_001305_2025-10-28_03-35-10-375_PM_jpg.rf.2778e37ace6c7830cb89c088ab00196e.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_001305_2025-10-28_03-35-10-375_PM_jpg.rf.2778e37ace6c7830cb89c088ab00196e.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/normal/frame_c4_006124_2025-10-26_01-53-02-140_PM_jpg.rf.217cb39672a30860e9ca0d0c32ef842a.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_006124_2025-10-26_01-53-02-140_PM_jpg.rf.217cb39672a30860e9ca0d0c32ef842a.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/smoking/frame_c4_012797_2025-10-26_03-48-53-705_PM_jpg.rf.5f09bd0fbdd40961ee00364cf7459f3e.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c4_012797_2025-10-26_03-48-53-705_PM_jpg.rf.5f09bd0fbdd40961ee00364cf7459f3e.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/normal/frame_c1_022409_2025-09-15_03-41-13-431_PM_jpg.rf.fad046b89912a618f75ac6af1b130f58.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_022409_2025-09-15_03-41-13-431_PM_jpg.rf.fad046b89912a618f75ac6af1b130f58.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/normal/frame_c2_000625_2025-10-29_09-21-05-237_AM_jpg.rf.9f41e84c1ea01f3015a87fa25adba9e7.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_000625_2025-10-29_09-21-05-237_AM_jpg.rf.9f41e84c1ea01f3015a87fa25adba9e7.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/normal/frame_c1_001759_2025-10-26_12-37-25-432_PM_jpg.rf.52485c7653500fda93e433f6fb8f9e84.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/valid/frame_c1_001759_2025-10-26_12-37-25-432_PM_jpg.rf.52485c7653500fda93e433f6fb8f9e84.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/normal/frame_c2_001540_2025-10-07_03-38-40-898_PM_jpg.rf.18790932c008defd865d85cf038b980f.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001540_2025-10-07_03-38-40-898_PM_jpg.rf.18790932c008defd865d85cf038b980f.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/normal/frame_c2_011421_2025-09-14_01-40-32-402_PM_jpg.rf.e66af77d01729e7a3d6fb010639730ce.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_011421_2025-09-14_01-40-32-402_PM_jpg.rf.e66af77d01729e7a3d6fb010639730ce.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/smoking/frame_c2_004172_2025-09-11_12-58-12-330_PM_jpg.rf.79a0da3cbd1956dcdab61cee005f3fb5.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_004172_2025-09-11_12-58-12-330_PM_jpg.rf.79a0da3cbd1956dcdab61cee005f3fb5.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/smoking/frame_c1_003406_2025-09-14_11-21-08-646_AM_jpg.rf.dcd7a5b9450630750d3316278bfd6dad.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_003406_2025-09-14_11-21-08-646_AM_jpg.rf.dcd7a5b9450630750d3316278bfd6dad.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/normal/frame_c2_022380_2025-09-15_03-39-25-032_PM_jpg.rf.5ad2a7ef0f7a14ee1e3cd1c65d79ff8b.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_022380_2025-09-15_03-39-25-032_PM_jpg.rf.5ad2a7ef0f7a14ee1e3cd1c65d79ff8b.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/smoking/frame_c2_011407_2025-09-14_01-40-17-843_PM_jpg.rf.2e8d9a5679f738f51a6ff59c2bde3d7f.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_011407_2025-09-14_01-40-17-843_PM_jpg.rf.2e8d9a5679f738f51a6ff59c2bde3d7f.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/smoking/frame_c2_001599_2025-10-07_03-39-42-494_PM_jpg.rf.5ce7b983c25bd74474bfc0f8edb2670f.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001599_2025-10-07_03-39-42-494_PM_jpg.rf.5ce7b983c25bd74474bfc0f8edb2670f.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/smoking/frame_c1_000301_2025-10-26_12-11-58-371_PM_jpg.rf.bcc4b4a4b22ea58738e955fa17e66658.jpg",
+          "dropped": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000301_2025-10-26_12-11-58-371_PM_jpg.rf.bcc4b4a4b22ea58738e955fa17e66658.jpg",
+          "task": "smoking",
+          "protocol": "frame",
+          "origin": null
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_0_0_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_0_0_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@45.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_0_0.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_0_0.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@45.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_0_1_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_0_1_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@46.666666666666664"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_0_1.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_0_1.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@46.666666666666664"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_0_2_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_0_2_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@48.333333333333336"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_0_2.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_0_2.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@48.333333333333336"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_0_3_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_0_3_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@50.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_0_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_0_3.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@50.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_1_0_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_1_0_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@38.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_1_0.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_1_0.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@38.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_1_1_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_1_1_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@38.4"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_1_1.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_1_1.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@38.4"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_1_2_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_1_2_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@38.800000000000004"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_1_2.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_1_2.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@38.800000000000004"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_1_3_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_1_3_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@39.2"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_1_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_1_3.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag/LeftBag.mpg#8f5d1dbf43d58da1bce57ca1b3f9491b8467773cfd66d2846f62f7d38d4a45e7@39.2"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_AtChair_2_0_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_AtChair_2_0_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag_AtChair/LeftBag_AtChair.mpg#f71c3816a7410c3972241af41fa975094370f90486246c5b9c0a88899f1ea727@28.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_AtChair_2_0.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_AtChair_2_0.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag_AtChair/LeftBag_AtChair.mpg#f71c3816a7410c3972241af41fa975094370f90486246c5b9c0a88899f1ea727@28.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_AtChair_2_1_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_AtChair_2_1_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag_AtChair/LeftBag_AtChair.mpg#f71c3816a7410c3972241af41fa975094370f90486246c5b9c0a88899f1ea727@29.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_AtChair_2_1.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_AtChair_2_1.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag_AtChair/LeftBag_AtChair.mpg#f71c3816a7410c3972241af41fa975094370f90486246c5b9c0a88899f1ea727@29.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_AtChair_2_2_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_AtChair_2_2_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag_AtChair/LeftBag_AtChair.mpg#f71c3816a7410c3972241af41fa975094370f90486246c5b9c0a88899f1ea727@30.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_AtChair_2_2.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_AtChair_2_2.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag_AtChair/LeftBag_AtChair.mpg#f71c3816a7410c3972241af41fa975094370f90486246c5b9c0a88899f1ea727@30.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_AtChair_2_3_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_AtChair_2_3_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag_AtChair/LeftBag_AtChair.mpg#f71c3816a7410c3972241af41fa975094370f90486246c5b9c0a88899f1ea727@31.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_AtChair_2_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_AtChair_2_3.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag_AtChair/LeftBag_AtChair.mpg#f71c3816a7410c3972241af41fa975094370f90486246c5b9c0a88899f1ea727@31.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_AtChair_3_0_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_AtChair_3_0_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag_AtChair/LeftBag_AtChair.mpg#f71c3816a7410c3972241af41fa975094370f90486246c5b9c0a88899f1ea727@19.6"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_AtChair_3_0.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_AtChair_3_0.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag_AtChair/LeftBag_AtChair.mpg#f71c3816a7410c3972241af41fa975094370f90486246c5b9c0a88899f1ea727@19.6"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_AtChair_3_1_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_AtChair_3_1_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag_AtChair/LeftBag_AtChair.mpg#f71c3816a7410c3972241af41fa975094370f90486246c5b9c0a88899f1ea727@19.666666666666668"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_AtChair_3_1.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_AtChair_3_1.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag_AtChair/LeftBag_AtChair.mpg#f71c3816a7410c3972241af41fa975094370f90486246c5b9c0a88899f1ea727@19.666666666666668"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_AtChair_3_2_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_AtChair_3_2_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag_AtChair/LeftBag_AtChair.mpg#f71c3816a7410c3972241af41fa975094370f90486246c5b9c0a88899f1ea727@19.733333333333334"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_AtChair_3_2.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_AtChair_3_2.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag_AtChair/LeftBag_AtChair.mpg#f71c3816a7410c3972241af41fa975094370f90486246c5b9c0a88899f1ea727@19.733333333333334"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_AtChair_3_3_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_AtChair_3_3_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag_AtChair/LeftBag_AtChair.mpg#f71c3816a7410c3972241af41fa975094370f90486246c5b9c0a88899f1ea727@19.8"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_AtChair_3_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_AtChair_3_3.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag_AtChair/LeftBag_AtChair.mpg#f71c3816a7410c3972241af41fa975094370f90486246c5b9c0a88899f1ea727@19.8"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_4_0_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_PickedUp_4_0_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@40.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_PickedUp_4_0.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_PickedUp_4_0.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@40.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_4_1_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_PickedUp_4_1_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@40.13333333333333"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_PickedUp_4_1.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_PickedUp_4_1.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@40.13333333333333"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_4_2_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_PickedUp_4_2_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@40.266666666666666"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_PickedUp_4_2.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_PickedUp_4_2.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@40.266666666666666"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_4_3_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_PickedUp_4_3_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@40.4"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_PickedUp_4_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_PickedUp_4_3.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@40.4"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_5_0_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_PickedUp_5_0_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@44.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_PickedUp_5_0.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_PickedUp_5_0.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@44.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_5_1_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_PickedUp_5_1_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@45.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_PickedUp_5_1.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_PickedUp_5_1.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@45.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_5_2_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_PickedUp_5_2_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@46.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_PickedUp_5_2.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_PickedUp_5_2.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@46.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_5_3_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_PickedUp_5_3_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@47.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_LeftBag_PickedUp_5_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_LeftBag_PickedUp_5_3.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://LeftBag_PickedUp/LeftBag_PickedUp.mpg#39e1ad6e486460aaa2a99a7df55bc366f4d744620f4ce0f85195a9b251ce2aa2@47.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk1_6_0_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_Walk1_6_0_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://Walk1/Walk1.mpg#a5d6dc7d7def01c1bdaeea8ff620195c148b366e1a52589bf4e46f15b6daa0c2@8.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_Walk1_6_0.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_Walk1_6_0.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://Walk1/Walk1.mpg#a5d6dc7d7def01c1bdaeea8ff620195c148b366e1a52589bf4e46f15b6daa0c2@8.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk1_6_1_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_Walk1_6_1_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://Walk1/Walk1.mpg#a5d6dc7d7def01c1bdaeea8ff620195c148b366e1a52589bf4e46f15b6daa0c2@11.333333333333334"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_Walk1_6_1.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_Walk1_6_1.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://Walk1/Walk1.mpg#a5d6dc7d7def01c1bdaeea8ff620195c148b366e1a52589bf4e46f15b6daa0c2@11.333333333333334"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk1_6_2_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_Walk1_6_2_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://Walk1/Walk1.mpg#a5d6dc7d7def01c1bdaeea8ff620195c148b366e1a52589bf4e46f15b6daa0c2@14.666666666666668"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_Walk1_6_2.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_Walk1_6_2.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://Walk1/Walk1.mpg#a5d6dc7d7def01c1bdaeea8ff620195c148b366e1a52589bf4e46f15b6daa0c2@14.666666666666668"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk1_6_3_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_Walk1_6_3_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://Walk1/Walk1.mpg#a5d6dc7d7def01c1bdaeea8ff620195c148b366e1a52589bf4e46f15b6daa0c2@18.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_Walk1_6_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_Walk1_6_3.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://Walk1/Walk1.mpg#a5d6dc7d7def01c1bdaeea8ff620195c148b366e1a52589bf4e46f15b6daa0c2@18.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk2_7_0_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_Walk2_7_0_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://Walk2/Walk2.mpg#b0096abea4a99c67b78d46e37fc5abae7f510b81ff3712911c3295656d3aa8b8@8.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_Walk2_7_0.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_Walk2_7_0.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://Walk2/Walk2.mpg#b0096abea4a99c67b78d46e37fc5abae7f510b81ff3712911c3295656d3aa8b8@8.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk2_7_1_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_Walk2_7_1_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://Walk2/Walk2.mpg#b0096abea4a99c67b78d46e37fc5abae7f510b81ff3712911c3295656d3aa8b8@15.333333333333332"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_Walk2_7_1.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_Walk2_7_1.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://Walk2/Walk2.mpg#b0096abea4a99c67b78d46e37fc5abae7f510b81ff3712911c3295656d3aa8b8@15.333333333333332"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk2_7_2_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_Walk2_7_2_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://Walk2/Walk2.mpg#b0096abea4a99c67b78d46e37fc5abae7f510b81ff3712911c3295656d3aa8b8@22.666666666666664"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_Walk2_7_2.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_Walk2_7_2.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://Walk2/Walk2.mpg#b0096abea4a99c67b78d46e37fc5abae7f510b81ff3712911c3295656d3aa8b8@22.666666666666664"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk2_7_3_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_Walk2_7_3_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://Walk2/Walk2.mpg#b0096abea4a99c67b78d46e37fc5abae7f510b81ff3712911c3295656d3aa8b8@30.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_Walk2_7_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_Walk2_7_3.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://Walk2/Walk2.mpg#b0096abea4a99c67b78d46e37fc5abae7f510b81ff3712911c3295656d3aa8b8@30.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk3_8_0_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_Walk3_8_0_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407@12.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_Walk3_8_0.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_Walk3_8_0.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407@12.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk3_8_1_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_Walk3_8_1_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407@21.333333333333336"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_Walk3_8_1.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_Walk3_8_1.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407@21.333333333333336"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk3_8_2_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_Walk3_8_2_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407@30.666666666666668"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_Walk3_8_2.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_Walk3_8_2.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407@30.666666666666668"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk3_8_3_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/frames/caviar_Walk3_8_3_3.png",
+          "task": "unattended_items",
+          "protocol": "frame",
+          "origin": "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407@40.0"
+        },
+        {
+          "kept": "${BUNDLE_ROOT}/caviar/window/caviar_Walk3_8_3.png",
+          "dropped": "${DATA_ROOT}/evaluation/derived/windows/caviar_Walk3_8_3.png",
+          "task": "unattended_items",
+          "protocol": "window",
+          "origin": "caviar://Walk3/Walk3.mpg#ff308985f127652527f67675516ca362fd21531c4a24e3fe055fec3fcb78c407@40.0"
+        }
+      ]
+    },
+    "seed": 42,
+    "manifests": {
+      "smoking_frame": "smoking_frame.csv",
+      "unattended_items_frame": "unattended_items_frame.csv",
+      "unattended_items_window": "unattended_items_window.csv"
+    },
+    "coverage": {
+      "littering": {},
+      "loitering": {},
+      "rough_sleeping": {},
+      "smoking": {
+        "frame": {
+          "counts": {
+            "dev": {
+              "normal": 120,
+              "smoking": 116
+            },
+            "test": {}
+          },
+          "groups": {
+            "dev": 16,
+            "test": 0
+          },
+          "groups_per_label": {
+            "dev": {
+              "normal": 16,
+              "smoking": 16
+            },
+            "test": {
+              "normal": 0,
+              "smoking": 0
+            }
+          },
+          "eligible_for_calibrated_test": false
+        }
+      },
+      "unattended_items": {
+        "frame": {
+          "counts": {
+            "dev": {
+              "normal": 16,
+              "unattended_items": 4
+            },
+            "test": {
+              "normal": 12,
+              "unattended_items": 4
+            }
+          },
+          "groups": {
+            "dev": 3,
+            "test": 3
+          },
+          "groups_per_label": {
+            "dev": {
+              "normal": 3,
+              "unattended_items": 1
+            },
+            "test": {
+              "normal": 3,
+              "unattended_items": 1
+            }
+          },
+          "eligible_for_calibrated_test": true
+        },
+        "window": {
+          "counts": {
+            "dev": {
+              "normal": 16,
+              "unattended_items": 4
+            },
+            "test": {
+              "normal": 12,
+              "unattended_items": 4
+            }
+          },
+          "groups": {
+            "dev": 3,
+            "test": 3
+          },
+          "groups_per_label": {
+            "dev": {
+              "normal": 3,
+              "unattended_items": 1
+            },
+            "test": {
+              "normal": 3,
+              "unattended_items": 1
+            }
+          },
+          "eligible_for_calibrated_test": true
+        }
+      }
+    },
+    "issues": [],
+    "confirmed_rows": 308,
+    "proxy_development_rows": 7200,
+    "fingerprint": "f966da378bba57835ee55648850f1b2103bc7e789fc9e59d21d53bc47959d229",
+    "limitations": [
+      "Historical benchmark groups are development only.",
+      "CAVIAR is a small staged single-camera set; source-sequence holdout is not a new-camera holdout.",
+      "Window contact sheets are a separate past-context protocol, not native video input.",
+      "Proxy pose/person/action labels do not establish rough sleeping, loitering or littering events.",
+      "ABODA, D2-CDNet and Roboflow candidates need event/normal review before task scoring."
+    ]
+  },
+  "dataset_fingerprint": "f966da378bba57835ee55648850f1b2103bc7e789fc9e59d21d53bc47959d229",
+  "requested_task_coverage": {
+    "littering": {
+      "available_protocols": [],
+      "test_eligible_protocols": []
+    },
+    "loitering": {
+      "available_protocols": [],
+      "test_eligible_protocols": []
+    },
+    "rough_sleeping": {
+      "available_protocols": [],
+      "test_eligible_protocols": []
+    },
+    "smoking": {
+      "available_protocols": [
+        "frame"
+      ],
+      "test_eligible_protocols": []
+    },
+    "unattended_items": {
+      "available_protocols": [
+        "frame",
+        "window"
+      ],
+      "test_eligible_protocols": [
+        "frame",
+        "window"
+      ]
+    }
+  },
+  "full_task_coverage": false,
+  "manifest_sha256": {
+    "smoking_frame": "1b15ef08f6e4d2c1b096f2a5e31ec638bd748c5771d6c9f058d643154baa8440",
+    "unattended_items_frame": "ad970d37103f6ae8388a7cb850f85ef15daf8ca25069566a14e0a4df887e972e",
+    "unattended_items_window": "b8eb61b2b2634722947e1229fd7e542c3af97f93be5914abb61810ef2e9bc7ea"
+  },
+  "analysis_errors": [
+    "Incomplete or mismatched planned prediction cohort: minicpm-v4"
+  ],
+  "experiment_fingerprint": "ce5b85de84d3fdf4144b4da4b22a6386598d085b8c1c6427c618bdd0073fe6ca",
+  "naive_baselines": {
+    "smoking_frame/dev": {
+      "always_normal": {
+        "accuracy": 0.5084745762711864,
+        "binary_f1": 0.0
+      },
+      "always_anomaly": {
+        "accuracy": 0.4915254237288136,
+        "binary_f1": 0.6590909090909091
+      }
+    },
+    "unattended_items_frame/dev": {
+      "always_normal": {
+        "accuracy": 0.8,
+        "binary_f1": 0.0
+      },
+      "always_anomaly": {
+        "accuracy": 0.2,
+        "binary_f1": 0.3333333333333333
+      }
+    },
+    "unattended_items_frame/test": {
+      "always_normal": {
+        "accuracy": 0.75,
+        "binary_f1": 0.0
+      },
+      "always_anomaly": {
+        "accuracy": 0.25,
+        "binary_f1": 0.4
+      }
+    },
+    "unattended_items_window/dev": {
+      "always_normal": {
+        "accuracy": 0.8,
+        "binary_f1": 0.0
+      },
+      "always_anomaly": {
+        "accuracy": 0.2,
+        "binary_f1": 0.3333333333333333
+      }
+    },
+    "unattended_items_window/test": {
+      "always_normal": {
+        "accuracy": 0.75,
+        "binary_f1": 0.0
+      },
+      "always_anomaly": {
+        "accuracy": 0.25,
+        "binary_f1": 0.4
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+\begin{longtable}{llrrP{5.0cm}}
+\toprule
+Cohort & Model & Rows & JSON frac. & First-pass decisions \\
+\midrule\endhead
+Smoking dev & SmolVLM-500M & 708 & 0.000 & normal:213, smoking:20, unanswered:3 \\
+Smoking dev & MiniCPM-V 4.0 & 696 & 1.000 & normal:236 \\
+Frame dev & SmolVLM-500M & 60 & 0.000 & unattended\_items:20 \\
+Frame dev & MiniCPM-V 4.0 & 60 & 0.000 & normal:20 \\
+Frame test & SmolVLM-500M & 48 & 0.000 & unattended\_items:16 \\
+Frame test & MiniCPM-V 4.0 & 48 & 0.000 & normal:16 \\
+Window dev & SmolVLM-500M & 60 & 0.000 & unattended\_items:20 \\
+Window dev & MiniCPM-V 4.0 & 60 & 0.800 & normal:20 \\
+Window test & SmolVLM-500M & 48 & 0.000 & normal:3, unattended\_items:13 \\
+Window test & MiniCPM-V 4.0 & 48 & 1.000 & normal:16 \\
+\bottomrule
+\end{longtable}

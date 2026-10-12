@@ -1,0 +1,359 @@
+{
+  "unit": "source_group",
+  "n_groups": 3,
+  "uncertainty_warning": "Few independent source groups; intervals are exploratory",
+  "seed": 42,
+  "bootstrap": 2000,
+  "experiment_fingerprint": "caca04e78a3dccc7e96673bbfebf1da143615ef9b8290abaef3cbb7268d35bbb",
+  "labels": [
+    "normal",
+    "unattended_items"
+  ],
+  "scored_labels": [
+    "normal",
+    "unattended_items"
+  ],
+  "models": {
+    "mobileclip2-s2": {
+      "point": {
+        "accuracy_including_failures": 0.75,
+        "macro_f1": 0.42857142857142855,
+        "binary_f1": 0.0,
+        "roc_auc": 0.3541666666666667
+      },
+      "ci95": {
+        "accuracy_including_failures": [
+          0.5,
+          1.0
+        ],
+        "macro_f1": [
+          0.3333333333333333,
+          0.5
+        ],
+        "binary_f1": [
+          0.0,
+          0.0
+        ],
+        "roc_auc": [
+          0.2916666666666667,
+          0.75
+        ]
+      },
+      "per_class": {
+        "normal": {
+          "precision": 0.75,
+          "recall": 1.0,
+          "f1": 0.8571428571428571,
+          "support": 12,
+          "unanswered": 0
+        },
+        "unattended_items": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4,
+          "unanswered": 0
+        }
+      },
+      "coverage": 1.0,
+      "abstentions": 0,
+      "errors": 0
+    },
+    "siglip2-b16-224": {
+      "point": {
+        "accuracy_including_failures": 0.75,
+        "macro_f1": 0.42857142857142855,
+        "binary_f1": 0.0,
+        "roc_auc": 0.16666666666666666
+      },
+      "ci95": {
+        "accuracy_including_failures": [
+          0.5,
+          1.0
+        ],
+        "macro_f1": [
+          0.3333333333333333,
+          0.5
+        ],
+        "binary_f1": [
+          0.0,
+          0.0
+        ],
+        "roc_auc": [
+          0.125,
+          0.16666666666666666
+        ]
+      },
+      "per_class": {
+        "normal": {
+          "precision": 0.75,
+          "recall": 1.0,
+          "f1": 0.8571428571428571,
+          "support": 12,
+          "unanswered": 0
+        },
+        "unattended_items": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4,
+          "unanswered": 0
+        }
+      },
+      "coverage": 1.0,
+      "abstentions": 0,
+      "errors": 0
+    },
+    "smolvlm-500m": {
+      "point": {
+        "accuracy_including_failures": 0.25,
+        "macro_f1": 0.2,
+        "binary_f1": 0.4,
+        "roc_auc": null
+      },
+      "ci95": {
+        "accuracy_including_failures": [
+          0.0,
+          0.5
+        ],
+        "macro_f1": [
+          0.0,
+          0.3333333333333333
+        ],
+        "binary_f1": [
+          0.0,
+          0.6666666666666666
+        ],
+        "roc_auc": null
+      },
+      "per_class": {
+        "normal": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 12,
+          "unanswered": 0
+        },
+        "unattended_items": {
+          "precision": 0.25,
+          "recall": 1.0,
+          "f1": 0.4,
+          "support": 4,
+          "unanswered": 0
+        }
+      },
+      "coverage": 1.0,
+      "abstentions": 0,
+      "errors": 0
+    },
+    "minicpm-v4": {
+      "point": {
+        "accuracy_including_failures": 0.75,
+        "macro_f1": 0.42857142857142855,
+        "binary_f1": 0.0,
+        "roc_auc": null
+      },
+      "ci95": {
+        "accuracy_including_failures": [
+          0.5,
+          1.0
+        ],
+        "macro_f1": [
+          0.3333333333333333,
+          0.5
+        ],
+        "binary_f1": [
+          0.0,
+          0.0
+        ],
+        "roc_auc": null
+      },
+      "per_class": {
+        "normal": {
+          "precision": 0.75,
+          "recall": 1.0,
+          "f1": 0.8571428571428571,
+          "support": 12,
+          "unanswered": 0
+        },
+        "unattended_items": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4,
+          "unanswered": 0
+        }
+      },
+      "coverage": 1.0,
+      "abstentions": 0,
+      "errors": 0
+    }
+  },
+  "paired_differences": {
+    "mobileclip2-s2 minus siglip2-b16-224": {
+      "accuracy_including_failures": {
+        "point": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "macro_f1": {
+        "point": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "binary_f1": {
+        "point": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "roc_auc": {
+        "point": 0.18750000000000003,
+        "ci95": [
+          0.12500000000000003,
+          0.625
+        ]
+      }
+    },
+    "mobileclip2-s2 minus smolvlm-500m": {
+      "accuracy_including_failures": {
+        "point": 0.5,
+        "ci95": [
+          0.0,
+          1.0
+        ]
+      },
+      "macro_f1": {
+        "point": 0.22857142857142854,
+        "ci95": [
+          0.0,
+          0.5
+        ]
+      },
+      "binary_f1": {
+        "point": -0.4,
+        "ci95": [
+          -0.6666666666666666,
+          -0.4
+        ]
+      },
+      "roc_auc": {
+        "point": null,
+        "ci95": null
+      }
+    },
+    "mobileclip2-s2 minus minicpm-v4": {
+      "accuracy_including_failures": {
+        "point": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "macro_f1": {
+        "point": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "binary_f1": {
+        "point": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "roc_auc": {
+        "point": null,
+        "ci95": null
+      }
+    },
+    "siglip2-b16-224 minus smolvlm-500m": {
+      "accuracy_including_failures": {
+        "point": 0.5,
+        "ci95": [
+          0.0,
+          1.0
+        ]
+      },
+      "macro_f1": {
+        "point": 0.22857142857142854,
+        "ci95": [
+          0.0,
+          0.5
+        ]
+      },
+      "binary_f1": {
+        "point": -0.4,
+        "ci95": [
+          -0.6666666666666666,
+          -0.4
+        ]
+      },
+      "roc_auc": {
+        "point": null,
+        "ci95": null
+      }
+    },
+    "siglip2-b16-224 minus minicpm-v4": {
+      "accuracy_including_failures": {
+        "point": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "macro_f1": {
+        "point": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "binary_f1": {
+        "point": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "roc_auc": {
+        "point": null,
+        "ci95": null
+      }
+    },
+    "smolvlm-500m minus minicpm-v4": {
+      "accuracy_including_failures": {
+        "point": -0.5,
+        "ci95": [
+          -1.0,
+          0.0
+        ]
+      },
+      "macro_f1": {
+        "point": -0.22857142857142854,
+        "ci95": [
+          -0.5,
+          0.0
+        ]
+      },
+      "binary_f1": {
+        "point": 0.4,
+        "ci95": [
+          0.4,
+          0.6666666666666666
+        ]
+      },
+      "roc_auc": {
+        "point": null,
+        "ci95": null
+      }
+    }
+  }
+}

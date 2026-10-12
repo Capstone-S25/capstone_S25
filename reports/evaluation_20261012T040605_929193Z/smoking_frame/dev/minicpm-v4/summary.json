@@ -1,0 +1,8 @@
+{
+  "model": "minicpm-v4",
+  "checkpoint": "openbmb/MiniCPM-V-4",
+  "status": "error",
+  "error": "Worker exceeded 3600 second model timeout (including loading and pacing)",
+  "total_wall_seconds": 3601.0917023429647,
+  "peak_rss_mb": 18407.94140625
+}

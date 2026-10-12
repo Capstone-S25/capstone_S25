@@ -1,0 +1,7 @@
+\begin{verbatim}
+anomaly-eval run --mode evaluation --skip-prepare \
+  --threads 32 --repeats 3 --protocols frame window \
+  --limit 0 --bootstrap 2000 --seed 42 \
+  --timeout-seconds 3600 --max-rss-mb 24576 \
+  --image-policy letterbox --max-side 768 --max-new-tokens 64
+\end{verbatim}

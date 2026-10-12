@@ -1,0 +1,4 @@
+/home/g31/projects/test_here/capstone_S25/.venv/lib/python3.12/site-packages/transformers/models/auto/image_processing_auto.py:647: FutureWarning: The image_processor_class argument is deprecated and will be removed in v4.42. Please use `slow_image_processor_class`, or `fast_image_processor_class` instead
+  warnings.warn(
+`use_fast` is set to `True` but the image processor class does not have a fast version.  Falling back to the slow version.
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  3.72it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  3.83it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  3.82it/s]
