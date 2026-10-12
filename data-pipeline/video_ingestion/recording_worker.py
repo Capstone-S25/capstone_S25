@@ -334,6 +334,26 @@ def _finalize_segment(
     )
 
 
+def _finalize_segment_with_retry(
+    entry: SegmentEntry,
+    session_dir: Path,
+    max_attempts: int = 3,
+) -> FinalizedSegment:
+    attempts = 0
+
+    while True:
+        try:
+            return _finalize_segment(entry, session_dir)
+
+        except (PermissionError, subprocess.CalledProcessError):
+            attempts += 1
+
+            if attempts >= max_attempts:
+                raise
+
+            time.sleep(0.25)
+
+
 def run_recording_worker(
     source: VideoSource,
     storage_root: Path,
@@ -357,9 +377,9 @@ def run_recording_worker(
 
             for entry in entries:
                 # TODO: produce the video segment metadata
-                print(entry, flush=True)
-                duration = _probe_segment_duration(session_dir / entry.filename)
-                print(duration, flush=True)
+                segment = _finalize_segment_with_retry(entry, session_dir)
+
+                print(segment, flush=True)
 
             time.sleep(0.25)
 
@@ -389,9 +409,9 @@ def run_recording_worker(
     entries, csv_offset = _read_segment_entries(csv_path, csv_offset)
     for entry in entries:
         # TODO: produce the video segment metadata
-        print(entry, flush=True)
-        duration = _probe_segment_duration(session_dir / entry.filename)
-        print(duration, flush=True)
+        segment = _finalize_segment_with_retry(entry, session_dir)
+
+        print(segment, flush=True)
 
     if process.returncode != 0 and not stopped_by_user:
         raise RuntimeError(f"FFmpeg exited with code {process.returncode}")
