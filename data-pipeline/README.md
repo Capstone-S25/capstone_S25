@@ -63,6 +63,55 @@ Verify that FFmpeg is available:
 ffmpeg -version
 ```
 
+### 4. Install Docker
+
+Docker with Docker Compose is required for the local development database. Install [Docker Desktop](https://docs.docker.com/get-started/get-docker/) for Windows, macOS, or a supported Linux distribution.
+Start Docker Desktop before running the database commands.
+
+Verify that Docker is running and Compose is installed:
+
+```bash
+docker info
+docker compose version
+```
+
+See [Local development database](#local-development-database) for startup and connection instructions.
+
+## Local development database
+
+Run these commands from the project root (`data-pipeline/`).
+Start the PostgreSQL 18 development container in the background:
+
+```bash
+docker compose -f infra/compose.yaml up -d postgres
+```
+
+Check the container status and whether PostgreSQL is accepting connections:
+
+```bash
+docker compose -f infra/compose.yaml exec postgres pg_isready -U capstone -d capstone
+```
+
+To inspect startup errors:
+
+```bash
+docker compose -f infra/compose.yaml logs postgres
+```
+
+To open an interactive SQL shell inside the container:
+
+```bash
+docker compose -f infra/compose.yaml exec postgres psql -U capstone -d capstone
+```
+
+To stop and remove the container:
+
+```bash
+docker compose -f infra/compose.yaml down
+# To delete database volume:
+docker compose -v -f infra/compose.yaml down
+```
+
 ## Add dependencies
 
 To add a production package:
