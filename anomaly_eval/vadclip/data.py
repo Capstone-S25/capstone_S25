@@ -2,7 +2,10 @@
 
 The smoking dataset ships as COCO annotations over extracted frames. Frames are grouped
 into *sessions* by ``(camera, date)`` parsed from the file name; within a session they are
-ordered by the integer frame index in the name. Every frame carries a dense per-frame label:
+ordered by the full capture timestamp when available. Frame indices can restart within
+the same camera/day. Timestamp-free legacy sessions use integer frame order; mixing
+timestamped and timestamp-free frames in one session is rejected as ambiguous.
+Every frame carries a dense per-frame label:
 category ``Smoking`` -> 1 (positive), ``Not Smoking`` -> 0 (negative).
 
 Why frame-level supervision (the one deliberate deviation from the paper):
@@ -21,6 +24,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 
 import numpy as np
@@ -36,6 +40,11 @@ PROMPTS = [NORMAL_PROMPT, SMOKING_PROMPT]  # index 0 = normal, index 1 = anomaly
 
 FRAME_RE = re.compile(r"frame_(c\d+)_(\d+)_")
 DATE_RE = re.compile(r"(\d{4}-\d{2}-\d{2})")
+TIME_RE = re.compile(
+    r"(\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}-\d{3}_[AP]M)(?=_|\.|$)",
+    re.IGNORECASE,
+)
+SOURCE_IDENTITY_POLICY = "camera_date_frame_capture_timestamp_v2"
 
 
 @dataclass
@@ -44,6 +53,73 @@ class Session:
     frames: list[str] = field(default_factory=list)  # ordered image paths (str)
     frame_indices: list[int] = field(default_factory=list)
     labels: list[int] = field(default_factory=list)  # per-frame 0/1, same order
+    timestamps: list[str | None] = field(default_factory=list)
+    source_ids: list[str] = field(default_factory=list)
+    ordering: str = "frame_index"
+
+
+class SmokingSourceError(ValueError):
+    """Source validation failed; the report retains all offending records."""
+
+    def __init__(self, report: dict):
+        self.report = report
+        details = []
+        for issue in report["issues"][:5]:
+            details.append(issue["message"])
+            for record in issue.get("records", []):
+                details.append(
+                    f"  {record['label']}: {record['path']} "
+                    f"(COCO image {record['image_id']} in {record['annotations']})"
+                )
+        super().__init__(
+            f"Smoking source validation found {len(report['issues'])} issue(s):\n"
+            + "\n".join(details)
+            + "\nReview the source annotations; labels were not changed. "
+            "Use --validation-report to save every issue."
+        )
+
+
+@dataclass(frozen=True)
+class _SourceFrame:
+    index: int
+    path: str
+    label: int
+    timestamp: str | None
+    source_id: str
+    annotations: str
+    image_id: int
+
+    def record(self):
+        return {
+            "path": self.path,
+            "label": "Smoking" if self.label else "Not Smoking",
+            "frame_index": self.index,
+            "timestamp": self.timestamp,
+            "source_id": self.source_id,
+            "annotations": self.annotations,
+            "image_id": self.image_id,
+        }
+
+
+def _frame_identity(fname: str):
+    m, dm = FRAME_RE.search(fname), DATE_RE.search(fname)
+    index = int(m.group(2)) if m else -1
+    key = f"{m.group(1)}:{dm.group(1)}" if (m and dm) else fname
+    clock = TIME_RE.search(fname)
+    timestamp = None
+    if clock:
+        # The filenames carry a camera-local clock, with no timezone annotation.
+        timestamp = datetime.strptime(  # noqa: DTZ007
+            clock.group(1).upper(), "%Y-%m-%d_%I-%M-%S-%f_%p"
+        ).isoformat(timespec="milliseconds")
+    elif dm and re.match(r"_\d{2}-", fname[dm.end() :]):
+        raise ValueError(f"Incomplete capture timestamp in {fname}")
+    # Export hashes do not identify new moments. Keep the index as well as the
+    # timestamp: different source frames can share a capture clock value.
+    source_id = f"{key}:frame={index}" if index >= 0 else f"path={fname}"
+    if timestamp is not None:
+        source_id += f":timestamp={timestamp}"
+    return key, index, timestamp, source_id
 
 
 def _load_coco(p: Path):
@@ -54,16 +130,30 @@ def _load_coco(p: Path):
     return cats, imgs, anns
 
 
-def load_smoking_sessions(root: str | Path) -> dict[str, Session]:
+def load_smoking_sessions(
+    root: str | Path, *, report: dict | None = None
+) -> dict[str, Session]:
     """Group the smoking-video frames into ordered sessions with dense per-frame labels."""
     root = Path(root)
     base = root / "smoking" / "smoking-video.v1i.coco"
-    sessions: dict[str, list[tuple[int, str, bool]]] = {}
+    sessions: dict[str, list[_SourceFrame]] = {}
+    report = {} if report is None else report
+    report.update(
+        identity_policy=SOURCE_IDENTITY_POLICY,
+        annotation_files=0,
+        images_listed=0,
+        unlabeled_images=0,
+        missing_images=0,
+        duplicate_exports=0,
+        issues=[],
+        sessions={},
+    )
 
     for split in ("train", "valid"):
         cp = resolve_original(base / split / "_annotations.coco.json")
         if cp is None:
             continue
+        report["annotation_files"] += 1
         cats, imgs, anns = _load_coco(cp)
         smoke_ids = {
             a["image_id"] for a in anns if cats.get(a.get("category_id")) == "Smoking"
@@ -74,38 +164,96 @@ def load_smoking_sessions(root: str | Path) -> dict[str, Session]:
             if cats.get(a.get("category_id")) == "Not Smoking"
         }
         for iid, fname in imgs.items():
+            report["images_listed"] += 1
+            if iid not in smoke_ids and iid not in nonsmoke_ids:
+                report["unlabeled_images"] += 1
+                continue  # missing/unknown annotation is NOT an explicit negative
             path = resolve_original(cp.parent / fname)
             if path is None:
+                report["missing_images"] += 1
+                report["issues"].append(
+                    {
+                        "kind": "missing_image",
+                        "message": f"Missing labeled image: {cp.parent / fname}",
+                        "annotations": str(cp),
+                        "image_id": iid,
+                    }
+                )
                 continue
-            m = FRAME_RE.search(fname)
-            dm = DATE_RE.search(fname)
-            order = int(m.group(2)) if m else -1
-            key = f"{m.group(1)}:{dm.group(1)}" if (m and dm) else fname
-            if iid not in smoke_ids and iid not in nonsmoke_ids:
-                continue  # missing/unknown annotation is NOT an explicit negative
-            is_smoke = iid in smoke_ids
-            sessions.setdefault(key, []).append((order, str(path), bool(is_smoke)))
+            try:
+                key, index, timestamp, source_id = _frame_identity(fname)
+            except ValueError as exc:
+                report["issues"].append(
+                    {
+                        "kind": "invalid_timestamp",
+                        "message": f"Invalid capture timestamp in {path}: {exc}",
+                        "annotations": str(cp),
+                        "image_id": iid,
+                    }
+                )
+                continue
+            sessions.setdefault(key, []).append(
+                _SourceFrame(
+                    index,
+                    str(path),
+                    int(iid in smoke_ids),
+                    timestamp,
+                    source_id,
+                    str(cp),
+                    iid,
+                )
+            )
 
     out: dict[str, Session] = {}
     for key, rows in sessions.items():
-        rows.sort(key=lambda t: (t[0], t[1]))
-        s = Session(key=key)
+        clock_count = sum(row.timestamp is not None for row in rows)
+        if clock_count not in (0, len(rows)):
+            report["issues"].append(
+                {
+                    "kind": "ambiguous_order",
+                    "message": f"Mixed capture timestamps and legacy frame indices in {key}",
+                    "records": [row.record() for row in rows],
+                }
+            )
+        ordering = "capture_timestamp" if clock_count else "frame_index"
+        rows.sort(key=lambda row: (row.timestamp or "", row.index, row.path))
+        s = Session(key=key, ordering=ordering)
         seen = {}
-        for order, path, lab in rows:
+        for row in rows:
             # Do not construct a fake temporal sequence by stacking augmented copies
             # of the same source moment. Unknown filenames retain their own identity.
-            identity = order if order >= 0 else path
-            if identity in seen:
-                if seen[identity] != lab:
-                    raise ValueError(
-                        f"Conflicting annotation at source moment {key}:{order}"
+            if row.source_id in seen:
+                first = seen[row.source_id]
+                if first.label != row.label:
+                    report["issues"].append(
+                        {
+                            "kind": "conflicting_annotation",
+                            "message": f"Conflicting annotation at source moment {row.source_id}",
+                            "records": [first.record(), row.record()],
+                        }
                     )
+                else:
+                    report["duplicate_exports"] += 1
                 continue
-            seen[identity] = lab
-            s.frames.append(path)
-            s.frame_indices.append(order)
-            s.labels.append(int(lab))
+            seen[row.source_id] = row
+            s.frames.append(row.path)
+            s.frame_indices.append(row.index)
+            s.labels.append(row.label)
+            s.timestamps.append(row.timestamp)
+            s.source_ids.append(row.source_id)
         out[key] = s
+        report["sessions"][key] = {
+            "n_frames": len(s.frames),
+            "n_positive": sum(s.labels),
+            "n_negative": len(s.labels) - sum(s.labels),
+            "ordering": s.ordering,
+            "source_ids": s.source_ids,
+        }
+    report["session_count"] = len(out)
+    report["retained_frames"] = sum(len(s.frames) for s in out.values())
+    report["status"] = "error" if report["issues"] else "ok"
+    if report["issues"]:
+        raise SmokingSourceError(report)
     return out
 
 

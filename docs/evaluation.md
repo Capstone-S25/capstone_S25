@@ -209,6 +209,31 @@ A single stream sampled at one inference frame/sec is the default resource scree
 
 ## VadCLIP
 
+Validate the original smoking corpus on the computation server first:
+
+```bash
+anomaly-eval vadclip extract --validate-only \
+  --validation-report reports/vadclip_source_validation.json
+```
+
+This uses the configured data root (`raw/datasets` beneath it); global workspace
+flags work as usual. It reads annotations and filenames without loading encoder
+weights or computing features, and checks the source-session split. Source
+identity includes camera, date, frame index and full capture timestamp. The frame
+counter can restart during a day; timestamps determine chronological order,
+including AM/PM and milliseconds. Camera/day groups stay together across
+train/dev/test. Legacy sessions without timestamps retain index order; mixed or
+malformed timestamps fail validation instead of inventing a chronology.
+
+Duplicate exports with matching labels contribute one source frame. Opposing
+labels at the same full source moment still fail, with both filenames, annotation
+files and COCO image IDs in the JSON report. Review those records against the
+original frame and annotations; do not automatically overwrite labels or discard
+conflicts. Missing labeled images also fail validation. Feature cache fingerprints
+include the new identity policy and ordered source records, so extraction rebuilds
+old caches automatically. Unified runs save `vadclip/source_validation.json` even
+when source validation fails.
+
 ```bash
 anomaly-eval run --vadclip --vadclip-epochs 100
 ```

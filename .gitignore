@@ -13,3 +13,4 @@ cookies*.txt
 build/
 dist/
 config/server.json
+reports/evaluation**

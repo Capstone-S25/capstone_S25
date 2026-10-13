@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 import time
 from pathlib import Path
 
@@ -27,10 +28,15 @@ import numpy as np
 import torch
 
 from anomaly_eval.data import code_hashes, file_sha256, fingerprint
-from anomaly_eval.paths import portable_path, resolve_arguments, resolve_path
+from anomaly_eval.paths import Workspace, portable_path, resolve_arguments, resolve_path
 
 from .clip_b16 import load_clip_b16, make_preprocess
-from .data import load_smoking_sessions, make_three_way_split
+from .data import (
+    SOURCE_IDENTITY_POLICY,
+    SmokingSourceError,
+    load_smoking_sessions,
+    make_three_way_split,
+)
 
 
 def extract_session(
@@ -60,9 +66,23 @@ def _open(path: str):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--root", required=True, help="datasets root (contains smoking/)")
-    ap.add_argument("--weights", required=True, help="path to openai_clip_vitb16.pt")
-    ap.add_argument("--cache-dir", required=True)
+    ap.add_argument(
+        "--root",
+        default=Workspace.current().data_dir / "raw" / "datasets",
+        help="datasets root (contains smoking/); defaults to configured data root/raw/datasets",
+    )
+    ap.add_argument("--weights", help="path to openai_clip_vitb16.pt")
+    ap.add_argument("--cache-dir")
+    ap.add_argument(
+        "--validate-only",
+        action="store_true",
+        help="Validate annotations, source identity, chronology and splits without loading a model",
+    )
+    ap.add_argument(
+        "--validation-report",
+        type=Path,
+        help="Save source counts, split membership and all validation issues as JSON",
+    )
     ap.add_argument("--batch-size", type=int, default=32)
     ap.add_argument("--valid-frac", type=float, default=0.25)
     ap.add_argument("--test-frac", type=float, default=0.2)
@@ -73,6 +93,39 @@ def main(argv=None):
 
     if min(args.batch_size, args.threads) < 1:
         ap.error("batch-size and threads must be positive")
+    if not args.validate_only and (not args.weights or not args.cache_dir):
+        ap.error("weights and cache-dir are required unless --validate-only is set")
+    args.root = str(resolve_path(args.root))
+    report = {}
+    try:
+        sessions = load_smoking_sessions(args.root, report=report)
+        keys = sorted(sessions)
+        try:
+            splits = make_three_way_split(
+                keys, args.valid_frac, args.test_frac, args.seed
+            )
+        except ValueError as exc:
+            report["status"] = "error"
+            report["issues"].append({"kind": "invalid_split", "message": str(exc)})
+            raise SmokingSourceError(report) from exc
+        report.update(seed=args.seed, splits=splits)
+    except SmokingSourceError as exc:
+        if args.validation_report:
+            _write_report(args.validation_report, report)
+        print(str(exc), file=sys.stderr, flush=True)
+        return 1
+    if args.validation_report:
+        _write_report(args.validation_report, report)
+    print(
+        f"[validate] {report['retained_frames']} source frames in "
+        f"{report['session_count']} camera/day groups; "
+        f"{report['duplicate_exports']} duplicate exports removed; "
+        f"{report['unlabeled_images']} unlabeled images excluded",
+        flush=True,
+    )
+    if args.validate_only:
+        return 0
+
     from threadpoolctl import threadpool_limits
 
     threadpool_limits(limits=args.threads)
@@ -83,15 +136,11 @@ def main(argv=None):
 
         os.environ["HF_HUB_OFFLINE"] = "1"
         os.environ["TRANSFORMERS_OFFLINE"] = "1"
-    args.root = str(resolve_path(args.root))
     args.weights = str(resolve_path(args.weights))
     cache_dir = resolve_path(args.cache_dir)
     cache_dir.mkdir(parents=True, exist_ok=True)
 
     device = torch.device("cpu")
-    sessions = load_smoking_sessions(args.root)
-    keys = sorted(sessions)
-    splits = make_three_way_split(keys, args.valid_frac, args.test_frac, args.seed)
     print(f"[extract] loading ViT-B/16 from {args.weights}", flush=True)
     model = None
     preprocess = None
@@ -103,14 +152,22 @@ def main(argv=None):
                 "sha256": file_sha256(Path(p)),
                 "label": y,
                 "path": portable_path(Path(p), Path(args.root)),
+                "source_id": source_id,
+                "timestamp": timestamp,
             }
-            for p, y in zip(sessions[k].frames, sessions[k].labels)
+            for p, y, source_id, timestamp in zip(
+                sessions[k].frames,
+                sessions[k].labels,
+                sessions[k].source_ids,
+                sessions[k].timestamps,
+            )
         ]
         for k in keys
     }
     identity = fingerprint(
         {
             "source": source,
+            "identity_policy": SOURCE_IDENTITY_POLICY,
             "weights": weights_sha,
             "preprocess": "official_clip224_exif_v2",
             "splits": splits,
@@ -124,6 +181,8 @@ def main(argv=None):
         "sessions": {},
         "fingerprint": identity,
         "weights_sha256": weights_sha,
+        "identity_policy": SOURCE_IDENTITY_POLICY,
+        "source_validation": report,
         "evaluation_context": "offline_ordered_sparse_camera_date_frames",
         "note": "Frame indices need not be continuous. This is not a streaming latency evaluation.",
         "source_root": portable_path(Path(args.root)),
@@ -162,6 +221,9 @@ def main(argv=None):
             "sha256": file_sha256(out),
             "paths": [portable_path(Path(p), Path(args.root)) for p in s.frames],
             "frame_indices": s.frame_indices,
+            "timestamps": s.timestamps,
+            "source_ids": s.source_ids,
+            "ordering": s.ordering,
             "sparse_indices": any(
                 b - a != 1 for a, b in zip(s.frame_indices, s.frame_indices[1:])
             ),
@@ -175,3 +237,9 @@ def main(argv=None):
         json.dumps(manifest, indent=2), encoding="utf-8"
     )
     print(f"[extract] done in {time.time() - t0:.1f}s -> {cache_dir}", flush=True)
+
+
+def _write_report(path: Path, report: dict):
+    path = resolve_path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(report, indent=2), encoding="utf-8")

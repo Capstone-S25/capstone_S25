@@ -498,6 +498,8 @@ def main(argv=None):
                             str(cache),
                             "--weights",
                             str(weights),
+                            "--validation-report",
+                            str(vdir / "source_validation.json"),
                             "--seed",
                             str(a.seed),
                             "--batch-size",
