@@ -1,4 +1,4 @@
-# CPU anomaly-model evaluation
+# CPU anomaly-model evaluatio
 
 Compare MobileCLIP2-S2, SigLIP2-B/16-224, SmolVLM-500M and MiniCPM-V 4.0 on shared, reviewed task data. VadCLIP is a separately supervised offline smoking study. The current evaluation, data utilities and reporting use one CLI: `anomaly-eval`.
 
