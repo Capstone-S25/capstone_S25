@@ -206,6 +206,7 @@ def read_reviews(path):
     definitions = read_definitions(Workspace.current().definitions)
     with path.open(newline="") as f:
         for r in csv.DictReader(f):
+            r = {k: v.strip() if isinstance(v, str) else v for k, v in r.items()}
             if not all(
                 r.get(k)
                 for k in (
@@ -236,7 +237,9 @@ def read_reviews(path):
             r["path"] = str(resolve_path(r["path"], path.parent))
             if not Path(r["path"]).is_file():
                 raise ValueError("Missing reviewed image")
-            r.setdefault("protocol", "frame")
+            r["protocol"] = r.get("protocol") or "frame"
+            if r["protocol"] not in {"frame", "window"}:
+                raise ValueError("Reviewed protocol must be frame or window")
             r["sha256"] = file_sha256(Path(r["path"]))
             rows.append(r)
     return rows
@@ -386,7 +389,10 @@ def prepare(
                     "sha256": file_sha256(item.path),
                 }
             )
-        for collector in (collect_littering, collect_rough_sleeping, collect_loitering):
+    except ValueError as e:
+        issues.append("smoking: " + str(e))
+    for collector in (collect_littering, collect_rough_sleeping, collect_loitering):
+        try:
             for item in collector(raw):
                 proxy.append(
                     {
@@ -401,8 +407,8 @@ def prepare(
                         "split": "dev",
                     }
                 )
-    except ValueError as e:
-        issues.append(str(e))
+        except ValueError as e:
+            issues.append(collector.__name__ + ": " + str(e))
     rows += caviar_examples(
         additional,
         output / "derived",
@@ -433,7 +439,7 @@ def prepare(
     selected = []
     for r in rows:
         key = (r["task"], r["protocol"], r["group_id"], r["label"])
-        if counts[key] < per_group:
+        if not per_group or counts[key] < per_group:
             selected.append(r)
             counts[key] += 1
     write_manifest(output / "confirmed.csv", selected)
@@ -494,6 +500,11 @@ def prepare(
         "coverage": coverage,
         "issues": issues,
         "confirmed_rows": len(selected),
+        "sampling": {
+            "per_group": per_group,
+            "available_unique_rows": len(rows),
+            "selected_rows": len(selected),
+        },
         "proxy_development_rows": len(proxy),
         "fingerprint": fingerprint(
             [
@@ -533,8 +544,8 @@ def main(argv=None):
     p.add_argument("--per-interval", type=int, default=4)
     p.add_argument("--seed", type=int, default=42)
     a = resolve_arguments(p.parse_args(argv))
-    if min(a.per_group, a.per_interval) < 1:
-        p.error("Sampling caps must be positive")
+    if a.per_group < 0 or a.per_interval < 1:
+        p.error("per-group must be nonnegative and per-interval positive")
     result = prepare(
         a.raw.resolve(),
         a.additional.resolve(),

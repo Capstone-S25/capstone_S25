@@ -1,4 +1,4 @@
-"""One CPU-only entry point: fetch, prepare, validate, benchmark, calibrate, bootstrap and report.
+"""Prepare, validate, benchmark on CPU/GPU, calibrate, bootstrap and report.
 
 Examples:
   anomaly-eval run --fetch --prepare-only
@@ -42,6 +42,7 @@ from anomaly_eval.paths import (
     resolve_path,
 )
 from anomaly_eval.resources import run_stage
+from anomaly_eval.runtime import available_threads, resolve_device
 
 
 def main(argv=None):
@@ -103,15 +104,48 @@ def main(argv=None):
         choices=["frame", "window"],
         help="Defaults to frame/window for evaluation, frame only for quick/deployment",
     )
-    p.add_argument("--threads", type=int, default=4)
+    p.add_argument(
+        "--threads",
+        type=int,
+        help="CPU threads; accuracy defaults to available CPUs, deployment to 4",
+    )
+    p.add_argument(
+        "--device",
+        help="auto, cpu, cuda, or cuda:N; accuracy defaults to auto, deployment to cpu",
+    )
+    p.add_argument(
+        "--dtype", choices=["auto", "float32", "float16", "bfloat16"], default="auto"
+    )
+    p.add_argument(
+        "--batch-size",
+        type=int,
+        default=0,
+        help="CLIP accuracy batch size; auto GPU=32/CPU=1; VLMs use 1",
+    )
+    p.add_argument(
+        "--per-group",
+        type=int,
+        default=0,
+        help="Preparation cap per recording/label/protocol; 0 keeps all data",
+    )
     p.add_argument("--cpu-cores", help="Optional CPU affinity list, e.g. 0,1,2,3")
+    p.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help="Concurrent image models for accuracy; deployment requires 1",
+    )
     p.add_argument(
         "--duty-cycle",
         type=float,
         default=1.0,
         help="Active fraction in deployment mode; default 1.0",
     )
-    p.add_argument("--max-rss-mb", type=float, default=24576)
+    p.add_argument(
+        "--max-rss-mb",
+        type=float,
+        help="Optional host RAM cap; accuracy has no default cap, deployment defaults to 24576 MiB",
+    )
     p.add_argument(
         "--camera-fps",
         type=float,
@@ -121,7 +155,7 @@ def main(argv=None):
     p.add_argument(
         "--timeout-seconds",
         type=float,
-        default=3600,
+        default=14400,
         help="Per image model including load",
     )
     p.add_argument("--seed", type=int, default=42)
@@ -145,15 +179,26 @@ def main(argv=None):
         help="Also extract/train/calibrate/test offline smoking adapter and feature baselines",
     )
     p.add_argument("--vadclip-epochs", type=int, default=100)
+    p.add_argument(
+        "--vadclip-weights", type=Path, help="Existing official CLIP ViT-B/16 weights"
+    )
+    p.add_argument(
+        "--vadclip-cache-dir", type=Path, help="Writable frozen-feature cache"
+    )
     p.add_argument("--vadclip-timeout", type=float, default=14400)
     a = resolve_arguments(p.parse_args(argv))
+    if a.threads is None:
+        a.threads = 4 if a.mode == "deployment" else available_threads()
+    a.device = a.device or ("cpu" if a.mode == "deployment" else "auto")
+    if a.max_rss_mb is None and a.mode == "deployment":
+        a.max_rss_mb = 24576
     if a.protocols is None:
         a.protocols = ["frame", "window"] if a.mode == "evaluation" else ["frame"]
     if a.limit is None:
         a.limit = {"evaluation": 0, "quick": 8, "deployment": 16}[a.mode]
     if a.bootstrap is None:
         a.bootstrap = 2000 if a.mode == "evaluation" else 200
-    if a.limit < 0 or a.limit == 1:
+    if a.limit < 0 or a.limit == 1 or a.per_group < 0:
         p.error("limit must be 0 (all) or at least 2 to retain event/normal support")
     if a.mode != "deployment" and a.duty_cycle != 1.0:
         p.error("--duty-cycle below 1 requires --mode deployment")
@@ -161,6 +206,14 @@ def main(argv=None):
         p.error(
             "VadCLIP is an offline study; use --vadclip in evaluation or quick mode"
         )
+    if a.batch_size < 0 or (a.mode == "deployment" and a.batch_size > 1):
+        p.error(
+            "batch-size must be nonnegative; deployment requires one input per inference"
+        )
+    if a.mode == "deployment":
+        a.batch_size = 1
+    if a.workers < 1 or (a.mode == "deployment" and a.workers != 1):
+        p.error("workers must be positive; deployment requires one model worker")
     a.data_dir = resolve_path(a.data_dir)
     a.cache_dir = resolve_path(a.cache_dir)
     if a.output:
@@ -178,7 +231,11 @@ def main(argv=None):
             a.vadclip_epochs,
         )
         < 1
-        or min(a.camera_fps, a.max_rss_mb, a.timeout_seconds, a.vadclip_timeout) <= 0
+        or min(a.camera_fps, a.timeout_seconds, a.vadclip_timeout) <= 0
+        or (
+            a.max_rss_mb is not None
+            and (not math.isfinite(a.max_rss_mb) or a.max_rss_mb <= 0)
+        )
         or not 0 < a.duty_cycle <= 1
         or not 0 <= a.target_fpr < 1
     ):
@@ -188,7 +245,6 @@ def main(argv=None):
             not math.isfinite(v)
             for v in (
                 a.camera_fps,
-                a.max_rss_mb,
                 a.timeout_seconds,
                 a.vadclip_timeout,
                 a.duty_cycle,
@@ -300,6 +356,7 @@ def main(argv=None):
                 a.data_dir / "additional",
                 evaluation,
                 a.review_csv,
+                per_group=a.per_group,
                 seed=a.seed,
             )
         state["dataset"] = dataset
@@ -345,6 +402,13 @@ def main(argv=None):
             )
             print(f"Report: {output / 'report.md'}")
             return 2
+        if not a.prepare_only:
+            a.device = resolve_device(a.device)
+            state["options"]["device"] = a.device
+            print(
+                f"Execution device: {a.device}; {a.threads} CPU threads; RAM cap: {a.max_rss_mb or 'none'}",
+                flush=True,
+            )
         definitions = read_definitions(Workspace.current().definitions)
         for task in a.tasks:
             for protocol in a.protocols:
@@ -401,8 +465,6 @@ def main(argv=None):
                         str(a.threads),
                         "--duty-cycle",
                         str(a.duty_cycle),
-                        "--max-rss-mb",
-                        str(a.max_rss_mb),
                         "--timeout-seconds",
                         str(a.timeout_seconds),
                         "--repeats",
@@ -417,7 +479,17 @@ def main(argv=None):
                         str(a.max_side),
                         "--max-new-tokens",
                         str(a.max_new_tokens),
+                        "--device",
+                        a.device,
+                        "--dtype",
+                        a.dtype,
+                        "--batch-size",
+                        str(a.batch_size),
+                        "--workers",
+                        str(a.workers),
                     ]
+                    if a.max_rss_mb is not None:
+                        command += ["--max-rss-mb", str(a.max_rss_mb)]
                     if a.cpu_cores:
                         command += ["--cpu-cores", a.cpu_cores]
                     if a.mode == "deployment":
@@ -437,7 +509,9 @@ def main(argv=None):
                         command,
                         output / "logs" / (cohort + "_" + split + ".log"),
                         a.timeout_seconds * len(a.models) + 60,
-                        a.max_rss_mb + 1024,
+                        a.max_rss_mb * min(a.workers, len(a.models)) + 1024
+                        if a.max_rss_mb is not None
+                        else None,
                     )
                     state["steps"].append(step)
                     state["benchmarks"].append(
@@ -471,9 +545,10 @@ def main(argv=None):
                     "note": "Fetch original smoking COCO corpus; bundled 32 development frames are not a training corpus.",
                 }
             else:
-                weights = (
+                weights = a.vadclip_weights or (
                     Workspace.current().cache_dir / "vadclip" / "openai_clip_vitb16.pt"
                 )
+                weights = resolve_path(weights)
                 sha = "5806e77cd80f8b59890b7e101eabd078d9fb84e6937f9e85e4ecb61988df416f"
                 if not weights.is_file():
                     if a.offline:
@@ -485,8 +560,16 @@ def main(argv=None):
                         weights,
                         expected_sha=sha,
                     )
+                if file_sha256(weights) != sha:
+                    raise ValueError(
+                        "VadCLIP weights do not match the official CLIP ViT-B/16 checksum"
+                    )
                 vdir = output / "vadclip"
-                cache = Workspace.current().cache_dir / "vadclip" / "features"
+                cache = (
+                    resolve_path(a.vadclip_cache_dir)
+                    if a.vadclip_cache_dir
+                    else (Workspace.current().cache_dir / "vadclip" / "features")
+                )
                 run = vdir / "adapter"
                 stages = [
                     (
@@ -503,7 +586,7 @@ def main(argv=None):
                             "--seed",
                             str(a.seed),
                             "--batch-size",
-                            "8",
+                            "32",
                         ],
                     ),
                     (
@@ -555,6 +638,8 @@ def main(argv=None):
                         *opts,
                         "--threads",
                         str(a.threads),
+                        "--device",
+                        a.device,
                     ]
                     step = run_stage(
                         command,

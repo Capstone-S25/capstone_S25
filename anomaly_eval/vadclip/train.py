@@ -37,6 +37,7 @@ from torch.utils.data import DataLoader
 from anomaly_eval.data import file_sha256
 from anomaly_eval.metrics import frame_metrics
 from anomaly_eval.paths import resolve_arguments, resolve_path
+from anomaly_eval.runtime import add_device_argument, resolve_device
 
 from .clip_b16 import load_clip_b16
 from .data import PROMPTS, VadClipDataset, build_clip, collate, expand_scores
@@ -148,6 +149,7 @@ def main(argv=None):
     ap.add_argument("--batch-size", type=int, default=4)
     ap.add_argument("--seed", type=int, default=234)
     ap.add_argument("--threads", type=int, default=4)
+    add_device_argument(ap)
     ap.add_argument(
         "--patience",
         type=int,
@@ -180,7 +182,8 @@ def main(argv=None):
     torch.set_num_interop_threads(1)
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
-    device = torch.device("cpu")
+    args.device = resolve_device(args.device)
+    device = torch.device(args.device)
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -194,7 +197,7 @@ def main(argv=None):
         attn_window=args.attn_window,
         visual_layers=args.temporal_layers,
         use_graph=not args.no_graph,
-    )
+    ).to(device)
 
     items_by_key, manifest = load_clips(Path(args.cache_dir), args.visual_length)
     if manifest["weights_sha256"] != file_sha256(Path(args.weights)):
@@ -240,10 +243,15 @@ def main(argv=None):
         model.train()
         run_loss = 0.0
         for feats, labels, lengths in loader:
+            feats, labels, lengths = (
+                feats.to(device),
+                labels.to(device),
+                lengths.to(device),
+            )
             opt.zero_grad()
             _, logits1, logits2, _ = model(feats, None, PROMPTS, lengths)
             L = feats.shape[1]
-            mask = torch.arange(L).unsqueeze(0) < lengths.unsqueeze(
+            mask = torch.arange(L, device=device).unsqueeze(0) < lengths.unsqueeze(
                 1
             )  # [B, L] valid frames
 

@@ -17,6 +17,7 @@ from sklearn.linear_model import LogisticRegression
 from anomaly_eval.data import file_sha256
 from anomaly_eval.metrics import frame_metrics, select_threshold
 from anomaly_eval.paths import resolve_arguments, resolve_path
+from anomaly_eval.runtime import add_device_argument, resolve_device
 
 from .clip_b16 import load_clip_b16, tokenize
 from .data import PROMPTS
@@ -28,6 +29,7 @@ def main(argv=None):
     for name in ("cache-dir", "weights", "out-dir"):
         p.add_argument("--" + name, type=Path, required=True)
     p.add_argument("--threads", type=int, default=4)
+    add_device_argument(p)
     a = resolve_arguments(p.parse_args(argv))
     for field in ("cache_dir", "weights", "out_dir"):
         setattr(a, field, resolve_path(getattr(a, field)))
@@ -41,12 +43,17 @@ def main(argv=None):
     items, manifest = load_clips(a.cache_dir)
     if manifest["weights_sha256"] != file_sha256(a.weights):
         raise ValueError("Encoder weights differ from cache")
-    encoder = load_clip_b16(str(a.weights), torch.device("cpu"))
+    device = torch.device(resolve_device(a.device))
+    encoder = load_clip_b16(str(a.weights), device)
     with torch.inference_mode():
-        tokens = tokenize(PROMPTS)
-        texts = torch.nn.functional.normalize(
-            encoder.encode_text(encoder.encode_token(tokens), tokens), dim=-1
-        ).numpy()
+        tokens = tokenize(PROMPTS).to(device)
+        texts = (
+            torch.nn.functional.normalize(
+                encoder.encode_text(encoder.encode_token(tokens), tokens), dim=-1
+            )
+            .cpu()
+            .numpy()
+        )
         scale = float(encoder.logit_scale.exp())
     arrays = {
         split: (
@@ -73,6 +80,7 @@ def main(argv=None):
     }
     result = {
         "split": "test",
+        "text_encoder_device": str(device),
         "cache_fingerprint": manifest["fingerprint"],
         "metrics": {
             name: frame_metrics(arrays["test"][1], s, thresholds[name])

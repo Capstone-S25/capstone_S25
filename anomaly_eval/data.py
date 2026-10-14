@@ -10,6 +10,7 @@ import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
+from functools import lru_cache
 from pathlib import Path
 
 from anomaly_eval.paths import (
@@ -283,23 +284,41 @@ def file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+@lru_cache(maxsize=32)
+def _receipt_indices(receipt: Path, signature: tuple):
+    """Index immutable receipt versions once; contents are still checked on lookup."""
+    by_original, by_actual = defaultdict(list), {}
+    for entry in json.loads(receipt.read_text()).get("renamed_files", []):
+        original = Path(entry["original_path"].replace("\\", "/"))
+        actual = (receipt.parent / entry["path"].replace("\\", "/")).resolve()
+        by_original[(receipt.parent / original).resolve()].append(actual)
+        # Preserve original_name's first-entry behavior for repeated receipts.
+        by_actual.setdefault(actual, original.name)
+    return dict(by_original), by_actual
+
+
+def _find_receipt_indices(path: Path):
+    for parent in path.parents:
+        receipt = parent / "download_receipt.json"
+        if receipt.is_file():
+            stat = receipt.stat()
+            signature = (
+                stat.st_dev,
+                stat.st_ino,
+                stat.st_size,
+                stat.st_mtime_ns,
+                stat.st_ctime_ns,
+            )
+            return _receipt_indices(receipt, signature)
+    return {}, {}
+
+
 def resolve_original(path: Path) -> Path | None:
     """Resolve an original remote path; conflicting contents require manual review."""
     path = path.resolve()
     candidates = [path] if path.is_file() else []
-    for parent in path.parents:
-        receipt = parent / "download_receipt.json"
-        if not receipt.is_file():
-            continue
-        entries = json.loads(receipt.read_text()).get("renamed_files", [])
-        for entry in entries:
-            original = Path(entry["original_path"].replace("\\", "/"))
-            actual = Path(entry["path"].replace("\\", "/"))
-            if (parent / original).resolve() == path:
-                local = (parent / actual).resolve()
-                if local.is_file():
-                    candidates.append(local)
-        break
+    by_original, _ = _find_receipt_indices(path)
+    candidates.extend(local for local in by_original.get(path, ()) if local.is_file())
     unique = {file_sha256(p): p for p in sorted(set(candidates))}
     if len(unique) > 1:
         raise ValueError(f"Ambiguous original filename has differing contents: {path}")
@@ -307,15 +326,10 @@ def resolve_original(path: Path) -> Path | None:
 
 
 def original_name(path: Path) -> str:
-    for parent in path.resolve().parents:
-        receipt = parent / "download_receipt.json"
-        if receipt.is_file():
-            for entry in json.loads(receipt.read_text()).get("renamed_files", []):
-                actual = (parent / entry["path"].replace("\\", "/")).resolve()
-                if actual == path.resolve():
-                    return Path(entry["original_path"].replace("\\", "/")).name
-            break
-    return path.name
+    fallback = path.name
+    path = path.resolve()
+    _, by_actual = _find_receipt_indices(path)
+    return by_actual.get(path, fallback)
 
 
 def fingerprint(value) -> str:
@@ -363,6 +377,8 @@ def experiment_options(options: dict) -> dict:
         "worker_config",
         "workspace",
         "list_models",
+        "vadclip_weights",
+        "vadclip_cache_dir",
     }
     return {key: value for key, value in options.items() if key not in location_keys}
 

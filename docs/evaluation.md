@@ -1,10 +1,10 @@
 # Running the corrected evaluation
 
-Use Python 3.12, the repository requirements, an editable package installation, and `ffmpeg`/`ffprobe` on PATH. The CLI works from any directory; see [server paths and migration](server.md). CPU-only model inference is sequential and isolated; the default shortlist is MobileCLIP2-S2, SigLIP2-B/16-224, SmolVLM-500M and MiniCPM-V 4.0. VadCLIP is an optional separately supervised smoking study.
+Use Python 3.12, the repository requirements, an editable package installation, and `ffmpeg`/`ffprobe` on PATH. The CLI works from any directory; see [server paths and migration](server.md). Model workers are isolated; the default shortlist is MobileCLIP2-S2, SigLIP2-B/16-224, SmolVLM-500M and MiniCPM-V 4.0. VadCLIP is an optional separately supervised smoking study.
 
 ```bash
 anomaly-eval run --prepare-only
-anomaly-eval run --threads 4 --max-rss-mb 24576 --camera-fps 1
+anomaly-eval run --device auto
 ```
 
 The first command validates/prepares datasets and prints a report without loading model weights. The second runs every available task/protocol through development and test inference, calibration, group bootstrap, paired differences, figures and reporting. Each invocation creates a new results directory. `--output` must name a directory that does not exist. `--offline` requires cached weights; `--skip-prepare` reuses a prepared dataset, but the benchmark still verifies every recorded image hash. The portable curated CAVIAR bundle works without downloading the source videos.
@@ -15,6 +15,38 @@ For a first pipeline check:
 anomaly-eval run --mode quick --models mobileclip2-s2 --tasks unattended_items --threads 4
 ```
 
+## Expanded accuracy study, finalized 14 October 2026
+
+The [expanded study](../reports/expanded_accuracy_review_20261014.md) uses separate
+research manifests under `data/expanded_20261013/cohorts/`. It retains all eligible
+deduplicated candidate inputs and holds related unattended-item camera families
+together. The unattended frame/window cohorts each contain 808 development and
+962 test inputs. Their interval labels are **assistant visual review**, not
+independently human verified. The 20-second windows also change the earlier
+six-second protocol.
+
+The three other anomaly exports are positive-only weak diagnostics: 6,667
+littering candidates, 1,675 loitering candidates and 111 rough-sleeping candidates.
+Their report supplies target-prediction rates rather than event accuracy. Separate
+person-presence and synthetic oracle posture tasks help distinguish visible
+evidence from unsupported event claims. These manifests do not promote weak data
+into the main runner's confirmed five-task coverage or satisfy `--require-all-tasks`.
+
+All four image models completed 55,156 unpaced CUDA predictions in this expansion.
+Smoking and the supervised offline VadCLIP study reuse prior GPU evidence. There
+was no new latency experiment. The [full report](../results/expanded_accuracy_20261013/report.md)
+and [updated slides](../reports/slides/model_evaluation_expanded_20261014.pdf) include
+the limitations, raw decisions and development-frozen CLIP operating points.
+
+`scripts/expand_accuracy.py` prepares review material and manifests;
+`scripts/run_expanded_accuracy.py` executes this study into an exclusive output
+directory. Preserve the completed output; the inference script deliberately
+refuses to overwrite it. To regenerate the accuracy report from saved predictions:
+
+```bash
+PYTHONPATH="$PWD" .venv/bin/python scripts/report_expanded_accuracy.py
+```
+
 ## Evaluation speed and deployment pacing
 
 | `run --mode` | Inference pacing | Default input cap per task/protocol/split | Default protocols | Bootstrap draws |
@@ -23,8 +55,19 @@ anomaly-eval run --mode quick --models mobileclip2-s2 --tasks unattended_items -
 | `quick` | No deliberate sleeps | 8 | Frame | 200 |
 | `deployment` | At most `--camera-fps` inputs/sec; optional duty-cycle sleeps | 16 | Frame | 200 |
 
-Use quick mode to screen the shortlist, then evaluate promising models on the full
-cohorts. Both unpaced modes retain the configured CPU thread and memory limits.
+Use quick mode to check execution, then evaluate the full cohorts. Accuracy runs
+default to all available CPU threads, CUDA when available, and no host RAM cap.
+CUDA CLIP batches default to 32; CPU batches default to 1. Generative VLMs remain
+sequential. `--device cuda` fails if CUDA is unavailable; `--device auto` falls back
+to CPU and records the resolved device. `--dtype auto` keeps CPU and CLIP float32
+and uses bfloat16 (or float16) for CUDA generative VLMs. Device, precision, GPU
+memory, batching and actual input counts are saved with each model. Batched timings
+are explicitly marked `batch_amortized` and must not be used as single-input
+deployment latency. Optional thread and memory settings remain available.
+`--workers N` runs up to N isolated model processes concurrently; threads and RSS
+caps are per model worker. Choose counts that fit available RAM/VRAM. Concurrent
+accuracy timings reflect contention and must not be used as a fair latency ranking.
+Deployment requires one worker and batch size one.
 `--camera-fps` is only a resource-budget comparison in those modes; it does not
 slow inference. `--duty-cycle` below 1 requires deployment mode. The standalone
 `benchmark` command also defaults to duty cycle 1 with no rate cap; its pacing
@@ -35,10 +78,12 @@ flags are explicit opt-ins.
 anomaly-eval run --mode quick --threads 8
 # Faster CLIP-only screen; all requested tasks with confirmed data remain eligible:
 anomaly-eval run --mode quick --models mobileclip2-s2 siglip2-b16-224 --threads 8
-# Full quality evaluation of promising candidates, using prepared data:
-anomaly-eval run --skip-prepare --models mobileclip2-s2 siglip2-b16-224 --threads 8
+# Full quality evaluation, rebuilding preparation without a per-group cap:
+anomaly-eval run --device cuda --batch-size 32 --vadclip
+# A CPU fallback can use several isolated workers without pacing:
+anomaly-eval run --device cpu --workers 4 --threads 16 --batch-size 16
 # Small paced resource check of one candidate on the actual deployment host:
-anomaly-eval run --mode deployment --models mobileclip2-s2 \
+anomaly-eval run --mode deployment --device cpu --models mobileclip2-s2 \
   --tasks unattended_items --threads 4 --camera-fps 1 --duty-cycle 0.5
 ```
 
@@ -51,6 +96,14 @@ and cycles through source groups with a fixed seed. Every model receives the
 same subset; `run.json`, `evaluation.json` and the report record selected versus
 available counts. Quick/subset results are pilot diagnostics, not a final model
 ranking. A tiny negative sample also makes false-positive calibration coarse.
+
+Preparation defaults to `--per-group 0` in the runner: all confirmed examples.
+The older default of eight examples per label/recording hid a substantial cap even
+when inference used `--limit 0`. `--per-group N` remains useful for an explicit
+recording-balanced experiment, and `dataset.json` records available unique versus
+retained counts. `--skip-prepare` retains the existing preparation cap; rebuild to
+evaluate all annotated frames. The standalone `prepare` command retains its small
+default; use `prepare --per-group 0` for all.
 
 Prepared datasets now use schema 3. Preparation merges duplicate file bytes,
 identical decoded EXIF-corrected RGB pixels and matching checksum-qualified
@@ -68,6 +121,8 @@ compare settings on development data. Cached weights avoid repeated downloads,
 and `--skip-prepare` avoids rebuilding prepared data. Models still load in
 isolated processes per cohort, and large generative VLMs remain expensive on CPU.
 
+Deployment mode defaults to CPU, four threads, 24 GiB RSS and batch size one. It
+rejects larger batches so amortized batch time cannot pass as single-input latency.
 Deployment mode paces sequential prepared inputs, including contact sheets if
 explicitly requested. It is not a live camera/decoder/queue simulation and cannot
 emulate another processor. Active inference latency excludes pacing sleeps;
@@ -238,7 +293,7 @@ when source validation fails.
 anomaly-eval run --vadclip --vadclip-epochs 100
 ```
 
-This requires the original smoking COCO frames. Encoder weights and content-validated features are reused under the configured cache root; run-specific adapter checkpoints remain under the results root. The runner fetches and verifies the official OpenAI CLIP-B/16 checkpoint if needed, extracts content-validated features, creates a frozen source-session train/dev/test split, trains/restores the best CPU adapter, calibrates development thresholds, and evaluates original binary test frames. CLIP zero-shot and fixed-C logistic regression use the same original frame features and split. Architecture knobs remain available in `anomaly-eval vadclip train --help`; tune them on development only, not by comparing final-test ablations.
+This requires the original smoking COCO frames. Encoder weights and content-validated features are reused under the configured cache root; run-specific adapter checkpoints remain under the results root. The runner fetches and verifies the official OpenAI CLIP-B/16 checkpoint if needed, extracts content-validated features, creates a frozen source-session train/dev/test split, trains/restores the best adapter on the selected device, calibrates development thresholds, and evaluates original binary test frames. CLIP zero-shot and fixed-C logistic regression use the same original frame features and split. Architecture knobs remain available in `anomaly-eval vadclip train --help`; tune them on development only, not by comparing final-test ablations.
 
 Alignment training uses the author-scaled cosine temperature (0.07) with stable soft-target log-softmax cross-entropy; evaluation preserves score ordering in float64. This is supervised frame learning, rather than official VadCLIP weakly supervised video MIL. Whole sparse camera/date sessions can include future context, original timestamps may have gaps, and adapter-only evaluation timing excludes the encoder. Historical inspection of the smoking corpus means the new frozen split is a controlled reanalysis, not a genuinely untouched external test. It cannot by itself rank VadCLIP against zero-shot models on five different events.
 

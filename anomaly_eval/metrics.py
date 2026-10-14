@@ -35,6 +35,24 @@ def roc_auc(pairs: list[tuple[bool, float]]) -> float | None:
     return (rank_sum - positives * (positives + 1) / 2) / (positives * negatives)
 
 
+def average_precision(pairs: list[tuple[bool, float]]) -> float | None:
+    """Noninterpolated AP, treating tied scores as one operating threshold."""
+    positives = sum(label for label, _ in pairs)
+    if not positives or positives == len(pairs):
+        return None
+    ordered = sorted(pairs, key=lambda pair: pair[1], reverse=True)
+    index, true_positives, ap = 0, 0, 0.0
+    while index < len(ordered):
+        end = index + 1
+        while end < len(ordered) and ordered[end][1] == ordered[index][1]:
+            end += 1
+        added = sum(label for label, _ in ordered[index:end])
+        true_positives += added
+        ap += added / positives * true_positives / end
+        index = end
+    return ap
+
+
 def detection_metrics(
     rows: list[dict], labels: list[str], scored_labels: list[str] | None = None
 ) -> dict:
@@ -120,6 +138,7 @@ def detection_metrics(
             "false_positive_rate": fp / negatives if negatives else None,
             "specificity": tn / negatives if negatives else None,
             "roc_auc": roc_auc(pairs),
+            "average_precision": average_precision(pairs),
             "auc_samples": len(pairs),
             "score_coverage": len(pairs) / count if count else None,
         },

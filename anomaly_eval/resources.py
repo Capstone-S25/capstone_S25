@@ -47,7 +47,6 @@ class CPUSettings:
         ):
             os.environ[name] = str(self.threads)
         os.environ["TOKENIZERS_PARALLELISM"] = "false"
-        os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
     def configure_worker(self) -> None:
         if self.cpu_cores:
@@ -161,7 +160,6 @@ def run_stage(command, output, timeout, memory):
     reason = None
     peak = 0
     env = process_environment()
-    env["CUDA_VISIBLE_DEVICES"] = ""
     with output.open("w") as f:
         proc = subprocess.Popen(
             command,

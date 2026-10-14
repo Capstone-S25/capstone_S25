@@ -36,6 +36,7 @@ def _extract(m):
         "macro_f1": m["macro_f1"],
         "binary_f1": m["binary"]["f1"],
         "roc_auc": m["binary"]["roc_auc"],
+        "average_precision": m["binary"]["average_precision"],
     }
 
 
@@ -181,6 +182,10 @@ def calibrate(dev_dir: Path, test_dir: Path, target_fpr=0.05):
         "max_new_tokens",
         "cpu_cores",
         "repeats",
+        "device",
+        "dtype",
+        "batch_size",
+        "workers",
     )
     if any(
         dev.get("options", {}).get(k) != test.get("options", {}).get(k)
@@ -313,7 +318,7 @@ def write_report(output, state, args):
         f"Deployment simulation: sequential sampled inputs paced at {args.camera_fps:g}/s, "
         f"with duty cycle {args.duty_cycle:g}. This is not a camera capture/queue test."
         if mode == "deployment"
-        else "Unpaced inference: no duty-cycle or camera-rate sleeps. CPU threads and memory limits still apply."
+        else "Accuracy evaluation: no duty-cycle or camera-rate sleeps; available GPUs are used when selected."
     )
     lines = [
         "# Corrected evaluation run",
@@ -321,6 +326,7 @@ def write_report(output, state, args):
         f"Run: `{output.name}`. Execution status: **{state['status']}**.",
         "",
         f"Mode: **{mode}**. {mode_note}",
+        f"Requested/resolved device: **{getattr(args, 'device', 'cpu')}**; CPU threads per worker: {getattr(args, 'threads', 'unrecorded')}; concurrent model workers: {getattr(args, 'workers', 1)}; RAM cap: {getattr(args, 'max_rss_mb', None) or 'none'} MiB.",
         "",
         (
             f"Requested tasks: {', '.join(args.tasks)}. Input protocols: {', '.join(args.protocols)}. "
@@ -349,7 +355,17 @@ def write_report(output, state, args):
             "",
             f"Input deduplication: {deduplication['removed_rows']} aliases removed from {deduplication['input_rows']} collected rows, using source moments and decoded RGB pixels. Provenance is saved in `evaluation.json`.",
         ]
-    if mode != "evaluation" or getattr(args, "limit", 0):
+    sampling = state["dataset"].get("sampling", {})
+    if sampling:
+        lines += [
+            "",
+            f"Preparation retained {sampling['selected_rows']} / {sampling['available_unique_rows']} unique confirmed inputs; per-recording/label/protocol cap: {sampling['per_group'] or 'none'}.",
+        ]
+    if (
+        mode != "evaluation"
+        or getattr(args, "limit", 0)
+        or (sampling and sampling["selected_rows"] < sampling["available_unique_rows"])
+    ):
         lines += [
             "",
             "This is a subset/pilot measurement. Reduced label and recording counts limit quality conclusions, confidence intervals and false-positive calibration; use an uncapped evaluation for model selection.",
@@ -372,14 +388,17 @@ def write_report(output, state, args):
         "",
         "## Measured model comparisons",
         "",
-        "| Task / input / split | Model | Coverage | Binary F1 | FPR | p95 seconds | RSS MiB | Host budget |",
-        "|---|---|---:|---:|---:|---:|---:|---|",
+        "| Task / input / split | Model | Status | Coverage | Precision | Recall | Binary F1 | FPR | AP | AUROC | Device |",
+        "|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|",
     ]
 
     def fmt(v):
         return "NA" if v is None else f"{v:.3f}"
 
     response_rows = []
+    resource_rows = []
+    calibration_rows = []
+    failures = []
 
     for record in state["benchmarks"]:
         path = resolve_path(record["output"], output) / "results.json"
@@ -412,20 +431,97 @@ def write_report(output, state, args):
                 and rss is not None
                 and lat / (args.duty_cycle if mode == "deployment" else 1)
                 <= 1 / args.camera_fps
-                and rss <= args.max_rss_mb
+                and (args.max_rss_mb is None or rss <= args.max_rss_mb)
                 and model["status"] == "ok"
             )
             values = [
                 record["cohort"] + " / " + record["split"],
                 model["model"],
+                model["status"],
                 fmt(m.get("prediction_coverage")),
+                fmt(b.get("precision")),
+                fmt(b.get("recall")),
                 fmt(b.get("f1")),
                 fmt(b.get("false_positive_rate")),
-                fmt(lat),
-                fmt(rss),
-                "passes sampled frame budget" if feasible else "fails/unknown",
+                fmt(b.get("average_precision")),
+                fmt(b.get("roc_auc")),
+                model.get("input_policy", {}).get("device", "unrecorded"),
             ]
             lines.append("| " + " | ".join(values) + " |")
+            resource_rows.append(
+                "| "
+                + " | ".join(
+                    [
+                        record["cohort"] + " / " + record["split"],
+                        model["model"],
+                        fmt(lat),
+                        fmt(model.get("active_samples_per_second")),
+                        fmt(rss),
+                        fmt(model.get("peak_gpu_allocated_mb")),
+                        str(model.get("batch_size", 1)),
+                        model.get("latency_kind", "single_input"),
+                        ("passes sampled frame budget" if feasible else "fails/unknown")
+                        if mode == "deployment"
+                        else "accuracy run; measure CPU deployment separately",
+                    ]
+                )
+                + " |"
+            )
+            if model.get("error"):
+                failures.append(
+                    f"- {record['cohort']}/{record['split']} / {model['model']}: `{model['error']}`"
+                )
+        calibration_path = path.parent / "calibration.json"
+        if calibration_path.is_file():
+            for name, calibrated in json.loads(calibration_path.read_text())[
+                "models"
+            ].items():
+                for operating_point, measured in calibrated.get(
+                    "operating_points", {}
+                ).items():
+                    m = measured["score_metrics"]
+                    calibration_rows.append(
+                        "| "
+                        + " | ".join(
+                            [
+                                record["cohort"],
+                                name,
+                                operating_point,
+                                fmt(m["threshold"]),
+                                fmt(m["precision"]),
+                                fmt(m["recall"]),
+                                fmt(m["f1"]),
+                                fmt(m["false_positive_rate"]),
+                                fmt(m["aupr"]),
+                                fmt(m["auroc"]),
+                            ]
+                        )
+                        + " |"
+                    )
+    if failures:
+        lines += ["", "Execution failures:", "", *failures]
+    if calibration_rows:
+        lines += [
+            "",
+            "## Development-calibrated test performance",
+            "",
+            "Thresholds were fitted on development data and frozen for test. AP/AUROC use continuous scores. The small CAVIAR source count limits these estimates.",
+            "",
+            "| Task / input | Model | Operating point | Threshold | Precision | Recall | F1 | FPR | AP | AUROC |",
+            "|---|---|---|---:|---:|---:|---:|---:|---:|---:|",
+            *calibration_rows,
+        ]
+    if resource_rows:
+        lines += [
+            "",
+            "## Resource measurements",
+            "",
+            "Accuracy-run timings describe the recorded device and precision. CPU latency comparisons require a separate frozen CPU run with batch size one.",
+            "",
+            "| Task / input / split | Model | p95 seconds | Active inputs/s | RSS MiB | GPU allocated MiB | Batch | Timing kind | Host budget |",
+            "|---|---|---:|---:|---:|---:|---:|---|---|",
+            *resource_rows,
+        ]
     if response_rows:
         lines += [
             "",
@@ -448,7 +544,7 @@ def write_report(output, state, args):
         ]
     lines += [
         "",
-        f"Resource screen: one stream sampled at {args.camera_fps:g} frames/s, p95 inference ≤ {1 / args.camera_fps:g}s, worker/process-tree RSS cap {args.max_rss_mb:g} MiB. This excludes queueing and camera decoding; verify on the deployment box.",
+        f"Deployment reference: one stream sampled at {args.camera_fps:g} frames/s, p95 inference ≤ {1 / args.camera_fps:g}s. Host RAM cap: {args.max_rss_mb or 'none'} MiB. This excludes queueing and camera decoding; verify on the deployment box.",
         "",
         "Inference latency excludes pacing sleeps. Active throughput, wall throughput and pacing sleep seconds are saved separately in `results.json` and `comparison.csv`; deployment duty-cycle overhead is included in the host-budget screen.",
         "",
@@ -467,8 +563,46 @@ def write_report(output, state, args):
     if state.get("vadclip"):
         lines += [
             "",
+            "## Supervised offline VadCLIP smoking study",
+            "",
+            f"Execution status: **{state['vadclip']['status']}**.",
+            "",
             "VadCLIP results are a supervised offline smoking adaptation with frozen CLIP-B/16 features and a separate train/dev/test protocol. Adapter timing excludes the image encoder and is not comparable to end-to-end VLM FPS. It uses future context within each sparse session and is not a streaming detector.",
         ]
+        vad_rows = []
+        for relative in (
+            "vadclip/adapter/eval.json",
+            "vadclip/baselines/baselines.json",
+        ):
+            p = output / relative
+            if p.is_file():
+                result = json.loads(p.read_text())
+                for name, m in result["metrics"].items():
+                    vad_rows.append(
+                        "| "
+                        + " | ".join(
+                            [
+                                name,
+                                str(m["n"]),
+                                fmt(m["precision"]),
+                                fmt(m["recall"]),
+                                fmt(m["f1"]),
+                                fmt(m["false_positive_rate"]),
+                                fmt(m["aupr"]),
+                                fmt(m["auroc"]),
+                            ]
+                        )
+                        + " |"
+                    )
+        if vad_rows:
+            lines += [
+                "",
+                "Operating thresholds are frozen on the adapter's development groups. These supervised results use a different cohort from the main zero-shot benchmark.",
+                "",
+                "| Branch / baseline | Test frames | Precision | Recall | F1 | FPR | AP | AUROC |",
+                "|---|---:|---:|---:|---:|---:|---:|---:|",
+                *vad_rows,
+            ]
     (output / "report.md").write_text("\n".join(lines) + "\n")
 
 

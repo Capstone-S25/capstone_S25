@@ -29,6 +29,7 @@ import torch
 
 from anomaly_eval.data import code_hashes, file_sha256, fingerprint
 from anomaly_eval.paths import Workspace, portable_path, resolve_arguments, resolve_path
+from anomaly_eval.runtime import add_device_argument, resolve_device
 
 from .clip_b16 import load_clip_b16, make_preprocess
 from .data import (
@@ -89,6 +90,7 @@ def main(argv=None):
     ap.add_argument("--threads", type=int, default=4)
     ap.add_argument("--offline", action="store_true")
     ap.add_argument("--seed", type=int, default=234)
+    add_device_argument(ap)
     args = resolve_arguments(ap.parse_args(argv))
 
     if min(args.batch_size, args.threads) < 1:
@@ -140,7 +142,7 @@ def main(argv=None):
     cache_dir = resolve_path(args.cache_dir)
     cache_dir.mkdir(parents=True, exist_ok=True)
 
-    device = torch.device("cpu")
+    device = torch.device(resolve_device(args.device))
     print(f"[extract] loading ViT-B/16 from {args.weights}", flush=True)
     model = None
     preprocess = None
@@ -170,6 +172,8 @@ def main(argv=None):
             "identity_policy": SOURCE_IDENTITY_POLICY,
             "weights": weights_sha,
             "preprocess": "official_clip224_exif_v2",
+            "device": str(device),
+            "dtype": "float32",
             "splits": splits,
             "code": code_hashes(),
         }
@@ -187,6 +191,8 @@ def main(argv=None):
         "note": "Frame indices need not be continuous. This is not a streaming latency evaluation.",
         "source_root": portable_path(Path(args.root)),
         "source": source,
+        "device": str(device),
+        "dtype": "float32",
     }
     old = (
         json.loads((cache_dir / "manifest.json").read_text())

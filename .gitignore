@@ -3,6 +3,7 @@ results/
 models/
 .env
 .venv
+.venv-gpu/
 __pycache__/
 *.py[cod]
 .ruff_cache/

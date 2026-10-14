@@ -1,4 +1,4 @@
-"""Benchmark anomaly models sequentially in isolated, CPU-only workers."""
+"""Benchmark anomaly models in isolated workers with explicit CPU/GPU placement."""
 
 from __future__ import annotations
 
@@ -12,9 +12,11 @@ import platform
 import statistics
 import subprocess
 import sys
+import threading
 import time
 import traceback
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import asdict, replace
 from datetime import UTC, datetime
 from pathlib import Path
@@ -46,6 +48,12 @@ from anomaly_eval.resources import (
     add_cpu_arguments,
     settings_from_args,
 )
+from anomaly_eval.runtime import (
+    add_device_argument,
+    available_threads,
+    resolve_device,
+    synchronize,
+)
 
 
 def cpu_description() -> str:
@@ -63,6 +71,73 @@ def write_json(path: Path, value: dict) -> None:
     path.write_text(
         json.dumps(value, indent=2, allow_nan=False) + "\n", encoding="utf-8"
     )
+
+
+def predict_rows(adapter, tests, args, repeat, batch_size, throttle, monitor):
+    """Batch CLIP accuracy work; record batch time and explicit amortized timing."""
+    for offset in range(0, len(tests), batch_size):
+        samples = tests[offset : offset + batch_size]
+        monitor.check()
+        rows = [
+            {
+                "path": portable_path(s.path),
+                "group_id": s.group_id,
+                "label": s.label,
+                "origin": s.origin,
+                "pixel_sha256": s.pixel_sha256,
+                "protocol": s.protocol,
+                "repeat": repeat,
+                "prediction": None,
+                "anomaly_score": None,
+                "scores": {},
+                "status": "error",
+            }
+            for s in samples
+        ]
+        with throttle.operation():
+            synchronize(adapter.device)
+            started = time.perf_counter()
+            try:
+                images = [
+                    load_image(s.path, args.max_side, adapter.image_policy)
+                    for s in samples
+                ]
+                predictions = (
+                    adapter.predict_batch(images)
+                    if batch_size > 1
+                    else [adapter.predict(images[0])]
+                )
+                if len(predictions) != len(samples):
+                    raise ValueError(
+                        "Adapter returned the wrong number of batch predictions"
+                    )
+                for row, prediction in zip(rows, predictions):
+                    row.update(
+                        prediction=prediction.label,
+                        anomaly_score=prediction.anomaly_score,
+                        scores=prediction.scores,
+                        raw_response=prediction.raw_response,
+                        generated_tokens=prediction.generated_tokens,
+                        response_format=prediction.response_format,
+                        abstention_reason=prediction.abstention_reason,
+                        status="ok" if prediction.label else "abstain",
+                    )
+            except (MemoryError, KeyboardInterrupt):
+                raise
+            except Exception as exc:  # noqa: BLE001 -- preserve failures for every planned input
+                for row in rows:
+                    row["error"] = f"{type(exc).__name__}: {exc}"
+            synchronize(adapter.device)
+            seconds = time.perf_counter() - started
+        for row in rows:
+            row.update(
+                latency_seconds=seconds / len(samples),
+                batch_seconds=seconds,
+                batch_size=len(samples),
+                batch_index=offset // batch_size,
+                latency_kind="batch_amortized" if batch_size > 1 else "single_input",
+            )
+            yield row
 
 
 def worker(config_path: Path) -> int:
@@ -116,6 +191,8 @@ def worker(config_path: Path) -> int:
             import torch
 
             torch.manual_seed(args.seed)
+            if getattr(args, "device", "cpu").startswith("cuda"):
+                torch.cuda.reset_peak_memory_stats(args.device)
             throttle = Throttler(settings)
             load_start = time.perf_counter()
             adapter = create_adapter(
@@ -125,8 +202,21 @@ def worker(config_path: Path) -> int:
                 args.offline,
                 args.max_new_tokens,
                 args.max_side,
+                device=getattr(args, "device", "cpu"),
+                dtype=getattr(args, "dtype", "float32"),
             )
             adapter.image_policy = getattr(args, "image_policy", "native")
+            adapter.device = getattr(adapter, "device", "cpu")
+            requested_batch = getattr(args, "batch_size", 1)
+            batch_size = requested_batch or (
+                32 if adapter.device.startswith("cuda") else 1
+            )
+            if not getattr(adapter, "supports_batch", False):
+                batch_size = 1
+            summary["batch_size"] = batch_size
+            summary["latency_kind"] = (
+                "batch_amortized" if batch_size > 1 else "single_input"
+            )
             summary["resolved_revision"] = getattr(
                 getattr(getattr(adapter, "model", None), "config", None),
                 "_commit_hash",
@@ -142,9 +232,15 @@ def worker(config_path: Path) -> int:
                     getattr(adapter, "preprocess", getattr(adapter, "processor", ""))
                 ),
                 "max_new_tokens": args.max_new_tokens,
-                "dtype": "float32",
-                "device": "cpu",
+                "dtype": str(getattr(adapter, "dtype", torch.float32)).removeprefix(
+                    "torch."
+                ),
+                "device": adapter.device,
+                "batch_size": batch_size,
             }
+            if adapter.device.startswith("cuda"):
+                summary["gpu_name"] = torch.cuda.get_device_name(adapter.device)
+            synchronize(adapter.device)
             summary["load_seconds"] = time.perf_counter() - load_start
             monitor.check()
             preparation_start = time.perf_counter()
@@ -157,50 +253,16 @@ def worker(config_path: Path) -> int:
                     adapter.predict(
                         load_image(tests[0].path, args.max_side, adapter.image_policy)
                     )
+            synchronize(adapter.device)
             summary["warmup_seconds"] = time.perf_counter() - warmup_start
             sleep_before = throttle.total_sleep_seconds
             measured_start = time.perf_counter()
             measured_cpu_start = time.process_time()
             with (output / "predictions.jsonl").open("w", encoding="utf-8") as handle:
                 for repeat in range(args.repeats):
-                    for sample in tests:
-                        monitor.check()
-                        row = {
-                            "path": portable_path(sample.path),
-                            "group_id": sample.group_id,
-                            "label": sample.label,
-                            "origin": sample.origin,
-                            "pixel_sha256": sample.pixel_sha256,
-                            "protocol": sample.protocol,
-                            "repeat": repeat,
-                            "prediction": None,
-                            "anomaly_score": None,
-                            "scores": {},
-                            "status": "error",
-                        }
-                        with throttle.operation():
-                            step_start = time.perf_counter()
-                            try:
-                                prediction = adapter.predict(
-                                    load_image(
-                                        sample.path, args.max_side, adapter.image_policy
-                                    )
-                                )
-                                row.update(
-                                    prediction=prediction.label,
-                                    anomaly_score=prediction.anomaly_score,
-                                    scores=prediction.scores,
-                                    raw_response=prediction.raw_response,
-                                    generated_tokens=prediction.generated_tokens,
-                                    response_format=prediction.response_format,
-                                    abstention_reason=prediction.abstention_reason,
-                                    status="ok" if prediction.label else "abstain",
-                                )
-                            except (MemoryError, KeyboardInterrupt):
-                                raise
-                            except Exception as exc:  # noqa: BLE001 -- record adapter failures per image
-                                row["error"] = f"{type(exc).__name__}: {exc}"
-                            row["latency_seconds"] = time.perf_counter() - step_start
+                    for row in predict_rows(
+                        adapter, tests, args, repeat, batch_size, throttle, monitor
+                    ):
                         rows.append(row)
                         handle.write(json.dumps(row, allow_nan=False) + "\n")
                         handle.flush()
@@ -210,6 +272,13 @@ def worker(config_path: Path) -> int:
                 row["latency_seconds"] for row in rows if row["status"] != "error"
             ]
             completed = len(latencies)
+            if adapter.device.startswith("cuda"):
+                summary["peak_gpu_allocated_mb"] = (
+                    torch.cuda.max_memory_allocated(adapter.device) / 1024**2
+                )
+                summary["peak_gpu_reserved_mb"] = (
+                    torch.cuda.max_memory_reserved(adapter.device) / 1024**2
+                )
             responses = [row for row in rows if row.get("raw_response") is not None]
             formats = Counter(
                 row.get("response_format") or "unrecorded" for row in responses
@@ -227,6 +296,16 @@ def worker(config_path: Path) -> int:
                 latency_mean_seconds=statistics.mean(latencies) if latencies else None,
                 latency_p50_seconds=percentile(latencies, 0.5),
                 latency_p95_seconds=percentile(latencies, 0.95),
+                batch_latency_p95_seconds=percentile(
+                    list(
+                        {
+                            (r["repeat"], r["batch_index"]): r["batch_seconds"]
+                            for r in rows
+                            if r["status"] != "error"
+                        }.values()
+                    ),
+                    0.95,
+                ),
                 active_samples_per_second=completed / sum(latencies)
                 if sum(latencies)
                 else None,
@@ -313,7 +392,9 @@ def stop_worker(process: subprocess.Popen) -> None:
             process.wait()
 
 
-def run_model(config_path: Path, timeout: float, max_rss_mb: float | None) -> dict:
+def run_model(
+    config_path: Path, timeout: float, max_rss_mb: float | None, cancelled=None
+) -> dict:
     import psutil
 
     config = json.loads(config_path.read_text(encoding="utf-8"))
@@ -338,6 +419,9 @@ def run_model(config_path: Path, timeout: float, max_rss_mb: float | None) -> di
         watched = psutil.Process(process.pid)
         try:
             while process.poll() is None:
+                if cancelled is not None and cancelled.is_set():
+                    reason = "Benchmark interrupted"
+                    break
                 try:
                     peak_rss_mb = max(peak_rss_mb, watched.memory_info().rss / 1024**2)
                 except psutil.NoSuchProcess:
@@ -390,6 +474,17 @@ def write_comparison(output: Path, summaries: list[dict]) -> None:
         "macro_f1",
         "binary_f1",
         "roc_auc",
+        "average_precision",
+        "precision",
+        "recall",
+        "false_positive_rate",
+        "specificity",
+        "device",
+        "dtype",
+        "peak_gpu_allocated_mb",
+        "batch_size",
+        "latency_kind",
+        "batch_latency_p95_seconds",
         "error",
     ]
     with (output / "comparison.csv").open("w", newline="", encoding="utf-8") as handle:
@@ -412,6 +507,16 @@ def write_comparison(output: Path, summaries: list[dict]) -> None:
                 row[column] = metrics.get(column)
             row["binary_f1"] = (metrics.get("binary") or {}).get("f1")
             row["roc_auc"] = (metrics.get("binary") or {}).get("roc_auc")
+            for column in (
+                "average_precision",
+                "precision",
+                "recall",
+                "false_positive_rate",
+                "specificity",
+            ):
+                row[column] = (metrics.get("binary") or {}).get(column)
+            for column in ("device", "dtype"):
+                row[column] = summary.get("input_policy", {}).get(column)
             writer.writerow(row)
     write_json(output / "results.json", {"models": summaries})
 
@@ -485,7 +590,24 @@ def main(argv: list[str] | None = None) -> int:
         help="Use only cached models; no network access",
     )
     parser.add_argument("--worker-config", type=Path, help=argparse.SUPPRESS)
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help="Concurrent model processes for accuracy; use 1 for latency comparisons",
+    )
     add_cpu_arguments(parser)
+    parser.set_defaults(threads=available_threads())
+    add_device_argument(parser)
+    parser.add_argument(
+        "--dtype", choices=["auto", "float32", "float16", "bfloat16"], default="auto"
+    )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=0,
+        help="CLIP batch size; 0 selects GPU=32/CPU=1; VLMs use 1",
+    )
     args = resolve_arguments(parser.parse_args(argv))
     if args.worker_config:
         return worker(args.worker_config)
@@ -500,8 +622,8 @@ def main(argv: list[str] | None = None) -> int:
     if unknown:
         parser.error("Unknown models: " + ", ".join(sorted(unknown)))
     if (
-        min(args.repeats, args.max_side, args.max_new_tokens) < 1
-        or min(args.warmup, args.limit) < 0
+        min(args.repeats, args.max_side, args.max_new_tokens, args.workers) < 1
+        or min(args.warmup, args.limit, args.batch_size) < 0
     ):
         parser.error(
             "repeats, max-side, and max-new-tokens must be positive; warmup and limit nonnegative"
@@ -517,6 +639,7 @@ def main(argv: list[str] | None = None) -> int:
 
         settings = settings_from_args(args)
         settings.configure_environment()
+        args.device = resolve_device(args.device)
         definitions = read_definitions(args.definitions)
         samples = read_manifest(args.manifest.resolve(), definitions)
         split_samples = [
@@ -580,6 +703,7 @@ def main(argv: list[str] | None = None) -> int:
         )
         write_json(output / "run.json", metadata)
         summaries = []
+        configurations = []
         for name in names:
             model_output = output / name
             model_output.mkdir()
@@ -598,14 +722,31 @@ def main(argv: list[str] | None = None) -> int:
                 f"Running {name} on {len(tests)} test images ({settings.threads} CPU threads)...",
                 flush=True,
             )
-            summary = run_model(config_path, args.timeout_seconds, args.max_rss_mb)
-            summaries.append(summary)
-            # Write after every model, so completed work survives interruption.
-            write_comparison(output, summaries)
-            print(
-                f"  {summary['status']}: {summary.get('error', str(summary.get('completed_inferences', 0)) + ' completed inferences')}",
-                flush=True,
-            )
+            configurations.append(config_path)
+        cancelled = threading.Event()
+        with ThreadPoolExecutor(max_workers=args.workers) as pool:
+            futures = [
+                pool.submit(
+                    run_model, config, args.timeout_seconds, args.max_rss_mb, cancelled
+                )
+                for config in configurations
+            ]
+            try:
+                for future in as_completed(futures):
+                    summary = future.result()
+                    summaries.append(summary)
+                    summaries.sort(key=lambda item: names.index(item["model"]))
+                    # Completed results survive interruption in requested model order.
+                    write_comparison(output, summaries)
+                    print(
+                        f"  {summary['model']} {summary['status']}: {summary.get('error', str(summary.get('completed_inferences', 0)) + ' completed inferences')}",
+                        flush=True,
+                    )
+            except BaseException:
+                cancelled.set()
+                for future in futures:
+                    future.cancel()
+                raise
         print(f"Results: {output / 'comparison.csv'}")
         return 0 if all(summary["status"] == "ok" for summary in summaries) else 1
     except (ValueError, OSError, ImportError) as exc:

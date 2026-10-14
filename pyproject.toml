@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "capstone-anomaly-evaluation"
 version = "0.1.0"
-description = "CPU CLIP/VLM anomaly evaluation with portable dataset provenance"
+description = "CPU/GPU CLIP/VLM anomaly evaluation with portable dataset provenance"
 requires-python = ">=3.12"
 dynamic = ["dependencies"]
 

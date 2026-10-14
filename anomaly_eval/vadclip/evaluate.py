@@ -17,6 +17,7 @@ import torch
 from anomaly_eval.data import file_sha256
 from anomaly_eval.metrics import frame_metrics
 from anomaly_eval.paths import resolve_arguments, resolve_path
+from anomaly_eval.runtime import add_device_argument, resolve_device, synchronize
 
 from .clip_b16 import load_clip_b16
 from .data import expand_scores
@@ -28,6 +29,7 @@ def score_items(model, items, device="cpu"):
     truth, vis, align, groups = [], [], [], []
     start = time.perf_counter()
     model.eval()
+    synchronize(device)
     with torch.inference_mode():
         for item in items:
             pv, pa = frame_scores(
@@ -44,6 +46,7 @@ def score_items(model, items, device="cpu"):
     if not truth:
         raise ValueError("No held-out clips")
     y, v, a = np.concatenate(truth), np.concatenate(vis), np.concatenate(align)
+    synchronize(device)
     return (
         y,
         {
@@ -63,6 +66,7 @@ def main(argv=None):
     p.add_argument("--weights", type=Path, required=True)
     p.add_argument("--run-dir", type=Path, required=True)
     p.add_argument("--threads", type=int, default=4)
+    add_device_argument(p)
     a = resolve_arguments(p.parse_args(argv))
     for field in ("cache_dir", "weights", "run_dir"):
         setattr(a, field, resolve_path(getattr(a, field)))
@@ -73,6 +77,7 @@ def main(argv=None):
     threadpool_limits(limits=a.threads)
     torch.set_num_threads(a.threads)
     torch.set_num_interop_threads(1)
+    device = torch.device(resolve_device(a.device))
     ckpt = torch.load(
         a.run_dir / "checkpoint.pt", map_location="cpu", weights_only=True
     )
@@ -88,19 +93,21 @@ def main(argv=None):
         raise ValueError("Re-train checkpoint with development calibration")
     model = CLIPVAD(
         num_class=2,
-        clip_model=load_clip_b16(str(a.weights), torch.device("cpu")),
+        clip_model=load_clip_b16(str(a.weights), device),
+        device=device,
         visual_length=cfg["visual_length"],
         attn_window=cfg["attn_window"],
         visual_layers=cfg["temporal_layers"],
         use_graph=not cfg.get("no_graph", False),
-    )
+    ).to(device)
     model.load_state_dict(ckpt["state"])
     y, scores, groups, seconds = score_items(
-        model, [items[k] for k in manifest["test"]]
+        model, [items[k] for k in manifest["test"]], device
     )
     result = {
         "protocol": "offline_supervised_smoking",
         "split": "test",
+        "device": str(device),
         "cache_fingerprint": manifest["fingerprint"],
         "n_test_frames": len(y),
         "selected_branch": ckpt["selected_branch"],

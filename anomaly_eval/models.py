@@ -1,4 +1,4 @@
-"""CPU model adapters: generative VLMs, CLIP, and few-shot vision features."""
+"""CPU/GPU model adapters: generative VLMs, CLIP, and few-shot vision features."""
 
 from __future__ import annotations
 
@@ -9,6 +9,7 @@ from pathlib import Path
 
 from anomaly_eval.data import Sample
 from anomaly_eval.resources import Throttler
+from anomaly_eval.runtime import adapter_options, move_inputs
 
 
 @dataclass(frozen=True)
@@ -138,6 +139,9 @@ def load_image(path: Path, max_side: int, policy: str = "native"):
 
 
 class Adapter:
+    device = "cpu"
+    supports_batch = False
+
     def prepare(
         self,
         references: list[Sample],
@@ -152,9 +156,13 @@ class Adapter:
 
 
 class CLIPAdapter(Adapter):
+    supports_batch = True
+
     def __init__(self, spec: ModelSpec, definitions: dict[str, str], options: dict):
         import torch
         from transformers import AutoProcessor, CLIPModel
+
+        options = adapter_options(self, options)
 
         self.torch = torch
         self.labels = list(definitions)
@@ -162,11 +170,13 @@ class CLIPAdapter(Adapter):
         self.model = (
             CLIPModel.from_pretrained(
                 spec.checkpoint,
-                dtype=torch.float32,
-                attn_implementation="eager",
+                dtype=self.dtype,
+                attn_implementation="sdpa"
+                if self.device.startswith("cuda")
+                else "eager",
                 **options,
             )
-            .to("cpu")
+            .to(self.device)
             .eval()
         )
         tokens = self.processor(
@@ -175,31 +185,43 @@ class CLIPAdapter(Adapter):
             truncation=True,
             return_tensors="pt",
         )
+        tokens = move_inputs(tokens, self.device, self.dtype)
         with torch.inference_mode():
             self.text_features = torch.nn.functional.normalize(
                 self.model.get_text_features(**tokens), dim=-1
             )
 
     def predict(self, image) -> Prediction:
+        return self.predict_batch([image])[0]
+
+    def predict_batch(self, images) -> list[Prediction]:
         torch = self.torch
-        inputs = self.processor(images=image, return_tensors="pt")
+        inputs = move_inputs(
+            self.processor(images=images, return_tensors="pt"), self.device, self.dtype
+        )
         with torch.inference_mode():
             features = torch.nn.functional.normalize(
                 self.model.get_image_features(**inputs), dim=-1
             )
             logits = self.model.logit_scale.exp() * features @ self.text_features.T
-            weights = logits.softmax(dim=-1)[0].tolist()
-        scores = dict(zip(self.labels, weights))
-        return Prediction(max(scores, key=scores.get), 1 - scores["normal"], scores)
+            weights = logits.softmax(dim=-1).tolist()
+        return [
+            Prediction(max(scores, key=scores.get), 1 - scores["normal"], scores)
+            for scores in (dict(zip(self.labels, row)) for row in weights)
+        ]
 
 
 class OpenCLIPAdapter(Adapter):
     """MobileCLIP2 using the OpenCLIP port of Apple's S2 checkpoint."""
 
+    supports_batch = True
+
     def __init__(self, spec: ModelSpec, definitions: dict[str, str], options: dict):
         import open_clip
         import torch
         from timm.utils import reparameterize_model
+
+        options = adapter_options(self, options)
 
         self.torch = torch
         self.labels = list(definitions)
@@ -221,8 +243,10 @@ class OpenCLIPAdapter(Adapter):
         self.resolved_revision = spec.revision
         self.model, _, self.preprocess = open_clip.create_model_and_transforms(
             model_name,
-            device="cpu",
-            precision="fp32",
+            device=self.device,
+            precision="fp32"
+            if self.dtype == torch.float32
+            else ("pure_bf16" if self.dtype == torch.bfloat16 else "pure_fp16"),
             cache_dir=options.get("cache_dir"),
         )
         self.model.eval()
@@ -231,27 +255,39 @@ class OpenCLIPAdapter(Adapter):
         tokenizer = open_clip.get_tokenizer(
             model_name, cache_dir=options.get("cache_dir")
         )
-        tokens = tokenizer(list(definitions.values()))
+        tokens = tokenizer(list(definitions.values())).to(self.device)
         with torch.inference_mode():
             self.text_features = self.model.encode_text(tokens, normalize=True)
 
     def predict(self, image) -> Prediction:
+        return self.predict_batch([image])[0]
+
+    def predict_batch(self, images) -> list[Prediction]:
         with self.torch.inference_mode():
             features = self.model.encode_image(
-                self.preprocess(image).unsqueeze(0), normalize=True
+                self.torch.stack([self.preprocess(image) for image in images]).to(
+                    device=self.device, dtype=self.dtype
+                ),
+                normalize=True,
             )
             logits = self.model.logit_scale.exp() * features @ self.text_features.T
-            weights = logits.softmax(dim=-1)[0].tolist()
-        scores = dict(zip(self.labels, weights))
-        return Prediction(max(scores, key=scores.get), 1 - scores["normal"], scores)
+            weights = logits.softmax(dim=-1).tolist()
+        return [
+            Prediction(max(scores, key=scores.get), 1 - scores["normal"], scores)
+            for scores in (dict(zip(self.labels, row)) for row in weights)
+        ]
 
 
 class SigLIPAdapter(Adapter):
     """Cache text features and preserve SigLIP's independent sigmoid scores."""
 
+    supports_batch = True
+
     def __init__(self, spec: ModelSpec, definitions: dict[str, str], options: dict):
         import torch
         from transformers import AutoModel, AutoProcessor
+
+        options = adapter_options(self, options)
 
         self.torch = torch
         self.labels = list(definitions)
@@ -261,11 +297,13 @@ class SigLIPAdapter(Adapter):
         self.model = (
             AutoModel.from_pretrained(
                 spec.checkpoint,
-                dtype=torch.float32,
-                attn_implementation="eager",
+                dtype=self.dtype,
+                attn_implementation="sdpa"
+                if self.device.startswith("cuda")
+                else "eager",
                 **options,
             )
-            .to("cpu")
+            .to(self.device)
             .eval()
         )
         tokens = self.processor(
@@ -275,14 +313,20 @@ class SigLIPAdapter(Adapter):
             truncation=True,
             return_tensors="pt",
         )
+        tokens = move_inputs(tokens, self.device, self.dtype)
         with torch.inference_mode():
             self.text_features = torch.nn.functional.normalize(
                 self.model.get_text_features(**tokens), dim=-1
             )
 
     def predict(self, image) -> Prediction:
+        return self.predict_batch([image])[0]
+
+    def predict_batch(self, images) -> list[Prediction]:
         torch = self.torch
-        inputs = self.processor(images=image, return_tensors="pt")
+        inputs = move_inputs(
+            self.processor(images=images, return_tensors="pt"), self.device, self.dtype
+        )
         with torch.inference_mode():
             features = torch.nn.functional.normalize(
                 self.model.get_image_features(**inputs), dim=-1
@@ -290,18 +334,22 @@ class SigLIPAdapter(Adapter):
             logits = (
                 self.model.logit_scale.exp() * features @ self.text_features.T
                 + self.model.logit_bias
-            )[0]
+            )
             values = logits.tolist()
             weights = logits.sigmoid().tolist()
-        scores = dict(zip(self.labels, weights))
-        raw_scores = dict(zip(self.labels, values))
-        # Score the anomaly-vs-normal margin; sigmoid outputs do not sum to one.
-        label = max(raw_scores, key=raw_scores.get)
-        margin = (
-            max(value for name, value in raw_scores.items() if name != "normal")
-            - raw_scores["normal"]
-        )
-        return Prediction(label, margin, scores)
+        predictions = []
+        for raw, weights_row in zip(values, weights):
+            scores = dict(zip(self.labels, weights_row))
+            raw_scores = dict(zip(self.labels, raw))
+            # Sigmoid outputs do not sum to one; use anomaly-vs-normal margin.
+            margin = (
+                max(value for name, value in raw_scores.items() if name != "normal")
+                - raw_scores["normal"]
+            )
+            predictions.append(
+                Prediction(max(raw_scores, key=raw_scores.get), margin, scores)
+            )
+        return predictions
 
 
 class VLMAdapter(Adapter):
@@ -316,6 +364,8 @@ class VLMAdapter(Adapter):
         import torch
         from transformers import AutoModelForImageTextToText, AutoProcessor
 
+        options = adapter_options(self, options, generative=True)
+
         self.torch = torch
         self.definitions = definitions
         self.max_new_tokens = max_new_tokens
@@ -325,11 +375,13 @@ class VLMAdapter(Adapter):
         self.model = (
             AutoModelForImageTextToText.from_pretrained(
                 spec.checkpoint,
-                dtype=torch.float32,
-                attn_implementation="eager",
+                dtype=self.dtype,
+                attn_implementation="sdpa"
+                if self.device.startswith("cuda")
+                else "eager",
                 **options,
             )
-            .to("cpu")
+            .to(self.device)
             .eval()
         )
         prompt = classification_prompt(definitions)
@@ -344,7 +396,11 @@ class VLMAdapter(Adapter):
         )
 
     def predict(self, image) -> Prediction:
-        inputs = self.processor(text=self.prompt, images=[image], return_tensors="pt")
+        inputs = move_inputs(
+            self.processor(text=self.prompt, images=[image], return_tensors="pt"),
+            self.device,
+            self.dtype,
+        )
         with self.torch.inference_mode():
             output = self.model.generate(
                 **inputs, max_new_tokens=self.max_new_tokens, do_sample=False
@@ -357,7 +413,7 @@ class VLMAdapter(Adapter):
 
 
 class MiniCPMAdapter(Adapter):
-    """MiniCPM-V 4.0 CPU float32 baseline, using its publisher's chat interface."""
+    """MiniCPM-V 4.0 using its publisher's chat interface."""
 
     def __init__(
         self,
@@ -368,6 +424,8 @@ class MiniCPMAdapter(Adapter):
     ):
         import torch
         from transformers import AutoModel, AutoProcessor
+
+        options = adapter_options(self, options, generative=True)
 
         self.torch = torch
         self.definitions = definitions
@@ -380,11 +438,11 @@ class MiniCPMAdapter(Adapter):
             AutoModel.from_pretrained(
                 spec.checkpoint,
                 trust_remote_code=True,
-                dtype=torch.float32,
+                dtype=self.dtype,
                 attn_implementation="sdpa",
                 **options,
             )
-            .to("cpu")
+            .to(self.device)
             .eval()
         )
 
@@ -410,6 +468,8 @@ class VisionAdapter(Adapter):
     def __init__(self, spec: ModelSpec, definitions: dict[str, str], options: dict):
         import torch
 
+        options = adapter_options(self, options)
+
         self.torch = torch
         self.labels = list(definitions)
         self.reference_features = None
@@ -426,7 +486,7 @@ class VisionAdapter(Adapter):
                     num_classes=0,
                     cache_dir=options.get("cache_dir"),
                 )
-                .to("cpu")
+                .to(device=self.device, dtype=self.dtype)
                 .eval()
             )
             self.transform = create_transform(
@@ -442,20 +502,30 @@ class VisionAdapter(Adapter):
             self.model = (
                 AutoModel.from_pretrained(
                     spec.checkpoint,
-                    dtype=torch.float32,
+                    dtype=self.dtype,
                     attn_implementation="eager",
                     **options,
                 )
-                .to("cpu")
+                .to(self.device)
                 .eval()
             )
 
     def _features(self, image):
         with self.torch.inference_mode():
             if self.processor is None:
-                features = self.model(self.transform(image).unsqueeze(0))
+                features = self.model(
+                    self.transform(image)
+                    .unsqueeze(0)
+                    .to(device=self.device, dtype=self.dtype)
+                )
             else:
-                output = self.model(**self.processor(images=image, return_tensors="pt"))
+                output = self.model(
+                    **move_inputs(
+                        self.processor(images=image, return_tensors="pt"),
+                        self.device,
+                        self.dtype,
+                    )
+                )
                 features = output.last_hidden_state[:, 0]
             return self.torch.nn.functional.normalize(features, dim=-1)
 
@@ -507,9 +577,11 @@ def create_adapter(
     offline: bool,
     max_new_tokens: int,
     max_side: int,
+    device: str = "cpu",
+    dtype: str = "float32",
 ) -> Adapter:
     spec = MODELS[name]
-    options = {"local_files_only": offline}
+    options = {"local_files_only": offline, "_device": device, "_dtype": dtype}
     if spec.revision:
         options["revision"] = spec.revision
     if cache_dir:

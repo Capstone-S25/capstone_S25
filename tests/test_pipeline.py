@@ -83,11 +83,13 @@ class ThrottleTests(unittest.TestCase):
                 CPUSettings(**options)
 
     def test_environment_overrides_thread_pools(self):
-        with patch.dict(os.environ, {"OMP_NUM_THREADS": "99"}):
+        with patch.dict(
+            os.environ, {"OMP_NUM_THREADS": "99", "CUDA_VISIBLE_DEVICES": "0"}
+        ):
             CPUSettings(threads=2).configure_environment()
             self.assertEqual(os.environ["OMP_NUM_THREADS"], "2")
             self.assertEqual(os.environ["OPENBLAS_NUM_THREADS"], "2")
-            self.assertEqual(os.environ["CUDA_VISIBLE_DEVICES"], "")
+            self.assertEqual(os.environ["CUDA_VISIBLE_DEVICES"], "0")
 
 
 class DataTests(unittest.TestCase):
