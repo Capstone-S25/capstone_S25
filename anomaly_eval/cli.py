@@ -10,6 +10,16 @@ from pathlib import Path
 from .paths import ROOT_FIELDS, configure
 
 COMMANDS = {
+    "predict-clip": (
+        "anomaly_eval.training.predict",
+        "main",
+        "Classify images with the development-selected trained CLIP bundle",
+    ),
+    "train-clip": (
+        "anomaly_eval.training.clip",
+        "main",
+        "Train source-grouped CLIP probes and last-stage visual adapters",
+    ),
     "run": (
         "anomaly_eval.runner",
         "main",

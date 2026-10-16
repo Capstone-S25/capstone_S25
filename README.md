@@ -76,4 +76,14 @@ adds 55,156 GPU predictions and increases unattended-item coverage from 36 to
 explicitly qualified diagnostics. The [updated slide deck](reports/slides/model_evaluation_expanded_20261014.pdf)
 covers the findings and methodology without an additional latency experiment.
 
+The [supervised CLIP training workflow](docs/training.md) adds masked five-target
+heads, frozen-feature probes and actual visual fine-tuning for MobileCLIP2-S2 and
+SigLIP2. Its [source-holdout protocol](reports/clip_training_protocol_20261015.md)
+uses new labelled video/photo sources and selects checkpoints on development data.
+Training results are kept separately under `results/clip_finetuning_20261015/`.
+The [completed training findings](reports/clip_finetuning_findings_20261016.md)
+cover all six GPU runs, stronger waste-dumping/unattended ranking, mixed smoking
+transfer and unresolved loitering. The [research model card](results/clip_finetuning_20261015/model_card.md)
+links the checkpoints and records input and threshold limitations.
+
 See [the evaluation guide](docs/evaluation.md) for data fetching, reviewed-label imports, metric definitions and all commands; [server setup and migration](docs/server.md) covers relocated datasets/caches and old commands. [The original workflow review](reports/workflow_review_20261013.md) records the preceding analysis and measurements. The historical bundle is development only, and confirmed held-out coverage for all five anomalies is still incomplete.
