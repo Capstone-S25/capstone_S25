@@ -2,7 +2,8 @@ from unittest.mock import MagicMock, Mock
 
 from sqlalchemy.exc import OperationalError
 
-from video_ingestion import recording_worker
+from video_ingestion.recording import worker
+from video_ingestion.recording.segments import SegmentEntry
 
 
 def test_finalizes_once_when_database_registration_retries(
@@ -11,7 +12,7 @@ def test_finalizes_once_when_database_registration_retries(
     # A second finalization would fail because .part has already been renamed.
     part = tmp_path / "000000.mp4.part"
     part.write_bytes(b"recorded video")
-    finalize = Mock(wraps=recording_worker._finalize_segment_with_retry)
+    finalize = Mock(wraps=worker.finalize_segment_with_retry)
     insert = Mock(
         side_effect=[
             OperationalError(None, None, Exception("Connection lost")),
@@ -19,12 +20,12 @@ def test_finalizes_once_when_database_registration_retries(
         ]
     )
     factory = MagicMock()
-    monkeypatch.setattr(recording_worker, "_finalize_segment_with_retry", finalize)
-    monkeypatch.setattr(recording_worker, "insert_video_segment_metadata", insert)
-    monkeypatch.setattr(recording_worker.time, "sleep", Mock())
+    monkeypatch.setattr(worker, "finalize_segment_with_retry", finalize)
+    monkeypatch.setattr(worker, "insert_video_segment_metadata", insert)
+    monkeypatch.setattr(worker.time, "sleep", Mock())
 
-    segment = recording_worker._finalize_and_register_segment(
-        recording_worker.SegmentEntry("000000.mp4.part", 0, 1),
+    segment = worker._finalize_and_register_segment(
+        SegmentEntry("000000.mp4.part", 0, 1),
         tmp_path,
         source=make_source(),
         session_id="test-session",

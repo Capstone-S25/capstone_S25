@@ -2,12 +2,12 @@ from pathlib import Path
 
 import pytest
 
-from video_ingestion.recording_worker import _build_ffmpeg_command
+from video_ingestion.recording.ffmpeg import build_segment_recording_command
 
 
 def test_build_command_defaults(make_source, tmp_path):
     source = make_source()
-    command = _build_ffmpeg_command(source, tmp_path)
+    command = build_segment_recording_command(source, tmp_path)
 
     assert command[0] == "ffmpeg"
     input_index = command.index("-i")
@@ -47,7 +47,7 @@ def test_build_command_defaults(make_source, tmp_path):
 
 def test_build_command_custom_duration(make_source, tmp_path):
     source = make_source()
-    command = _build_ffmpeg_command(source, tmp_path, segment_seconds=10)
+    command = build_segment_recording_command(source, tmp_path, segment_seconds=10)
 
     assert command[command.index("-segment_time") + 1] == "10"
 
@@ -56,14 +56,14 @@ def test_build_command_custom_duration(make_source, tmp_path):
 def test_build_command_rejects_nonpositive_duration(make_source, tmp_path, duration):
     source = make_source()
     with pytest.raises(ValueError):
-        _build_ffmpeg_command(source, tmp_path, segment_seconds=duration)
+        build_segment_recording_command(source, tmp_path, segment_seconds=duration)
 
 
 def test_build_command_resolves_relative_directory(make_source, tmp_path, monkeypatch):
     source = make_source()
     monkeypatch.chdir(tmp_path)
 
-    command = _build_ffmpeg_command(source, Path("recordings"))
+    command = build_segment_recording_command(source, Path("recordings"))
 
     expected_directory = tmp_path / "recordings"
 

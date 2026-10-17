@@ -3,7 +3,8 @@ from unittest.mock import MagicMock, Mock
 import pytest
 from sqlalchemy.exc import IntegrityError, InterfaceError, OperationalError
 
-from video_ingestion import recording_worker
+from video_ingestion.recording import worker
+from video_ingestion.recording.segments import FinalizedSegment
 
 
 @pytest.fixture
@@ -12,9 +13,9 @@ def registration(tmp_path, monkeypatch):
     factory = MagicMock()
     insert = Mock(return_value=True)
     sleep = Mock()
-    monkeypatch.setattr(recording_worker, "insert_video_segment_metadata", insert)
-    monkeypatch.setattr(recording_worker.time, "sleep", sleep)
-    segment = recording_worker.FinalizedSegment(
+    monkeypatch.setattr(worker, "insert_video_segment_metadata", insert)
+    monkeypatch.setattr(worker.time, "sleep", sleep)
+    segment = FinalizedSegment(
         path=tmp_path / "000000.mp4",
         start_at_ms=1_700_000_000_000,
         end_at_ms=1_700_000_001_000,
@@ -24,7 +25,7 @@ def registration(tmp_path, monkeypatch):
 
 def _run_registration(registration, tmp_path, **kwargs):
     factory, _, _, segment = registration
-    return recording_worker._register_segment_metadata_with_retry(
+    return worker._register_segment_metadata_with_retry(
         segment,
         source_id="camera_01",
         session_id="test-session",

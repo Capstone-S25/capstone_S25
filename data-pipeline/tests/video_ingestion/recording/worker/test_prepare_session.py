@@ -1,6 +1,6 @@
 import pytest
 
-from video_ingestion.recording_worker import _prepare_session
+from video_ingestion.recording.worker import _prepare_session
 
 
 def test_prepare_session_creates_directory(make_source, tmp_path):

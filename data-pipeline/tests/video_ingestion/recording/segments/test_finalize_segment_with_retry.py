@@ -2,26 +2,27 @@ from unittest.mock import Mock, call
 
 import pytest
 
-from video_ingestion import recording_worker
+from video_ingestion.recording import segments
+from video_ingestion.recording.segments import FinalizedSegment, SegmentEntry
 
 
 @pytest.fixture
 def retry_context(tmp_path, monkeypatch):
-    entry = recording_worker.SegmentEntry("000000.mp4.part", 12.0, 18.5)
-    segment = recording_worker.FinalizedSegment(
+    entry = SegmentEntry("000000.mp4.part", 12.0, 18.5)
+    segment = FinalizedSegment(
         tmp_path / "000000.mp4", 1_700_000_012_000, 1_700_000_018_500
     )
     finalize = Mock(return_value=segment)
     sleep = Mock()
-    monkeypatch.setattr(recording_worker, "_finalize_segment", finalize)
-    monkeypatch.setattr(recording_worker.time, "sleep", sleep)
+    monkeypatch.setattr(segments, "_finalize_segment", finalize)
+    monkeypatch.setattr(segments.time, "sleep", sleep)
     return entry, segment, finalize, sleep
 
 
 def test_finalize_segment_with_retry_succeeds_without_sleeping(retry_context, tmp_path):
     entry, segment, finalize, sleep = retry_context
 
-    result = recording_worker._finalize_segment_with_retry(
+    result = segments.finalize_segment_with_retry(
         entry, tmp_path, session_started_at_utc=1_700_000_000_000
     )
 
@@ -40,7 +41,7 @@ def test_finalize_segment_with_retry_succeeds_on_last_attempt(retry_context, tmp
     events.attach_mock(sleep, "sleep")
     finalize.side_effect = [error, error, segment]
 
-    result = recording_worker._finalize_segment_with_retry(
+    result = segments.finalize_segment_with_retry(
         entry, tmp_path, session_started_at_utc=1_700_000_000_000
     )
 
@@ -63,7 +64,7 @@ def test_finalize_segment_with_retry_reraises_after_attempt_limit(
     finalize.side_effect = error
 
     with pytest.raises(type(error)) as exc_info:
-        recording_worker._finalize_segment_with_retry(
+        segments.finalize_segment_with_retry(
             entry,
             tmp_path,
             max_attempts=max_attempts,
@@ -95,7 +96,7 @@ def test_finalize_segment_with_retry_does_not_retry_other_errors(
     finalize.side_effect = error
 
     with pytest.raises(type(error)) as exc_info:
-        recording_worker._finalize_segment_with_retry(
+        segments.finalize_segment_with_retry(
             entry, tmp_path, session_started_at_utc=1_700_000_000_000
         )
 

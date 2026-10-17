@@ -1,11 +1,12 @@
 import pytest
 
-from video_ingestion import recording_worker
+from video_ingestion.recording import segments
+from video_ingestion.recording.segments import FinalizedSegment, SegmentEntry
 
 
 @pytest.fixture
 def entry():
-    return recording_worker.SegmentEntry(
+    return SegmentEntry(
         filename="000000.mp4.part", start_seconds=12.0, end_seconds=18.5
     )
 
@@ -15,14 +16,14 @@ def test_finalize_segment_renames_file_and_returns_metadata(tmp_path, entry):
     final_path = tmp_path / "000000.mp4"
     part_path.write_bytes(b"temporary segment")
 
-    segment = recording_worker._finalize_segment(
+    segment = segments._finalize_segment(
         entry, tmp_path, session_started_at_utc=1_700_000_000_000
     )
 
     assert not part_path.exists()
     assert final_path.is_file()
     assert final_path.read_bytes() == b"temporary segment"
-    assert segment == recording_worker.FinalizedSegment(
+    assert segment == FinalizedSegment(
         path=final_path,
         start_at_ms=1_700_000_012_000,
         end_at_ms=1_700_000_018_500,
@@ -36,7 +37,7 @@ def test_finalize_segment_preserves_both_files_when_destination_exists(tmp_path,
     final_path.write_bytes(b"existing finalized segment")
 
     with pytest.raises(FileExistsError, match="Final segment already exists"):
-        recording_worker._finalize_segment(
+        segments._finalize_segment(
             entry, tmp_path, session_started_at_utc=1_700_000_000_000
         )
 
@@ -47,10 +48,10 @@ def test_finalize_segment_preserves_both_files_when_destination_exists(tmp_path,
 def test_finalize_segment_rejects_non_temporary_file(tmp_path):
     path = tmp_path / "000000.mp4"
     path.write_bytes(b"existing segment")
-    entry = recording_worker.SegmentEntry(path.name, 0.0, 6.0)
+    entry = SegmentEntry(path.name, 0.0, 6.0)
 
     with pytest.raises(ValueError, match="Expected a temporary segment"):
-        recording_worker._finalize_segment(
+        segments._finalize_segment(
             entry, tmp_path, session_started_at_utc=1_700_000_000_000
         )
 
@@ -64,9 +65,9 @@ def test_finalize_segment_rejects_non_temporary_file(tmp_path):
 def test_finalize_segment_converts_fractional_offsets(
     tmp_path, start, end, expected_start, expected_end
 ):
-    entry = recording_worker.SegmentEntry("000000.mp4.part", start, end)
+    entry = SegmentEntry("000000.mp4.part", start, end)
     (tmp_path / entry.filename).write_bytes(b"segment")
-    segment = recording_worker._finalize_segment(
+    segment = segments._finalize_segment(
         entry, tmp_path, session_started_at_utc=1_700_000_000_000
     )
     assert segment.start_at_ms == 1_700_000_000_000 + expected_start
@@ -97,12 +98,12 @@ def test_finalize_segment_converts_fractional_offsets(
     ],
 )
 def test_invalid_timestamps_leave_temporary_file_untouched(tmp_path, start, end):
-    entry = recording_worker.SegmentEntry("000000.mp4.part", start, end)
+    entry = SegmentEntry("000000.mp4.part", start, end)
     part_path = tmp_path / entry.filename
     part_path.write_bytes(b"original segment")
 
     with pytest.raises(ValueError):
-        recording_worker._finalize_segment(
+        segments._finalize_segment(
             entry, tmp_path, session_started_at_utc=1_700_000_000_000
         )
 

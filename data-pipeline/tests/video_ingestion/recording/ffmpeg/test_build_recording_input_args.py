@@ -1,6 +1,6 @@
 import pytest
 
-from video_ingestion.recording_worker import _build_input_args
+from video_ingestion.recording.ffmpeg import _build_recording_input_args
 from video_ingestion.sources import SourceType
 
 
@@ -10,7 +10,7 @@ def test_file_input_args(make_source):
         "videos/test clip.mp4",
     )
 
-    result = _build_input_args(source)
+    result = _build_recording_input_args(source)
 
     input_index = result.index("-i")
     assert result[input_index + 1] == source.location
@@ -23,7 +23,7 @@ def test_rtsp_input_args(make_source):
         "rtsp://192.168.1.50:554/live/main",
     )
 
-    result = _build_input_args(source)
+    result = _build_recording_input_args(source)
 
     input_index = result.index("-i")
     transport_index = result.index("-rtsp_transport")
@@ -36,4 +36,4 @@ def test_usb_input_is_not_supported_yet(make_source):
     source = make_source(SourceType.USB, "Integrated Camera")
 
     with pytest.raises(ValueError):
-        _build_input_args(source)
+        _build_recording_input_args(source)
