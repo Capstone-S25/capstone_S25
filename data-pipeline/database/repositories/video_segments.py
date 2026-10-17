@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from database.models.video_segments import VideoSegment
 
 
-def insert_video_segment(
+def insert_video_segment_metadata(
     db: Session,
     *,
     source_id: str,

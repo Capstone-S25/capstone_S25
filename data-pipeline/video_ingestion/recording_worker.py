@@ -1,10 +1,15 @@
 import csv
+import math
 import subprocess
 import time
 from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from uuid import uuid4
 
+from sqlalchemy.orm import Session, sessionmaker
+
+from database.repositories.video_segments import insert_video_segment_metadata
 from video_ingestion.sources import SourceType, VideoSource
 
 _SEGMENT_LIST_FILENAME = "completed.csv"
@@ -307,11 +312,45 @@ def _finalize_segment_with_retry(
             time.sleep(0.25)
 
 
+def _finalize_and_register_segment(
+    entry: SegmentEntry,
+    session_dir: Path,
+    *,
+    source: VideoSource,
+    session_id: str,
+    storage_root: Path,
+    session_started_at_utc: int,
+    session_factory: sessionmaker[Session],
+    retention_hours: float,
+) -> FinalizedSegment:
+    segment = _finalize_segment_with_retry(
+        entry, session_dir, session_started_at_utc=session_started_at_utc
+    )
+    with session_factory.begin() as db:
+        insert_video_segment_metadata(
+            db,
+            source_id=source.source_id,
+            session_id=session_id,
+            storage_root=storage_root,
+            path=segment.path,
+            start_at_ms=segment.start_at_ms,
+            end_at_ms=segment.end_at_ms,
+            delete_at=datetime.now(UTC) + timedelta(hours=retention_hours),
+        )
+    return segment
+
+
 def run_recording_worker(
     source: VideoSource,
     storage_root: Path,
     segment_seconds: int = 5,
+    *,
+    session_factory: sessionmaker[Session],
+    retention_hours: float = 24,
 ):
+    if not math.isfinite(retention_hours) or retention_hours <= 0:
+        raise ValueError("retention_hours must be positive and finite")
+
     # Create a recording session and its output directory
     session_id, session_dir = _prepare_session(source, storage_root)
 
@@ -332,9 +371,15 @@ def run_recording_worker(
             entries, csv_offset = _read_segment_entries(csv_path, csv_offset)
 
             for entry in entries:
-                # TODO: produce the video segment metadata
-                segment = _finalize_segment_with_retry(
-                    entry, session_dir, session_started_at_utc=session_started_at_utc
+                segment = _finalize_and_register_segment(
+                    entry,
+                    session_dir,
+                    source=source,
+                    session_id=session_id,
+                    storage_root=storage_root,
+                    session_started_at_utc=session_started_at_utc,
+                    session_factory=session_factory,
+                    retention_hours=retention_hours,
                 )
 
                 print(segment, flush=True)
@@ -366,9 +411,15 @@ def run_recording_worker(
     # Edge case: FFmpeg may write the final rows between the last poll and process exit
     entries, csv_offset = _read_segment_entries(csv_path, csv_offset)
     for entry in entries:
-        # TODO: produce the video segment metadata
-        segment = _finalize_segment_with_retry(
-            entry, session_dir, session_started_at_utc=session_started_at_utc
+        segment = _finalize_and_register_segment(
+            entry,
+            session_dir,
+            source=source,
+            session_id=session_id,
+            storage_root=storage_root,
+            session_started_at_utc=session_started_at_utc,
+            session_factory=session_factory,
+            retention_hours=retention_hours,
         )
 
         print(segment, flush=True)

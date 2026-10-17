@@ -7,7 +7,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from database.models.video_segments import SegmentStatus, VideoSegment
-from database.repositories.video_segments import insert_video_segment
+from database.repositories.video_segments import insert_video_segment_metadata
 
 
 @pytest.fixture
@@ -30,7 +30,7 @@ def test_rejects_path_outside_storage_before_query(segment_data, tmp_path):
     segment_data["path"] = tmp_path / "outside.mp4"
 
     with pytest.raises(ValueError):
-        insert_video_segment(db, **segment_data)
+        insert_video_segment_metadata(db, **segment_data)
 
     db.execute.assert_not_called()
 
@@ -40,7 +40,7 @@ def test_rejects_invalid_session_uuid_before_query(segment_data):
     segment_data["session_id"] = "invalid"
 
     with pytest.raises(ValueError):
-        insert_video_segment(db, **segment_data)
+        insert_video_segment_metadata(db, **segment_data)
 
     db.execute.assert_not_called()
 
@@ -52,7 +52,7 @@ def test_inserts_normalized_metadata_and_leaves_transaction_open(
     db = postgres_session
     expected_path = f"camera_01/{segment_data['session_id']}/000000.mp4"
 
-    inserted = insert_video_segment(db, **segment_data, delete_at=delete_at)
+    inserted = insert_video_segment_metadata(db, **segment_data, delete_at=delete_at)
 
     assert inserted is True
     assert db.in_transaction()
@@ -79,7 +79,7 @@ def test_duplicate_path_is_noop_and_session_remains_usable(
     postgres_session, segment_data
 ):
     db = postgres_session
-    inserted = insert_video_segment(db, **segment_data)
+    inserted = insert_video_segment_metadata(db, **segment_data)
     assert inserted is True
 
     # Use a different spelling of the same path and attempt to change its metadata.
@@ -88,7 +88,7 @@ def test_duplicate_path_is_noop_and_session_remains_usable(
     duplicate_data["path"] = original_path.parent / "nested" / ".." / original_path.name
     duplicate_data["end_at_ms"] = 1_700_000_009_000
 
-    duplicate_inserted = insert_video_segment(db, **duplicate_data)
+    duplicate_inserted = insert_video_segment_metadata(db, **duplicate_data)
 
     assert duplicate_inserted is False
     stored_end_at_ms = db.scalar(select(VideoSegment.end_at_ms))
@@ -98,7 +98,7 @@ def test_duplicate_path_is_noop_and_session_remains_usable(
     next_segment_data = segment_data.copy()
     next_segment_data["path"] = original_path.with_name("000001.mp4")
 
-    next_inserted = insert_video_segment(db, **next_segment_data)
+    next_inserted = insert_video_segment_metadata(db, **next_segment_data)
 
     assert next_inserted is True
     db.commit()
@@ -110,14 +110,16 @@ def test_rejects_naive_delete_at_before_query(segment_data):
     db = Mock(spec=Session)
 
     with pytest.raises(ValueError, match="timezone-aware"):
-        insert_video_segment(db, **segment_data, delete_at=datetime(2026, 10, 17))
+        insert_video_segment_metadata(
+            db, **segment_data, delete_at=datetime(2026, 10, 17)
+        )
 
     db.execute.assert_not_called()
 
 
 def test_status_update_preserves_created_at(postgres_session, segment_data):
     db = postgres_session
-    insert_video_segment(db, **segment_data)
+    insert_video_segment_metadata(db, **segment_data)
     segment = db.scalar(select(VideoSegment))
     # Use an older registration time so an accidental timestamp reset is visible,
     # even when the database's now() is constant within this transaction.
@@ -136,7 +138,7 @@ def test_status_update_preserves_created_at(postgres_session, segment_data):
 def test_duplicate_insert_preserves_lifecycle_metadata(postgres_session, segment_data):
     db = postgres_session
     deadline = datetime(2030, 1, 1, tzinfo=UTC)
-    insert_video_segment(db, **segment_data, delete_at=deadline)
+    insert_video_segment_metadata(db, **segment_data, delete_at=deadline)
     segment = db.scalar(select(VideoSegment))
     segment.status = SegmentStatus.PROCESSED
     segment.created_at = datetime(2020, 1, 1, tzinfo=UTC)
@@ -144,7 +146,7 @@ def test_duplicate_insert_preserves_lifecycle_metadata(postgres_session, segment
     created_at = segment.created_at
 
     # Retrying registration must not reset status, creation time, or retention.
-    assert insert_video_segment(db, **segment_data) is False
+    assert insert_video_segment_metadata(db, **segment_data) is False
     db.refresh(segment)
     assert segment.status is SegmentStatus.PROCESSED
     assert segment.created_at == created_at

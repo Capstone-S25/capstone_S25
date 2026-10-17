@@ -1,4 +1,5 @@
-from unittest.mock import Mock, call
+from datetime import UTC, datetime, timedelta
+from unittest.mock import MagicMock, Mock, call
 
 import pytest
 
@@ -6,7 +7,19 @@ from video_ingestion import recording_worker
 
 
 @pytest.fixture
-def worker_process(tmp_path, monkeypatch):
+def session_factory(monkeypatch):
+    clock = Mock()
+    clock.now.return_value = datetime(2026, 10, 17, 12, tzinfo=UTC)
+    monkeypatch.setattr(recording_worker, "datetime", clock)
+    factory = MagicMock()
+    monkeypatch.setattr(
+        recording_worker, "insert_video_segment_metadata", Mock(return_value=True)
+    )
+    return factory
+
+
+@pytest.fixture
+def worker_process(tmp_path, monkeypatch, session_factory):
     """A running process and session directory, without launching FFmpeg."""
     monkeypatch.setattr(
         recording_worker.time, "time_ns", lambda: 1_700_000_000_000_999_999
@@ -21,6 +34,7 @@ def worker_process(tmp_path, monkeypatch):
         recording_worker, "_prepare_session", lambda *_: ("session", session_dir)
     )
     monkeypatch.setattr(recording_worker, "_start_ffmpeg", lambda _: process)
+    # Return realistic metadata without renaming files; rename tests are separate.
     finalize = Mock(
         side_effect=lambda entry, directory, *, session_started_at_utc: (
             recording_worker.FinalizedSegment(
@@ -34,8 +48,46 @@ def worker_process(tmp_path, monkeypatch):
     return process, session_dir, finalize
 
 
+def _assert_segment_metadata_registered(
+    finalize, session_factory, storage_root, retention_hours=24
+):
+    """Check that each finalized segment is inserted once with correct metadata."""
+    finalized_calls = finalize.call_args_list
+    insert_calls = recording_worker.insert_video_segment_metadata.call_args_list
+    transaction = session_factory.begin.return_value
+    db = transaction.__enter__.return_value
+    expected_deadline = datetime(2026, 10, 17, 12, tzinfo=UTC) + timedelta(
+        hours=retention_hours
+    )
+
+    assert len(insert_calls) == len(finalized_calls)
+
+    # Pair each finalized CSV entry with its database insertion, in order.
+    for finalized_call, insert_call in zip(finalized_calls, insert_calls, strict=True):
+        entry, session_dir = finalized_call.args
+        session_start_ms = finalized_call.kwargs["session_started_at_utc"]
+        metadata = insert_call.kwargs
+
+        assert insert_call.args == (db,)
+        assert metadata["source_id"] == "camera_01"
+        assert metadata["session_id"] == "session"
+        assert metadata["storage_root"] == storage_root
+        assert metadata["path"] == (session_dir / entry.filename).with_suffix("")
+        assert metadata["start_at_ms"] == session_start_ms + round(
+            entry.start_seconds * 1000
+        )
+        assert metadata["end_at_ms"] == session_start_ms + round(
+            entry.end_seconds * 1000
+        )
+        assert metadata["delete_at"] == expected_deadline
+
+    # Begin a separate transaction for each segment insertion.
+    assert session_factory.begin.call_count == len(insert_calls)
+
+
+@pytest.mark.parametrize("retention_hours", [24, 48, 0.5])
 def test_finalizes_running_entries_once_and_cleans_up(
-    worker_process, make_source, tmp_path, monkeypatch
+    worker_process, make_source, tmp_path, monkeypatch, session_factory, retention_hours
 ):
     process, session_dir, finalize = worker_process
     csv_path = session_dir / "completed.csv"
@@ -60,7 +112,12 @@ def test_finalizes_running_entries_once_and_cleans_up(
 
     monkeypatch.setattr(recording_worker.time, "sleep", advance_recording)
 
-    recording_worker.run_recording_worker(make_source(), tmp_path)
+    recording_worker.run_recording_worker(
+        make_source(),
+        tmp_path,
+        session_factory=session_factory,
+        retention_hours=retention_hours,
+    )
 
     assert finalize.call_args_list == [
         call(
@@ -75,6 +132,10 @@ def test_finalizes_running_entries_once_and_cleans_up(
         ),
     ]
     assert pauses == 2
+    _assert_segment_metadata_registered(
+        finalize, session_factory, tmp_path, retention_hours
+    )
+
     process.kill.assert_not_called()
     process.communicate.assert_not_called()
     process.wait.assert_called_once()
@@ -82,7 +143,7 @@ def test_finalizes_running_entries_once_and_cleans_up(
 
 
 def test_finalizes_all_rows_in_order_without_duplicates(
-    worker_process, make_source, tmp_path, monkeypatch
+    worker_process, make_source, tmp_path, monkeypatch, session_factory
 ):
     process, session_dir, finalize = worker_process
     (session_dir / "completed.csv").write_text(
@@ -117,17 +178,22 @@ def test_finalizes_all_rows_in_order_without_duplicates(
 
     monkeypatch.setattr(recording_worker.time, "sleep", finish_recording)
 
-    recording_worker.run_recording_worker(make_source(), tmp_path)
+    recording_worker.run_recording_worker(
+        make_source(), tmp_path, session_factory=session_factory
+    )
 
     # The final read must not repeat rows already consumed by the loop
     assert finalize.call_args_list == expected_calls
+    _assert_segment_metadata_registered(finalize, session_factory, tmp_path)
+
     process.kill.assert_not_called()
     process.wait.assert_called_once()
     process.stdin.close.assert_called_once()
 
 
+@pytest.mark.parametrize("retention_hours", [24, 48, 0.5])
 def test_finalizes_entries_written_at_process_exit(
-    worker_process, make_source, tmp_path, monkeypatch
+    worker_process, make_source, tmp_path, monkeypatch, session_factory, retention_hours
 ):
     """Finalize the final CSV row written between the last read and process exit."""
     process, session_dir, finalize = worker_process
@@ -146,12 +212,21 @@ def test_finalizes_entries_written_at_process_exit(
 
     monkeypatch.setattr(recording_worker.time, "sleep", finish_recording)
 
-    recording_worker.run_recording_worker(make_source(), tmp_path)
+    recording_worker.run_recording_worker(
+        make_source(),
+        tmp_path,
+        session_factory=session_factory,
+        retention_hours=retention_hours,
+    )
 
     finalize.assert_called_once_with(
         recording_worker.SegmentEntry("000000.mp4.part", 0.0, 8.366667),
         session_dir,
         session_started_at_utc=1_700_000_000_000,
+    )
+
+    _assert_segment_metadata_registered(
+        finalize, session_factory, tmp_path, retention_hours
     )
 
     process.kill.assert_not_called()
