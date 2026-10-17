@@ -1,3 +1,3 @@
-from database.models.video_segments import VideoSegment
+from database.models.video_segments import SegmentStatus, VideoSegment
 
-__all__ = ["VideoSegment"]
+__all__ = ["SegmentStatus", "VideoSegment"]

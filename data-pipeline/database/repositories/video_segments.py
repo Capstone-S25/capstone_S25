@@ -1,3 +1,4 @@
+from datetime import datetime
 from pathlib import Path
 from uuid import UUID
 
@@ -16,6 +17,7 @@ def insert_video_segment(
     path: Path,
     start_at_ms: int,
     end_at_ms: int,
+    delete_at: datetime | None = None,
 ) -> bool:
     """Insert segment metadata in PostgreSQL without committing.
 
@@ -28,10 +30,14 @@ def insert_video_segment(
             Relative input paths are resolved against the working directory.
         start_at_ms: Approximate segment start as UTC epoch milliseconds.
         end_at_ms: Approximate segment end as UTC epoch milliseconds.
+        delete_at: Optional timezone-aware retention deadline. Defaults to None;
 
     Returns:
         True if inserted, or False if the normalized path already exists.
     """
+    if delete_at is not None and delete_at.utcoffset() is None:
+        raise ValueError("delete_at must be timezone-aware")
+
     relative_path = path.resolve().relative_to(storage_root.resolve()).as_posix()
 
     statement = (
@@ -42,6 +48,7 @@ def insert_video_segment(
             path=relative_path,
             start_at_ms=start_at_ms,
             end_at_ms=end_at_ms,
+            delete_at=delete_at,
         )
         .on_conflict_do_nothing(constraint="uq_video_segments_path")
         .returning(VideoSegment.id)

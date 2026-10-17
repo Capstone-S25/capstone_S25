@@ -28,6 +28,18 @@ def upgrade() -> None:
         sa.Column("path", sa.String(length=1024), nullable=False),
         sa.Column("start_at_ms", sa.BigInteger(), nullable=False),
         sa.Column("end_at_ms", sa.BigInteger(), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            nullable=False,
+            server_default=sa.func.now(),
+        ),
+        sa.Column("status", sa.String(10), nullable=False, server_default="pending"),
+        sa.Column("delete_at", sa.DateTime(timezone=True), nullable=True),
+        sa.CheckConstraint(
+            "status IN ('pending', 'processing', 'processed', 'failed')",
+            name="ck_video_segments_status",
+        ),
         sa.CheckConstraint(
             "end_at_ms >= start_at_ms", name="ck_video_segments_time_order"
         ),

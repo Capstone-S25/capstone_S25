@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from unittest.mock import Mock
 from uuid import UUID, uuid4
 
@@ -5,7 +6,7 @@ import pytest
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from database.models.video_segments import VideoSegment
+from database.models.video_segments import SegmentStatus, VideoSegment
 from database.repositories.video_segments import insert_video_segment
 
 
@@ -44,13 +45,14 @@ def test_rejects_invalid_session_uuid_before_query(segment_data):
     db.execute.assert_not_called()
 
 
+@pytest.mark.parametrize("delete_at", [None, datetime(2030, 1, 1, tzinfo=UTC)])
 def test_inserts_normalized_metadata_and_leaves_transaction_open(
-    postgres_session, segment_data
+    postgres_session, segment_data, delete_at
 ):
     db = postgres_session
     expected_path = f"camera_01/{segment_data['session_id']}/000000.mp4"
 
-    inserted = insert_video_segment(db, **segment_data)
+    inserted = insert_video_segment(db, **segment_data, delete_at=delete_at)
 
     assert inserted is True
     assert db.in_transaction()
@@ -62,6 +64,10 @@ def test_inserts_normalized_metadata_and_leaves_transaction_open(
     assert stored_segment.path == expected_path
     assert stored_segment.start_at_ms == segment_data["start_at_ms"]
     assert stored_segment.end_at_ms == segment_data["end_at_ms"]
+    assert stored_segment.created_at is not None
+    assert stored_segment.created_at.utcoffset() is not None
+    assert stored_segment.status is SegmentStatus.PENDING
+    assert stored_segment.delete_at == delete_at
 
     # The caller can still undo the insertion: the function did not commit.
     db.rollback()
@@ -98,3 +104,48 @@ def test_duplicate_path_is_noop_and_session_remains_usable(
     db.commit()
     segment_count = db.scalar(select(func.count()).select_from(VideoSegment))
     assert segment_count == 2
+
+
+def test_rejects_naive_delete_at_before_query(segment_data):
+    db = Mock(spec=Session)
+
+    with pytest.raises(ValueError, match="timezone-aware"):
+        insert_video_segment(db, **segment_data, delete_at=datetime(2026, 10, 17))
+
+    db.execute.assert_not_called()
+
+
+def test_status_update_preserves_created_at(postgres_session, segment_data):
+    db = postgres_session
+    insert_video_segment(db, **segment_data)
+    segment = db.scalar(select(VideoSegment))
+    # Use an older registration time so an accidental timestamp reset is visible,
+    # even when the database's now() is constant within this transaction.
+    segment.created_at = datetime(2020, 1, 1, tzinfo=UTC)
+    db.flush()
+    created_at = segment.created_at
+
+    segment.status = SegmentStatus.PROCESSED
+    db.flush()
+    db.refresh(segment)
+
+    assert segment.status is SegmentStatus.PROCESSED
+    assert segment.created_at == created_at
+
+
+def test_duplicate_insert_preserves_lifecycle_metadata(postgres_session, segment_data):
+    db = postgres_session
+    deadline = datetime(2030, 1, 1, tzinfo=UTC)
+    insert_video_segment(db, **segment_data, delete_at=deadline)
+    segment = db.scalar(select(VideoSegment))
+    segment.status = SegmentStatus.PROCESSED
+    segment.created_at = datetime(2020, 1, 1, tzinfo=UTC)
+    db.flush()
+    created_at = segment.created_at
+
+    # Retrying registration must not reset status, creation time, or retention.
+    assert insert_video_segment(db, **segment_data) is False
+    db.refresh(segment)
+    assert segment.status is SegmentStatus.PROCESSED
+    assert segment.created_at == created_at
+    assert segment.delete_at == deadline
