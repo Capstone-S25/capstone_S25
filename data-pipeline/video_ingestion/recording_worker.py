@@ -7,6 +7,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from uuid import uuid4
 
+from sqlalchemy.exc import InterfaceError, OperationalError
 from sqlalchemy.orm import Session, sessionmaker
 
 from database.repositories.video_segments import insert_video_segment_metadata
@@ -260,7 +261,8 @@ def _finalize_segment(
         .part is removed: 000000.mp4.part becomes 000000.mp4.
 
     Raises:
-        ValueError: If the filename does not end in .part.
+        ValueError: If the filename does not end in .part or timestamps are
+            nonfinite, negative, or out of order. Validation precedes renaming.
         FileExistsError: If the finalized destination already exists.
         OSError: If the file cannot be renamed, e.g. it is missing or permission
             is denied.
@@ -269,6 +271,20 @@ def _finalize_segment(
 
     if part_path.suffix != ".part":
         raise ValueError(f"Expected a temporary segment: {part_path}")
+
+    if not all(
+        math.isfinite(value) for value in (entry.start_seconds, entry.end_seconds)
+    ):
+        raise ValueError("Segment timestamps must be finite")
+    if entry.start_seconds < 0 or entry.end_seconds < entry.start_seconds:
+        raise ValueError("Segment timestamps must satisfy 0 <= start <= end")
+
+    start_offset_ms = entry.start_seconds * 1000
+    end_offset_ms = entry.end_seconds * 1000
+    if not all(math.isfinite(value) for value in (start_offset_ms, end_offset_ms)):
+        raise ValueError("Segment timestamps are too large to convert to milliseconds")
+    start_at_ms = session_started_at_utc + round(start_offset_ms)
+    end_at_ms = session_started_at_utc + round(end_offset_ms)
 
     # Remove only ".part": 000000.mp4.part becomes 000000.mp4
     final_path = part_path.with_suffix("")
@@ -280,8 +296,8 @@ def _finalize_segment(
 
     return FinalizedSegment(
         path=final_path,
-        start_at_ms=session_started_at_utc + round(entry.start_seconds * 1000),
-        end_at_ms=session_started_at_utc + round(entry.end_seconds * 1000),
+        start_at_ms=start_at_ms,
+        end_at_ms=end_at_ms,
     )
 
 
@@ -312,6 +328,46 @@ def _finalize_segment_with_retry(
             time.sleep(0.25)
 
 
+def _register_segment_metadata_with_retry(
+    segment: FinalizedSegment,
+    *,
+    source_id: str,
+    session_id: str,
+    storage_root: Path,
+    session_factory: sessionmaker[Session],
+    retention_hours: float,
+    max_attempts: int = 3,
+) -> None:
+    """Register an already finalized file, retrying database operational errors.
+
+    Each attempt uses a fresh transaction, including commit in the retry scope.
+    The retention deadline stays fixed across attempts. After max_attempts,
+    propagate the error and leave the file intact for later recovery. Integrity
+    and validation errors are not retried; duplicate paths remain a no-op.
+    """
+    if max_attempts < 1:
+        raise ValueError("max_attempts must be at least 1")
+    delete_at = datetime.now(UTC) + timedelta(hours=retention_hours)
+    for attempt in range(max_attempts):
+        try:
+            with session_factory.begin() as db:
+                insert_video_segment_metadata(
+                    db,
+                    source_id=source_id,
+                    session_id=session_id,
+                    storage_root=storage_root,
+                    path=segment.path,
+                    start_at_ms=segment.start_at_ms,
+                    end_at_ms=segment.end_at_ms,
+                    delete_at=delete_at,
+                )
+            return
+        except (OperationalError, InterfaceError):
+            if attempt == max_attempts - 1:
+                raise
+            time.sleep(0.25)
+
+
 def _finalize_and_register_segment(
     entry: SegmentEntry,
     session_dir: Path,
@@ -326,17 +382,14 @@ def _finalize_and_register_segment(
     segment = _finalize_segment_with_retry(
         entry, session_dir, session_started_at_utc=session_started_at_utc
     )
-    with session_factory.begin() as db:
-        insert_video_segment_metadata(
-            db,
-            source_id=source.source_id,
-            session_id=session_id,
-            storage_root=storage_root,
-            path=segment.path,
-            start_at_ms=segment.start_at_ms,
-            end_at_ms=segment.end_at_ms,
-            delete_at=datetime.now(UTC) + timedelta(hours=retention_hours),
-        )
+    _register_segment_metadata_with_retry(
+        segment,
+        source_id=source.source_id,
+        session_id=session_id,
+        storage_root=storage_root,
+        session_factory=session_factory,
+        retention_hours=retention_hours,
+    )
     return segment
 
 

@@ -73,3 +73,38 @@ def test_finalize_segment_converts_fractional_offsets(
     assert segment.end_at_ms == 1_700_000_000_000 + expected_end
     assert isinstance(segment.start_at_ms, int)
     assert isinstance(segment.end_at_ms, int)
+
+
+@pytest.mark.parametrize(
+    ("start", "end"),
+    [
+        (float("nan"), 1),
+        (0, float("nan")),
+        (float("inf"), float("inf")),
+        (0, float("inf")),
+        (-1, 1),
+        (2, 1),
+        (0, 1e308),
+    ],
+    ids=[
+        "nan-start",
+        "nan-end",
+        "infinite-start",
+        "infinite-end",
+        "negative-start",
+        "reversed-interval",
+        "millisecond-overflow",
+    ],
+)
+def test_invalid_timestamps_leave_temporary_file_untouched(tmp_path, start, end):
+    entry = recording_worker.SegmentEntry("000000.mp4.part", start, end)
+    part_path = tmp_path / entry.filename
+    part_path.write_bytes(b"original segment")
+
+    with pytest.raises(ValueError):
+        recording_worker._finalize_segment(
+            entry, tmp_path, session_started_at_utc=1_700_000_000_000
+        )
+
+    assert part_path.read_bytes() == b"original segment"
+    assert not part_path.with_suffix("").exists()
