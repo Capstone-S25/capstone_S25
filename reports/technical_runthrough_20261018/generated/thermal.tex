@@ -1,0 +1,18 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.2567\linewidth}>{\raggedright\arraybackslash}p{0.1167\linewidth}>{\raggedright\arraybackslash}p{0.1167\linewidth}>{\raggedright\arraybackslash}p{0.1167\linewidth}>{\raggedright\arraybackslash}p{0.1167\linewidth}>{\raggedright\arraybackslash}p{0.1167\linewidth}@{}}
+\caption[Thermal]{Provided thermal tracks: mean development-date AP and held-out-date decisions.}\label{tab:thermal}\\
+\toprule
+\textbf{Candidate} & \textbf{Dev AP} & \textbf{Test AP} & \textbf{Recall} & \textbf{F1} & \textbf{FPR} \\
+\midrule\endfirsthead
+\multicolumn{6}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{Candidate} & \textbf{Dev AP} & \textbf{Test AP} & \textbf{Recall} & \textbf{F1} & \textbf{FPR} \\
+\midrule\endhead
+\midrule\multicolumn{6}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+duration only & 0.327 & 0.283 & 100.0\% & 0.355 & 100.0\% \\
+trajectory linear & 0.804 & 0.554 & 74.6\% & 0.615 & 18.7\% \\
+trajectory forest & 0.863 & 0.577 & 83.5\% & 0.664 & 18.7\% \\
+trajectory boosting & 0.848 & 0.571 & 85.8\% & 0.647 & 21.9\% \\
+\end{longtable}\endgroup

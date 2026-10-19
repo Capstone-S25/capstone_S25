@@ -1,0 +1,22 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.1775\linewidth}>{\raggedright\arraybackslash}p{0.1183\linewidth}>{\raggedright\arraybackslash}p{0.1183\linewidth}>{\raggedright\arraybackslash}p{0.1183\linewidth}>{\raggedright\arraybackslash}p{0.0946\linewidth}>{\raggedright\arraybackslash}p{0.1183\linewidth}>{\raggedright\arraybackslash}p{0.0946\linewidth}@{}}
+\caption[Baseline unattended]{Initial unattended raw test results: each protocol has four positives and twelve normals.}\label{tab:baseline_unattended}\\
+\toprule
+\textbf{Model} & \textbf{Input} & \textbf{PPV} & \textbf{Recall} & \textbf{F1} & \textbf{FPR} & \textbf{AP} \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{Model} & \textbf{Input} & \textbf{PPV} & \textbf{Recall} & \textbf{F1} & \textbf{FPR} & \textbf{AP} \\
+\midrule\endhead
+\midrule\multicolumn{7}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+Mobile\allowbreak{}CLIP & frame & 0.0\% & 0.0\% & 0.000 & 0.0\% & 0.233 \\
+Mobile\allowbreak{}CLIP & window & 25.0\% & 25.0\% & 0.250 & 25.0\% & 0.281 \\
+SigLIP & frame & 0.0\% & 0.0\% & 0.000 & 0.0\% & 0.189 \\
+SigLIP & window & 0.0\% & 0.0\% & 0.000 & 25.0\% & 0.196 \\
+SmolVLM & frame & 25.0\% & 100.0\% & 0.400 & 100.0\% & -- \\
+SmolVLM & window & 25.0\% & 100.0\% & 0.400 & 100.0\% & -- \\
+MiniCPM & frame & 0.0\% & 0.0\% & 0.000 & 0.0\% & -- \\
+MiniCPM & window & 0.0\% & 0.0\% & 0.000 & 0.0\% & -- \\
+\end{longtable}\endgroup

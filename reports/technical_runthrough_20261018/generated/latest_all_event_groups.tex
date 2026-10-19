@@ -1,0 +1,34 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.1500\linewidth}>{\raggedright\arraybackslash}p{0.2600\linewidth}>{\raggedright\arraybackslash}p{0.0600\linewidth}>{\raggedright\arraybackslash}p{0.1100\linewidth}>{\raggedright\arraybackslash}p{0.0800\linewidth}>{\raggedright\arraybackslash}p{0.0800\linewidth}>{\raggedright\arraybackslash}p{0.1000\linewidth}@{}}
+\caption[Latest all event groups]{Latest state ablations by source/split; historical intervals have different source criteria.}\label{tab:latest_all_event_groups}\\
+\toprule
+\textbf{Source} & \textbf{Policy} & \textbf{Hit / N} & \textbf{FP / dup / unk} & \textbf{Normal s} & \textbf{Delay s} & \textbf{95\% upper/hr} \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{Source} & \textbf{Policy} & \textbf{Hit / N} & \textbf{FP / dup / unk} & \textbf{Normal s} & \textbf{Delay s} & \textbf{95\% upper/hr} \\
+\midrule\endhead
+\midrule\multicolumn{7}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+historical train & original tracks item memory & 0/4 & 1/0/2 & 78.00 & -- & 218.9 \\
+historical train & robust tracks item memory & 0/4 & 1/0/2 & 78.00 & -- & 218.9 \\
+historical train & original tracks global debounce & 0/4 & 1/0/1 & 78.00 & -- & 218.9 \\
+historical train & robust tracks global debounce & 0/4 & 1/0/1 & 78.00 & -- & 218.9 \\
+historical test & original tracks item memory & 4/5 & 0/1/1 & 230.00 & 19.24 & 46.9 \\
+historical test & robust tracks item memory & 4/5 & 0/0/1 & 230.00 & 18.99 & 46.9 \\
+historical test & original tracks global debounce & 4/5 & 0/0/1 & 230.00 & 19.24 & 46.9 \\
+historical test & robust tracks global debounce & 4/5 & 0/0/1 & 230.00 & 18.99 & 46.9 \\
+historical dev & original tracks item memory & 0/2 & 0/0/1 & 28.00 & -- & 385.2 \\
+historical dev & robust tracks item memory & 0/2 & 0/0/1 & 28.00 & -- & 385.2 \\
+historical dev & original tracks global debounce & 0/2 & 0/0/1 & 28.00 & -- & 385.2 \\
+historical dev & robust tracks global debounce & 0/2 & 0/0/1 & 28.00 & -- & 385.2 \\
+avss primary retrospective & original tracks item memory & 2/2 & 0/0/0 & 165.74 & 34.82 & 65.1 \\
+avss primary retrospective & robust tracks item memory & 2/2 & 0/0/0 & 165.74 & 35.07 & 65.1 \\
+avss primary retrospective & original tracks global debounce & 2/2 & 0/0/0 & 165.74 & 34.82 & 65.1 \\
+avss primary retrospective & robust tracks global debounce & 2/2 & 0/0/0 & 165.74 & 35.07 & 65.1 \\
+avss censored & original tracks item memory & 1/1 & 0/2/0 & 98.32 & 10.68 & 109.7 \\
+avss censored & robust tracks item memory & 1/1 & 0/2/0 & 98.32 & 10.68 & 109.7 \\
+avss censored & original tracks global debounce & 1/1 & 0/1/0 & 98.32 & 10.68 & 109.7 \\
+avss censored & robust tracks global debounce & 1/1 & 0/1/0 & 98.32 & 10.68 & 109.7 \\
+\end{longtable}\endgroup

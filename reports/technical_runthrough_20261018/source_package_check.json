@@ -1,0 +1,10 @@
+{
+  "status": "pass",
+  "source_manifest_sha256": "eae96de460255956c68196716ea3f638d704efb5c2a52f33b752a45ff16364da",
+  "compiled_from": "Extracted self-contained source ZIP in /tmp; no model/data directories used",
+  "pdf_text_matches_original": true,
+  "pdf_text_sha256": "abd722c00fb077c4b2cb5f8c2d7eacea573c98abbf5f7138cae43b6375748b18",
+  "compiler": "Tectonic 0.17.0 from recorded verified local binary; existing workspace package cache",
+  "compilation_helper": "compile.py",
+  "original_model_inference_performed": false
+}

@@ -1,0 +1,30 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.2471\linewidth}>{\raggedright\arraybackslash}p{0.1729\linewidth}>{\raggedright\arraybackslash}p{0.0988\linewidth}>{\raggedright\arraybackslash}p{0.1359\linewidth}>{\raggedright\arraybackslash}p{0.0988\linewidth}>{\raggedright\arraybackslash}p{0.0865\linewidth}@{}}
+\caption[Weak diagnostics]{Weak/coarse labels: target-prediction rates, not verified event recall or precision.}\label{tab:weak_diagnostics}\\
+\toprule
+\textbf{Diagnostic} & \textbf{Model} & \textbf{Inputs} & \textbf{Target rate} & \textbf{Abstain} & \textbf{Errors} \\
+\midrule\endfirsthead
+\multicolumn{6}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{Diagnostic} & \textbf{Model} & \textbf{Inputs} & \textbf{Target rate} & \textbf{Abstain} & \textbf{Errors} \\
+\midrule\endhead
+\midrule\multicolumn{6}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+littering weak & Mobile\allowbreak{}CLIP & 6667 & 0.8\% & 0 & 0 \\
+littering weak & SigLIP & 6667 & 26.7\% & 0 & 0 \\
+littering weak & SmolVLM & 6667 & 74.9\% & 924 & 0 \\
+littering weak & MiniCPM & 6667 & 55.8\% & 0 & 0 \\
+loitering weak & Mobile\allowbreak{}CLIP & 1675 & 10.6\% & 0 & 0 \\
+loitering weak & SigLIP & 1675 & 84.5\% & 0 & 0 \\
+loitering weak & SmolVLM & 1675 & 0.1\% & 319 & 0 \\
+loitering weak & MiniCPM & 1675 & 4.6\% & 1 & 0 \\
+person presence & Mobile\allowbreak{}CLIP & 1675 & 28.5\% & 0 & 0 \\
+person presence & SigLIP & 1675 & 17.4\% & 0 & 0 \\
+person presence & SmolVLM & 1675 & 92.7\% & 120 & 0 \\
+person presence & MiniCPM & 1675 & 96.1\% & 8 & 0 \\
+rough sleeping weak & Mobile\allowbreak{}CLIP & 111 & 9.9\% & 0 & 0 \\
+rough sleeping weak & SigLIP & 111 & 95.5\% & 0 & 0 \\
+rough sleeping weak & SmolVLM & 111 & 81.1\% & 13 & 0 \\
+rough sleeping weak & MiniCPM & 111 & 66.7\% & 24 & 0 \\
+\end{longtable}\endgroup

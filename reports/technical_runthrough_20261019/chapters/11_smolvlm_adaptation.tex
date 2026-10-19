@@ -1,0 +1,179 @@
+\chapter{19 October: adapting SmolVLM to the five definitions}
+\label{ch:smol}
+
+\section{Purpose and the controlled comparison}
+The next requested experiment was to fine-tune SmolVLM or VadCLIP for the five existing objectives. This stage chose SmolVLM-500M-Instruct because its instruction-conditioned language model can share adaptation across all five definitions while retaining the source-specific annotations already assembled. It performs actual language-weight adaptation using low-rank adapters (LoRA). The historical supervised VadCLIP smoking experiment is retained without another training run; MiniCPM is also unchanged. Thus the project now includes learned CLIP visual representations, learned temporal/classifier heads, and a separately learned generative-model decision function. Those interventions have different trainable components and should not all be called visual fine-tuning.
+
+The central controlled comparison is the original SmolVLM against its adapted versions under identical task queries, images, view order, image tokens and response scoring. The original checkpoint is \path{HuggingFaceTB/SmolVLM-500M-Instruct}, revision \path{a7da5b986cb59b408707209984f360a5f4ad7e47}; its base-weight SHA-256 is \path{d05b567eeaf534e83d375551f068ed57b5f52d37c657197f644af5ef9db091a2}. Both original and adapted models see the accepted target definitions. No target definition is changed to obtain a better score.
+
+This experiment changes the interface from the earlier six-label JSON generation protocol to a task-conditioned binary query. An example asks about one known objective and its visible evidence, rather than requiring all categories in a free-generated response. That makes a genuine continuous first-answer score available. It also means that comparing the old JSON label accuracy directly with this study's AP would confound prompting, image processing, temporal representation and adaptation. The matched original model in this chapter is the proper weight-adaptation control.
+
+\finding{Three LoRA candidates were trained successfully. Primary task routing improves four of the five historical target rankings, but loitering regresses, a single joint adapter regresses on the tiny historical sleep cohort, and the unattended-item development threshold transfers very poorly. These are research results, not a validated replacement for the existing event pipeline.}
+
+\evidence{results/smolvlm_finetuning_20261019/protocol.json}
+\evidence{results/smolvlm_finetuning_20261019/run.json}
+\evidence{reports/smolvlm_finetuning_findings_20261019.md}
+
+\section{Manifest, units and source separation}
+\subsection{Main study and additional transfer}
+The main manifest reuses the 16 October strategy training data and historical evaluation inputs. It contains 3,973 training examples, 1,812 development examples, 2,025 test examples and 806 separately reported external smoking photographs: 8,616 examples with 13,596 distinct decoded images. An example is a target-labelled image or ordered group of views, not necessarily a new independent event. Table~\ref{tab:smol_counts} reports \textbf{normal/positive} counts. For instance, smoking training has 1,739 normal and 1,073 positive examples, totaling 2,812; it does not contain 2,812 normal examples.
+\input{generated/smol_counts.tex}
+
+The smoking test separates 224 newer Kaggle photographs (112 positive, 112 normal) from 646 CCTV frames (393 positive, 253 normal). The historical Stanford40 evaluation adds 806 photographs, including 140 smoking positives. IWDD contributes 100 littering/dumping test clips with 50 positives; Street Scene has 75 loitering windows with 11 positives; the historical public-sleep cohort has 18 photographs with six positives; unattended items has 962 overlapping endpoints with 242 positives. These prevalences are essential when interpreting AP.
+
+Three additional transfer collections remain outside training and development: 906 HMDB action clips (109 smoking, 797 other primary actions), 28 new-author public-sleep photographs (17 positive, 11 normal; 25 author groups), and 27 MEVA action windows (15 abandonment actions, 12 pre-event controls). Together these are 961 examples and 7,375 distinct decoded images. Main and additional held-out evaluation therefore covers 3,792 unique examples. Identity verification checks 20,971 distinct decoded image contents across the main and additional collections. Multiple methods and seeds reuse these same cases.
+
+No new dataset is downloaded in this stage. The new contribution is model adaptation and controlled re-evaluation of previously collected sources. The existing source manifests remain authoritative about original acquisition, licenses, exclusions, aliases and source-group membership.
+
+\subsection{Leakage controls and the limits of these controls}
+The preparation retains recording, camera, author and source-family grouping rather than randomly distributing adjacent views. It rechecks decoded EXIF-corrected RGB pixel hashes, rejects cross-split image overlap, and checks full ordered input identities and conflicting known labels. Additional transfer inputs have no recorded group or exact-pixel overlap with the main learning/selection inputs. The same held-out identities and labels are checked against the two existing CLIP strategy pipelines before the contextual comparison later in this chapter.
+
+These guards establish the recorded separation; they do not create independent surveillance environments. Loitering still comes from one Street Scene camera, with 20/6/6 recording groups in train/development/test. Historical unattended data has two training source families, one development family and two test families. Sparse views cannot resolve every ownership or identity ambiguity. Exact-pixel checks also do not prove the absence of every near-duplicate or shared actor/scene identity.
+
+All these historical holdouts had already been inspected in earlier studies. Training, selection and threshold fitting use only the recorded learning/development partitions, but the experiment as a whole remains retrospective. Neither a new seed nor a fresh training run turns an already inspected source into a prospective test.
+
+\subsection{Label semantics and masked unknown objectives}
+Each example supervises exactly one annotated target. A smoking-negative image is not labelled negative for littering, loitering, sleep and unattended items. Unknown objectives have no loss term. This prevents the heterogeneous collections from generating large numbers of fabricated cross-task negatives.
+
+IWDD remains an offline dumping/action task with full-clip inputs, not an exhaustively localized pedestrian-littering event. Historical sleep annotations describe provisional apparent public sleep under the existing visible-evidence definition; housing status is never inferred. HMDB's other primary actions are non-exhaustive smoking controls in a movie/web domain. MEVA abandonment actions do not establish a persistent unattended state. Historical unattended and duration labels retain the qualifications of their original preparation.
+
+\evidence{results/smolvlm_finetuning_20261019/input_label_audit.json}
+\evidence{results/smolvlm_finetuning_20261019/additional_transfer/protocol.json}
+
+\section{Image processing, view order and frozen visual features}
+Every image is EXIF-corrected, converted to RGB and resized with preserved aspect ratio so that its longest edge is at most 512 pixels. A centered square letterbox with gray value 127 precedes the publisher's 512-pixel processor. Image splitting is disabled. Each image produces 64 visual tokens through the frozen vision tower and multimodal connector. Their float32 outputs are cached; original and adapted language models receive identical visual tokens.
+
+Static smoking and public-sleep examples use one image. Loitering and unattended-item examples retain all four existing ordered past views over approximately 20 seconds. Littering retains eight ordered views sampled across the source clip. The transfer HMDB smoking clips also use eight views; that is a transfer in both source and temporal input relative to the one-image smoking training examples. No future frames are added to causal temporal windows. IWDD full-clip classification remains offline and must not be presented as a causal online litter detector.
+
+Caching is possible because the image encoder and connector never change. It removes repeated frozen computation without simulating a slower device or pacing the accuracy run. Native-image forward checks compare the cache/batched path with the actual publisher model for all five targets and all adapter states. Cache validity is an identity and numerical issue, not evidence that 64 image tokens capture tiny cigarettes or complete person/item histories.
+
+The frozen base tensors are stored in BF16; converting their stored values to float32 does not recover extra pretrained mantissa precision or change their values. Training uses BF16 computation for the trainable language adapters. Frozen visual extraction, checkpoint selection, threshold fitting and final scoring use float32 with TF32 disabled. That numerical discipline follows the earlier CLIP batch-shape audit and avoids choosing a checkpoint under one scoring precision and deploying a cutoff under another.
+
+\section{What is learned and how the binary score is defined}
+\subsection{Low-rank updates in language projections}
+For an adapted projection with frozen weight $W$, LoRA adds
+\begin{equation}
+W' = W + \frac{\alpha}{r}BA,\qquad r=8,\quad \alpha=16.
+\end{equation}
+Dropout is 0.05 and no bias parameters are trained. The target projections are attention \texttt{q/k/v/o} and feed-forward \texttt{gate/up/down} in all 32 language layers: seven projections per layer, or 224 adapted modules. The resulting 4,341,760 trainable parameters are saved in approximately 17 MB adapter files. Vision, connector, token embeddings and the vocabulary output head remain frozen. Finite tensor values and nonzero learned LoRA B matrices are verified for all three saved adapters.
+
+This is an actual change to the model's language computation, beyond fitting a classifier on fixed scene embeddings. It does not fine-tune the visual encoder, create tracked identities, localize a cigarette or add an ownership representation by itself. The distinction matters when comparing it with the earlier CLIP visual-stage updates and later temporal heads.
+
+\subsection{Answer-only training with a full-vocabulary loss}
+The response verbalizers are the first-token encodings of \texttt{ Yes} (token 9230) and \texttt{ No} (token 2838). For an input $x$ asking about target $t$, let $z_v(x,t)$ be the next-token logit for vocabulary token $v$. The loss is
+\begin{equation}
+\mathcal{L}(x,t,y)=-z_{v_y}(x,t)+\log\sum_{v\in\mathcal V}\exp z_v(x,t),
+\end{equation}
+where $v_1$ is Yes and $v_0$ is No. This is full-vocabulary cross entropy, not merely a two-logit loss. Every prompt/image position is excluded from the target loss. No explanation, end-of-sequence behavior, bounding box or unannotated objective is trained.
+
+The continuous detector score is
+\begin{equation}
+s(x,t)=z_{\mathrm{Yes}}(x,t)-z_{\mathrm{No}}(x,t).
+\end{equation}
+Raw classification chooses Yes at $s\geq0$. Applying a sigmoid would give the relative Yes probability conditional on these two tokens, but would not calibrate event probability. To detect a model that prefers a third token, the study also records the total full-vocabulary probability mass on Yes and No. On development data the original mass has minimum 0.98398 and median 0.99930; the primary joint adapter has minimum approximately 0.987 and median approximately 1.0. Both already strongly follow the binary format. The study therefore does not support explaining its gains solely as repaired output syntax.
+
+There is no learned abstention class. The inference wrapper returns unknown when required timed history is missing, but that input guard is different from a trained uncertainty or ownership decision. A confident binary margin cannot establish evidence that is absent from the input.
+
+\input{generated/smol_settings.tex}
+
+\section{Optimization, balancing and selection timing}
+\subsection{Coverage and source-balanced resampling}
+Every epoch first includes all 3,973 training examples once. An equally sized resampled pass balances task/class, then dataset source and recording/author group, and both passes are shuffled together. This gives 7,946 example visits per epoch. It prevents rare targets from being skipped while ensuring full original coverage. The resampled half is balanced; the combined epoch retains the original corpus imbalance and should not be described as exactly equal training mass for the five tasks.
+
+AdamW uses weight decay 0.01, 5\% warmup, linear learning-rate decay and gradient-norm clipping at 1.0. Microbatch eight with four-step gradient accumulation gives effective batch 32. Primary seed 42 compares learning rates $3\times10^{-5}$ and $10^{-4}$. The planned limit is six epochs with patience two. Seed 43 repeats only the primary winning joint learning rate, $10^{-4}$; it is a limited optimization replication, not a complete repeat of the primary grid.
+
+All accuracy work runs on the available RTX 5000 Ada GPU with no pacing, CPU emulation or new latency benchmark. Training durations in the saved state files are execution provenance; they are not controlled inference-speed measurements. The nine completed epochs across the three runs comprise 71,514 example visits, repeatedly visiting the same 3,973 unique training examples.
+
+\subsection{Development metric and primary routes}
+For each task, AP is computed separately for its dataset-source development cohorts, then averaged within the task. The checkpoint metric is the equal average over all five tasks:
+\begin{equation}
+M_{\mathrm{dev}}=\frac{1}{5}\sum_{t=1}^{5}
+\frac{1}{|S_t|}\sum_{s\in S_t}\operatorname{AP}_{t,s}.
+\end{equation}
+This avoids a pooled five-task metric being dominated by smoking example count. It does not guarantee good performance on the worst individual source.
+
+The matched original development macro AP is 0.5657. The primary low-learning-rate checkpoint reaches 0.6584; the high-learning-rate checkpoint reaches 0.7026 and is the selected \textbf{joint} adapter. A separate per-task route chooses the best development source AP among the original and the two primary checkpoints, preferring the original on ties. That route uses the high learning rate for smoking, littering, loitering and unattended items, and the low learning rate for public sleep. Task routing is a configuration containing two adapters, not a claim that one joint checkpoint achieves every routed score.
+
+Checkpoint and route selection, as well as the raw, development-maximum-F1 and development-pooled-FPR-at-most-5\% cutoffs, precede their held-out inference. Seed 43 never replaces the primary simply because one test result is better. The optional later safeguard has a different timing qualification described below.
+\input{generated/smol_checkpoints.tex}
+\input{generated/smol_routes.tex}
+
+\subsection{Early overfitting is visible in all candidates}
+All three candidates complete three epochs and select epoch one. For the primary high learning rate, training loss falls from 0.4789 to 0.2895 to 0.2235 while development macro AP falls from 0.7026 to 0.6485 to 0.6276. Additional optimization therefore fits the learning corpus more closely without improving the selected source-generalization diagnostic. Early stopping preserves the first checkpoint; reporting the final lowest-loss weights would misrepresent the selection rule.
+
+\fig{smol_learning_curves.pdf}{1.0}{All three LoRA training histories. The original development baseline and selected first epochs distinguish optimization progress from source-transfer progress. These curves reuse the same development cohorts.}
+\evidence{results/smolvlm_finetuning_20261019/seed_42/selection.json}
+\evidence{results/smolvlm_finetuning_20261019/seed_43/selection.json}
+
+\section{Held-out discrimination: gains and preserved regressions}
+\input{generated/smol_ap.tex}
+\fig{smol_matched_ap.pdf}{1.0}{Original, joint and per-task routed SmolVLM AP on ten source/task cohorts. All use the same inputs and binary score within this study. Joint and routed results differ for public sleep.}
+
+The clearest gains are Stanford40 smoking photographs (AP 0.5831 to 0.8900), IWDD littering/dumping clips (0.5922 to 0.7660), and historical unattended endpoints (0.4762 to 0.6933). Kaggle smoking photographs begin with high AP 0.9670 and rise to 0.9844. HMDB smoking transfer improves more modestly, from 0.7638 to 0.7837. New-author public-sleep AP rises from 0.8062 to 0.8904 under the selected low-learning-rate route; MEVA abandonment-action AP rises from 0.6076 to 0.6457.
+
+The CCTV smoking gain is weak: 0.5999 to 0.6225 on a cohort whose constant-score AP is its positive fraction, $393/646=0.6084$. The adapted score only modestly exceeds that reference. High photo performance has again failed to establish useful surveillance-camera discrimination.
+
+Loitering is a clear regression, from 0.4250 to 0.1822 despite a positive primary development gain. Source grouping did not prevent learning an unstable source-specific association. Four sparse images without persistent identity and activity context are also limited evidence for duration. The held-out result is retained under the primary route rather than replaced with the original after looking at the test.
+
+Historical public sleep illustrates why the joint/routed distinction is necessary. The single high-learning-rate joint adapter falls from original AP 0.7437 to 0.6327. The development-selected low-learning-rate route reaches 0.7885. Thus the statement that four of five target rankings improve applies to the primary \textbf{routed configuration}; it is false for the joint checkpoint on this cohort. Six positive historical photographs remain too few for a strong generalization claim.
+
+\section{Fixed decisions and threshold-transfer failure}
+\subsection{The development FPR budget does not transfer automatically}
+Each target has a threshold fitted only on its pooled development normals, allowing empirical FPR at most 5\% and choosing the best F1 among permitted cutoffs. This is weaker than constraining every development source separately. Table~\ref{tab:smol_threshold_transfer} compares the original and routed methods at their own development-budget cutoffs. The values are endpoint/clip FPR, not alerts per normal hour.
+\input{generated/smol_threshold_transfer.tex}
+
+Smoking photographs benefit: Kaggle recall remains 93.8\% while FPR falls from 12.5\% to 1.8\%. Stanford40 recall is 78.6\% with FPR 4.4\%, compared with original 77.1\% and 25.4\%. HMDB reaches 69.7\% recall with 2.8\% FPR. CCTV, however, finds only seven of 393 positives: 1.8\% recall with zero observed false positives. This is still unsuitable evidence for a useful CCTV smoking detector.
+
+The important unattended failure is explicit: the routed cutoff finds 229 of 242 positives but falsely flags 510 of 720 normal endpoints. That is 94.6\% recall at 70.8\% FPR. The original method has much lower recall, 20.2\%, but also much lower FPR, 1.9\%. The AP gain has not produced a generally superior fixed decision. MEVA is similarly problematic at 66.7\% recall and 58.3\% FPR, with only 12 normal controls. Neither result supports an unattended alarm deployment claim.
+
+Littering reaches 30.0\% recall and 8.0\% FPR; loitering reaches 9.1\% and 6.2\%; historical sleep reaches 33.3\% and 8.3\%. Small negative denominators make the latter percentages coarse. The new-author sleep set has seven true positives and zero false positives at the selected cutoff, but zero among 11 negatives does not establish a low general false-alarm rate.
+
+\subsection{Raw margin-zero decisions answer a different question}
+\input{generated/smol_raw.tex}
+The raw threshold does not fit a cutoff: Yes must have a logit at least as high as No. It therefore provides a useful check on decision-bias changes. Routed CCTV is entirely negative at this point, with zero recall and F1. Routed littering has 60.0\% recall and 26.0\% FPR; unattended items has 64.9\% recall and 25.8\% FPR. A different cutoff moves the tradeoff but does not repair missing ownership evidence or a shifted camera score distribution.
+
+The appendix preserves all 60 source/method/seed summaries, including maximum-F1 decisions, and the source package includes the complete CSV. The report does not select the most flattering operating point separately for each test cohort. A future alert study must fit its policy on development streams and evaluate real alert starts, repeats, delay and reviewed normal hours; this LoRA stage contains no continuous event-policy evaluation.
+
+\section{Seed stability and the optional retrospective safeguard}
+\input{generated/smol_seeds.tex}
+Seed 43 repeats the selected high learning rate, choosing epoch one with development macro AP 0.6548. Main joint-adapter APs broadly repeat for photographs, CCTV, dumping and unattended endpoints. Loitering remains poor and falls further to 0.1314. Historical sleep changes from seed-42 joint AP 0.6327 to seed-43 joint AP 0.9167. That variation on six positives is a warning about sensitivity, not permission to promote seed 43 after inspecting held-out results. Both seeds share the same cameras and labels, so agreement cannot establish independent-domain replication.
+
+After primary held-out results had been inspected and the first seed-43 development epoch was available, an optional repeated-gain rule was specified. It keeps a primary per-task adapter only when both its primary development AP gain and the seed-43 joint development AP gain over the original are strictly positive. Otherwise it restores the original model and its original development cutoffs. The function reads development scores only, but the decision to introduce this function is post hoc. Its result is an exploratory retrospective safeguard, not a new prospective model-selection success.
+\input{generated/smol_repeated_gains.tex}
+
+The rule restores the original for loitering because the primary gain is $+0.0308$ but the second-seed development gain is $-0.1620$. The other four primary task routes remain. The public-sleep primary is a low-learning-rate adapter whereas seed 43 repeats the high-learning-rate joint adapter, so the check supports a broad adaptation-family gain rather than exact replication of every routed configuration. It does not solve the unattended FPR failure, create temporal labels or add a camera holdout. The primary tables above remain unchanged.
+
+\evidence{results/smolvlm_finetuning_20261019/repeated_gain_protocol.json}
+\evidence{results/smolvlm_finetuning_20261019/repeated_gain_routes.json}
+
+\section{Context against the existing CLIP strategies}
+\input{generated/smol_clip_context.tex}
+The comparison uses the 16 October primary CLIP strategy routes, the same 3,973/1,812 learning/development partitions, and exactly 3,792 matched held-out identities and labels. The recorded comparison provenance checks that identity match. Automatic crops, resolution, image representation, optimization and trainable components differ, so these are complete trained-pipeline comparisons rather than isolated architecture effects.
+
+SigLIP and MobileCLIP remain stronger on most historical cohorts. For example, CCTV AP is 0.6902/0.7225 versus SmolVLM 0.6225; IWDD is 0.8064/0.8934 versus 0.7660; loitering is 0.4894/0.5505 versus 0.1822; and historical unattended endpoints are 0.9803/0.9250 versus 0.6933. High historical CLIP unattended AP must still be read with its own threshold failures documented earlier.
+
+SmolVLM is stronger on HMDB transfer in this matched protocol: AP 0.7837 versus 0.5764/0.6639. It is also modestly higher on MEVA action transfer, 0.6457 versus 0.5452/0.6205, on only 27 examples with action-proxy labels. On Stanford40 it lies between MobileCLIP and SigLIP. These source-specific findings justify retaining the adapted VLM as a research alternative, not declaring a five-objective winner.
+
+The later CLIP smoking video pilot uses 530 HMDB training clips, 205 held-out clips and a different 16-view temporal/crop protocol. Its 0.9645 ensemble result cannot be placed against the 906-case SmolVLM transfer score as an equal-split comparison. VadCLIP uses another supervised offline smoking split of 1,056 frames, so it also stays outside this matched-cohort table.
+
+\evidence{results/smolvlm_finetuning_20261019/clip_comparison_provenance.json}
+
+\section{Verification, exported adapters and inference limits}
+The completed verification reconstructs all selections and frozen cutoffs from development predictions and replays 7,248 development plus 15,168 held-out scores. It checks full example coverage in every completed epoch, 13,596 main plus 7,375 transfer decoded image identities, finite parameters and changed LoRA B matrices for all three adapters, and 20 native-image GPU cases: original plus three adapters, each across the five targets. The largest native-versus-saved score error is $7.25\times10^{-5}$, below the recorded 0.002 tolerance. These checks establish that the implementation and saved metrics agree within their numerical scope; they do not validate the annotation semantics.
+
+The software snapshot has 187 passing unit tests, Ruff lint/format checks and a clean whitespace diff. Six inference-interface checks cover four real native scoring cases and two missing-timestamp temporal guards. These are functional score/interface checks, not accuracy successes on six independently sampled examples. Some selected positive examples are classified absent at the strict development-budget cutoff; that fact is consistent with the measured recall limitations.
+
+Portable exports replace a machine-local base-model cache path in adapter configuration with the public model identity and pinned revision; the adapter weight bytes do not change. The model bundle records selected adapter paths, weight/config hashes, primary routes and all cutoffs. Its explicit status is \texttt{research\_inference\_configuration}. The optional repeated-gain routes retain their retrospective qualification. Each candidate also saves its processor and complete training history.
+
+The real-input wrapper supports the primary routing by default, an original-model control, a joint-adapter control, and optional repeated-gain routing. Duration-dependent targets require timed context and return unknown when it is absent. Providing four timestamps passes an input requirement; it does not prove stable identity, continuous dwell or an owner leaving. No visual boxes, calibrated event probabilities, explanation quality, learned abstention, long normal-stream rates or computation latency are measured by this stage.
+
+\evidence{results/smolvlm_finetuning_20261019/verification.json}
+\evidence{results/smolvlm_finetuning_20261019/software_checks.json}
+\evidence{results/smolvlm_finetuning_20261019/cli_checks.json}
+\evidence{results/smolvlm_finetuning_20261019/model_bundle.json}
+\evidence{results/smolvlm_finetuning_20261019/portable_adapter_export.json}
+\evidence{anomaly_eval/training/smolvlm.py}
+\evidence{scripts/run_smolvlm_finetuning.py}
+\evidence{scripts/verify_smolvlm_finetuning.py}
+\evidence{scripts/predict_smolvlm.py}
+\evidence{docs/smolvlm_finetuning.md}

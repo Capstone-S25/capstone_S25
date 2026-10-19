@@ -1,0 +1,56 @@
+\chapter{Actual supervised CLIP visual fine-tuning}
+\label{ch:training}
+\section{Learning objective and representations}
+The 15--16 October study is the first stage in this progression that actually updates the two requested CLIP visual backbones. Its frozen manifest has 7,498 target-specific examples and 12,478 unique view images: 3,258 train, 1,633 development, 1,801 test and 806 additional official-test photographs. Every example has one known binary target; the other four objectives are unknown, not presumed negative.
+
+Let $f_t$ be the normalized embedding for chronological view $t$. The probe and fine-tuned representation is
+\begin{equation}
+z=\operatorname{norm}\left[ f_T;\ \frac{1}{T}\sum_t f_t;\ \max_t f_t;\ f_T-f_1\right].
+\end{equation}
+For a static image the change term is zero. Five binary heads allow simultaneous objective scores rather than forcing mutually exclusive event labels. The masked binary loss gathers only the head corresponding to the example's annotated target. Thus a smoking-negative example supplies no gradient asserting absence of loitering, sleep or unattended items.
+
+The pretrained baseline is a last-frame text score. Improvements over it can combine supervised classification and temporal context. The frozen linear probe versus visual fine-tune comparison is more controlled because both use the same ordered-view representation. Unknown-label masking and temporal ordering have dedicated tests.
+
+\section{Probe, visual parameters and regularization}
+The frozen probe uses L2-regularized logistic classification with $C\in\{1,10,100\}$. The development-selected probe initializes the supervised heads. Fine-tuning then unfreezes the last MobileCLIP visual stage/final convolution/projection or the last SigLIP transformer block/pooling head, while freezing the text tower, early vision layers and batch-normalization statistics.
+
+MobileCLIP updates 18,106,992 visual parameters; SigLIP updates 14,176,512, plus their binary heads. These are real changed visual tensors, verified by parameter-delta checks; this stage is not merely fitting a linear classifier to fixed embeddings. Horizontal flips at probability .5 and mild brightness/contrast .15 and saturation .1 preserve complete scene content. Random crops that might remove a cigarette or item are avoided.
+
+Sampling balances task, class, dataset source and recording/author group. With feature teacher $z_0$ and pretrained visual weights $\theta_0$, the implemented loss is
+\begin{equation}
+\mathcal L = \mathcal L_{\mathrm{BCE,known\ target}} +0.1\operatorname{MSE}(z,z_0)
++0.1\sum_{k\in\mathcal U}\operatorname{mean}(\theta_k-\theta_{0,k})^2,
+\end{equation}
+where $\mathcal U$ is the unfrozen visual parameter set. The classifier sees dropout .1. Distillation and weight anchoring constrain drift from pretrained features; they are attempted generalization safeguards, not proof of robustness.
+
+AdamW uses visual learning rates $10^{-5}$ and $3\cdot10^{-5}$ for primary seed 42, head learning rate $3\cdot10^{-4}$ and weight decay .01. The budget is ten epochs maximum with three stale development epochs, and gradient norm clipping at one. GPU training is unpaced with float32 weights and BF16 autocast, batch 32 target examples, six decoding workers and eight CPU threads per job.
+
+\section{Selection, replications and execution details}
+Checkpoints and visual learning rate maximize development macro task AP, averaging source AP within each task. Per-target routing chooses among pretrained, probe and fine-tuned scores using development AP, with simpler methods winning ties. Seed 42 is predesignated primary. Seeds 43/44 reuse its development-selected visual learning rate and report variability; their best test column cannot replace the primary.
+
+Both primary models select visual learning rate $3\cdot10^{-5}$. MobileCLIP selects epoch three and SigLIP epoch two. MobileCLIP primary routes use its fine-tuned score for all five targets. SigLIP routes smoking/unattended to fine-tuning, dumping/public sleep to probes, and loitering to its pretrained score. This is why the selected five-target result is not identical to whichever fine-tuned AP is largest in a test table.
+
+All six model/seed jobs complete. The scheduler eventually allows up to three concurrent GPU jobs. Initial jobs use convolution autotuning; later jobs disable it to avoid repeated searches under variable frame-batch shapes. Executed snapshots and commands preserve those differences without changing labels, splits or the selection plan.
+
+\section{Numerical audit and final evaluation}
+An AMP inference consistency audit finds batch-shape-sensitive scores. The final quality pass therefore scores all methods and seeds in float32 with TF32 disabled. Trained weights, hyperparameters and development-selected routes stay fixed. Only operating thresholds are recalibrated on float32 development predictions. The original AMP outputs remain beside each \path{float32_evaluation/} directory.
+
+This distinction matters for exact threshold boundaries. A threshold fitted from one numerical representation should not be applied to a slightly different serialized model without checking it. The later strategy screen likewise refits cutoffs from serialized float32 classifier development scores while retaining fitted weights and route selection.
+
+\section{Held-out ranking gains and regressions}
+\input{generated/finetuning_main.tex}
+Waste dumping improves strongly for both encoders relative to the same-study pretrained baseline. Official-test smoking photographs also improve, MobileCLIP .220 to .901 and SigLIP .499 to .954. However, CCTV smoking ranking regresses under both primary development-selected routes. Loitering remains unresolved: selected AP .093/.097 is below the .147 positive prevalence of the 75-window cohort. The six-positive sleep-photo test yields high point estimates but cannot establish broad coverage. Unattended AP improves substantially under provisional labels and two held-out camera families.
+\fig{finetuning_ap.pdf}{0.96}{Same-study pretrained and development-routed AP for the primary fine-tuning seed. The cohorts differ across targets; bars do not form a cross-task difficulty ranking.}
+
+\section{Why AP did not make the models safe to threshold}
+\input{generated/finetuning_operating.tex}
+SigLIP unattended zero-logit decisions give F1 .749, recall 61.2\%, precision 96.7\% and FPR .7\% on this holdout. Yet its maximum-development-F1 cutoff gives 99.6\% test FPR, and the development 5\% budget point gives 99.4\%. MobileCLIP's corresponding unattended thresholds also transfer poorly. Both primary smoking max-dev-F1 cutoffs exceed 93\% CCTV FPR. These are retained as failures of operating-point transfer rather than recalibrated from test negatives.
+
+The all-seed appendix reports selected route AP and operating points for every task. Optimization variation can be material, but three seeds still evaluate the same cameras and provisional labels. Selecting a fortunate seed from its test score would overstate the evidence.
+
+\section{Checkpoint and interface validation}
+The final audit verifies finite changed visual tensors in all six checkpoints, recomputes 46,926 held-out and 29,394 development predictions, checks source/pixel identities and selections, and runs real saved-checkpoint inference on both encoders. Live-versus-saved differences are below one millionth in the recorded primary checks. At completion, 153 tests pass.
+
+The exported interface classifies images or ordered clips; it is not a box detector. It requires chronological timestamps for duration objectives and returns unknown when sufficient history is absent. Scores are logits, not calibrated event probabilities. The default max-dev-F1 option is a faithful recorded protocol, not a validated deployment recommendation in light of the observed threshold failures.
+\evidence{reports/clip_training_protocol_20261015.md}
+\evidence{results/clip_finetuning_20261015/verification.json}

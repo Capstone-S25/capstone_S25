@@ -1,0 +1,59 @@
+\chapter{Historical audit and superseded adapter experiments}
+The archived audit is part of the work completed, but its historical 80-image results and validation-only temporal ablations are not the corrected test protocol. The fifteen findings explain why later source labels, metrics, cached identities, checkpoints and split rules were strengthened. Their titles are preserved as audit observations; the accompanying source contains the reproductions and detailed limitations.
+\input{generated/historical_audit.tex}
+
+The following older six-run VadCLIP suite varied graph use, attention window and representative length. It used a 12-session train/four-session validation split with no separate final test. The archived audit identified fractional-label truncation, threshold inconsistency and CPU snapshot/padding issues. Representative target counts differ with visual length. Therefore these archived AP/F1 entries document what was run, not valid evidence that one architecture generalizes better. They remain separate from the corrected 1,056-frame held-out test in Chapter~\ref{ch:baseline}.
+\input{generated/historical_vadclip_ablation.tex}
+
+\chapter{Fine-tuning replications and operating points}
+The following tables reproduce the primary three operating points and all seed-specific routed results. They preserve the development routing rather than replacing it with the best test candidate. ``M'' denotes MobileCLIP2-S2 and ``S'' denotes SigLIP2-B/16-224 in compact tables. AP, F1, recall and FPR use the exact cohort/split described in Chapter~\ref{ch:training}; public sleep and historical unattended labels retain their provisional qualifications.
+\input{generated/finetuning_all_operating.tex}
+\input{generated/finetuning_seeds.tex}
+
+\chapter{All 330 strategy-development configurations}
+This is a complete development table: 33 candidates for each of five targets and two backbones. It is not a test-selected leaderboard. Strategy names preserve interpolation coefficients and representation recipes; the ``setting'' column gives linear $C$ or an MLP selected epoch. The primary per-task choice maximizes mean development-source AP. Complete held-out family operating-point data remain in the original CSV and are included in the source package's numeric exports.
+\input{generated/strategy_all_candidates.tex}
+
+\chapter{All 50 final video-pilot heads}
+Final source-guarded heads and their epoch/seed, worst-source AP, mean-source AP and selected-route flag are reproduced below. Earlier prefix-split fits are diagnostic only. A hard-negative checkpoint selected before epoch four is not evidence of mining benefit. These are frozen-pretrained-encoder heads, distinct from the earlier six actual visual fine-tunes.
+\input{generated/pilot_all_heads.tex}
+
+\chapter{All 38 latest smoking policies}
+These policies reuse the existing saved heads and fixed equal sigmoid averages. Each cutoff satisfies the empirical development-source constraint; values are not calibrated probabilities. The selected flag is determined from worst/mean development recall with AP ties. A separate AP-selected alternative remains in the source JSON. All relevant held-out comparisons are retrospective.
+\input{generated/latest_all_policies.tex}
+
+\chapter{Detailed event results and source accounting}
+This table retains global, historical, known-criteria and censored event outcomes from the pilot, including nonprimary candidates where the event policy was defined. Camera/scene counts and normal exposure are more informative than the number of overlapping decision windows. Zero normal exposure would make a normal hourly rate unavailable rather than zero. Unknown alerts are distinct from normal false alarms.
+\input{generated/pilot_all_events.tex}
+\input{generated/latest_all_event_groups.tex}
+
+\chapter{Pinned identities, artifact registry and acquisition references}
+Full SHA-256 values are stored in the accompanying JSON manifest; the table shows compact prefixes for reading. Paths are repository-relative. The registry identifies what this documentation build read, including code inspected for implementation details. It is not a claim that every current code file is byte-identical to every original execution snapshot; those execution-specific identities remain in their original artifacts.
+\input{generated/model_revisions.tex}
+\section{Preserved run-directory inventory}
+These statuses are read from each root metadata file where present. ``Not recorded'' is not inferred to mean success. Prepared, interrupted, error and incomplete-data runs are preserved as diagnostics; the narrative identifies which completed studies provide the authoritative stage results. Separate source jobs assembled into a combined report are not extra independent datasets.
+\input{generated/run_inventory.tex}
+\section{Source registry}
+\input{generated/source_registry.tex}
+
+\section{Recorded public source locations}
+These URLs identify source releases, author pages or model repositories recorded by the project. They are not a new survey of current access conditions, and original dataset label/license metadata remains authoritative.
+\begin{enumerate}
+\item Stanford40 action images: \url{http://vision.stanford.edu/Datasets/40actions.html}.
+\item MIVIA-IWDD author release: \url{https://github.com/MiviaLab/IllegalWasteDumping}.
+\item Street Scene source: \url{https://www.merl.com/research/?research=license-request&sw=StreetScene}.
+\item Added smoking photographs: \url{https://www.kaggle.com/datasets/sujaykapadnis/smoking}.
+\item Recorded HMDB archive source: \url{https://huggingface.co/datasets/Serrelab/hmdb51}.
+\item Thermal loitering annotations: \url{https://github.com/johnnynunez/RS-WACV24_Loitering}.
+\item MEVA public data: \url{https://mevadata.org/}.
+\item Commons media and per-image metadata: \url{https://commons.wikimedia.org/}.
+\item CAVIAR source: \url{https://homepages.inf.ed.ac.uk/rbf/CAVIAR/}.
+\item ABODA source: \url{https://github.com/kevinlin311tw/ABODA}.
+\item AVSS/AOD author package: \url{http://www-vpu.eps.uam.es/publications/AODsurvey/}.
+\item Additional author debris release: \url{https://github.com/hangsuuuu/video-of-abandoned-object-detection}.
+\item Grounding DINO tiny weights: \url{https://huggingface.co/IDEA-Research/grounding-dino-tiny}.
+\item Official Tectonic installation/release documentation: \url{https://tectonic-typesetting.github.io/en-US/install.html}.
+\end{enumerate}
+
+\section{Final scope statement}
+The work produced standardized source-qualified evaluations, multiple trained research bundles, stronger representations/components and a more defensible account of generalization failures. It did not complete independent human verification of all target labels, an untouched multi-camera benchmark covering all five events, or a production streaming application. Those distinctions define what the existing results can support.

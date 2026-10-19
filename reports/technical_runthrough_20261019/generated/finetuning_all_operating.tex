@@ -1,0 +1,44 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.1200\linewidth}>{\raggedright\arraybackslash}p{0.1527\linewidth}>{\raggedright\arraybackslash}p{0.1418\linewidth}>{\raggedright\arraybackslash}p{0.0982\linewidth}>{\raggedright\arraybackslash}p{0.0764\linewidth}>{\raggedright\arraybackslash}p{0.0873\linewidth}>{\raggedright\arraybackslash}p{0.0764\linewidth}>{\raggedright\arraybackslash}p{0.0873\linewidth}@{}}
+\caption[Finetuning all operating]{All primary routed operating points; historical/provisional cohort qualifications apply.}\label{tab:finetuning_all_operating}\\
+\toprule
+\textbf{Model} & \textbf{Target} & \textbf{Cutoff rule} & \textbf{Cutoff} & \textbf{PPV} & \textbf{Recall} & \textbf{F1} & \textbf{FPR} \\
+\midrule\endfirsthead
+\multicolumn{8}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{Model} & \textbf{Target} & \textbf{Cutoff rule} & \textbf{Cutoff} & \textbf{PPV} & \textbf{Recall} & \textbf{F1} & \textbf{FPR} \\
+\midrule\endhead
+\midrule\multicolumn{8}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+Mobile\allowbreak{}CLIP & Smoking & raw & 0.000 & 0.0\% & 0.0\% & 0.000 & 1.2\% \\
+Mobile\allowbreak{}CLIP & Smoking & dev max f1 & -4.416 & 60.7\% & 93.1\% & 0.735 & 93.7\% \\
+Mobile\allowbreak{}CLIP & Smoking & dev fpr budget & -0.760 & 50.0\% & 3.1\% & 0.058 & 4.7\% \\
+Mobile\allowbreak{}CLIP & Dumping / littering & raw & 0.000 & 78.8\% & 82.0\% & 0.804 & 22.0\% \\
+Mobile\allowbreak{}CLIP & Dumping / littering & dev max f1 & -1.372 & 78.9\% & 90.0\% & 0.841 & 24.0\% \\
+Mobile\allowbreak{}CLIP & Dumping / littering & dev fpr budget & 4.225 & 90.5\% & 38.0\% & 0.535 & 4.0\% \\
+Mobile\allowbreak{}CLIP & Loitering & raw & 0.000 & 0.0\% & 0.0\% & 0.000 & 9.4\% \\
+Mobile\allowbreak{}CLIP & Loitering & dev max f1 & -0.472 & 0.0\% & 0.0\% & 0.000 & 12.5\% \\
+Mobile\allowbreak{}CLIP & Loitering & dev fpr budget & -0.472 & 0.0\% & 0.0\% & 0.000 & 12.5\% \\
+Mobile\allowbreak{}CLIP & Public sleep & raw & 0.000 & 83.3\% & 83.3\% & 0.833 & 8.3\% \\
+Mobile\allowbreak{}CLIP & Public sleep & dev max f1 & 0.779 & 100.0\% & 83.3\% & 0.909 & 0.0\% \\
+Mobile\allowbreak{}CLIP & Public sleep & dev fpr budget & 0.779 & 100.0\% & 83.3\% & 0.909 & 0.0\% \\
+Mobile\allowbreak{}CLIP & Unattended & raw & 0.000 & 100.0\% & 25.6\% & 0.408 & 0.0\% \\
+Mobile\allowbreak{}CLIP & Unattended & dev max f1 & -5.249 & 25.6\% & 100.0\% & 0.408 & 97.6\% \\
+Mobile\allowbreak{}CLIP & Unattended & dev fpr budget & -3.311 & 47.0\% & 96.3\% & 0.631 & 36.5\% \\
+SigLIP & Smoking & raw & 0.000 & 68.3\% & 10.9\% & 0.189 & 7.9\% \\
+SigLIP & Smoking & dev max f1 & -1.445 & 60.3\% & 91.3\% & 0.727 & 93.3\% \\
+SigLIP & Smoking & dev fpr budget & 0.778 & 100.0\% & 0.3\% & 0.005 & 0.0\% \\
+SigLIP & Dumping / littering & raw & 0.000 & 75.5\% & 80.0\% & 0.777 & 26.0\% \\
+SigLIP & Dumping / littering & dev max f1 & -0.245 & 76.8\% & 86.0\% & 0.811 & 26.0\% \\
+SigLIP & Dumping / littering & dev fpr budget & 1.790 & 85.7\% & 60.0\% & 0.706 & 10.0\% \\
+SigLIP & Loitering & raw & 0.000 & 0.0\% & 0.0\% & 0.000 & 0.0\% \\
+SigLIP & Loitering & dev max f1 & -2.409 & 2.2\% & 9.1\% & 0.035 & 70.3\% \\
+SigLIP & Loitering & dev fpr budget & -1.556 & 0.0\% & 0.0\% & 0.000 & 12.5\% \\
+SigLIP & Public sleep & raw & 0.000 & 85.7\% & 100.0\% & 0.923 & 8.3\% \\
+SigLIP & Public sleep & dev max f1 & 2.163 & 100.0\% & 33.3\% & 0.500 & 0.0\% \\
+SigLIP & Public sleep & dev fpr budget & 2.163 & 100.0\% & 33.3\% & 0.500 & 0.0\% \\
+SigLIP & Unattended & raw & 0.000 & 96.7\% & 61.2\% & 0.749 & 0.7\% \\
+SigLIP & Unattended & dev max f1 & -5.255 & 25.2\% & 100.0\% & 0.403 & 99.6\% \\
+SigLIP & Unattended & dev fpr budget & -4.791 & 25.3\% & 100.0\% & 0.403 & 99.4\% \\
+\end{longtable}\endgroup

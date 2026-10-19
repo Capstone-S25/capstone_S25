@@ -73,7 +73,7 @@ The implementation lives in `anomaly_eval/`: shared manifests/provenance, datase
 The [expanded accuracy evaluation](reports/expanded_accuracy_review_20261014.md)
 adds 55,156 GPU predictions and increases unattended-item coverage from 36 to
 1,770 endpoints. It also attempts littering, loitering and rough sleeping as
-explicitly qualified diagnostics. The [updated slide deck](reports/slides/model_evaluation_expanded_20261014.pdf)
+explicitly qualified diagnostics. The [14 October slide deck](reports/slides/model_evaluation_expanded_20261014.pdf)
 covers the findings and methodology without an additional latency experiment.
 
 The [supervised CLIP training workflow](docs/training.md) adds masked five-target
@@ -85,5 +85,48 @@ The [completed training findings](reports/clip_finetuning_findings_20261016.md)
 cover all six GPU runs, stronger waste-dumping/unattended ranking, mixed smoking
 transfer and unresolved loitering. The [research model card](results/clip_finetuning_20261015/model_card.md)
 links the checkpoints and records input and threshold limitations.
+
+The [expanded strategy study](results/strategy_study_20261016/report.md) adds new
+smoking images, HMDB action clips, MEVA abandonment windows, public-sleep photos
+and a separate date-held-out thermal loitering study. It compares 330 candidate
+configurations and keeps genuine new-source transfer separate from historical
+diagnostics. [Strategy reproduction and experimental inference](docs/strategy_study.md)
+describe the saved heads, automatic crops, ordered features and weight blending.
+The [findings overview](reports/strategy_findings_20261016.md) summarizes the
+historical gains, new-source transfer failures and remaining threshold problems.
+
+The [causal video pilot](reports/video_pilot_findings_20261016.md) follows those
+failures with a five-objective error audit, smoking/person supervision, temporal
+heads, automatic tracking, an open-vocabulary item-detector ablation and fresh
+AVSS source annotations. It reports event recall and actual alert exposure,
+separating source criteria and disjoint-recording calibration. See the
+[workflow and saved-prediction guide](docs/video_pilot.md) for reproduction.
+
+The [17 October improvements](reports/event_improvements_findings_20261017.md)
+compare 38 source-aware smoking policies, item-state/memory ablations and fixed
+tiled item detection. Tiling raises CAVIAR reference-item recall at IoU 0.5 from
+48.5% to 85.3%; the SigLIP ensemble improves retrospective HMDB AP, while CCTV
+recall remains poor. Extra event memory does not improve the primary AVSS result.
+New highway-debris videos are component stress tests, not verified unattended
+events. The [reproduction guide](docs/event_improvements.md) records these limits.
+
+The [19 October SmolVLM fine-tuning study](reports/smolvlm_finetuning_findings_20261019.md)
+extends actual model adaptation to all five target definitions with language-layer
+LoRA, 512-pixel ordered image inputs and source-separated supervision. It compares
+the original model, a joint adapter and development-selected target routes, with
+matched historical/transfer cohorts against the earlier CLIP strategies. The
+[training and inference guide](docs/smolvlm_finetuning.md) explains partial labels,
+temporal input guards, checkpoints and the limits of the binary query interface.
+
+The latest [32-slide progress PDF](reports/slides/model_evaluation_progress_20261017.pdf)
+and [editable PowerPoint](reports/slides/model_evaluation_progress_20261017.pptx)
+cover all evaluation, data expansion, training and improvement stages. See the
+[slide index](reports/slides/README.md) for the summary, notes and source hashes.
+
+The [complete technical runthrough](reports/technical_runthrough_20261018/model_evaluation_runthrough_20261018.pdf)
+documents the work through 17 October in detail: data collection and audits,
+evaluation protocols, actual training, iterative strategies, event metrics,
+results and remaining generalization limits. Its [LaTeX source and build guide](reports/technical_runthrough_20261018/README.md)
+include the full candidate appendices, numeric exports and source hashes.
 
 See [the evaluation guide](docs/evaluation.md) for data fetching, reviewed-label imports, metric definitions and all commands; [server setup and migration](docs/server.md) covers relocated datasets/caches and old commands. [The original workflow review](reports/workflow_review_20261013.md) records the preceding analysis and measurements. The historical bundle is development only, and confirmed held-out coverage for all five anomalies is still incomplete.

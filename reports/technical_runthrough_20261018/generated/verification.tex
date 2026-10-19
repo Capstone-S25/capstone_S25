@@ -1,0 +1,20 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.1881\linewidth}>{\raggedright\arraybackslash}p{0.1504\linewidth}>{\raggedright\arraybackslash}p{0.5015\linewidth}@{}}
+\caption[Verification]{Historical completion audits; counts are replayed predictions, not independent events.}\label{tab:verification}\\
+\toprule
+\textbf{Stage} & \textbf{Test snapshot} & \textbf{Prediction/identity evidence} \\
+\midrule\endfirsthead
+\multicolumn{3}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{Stage} & \textbf{Test snapshot} & \textbf{Prediction/identity evidence} \\
+\midrule\endhead
+\midrule\multicolumn{3}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+Corrected GPU baseline & 144 tests & 13,400 planned predictions checked; 20 summaries recomputed. \\
+Expanded accuracy & Existing tests retained & 40/40 successful CUDA summaries; 55,156 predictions replayed. \\
+Actual fine-tuning & 153 tests & 46,926 held-out + 29,394 dev predictions; six changed visual checkpoints. \\
+Strategy screen & 159 tests & 117,612 predictions; 330 selections; 20,980 input image identities; ten live cases. \\
+Causal video pilot & 171 tests & 99,528 predictions; 50 selections/heads; 25,452 input images and live encoder checks. \\
+Latest improvements & 182 tests & 5,643 smoking scores; 38 dev policies; 6,390 trace decisions; eight component cells. \\
+\end{longtable}\endgroup

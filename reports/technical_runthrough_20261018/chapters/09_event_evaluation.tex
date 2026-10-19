@@ -1,0 +1,48 @@
+\chapter{Continuous unattended-event evaluation and calibration}
+\label{ch:events}
+\section{Freeze global alarm policies before opening the new source}
+For the video pilot, selected global classification routes are MobileCLIP \texttt{region\_linear} and SigLIP \texttt{grounded\_track\_temporal\_seed\_42}. Development alarm thresholds maximize event recall subject to at most one normal false alert per reviewed camera-hour, then prefer fewer duplicates/false alerts and a higher tied threshold. The alarm machinery requires two seconds above threshold, releases after one second below and uses a ten-second cooldown. Gaps over 1.1 seconds reset pending score evidence. Emission timestamps are actual decision times rather than backdated high-score onsets.
+
+This formalizes a useful desired operating point, but development has only about 28 seconds of reviewed normal exposure. A single normal false alert would imply a large hourly rate. The selected zero-false-alert cutoff therefore has weak statistical support. The record distinguishes a development constraint from a proven deployment budget.
+
+\section{Historical windows and actual event discovery}
+On 698 known historical unattended windows (242 positive/456 normal), the selected MobileCLIP route has AP about .916 and SigLIP .865. Their fixed frame-budget behavior differs sharply: MobileCLIP recall .789/FPR .055 versus SigLIP recall 1.0/FPR .899. Those numbers alone do not describe alarm starts across time.
+
+Under strict global event matching, MobileCLIP detects 1/5 historical events with zero normal false alerts and four unknown-time alerts; SigLIP detects 0/5 with six normal false alerts and three unknown-time alerts over 230 normal seconds. Some alarms occur in unreviewed transitions before positive windows. They cannot be counted as normal false alarms or silently matched later, and provisional onset labels prevent treating every such case as a certain practical miss. The report preserves the distinctions rather than showing only window AP.
+
+\section{Clean AVSS primary events}
+EASY and MEDIUM form a two-event primary subset, contributing 605 overlapping decision windows and 165.7389 reviewed normal seconds. They are one conservative source block, not two verified independent cameras. At first use they are new to the pilot selection; in later reuse they are retrospective.
+\input{generated/pilot_avss_primary.tex}
+The global score route detects 2/2 events for both encoders but generates one MobileCLIP and six SigLIP normal false alerts, plus three repeated event alerts each. Their measured normal-exposure rates are 21.7/hour and 130.3/hour. Median delays are 25.8 and 12.1 seconds after annotated abandoned-state onset. These are not compatible with a reliable low-false-alert deployment claim despite perfect two-event recall.
+
+\section{Known annotation criteria: same item, stationary and owner away}
+A separately frozen AVSS diagnostic requires the same detected item to be stationary for at least 30 seconds, its previously associated owner absent for at least .5 seconds, and the fixed two-second persistence for an alarm. Stationarity from one item cannot be combined with owner absence from another. Missing owner history produces no candidate alert and can cause a real miss; it does not create an inferred normal annotation.
+
+Both classifier-plus-state gates detect 2/2 with zero normal false alerts. MobileCLIP has no repeats and median delay 36.3 seconds; SigLIP has one repeat and delay 34.8 seconds. The state rule alone detects 2/2, zero normal false or repeated alarms, and median delay 34.818 seconds. This rule is independent of CLIP, so its identical entries across backbones do not represent two separate confirmations.
+
+The rule's useful result comes with a long delay after labelled onset, likely influenced by detector/track persistence and stationarity resets. The implementation's proximity owner relation can confuse passers-by, and pixel-anchor jitter can restart the stationary timer. A two-event result cannot establish robustness across crowded scenes, pickups, occlusion, camera motion or different item types.
+
+\section{Censored HARD and why it stays separate}
+HARD's annotation tail is outside the supplied stream and nominal/actual FPS disagree. The observed prefix is retained, with the original onset unscaled and a clipped right edge. The all-three global diagnostic detects 3/3 observed events but has four/nine normal false alerts and four/five duplicates for MobileCLIP/SigLIP, over approximately 264.06 normal seconds. It cannot be presented as three clean independent confirmations or silently pooled into the headline two-event result.
+
+The timing issue is upstream data evidence, not a poor model result being excluded. The clean/censored distinction was specified before pilot scoring and is carried through the tables. Later method changes evaluated on HARD remain retrospective diagnostic comparisons with the same qualification.
+
+\section{Disjoint normal-recording calibration}
+Calibration reserves entire ABODA classroom video7 and walkway video2 recordings, using only their existing reviewed normal portions. The same complete recordings are excluded from both the global and calibrated evaluation arms. This prevents fitting a camera offset from the negatives later used to judge that offset.
+
+An offset is the difference between calibration and development normal-score 95th percentiles. After exclusions, evaluation has four events and 137 normal seconds. MobileCLIP remains 0/4 with no normal false alarms in both arms. SigLIP changes from 0/4 to 1/4 events while reducing normal false alerts from four to one, still 26.3/hour. Calibration data itself is tiny, about 84.5 seconds for the classroom and eight seconds for the walkway. AVSS has no disjoint normal recording with verified camera identity, so camera calibration is unavailable there.
+
+This is a useful historical diagnostic rather than proof that normalization solves transfer. Camera-specific calibration, unchanged global transfer and a source-criteria rule are different protocols and remain separate.
+
+\section{Quantify the short-exposure limitation}
+For a homogeneous Poisson false-alert process, a one-sided exact 95\% upper rate after $k$ observed normal false alarms in $T$ seconds is
+\begin{equation}
+\lambda_{U,0.95}=\frac{3600}{2T}\chi^2_{0.95,2(k+1)}.
+\end{equation}
+For zero alerts this simplifies to $-3600\log(.05)/T$. At $T=165.7389$ seconds, the upper bound is about 65.1 false alerts/hour. Approximately three zero-alert normal hours would be needed just for this conditional bound to drop below one/hour. Such a calculation assumes a homogeneous process; it does not protect against camera/domain shift or clustered alert behavior.
+
+\fig{normal_exposure_bound.pdf}{0.88}{Conditional one-sided 95\% Poisson upper false-alert rate after zero alerts, as a function of reviewed normal exposure. The AVSS exposure is far below the approximately three-hour crossing for one alert/hour. This is an exposure calculation, not a measured deployment-rate curve.}
+\finding{The source-rule pilot is promising on its two events. Its zero observed false alarms and high window AP provide far less assurance than an independently reviewed multi-camera event study with long normal streams.}
+
+\evidence{results/video_pilot_20261016/events.csv}
+\evidence{results/video_pilot_20261016/mobileclip2-s2/event_policies.json}

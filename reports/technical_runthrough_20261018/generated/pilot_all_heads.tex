@@ -1,0 +1,64 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.0506\linewidth}>{\raggedright\arraybackslash}p{0.1214\linewidth}>{\raggedright\arraybackslash}p{0.3542\linewidth}>{\raggedright\arraybackslash}p{0.0506\linewidth}>{\raggedright\arraybackslash}p{0.0607\linewidth}>{\raggedright\arraybackslash}p{0.0810\linewidth}>{\raggedright\arraybackslash}p{0.0810\linewidth}>{\raggedright\arraybackslash}p{0.0405\linewidth}@{}}
+\caption[Pilot all heads]{All final source-guarded pilot heads; asterisk marks the primary development route.}\label{tab:pilot_all_heads}\\
+\toprule
+\textbf{M/S} & \textbf{Target} & \textbf{Head} & \textbf{Seed} & \textbf{Ep.} & \textbf{Worst AP} & \textbf{Mean AP} & \textbf{*} \\
+\midrule\endfirsthead
+\multicolumn{8}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{M/S} & \textbf{Target} & \textbf{Head} & \textbf{Seed} & \textbf{Ep.} & \textbf{Worst AP} & \textbf{Mean AP} & \textbf{*} \\
+\midrule\endhead
+\midrule\multicolumn{8}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+M & Smoking & scene linear & -- & -- & 0.3733 & 0.6659 &  \\
+M & Smoking & region linear & -- & -- & 0.4544 & 0.7368 &  \\
+M & Smoking & region temporal seed 42 & 42 & 15 & 0.5427 & 0.7926 &  \\
+M & Smoking & region temporal seed 43 & 43 & 22 & 0.5162 & 0.7723 &  \\
+M & Smoking & region temporal seed 44 & 44 & 15 & 0.5173 & 0.7709 &  \\
+M & Smoking & region track temporal seed 42 & 42 & 15 & 0.5492 & 0.7862 &  \\
+M & Smoking & region track temporal seed 43 & 43 & 14 & 0.5274 & 0.7755 &  \\
+M & Smoking & region track temporal seed 44 & 44 & 21 & 0.5175 & 0.7922 &  \\
+M & Smoking & person supervised seed 42 & 42 & 60 & 0.5704 & 0.7967 &  \\
+M & Smoking & person supervised seed 43 & 43 & 60 & 0.5723 & 0.7978 &  \\
+M & Smoking & person supervised seed 44 & 44 & 60 & 0.5723 & 0.7994 &  \\
+M & Smoking & person supervised hardneg seed 42 & 42 & 60 & 0.5736 & 0.7975 & * \\
+M & Smoking & person supervised hardneg seed 43 & 43 & 60 & 0.5670 & 0.8004 &  \\
+M & Smoking & person supervised hardneg seed 44 & 44 & 60 & 0.5719 & 0.8035 &  \\
+M & Unattended & scene linear & -- & -- & 0.8130 & 0.8130 &  \\
+M & Unattended & region linear & -- & -- & 0.8782 & 0.8782 & * \\
+M & Unattended & region temporal seed 42 & 42 & 1 & 0.8146 & 0.8146 &  \\
+M & Unattended & region temporal seed 43 & 43 & 4 & 0.7552 & 0.7552 &  \\
+M & Unattended & region temporal seed 44 & 44 & 1 & 0.8316 & 0.8316 &  \\
+M & Unattended & region track temporal seed 42 & 42 & 1 & 0.8259 & 0.8259 &  \\
+M & Unattended & region track temporal seed 43 & 43 & 15 & 0.8297 & 0.8297 &  \\
+M & Unattended & region track temporal seed 44 & 44 & 1 & 0.8318 & 0.8318 &  \\
+M & Unattended & grounded track temporal seed 42 & 42 & 1 & 0.8067 & 0.8067 &  \\
+M & Unattended & grounded track temporal seed 43 & 43 & 15 & 0.8377 & 0.8377 &  \\
+M & Unattended & grounded track temporal seed 44 & 44 & 8 & 0.7828 & 0.7828 &  \\
+S & Smoking & scene linear & -- & -- & 0.3723 & 0.6987 &  \\
+S & Smoking & region linear & -- & -- & 0.4293 & 0.7264 &  \\
+S & Smoking & region temporal seed 42 & 42 & 59 & 0.5810 & 0.7890 & * \\
+S & Smoking & region temporal seed 43 & 43 & 23 & 0.5393 & 0.7818 &  \\
+S & Smoking & region temporal seed 44 & 44 & 24 & 0.5435 & 0.7995 &  \\
+S & Smoking & region track temporal seed 42 & 42 & 43 & 0.5710 & 0.7765 &  \\
+S & Smoking & region track temporal seed 43 & 43 & 24 & 0.5530 & 0.7980 &  \\
+S & Smoking & region track temporal seed 44 & 44 & 47 & 0.5774 & 0.7776 &  \\
+S & Smoking & person supervised seed 42 & 42 & 9 & 0.4921 & 0.8164 &  \\
+S & Smoking & person supervised seed 43 & 43 & 59 & 0.5531 & 0.8369 &  \\
+S & Smoking & person supervised seed 44 & 44 & 60 & 0.5542 & 0.8372 &  \\
+S & Smoking & person supervised hardneg seed 42 & 42 & 2 & 0.4890 & 0.8146 &  \\
+S & Smoking & person supervised hardneg seed 43 & 43 & 60 & 0.5471 & 0.8348 &  \\
+S & Smoking & person supervised hardneg seed 44 & 44 & 60 & 0.5506 & 0.8339 &  \\
+S & Unattended & scene linear & -- & -- & 0.7520 & 0.7520 &  \\
+S & Unattended & region linear & -- & -- & 0.7576 & 0.7576 &  \\
+S & Unattended & region temporal seed 42 & 42 & 21 & 0.9700 & 0.9700 &  \\
+S & Unattended & region temporal seed 43 & 43 & 39 & 0.9643 & 0.9643 &  \\
+S & Unattended & region temporal seed 44 & 44 & 12 & 0.9477 & 0.9477 &  \\
+S & Unattended & region track temporal seed 42 & 42 & 21 & 0.9552 & 0.9552 &  \\
+S & Unattended & region track temporal seed 43 & 43 & 35 & 0.9710 & 0.9710 &  \\
+S & Unattended & region track temporal seed 44 & 44 & 19 & 0.9120 & 0.9120 &  \\
+S & Unattended & grounded track temporal seed 42 & 42 & 20 & 0.9730 & 0.9730 & * \\
+S & Unattended & grounded track temporal seed 43 & 43 & 35 & 0.9701 & 0.9701 &  \\
+S & Unattended & grounded track temporal seed 44 & 44 & 2 & 0.8805 & 0.8805 &  \\
+\end{longtable}\endgroup

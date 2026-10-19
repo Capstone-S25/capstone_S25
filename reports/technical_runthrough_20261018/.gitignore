@@ -1,0 +1,9 @@
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.xdv
+*.synctex.gz
+__pycache__/

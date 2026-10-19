@@ -1,0 +1,30 @@
+{
+  "status": "complete",
+  "report_date": "2026-10-18",
+  "experiment_cutoff": "2026-10-17",
+  "pdf_pages": 83,
+  "narrative_source_words_approximate": 15036,
+  "generated_tables": 38,
+  "generated_table_rows": 933,
+  "source_files_checked": 146,
+  "latex_input_links_checked": 52,
+  "narrative_artifact_links_checked": 28,
+  "scientific_figures": 4,
+  "no_unresolved_references": true,
+  "no_overfull_boxes": true,
+  "fonts_embedded": true,
+  "text_within_page_boundaries": true,
+  "no_new_model_inference": true,
+  "pdf_sha256": "c2854bad61227dd591cba35a9db68944d5e3ac55b5a50735d4e7bbc74d666ed0",
+  "source_manifest_sha256": "eae96de460255956c68196716ea3f638d704efb5c2a52f33b752a45ff16364da",
+  "compiler": {
+    "release": "tectonic@0.17.0",
+    "url": "https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.17.0/tectonic-0.17.0-x86_64-unknown-linux-musl.tar.gz",
+    "archive_sha256": "8533d07f9ccbd7a65824b9e0459041bca34af1eb33daba48f59215593753a3b7",
+    "binary_sha256": "a98aa59ad5c1df39a6c9e56cbfc5088f2b11d6c179c0130b97998e4bd46a46da",
+    "installation": "Workspace-local portable binary; no system package changes"
+  },
+  "extracted_source_package_compiled_independently": true,
+  "independent_pdf_text_matches": true,
+  "pages_rendered_and_reviewed_in_contact_sheets": 83
+}

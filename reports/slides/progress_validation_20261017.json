@@ -1,0 +1,16 @@
+{
+  "status": "complete",
+  "slides": 32,
+  "editable_pptx_slides": 32,
+  "speaker_notes": 32,
+  "all_source_and_builder_hashes_match": true,
+  "local_document_links_checked": 54,
+  "pdf_pages_rendered": 32,
+  "layout": "Text-fit and geometry checked by shared renderer; both 16-page previews visually reviewed.",
+  "primary_artifact_sha256": {
+    "model_evaluation_progress_20261017.pdf": "3a9b23b96a4fb25383bf77c98f7046972801e456e0b5e20ac2cab55d52057f1f",
+    "model_evaluation_progress_20261017.pptx": "15f450dc03861a41cd9932363e44df9a01bdd2db932cca6a0a563d5f1b244798",
+    "summary_slide_progress_20261017.pdf": "36ac1eb4777485dcb273c4e48c1e41ff47f7369f0ce9cfd853154122de5ae224",
+    "summary_slide_progress_20261017.pptx": "e2be704f78b56bc3f74e832ed86845372e8ec1a4e2d3f0cf082de32d5ac46cd7"
+  }
+}

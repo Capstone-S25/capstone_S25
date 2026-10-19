@@ -1,0 +1,29 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.1928\linewidth}>{\raggedright\arraybackslash}p{0.6472\linewidth}@{}}
+\caption[Smol settings]{Actual SmolVLM training and scoring settings.}\label{tab:smol_settings}\\
+\toprule
+\textbf{C/ep} & \textbf{Recorded value} \\
+\midrule\endfirsthead
+\multicolumn{2}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{C/ep} & \textbf{Recorded value} \\
+\midrule\endhead
+\midrule\multicolumn{2}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+Adaptation & Language projections only; 4,341,760 trainable parameters \\
+LoRA & Rank 8; alpha 16; dropout 0.05; no bias \\
+Projections & q/k/v/o and gate/up/down in 32 language layers \\
+Frozen & Vision tower, multimodal connector, embeddings, vocabulary head \\
+Inputs & 512-pixel gray letterbox; 64 visual tokens/image; no image splitting \\
+Views & 1 static; 4 ordered past views for temporal windows; 8 littering clip views \\
+Loss & First-answer-token full-vocabulary cross entropy; all input positions masked \\
+Optimizer & AdamW; weight decay 0.01; gradient norm clip 1.0 \\
+Schedule & 5\% warmup; linear decay; at most 6 epochs; patience 2 \\
+Primary search & Seed 42; learning rates 0.00003 and 0.0001 \\
+Replication & Seed 43; only the primary winning joint learning rate 0.0001 \\
+Batch & 8 examples/microbatch; accumulation 4; effective batch 32 \\
+Coverage/epoch & 3,973 unique examples once + 3,973 balanced resamples = 7,946 visits \\
+Numerics & BF16 training; frozen visual tokens and all selection/final scores float32; TF32 off \\
+Score & First-answer logit(Yes) minus logit(No); not a calibrated probability \\
+\end{longtable}\endgroup

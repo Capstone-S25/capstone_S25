@@ -1,0 +1,18 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.2240\linewidth}>{\raggedright\arraybackslash}p{0.1400\linewidth}>{\raggedright\arraybackslash}p{0.1400\linewidth}>{\raggedright\arraybackslash}p{0.1960\linewidth}>{\raggedright\arraybackslash}p{0.1400\linewidth}@{}}
+\caption[Historical latency]{Historical CPU pilot only: eight images, three measured repeats, four logical CPUs; not rerun.}\label{tab:historical_latency}\\
+\toprule
+\textbf{Model} & \textbf{p50 (s)} & \textbf{p95 (s)} & \textbf{Peak RSS (GiB)} & \textbf{Load (s)} \\
+\midrule\endfirsthead
+\multicolumn{5}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{Model} & \textbf{p50 (s)} & \textbf{p95 (s)} & \textbf{Peak RSS (GiB)} & \textbf{Load (s)} \\
+\midrule\endhead
+\midrule\multicolumn{5}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+Mobile\allowbreak{}CLIP & 0.055 & 0.056 & 0.97 & 2.89 \\
+SigLIP & 0.109 & 0.138 & 1.22 & 2.43 \\
+SmolVLM & 7.505 & 7.563 & 3.27 & 2.41 \\
+MiniCPM & 8.091 & 8.176 & 18.41 & 4.15 \\
+\end{longtable}\endgroup

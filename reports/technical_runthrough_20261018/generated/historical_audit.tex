@@ -1,0 +1,29 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.0737\linewidth}>{\raggedright\arraybackslash}p{0.1032\linewidth}>{\raggedright\arraybackslash}p{0.6632\linewidth}@{}}
+\caption[Historical audit]{Fifteen archived audit findings; original reproductions are in the registered audit source.}\label{tab:historical_audit}\\
+\toprule
+\textbf{ID} & \textbf{Severity} & \textbf{Historical issue} \\
+\midrule\endfirsthead
+\multicolumn{3}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{ID} & \textbf{Severity} & \textbf{Historical issue} \\
+\midrule\endhead
+\midrule\multicolumn{3}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+F01 & High & fractional positives are silently converted to negatives \\
+F02 & High & reported optimal thresholds do not match their metrics \\
+F03 & High & the CPU best-weight snapshot changes during further training \\
+F04 & High & validation is reused for model/epoch/branch/threshold selection \\
+F05 & High & dataset labels do not fully match the specified events \\
+F06 & High & source and negative distribution confound the image comparison \\
+F07 & High & the requested five-anomaly coverage is incomplete \\
+F08 & Medium & abstentions are excluded from most headline metrics \\
+F09 & Medium & macro-F1 has a changing class denominator \\
+F10 & Medium & bootstrap ignores the group structure and does not establish a winner \\
+F11 & Medium & padded frames influence real predictions \\
+F12 & Medium & session labels/order and feature-cache reuse need stronger provenance \\
+F13 & Medium & notebook reuse can silently show stale results \\
+F14 & Medium & the old VadCLIP wrapper is not a working upstream integration \\
+F15 & Medium & hardware/runtime tests do not select the best deployment pipeline \\
+\end{longtable}\endgroup

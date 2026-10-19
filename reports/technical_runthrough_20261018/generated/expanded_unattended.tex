@@ -1,0 +1,22 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.1703\linewidth}>{\raggedright\arraybackslash}p{0.1022\linewidth}>{\raggedright\arraybackslash}p{0.1022\linewidth}>{\raggedright\arraybackslash}p{0.1022\linewidth}>{\raggedright\arraybackslash}p{0.0795\linewidth}>{\raggedright\arraybackslash}p{0.1022\linewidth}>{\raggedright\arraybackslash}p{0.0795\linewidth}>{\raggedright\arraybackslash}p{0.1022\linewidth}@{}}
+\caption[Expanded unattended]{Expanded unattended raw test decisions: 962 endpoints per input protocol, provisional labels.}\label{tab:expanded_unattended}\\
+\toprule
+\textbf{Model} & \textbf{Input} & \textbf{PPV} & \textbf{Recall} & \textbf{F1} & \textbf{FPR} & \textbf{AP} & \textbf{AUROC} \\
+\midrule\endfirsthead
+\multicolumn{8}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{Model} & \textbf{Input} & \textbf{PPV} & \textbf{Recall} & \textbf{F1} & \textbf{FPR} & \textbf{AP} & \textbf{AUROC} \\
+\midrule\endhead
+\midrule\multicolumn{8}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+Mobile\allowbreak{}CLIP & frame & 25.3\% & 75.2\% & 0.379 & 74.6\% & 0.209 & 0.417 \\
+SigLIP & frame & 0.0\% & 0.0\% & 0.000 & 2.6\% & 0.309 & 0.675 \\
+SmolVLM & frame & 18.6\% & 63.6\% & 0.288 & 93.8\% & -- & -- \\
+MiniCPM & frame & 77.1\% & 34.7\% & 0.479 & 3.5\% & -- & -- \\
+Mobile\allowbreak{}CLIP & window & 27.2\% & 76.0\% & 0.400 & 68.5\% & 0.362 & 0.580 \\
+SigLIP & window & 12.5\% & 1.7\% & 0.029 & 3.9\% & 0.325 & 0.663 \\
+SmolVLM & window & 24.9\% & 96.3\% & 0.396 & 97.4\% & -- & -- \\
+MiniCPM & window & 96.3\% & 10.7\% & 0.193 & 0.1\% & -- & -- \\
+\end{longtable}\endgroup

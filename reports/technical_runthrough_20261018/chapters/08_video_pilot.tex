@@ -1,0 +1,56 @@
+\chapter{Causal video pilot: failure audit, regions and learned heads}
+\label{ch:pilot}
+\section{Start from observed failure modes}
+The strategy results motivated a controlled temporal experiment instead of another large undirected visual fine-tune. An error audit exports 117 deliberately selected severe/source-balanced cases across all five targets. Provisional notes distinguish low spatial detail, misleading crops, confusable actions, unsupported duration and item/owner evidence. This is a review queue for investigation, not an independent or representative statistical estimate of error causes. No reviewed test mistake is silently corrected into a favorable new label.
+
+For CCTV smoking the median largest annotated smoker is only 11.2 pixels tall after 224-pixel letterboxing. In 71.8\% of held-out positive frames, all smokers are below 12 pixels. The previous automatic crop loses at least half of every target in 40.2\% of positive frames. Multiple person/full-upper-body crops reduce that coverage failure to one of 393 frames (.254\%). Detector resolution and crop policy change together, so this is a geometric coverage result rather than an isolated causal accuracy gain.
+\input{generated/crop_audit.tex}
+
+The item audit exposes a separate bottleneck: the COCO detector/association pipeline matches none of 136 sampled CAVIAR leaving-item reference boxes at IoU .5. A classifier cannot recover reliable item state if its automatic upstream item proposals are absent. This training-camera finding motivates a pre-score Grounding DINO geometry amendment with unchanged CLIP visual representations.
+
+\section{Video preparation and identity repair}
+The preparation covers 936 actual video files: 906 HMDB clips, 17 historical continuous recordings and 13 MEVA sources. Static smoking/photo examples also receive recording identities for bookkeeping, but those identifiers are not additional decoded surveillance videos. Continuous sources are decoded to real indices at 2 Hz; HMDB uses 16 sequentially decoded uniform views. Twenty-second windows end at the actual decision timestamp, with no decisions before a 20-second warmup. Unknown intervals use target $-1$ and never become normal examples.
+
+The initial prepared modeling pool has 8,941 examples. Verification completes/repairs inherited pixel-hash fields in separate canonical manifests without changing labels, views, timestamps or splits. The known-source guard then finds a title-part alias: The Departed Part 1 and Part 2 cross train/development under raw prefixes. Ten training clips are purged, leaving 8,931 modeling examples; no test clip is removed. Earlier fits remain under \path{prefix_split_diagnostic/}, while all final selections use refitted guarded data.
+
+The combined historical/new input verification covers 25,452 distinct view-image paths and no cross-fold decoded-pixel conflicts. The source guard covers explicit part/pt/clip/scene/episode suffixes; it does not independently verify every movie or actor identity. The new title grouping is therefore an improved safeguard with a stated limit.
+
+\section{Automatic detection and causal tracking}
+The common COCO detector is Faster R-CNN ResNet50 FPN v2, with minimum image size 640, maximum 1024, low confidence .2 and new-track threshold .5. Person and backpack/handbag/suitcase labels feed a documented Hungarian IoU/velocity association baseline. It retains tracks across gaps up to two seconds. Association can use IoU at least .05 or small predicted-center distance; velocity is smoothed from past displacements.
+
+Stationarity originally resets when an observed center moves more than .015 normalized frame distance from its anchor. Ownership is a proximity hypothesis: an item must have a near person candidate observed for two seconds before association. Distance uses the item center relative to a person's rectangle normalized by person height. An owner becomes absent when missing or sufficiently far; the established relation is retained after departure. There is no appearance ReID or independent ownership truth. The algorithm is not ByteTrack.
+
+The 18 geometry channels include clipped person/item counts, maximum age, stationary duration, owner-absence duration, owned-item fraction, presence, speed, minimum distance, area, detection confidence and visible-owner fraction. Source boxes do not choose tracks or inference crops. Missing detections affect the actual final output rather than being repaired with oracle annotations.
+
+Grounding DINO tiny is pinned to revision \texttt{a2bb814dd30d776dcf7e30523b00659f4f141c71}, with a recorded safetensors hash. The fixed query is:
+\begin{lstlisting}
+person . bag . backpack . suitcase . cardboard box . package .
+\end{lstlisting}
+Box threshold .25, text threshold .20, class-wise NMS .5 and maximum item area .2 are fixed. A private label 1001 denotes the generic bag/package class. Its new-track threshold is .25. Custom kernels are disabled and inference is float32. Geometry changes while the existing CLIP image features remain fixed, isolating this ablation.
+
+Against partial CAVIAR item references, DINO tracks recover 66/136 (48.5\%) at IoU .5; person reference recall rises from 36.0\% to 67.2\%. The references omit other carried bags, so unmatched item predictions cannot be called proven false positives or used as item precision.
+
+\section{Frozen visual encoders and automatic regions}
+This pilot uses frozen pretrained CLIP encoders, distinct from the six earlier visual fine-tunes. Each image supplies full-scene features, automatic region mean/max, and optional geometry. Up to four persons each contribute contextual whole-body and upper-55\%-body crops, plus up to two item/observed-owner contexts. This upper-body policy is a geometric heuristic, not a validated face/hand detector. Scene fallback is preserved when detections are absent.
+
+Each backbone encodes 137,674 scene/crop views over the 25,452 input images in float32 with TF32 disabled. Frozen arrays preserve paths, full/crop features, geometry, region boxes, region-image indices and person flags. The extraction does not use anomaly labels to choose inference regions. Cached arrays are loaded once into memory for fitting/replay; repeatedly decompressing the same NPZ for every row was avoided.
+
+\section{Fifty final candidate heads}
+Each encoder fits 14 smoking and 11 unattended candidates, for 50 saved checkpoints total. Scene and multiple-region linear baselines use fixed $C=1$. Causal GRUs project inputs through layer normalization and 128-unit GELU/dropout .2, then use a 64-unit GRU and linear output. Region GRUs are compared with and without the 18 geometry features, across seeds 42/43/44. Relative elapsed time and inter-view gaps are explicit channels, with packed variable-length sequences preserving causal padding semantics.
+
+AdamW uses learning rate .0005 and weight decay .01; heads train up to 60 epochs with patience eight, batch 128 and gradient clipping one. Task/source/class-balanced sampling is retained. Checkpoints and routes maximize worst development-source AP, with mean AP as tie-breaker. Static examples and variable-length action clips remain separate supported input types, not fabricated CCTV sequences.
+
+Smoking additionally compares a per-person multiple-instance linear head, max-pooled over automatic person regions/views. Training-camera COCO annotations supervise 1,460 matched automatic regions, including 277 positives, at IoU at least .3; ambiguous matches are omitted. The loss combines weak scene/clip BCE with .5 times the matched-region BCE. No test box chooses an inference region.
+
+The hard-negative version starts mining at epoch four using training normals within each source, upweighting difficult cases without changing original class/source mass. Both person variants use three seeds. A checkpoint selected before epoch four has not benefited from mining merely because its run name includes hard negatives. SigLIP has such a recorded early-selected case. This metadata is retained in the appendix.
+
+\section{Smoking results and the fair within-pilot controls}
+\input{generated/pilot_smoking.tex}
+MobileCLIP's selected person-supervised hard-negative route raises retrospective CCTV AP from the previous bundle's .690 to .725, while SigLIP's selected region GRU drops .722 to .688. Both do well on adapted movie/web clips, but the SigLIP selected route's .778 AP trails its own .888 scene-only pilot baseline. Keeping this regression is necessary: the development selection is not replaced with whichever test ablation is best.
+
+The previous bundle on the same 205 HMDB cases uses eight views and no HMDB training; the pilot uses 16 views and 530 grouped training clips. MobileCLIP .697 to .908 and SigLIP .762 to .778 therefore combine data/method changes. The scene baseline shares the new pilot's training data/views and is the better controlled reference. Neither establishes temporal CCTV generalization because the CCTV test remains static.
+
+\section{Completion and recovery}
+One concurrent SigLIP fit exhausts VRAM while the detector batches images. It is rerun after the detector exits; no feature extraction or labels change. Final verification replays 99,528 predictions, checks all 50 candidate selections and saved heads, and exercises four live encoder/ROI cases. Maximum saved-head difference is about $1.9\cdot10^{-6}$ and live-feature difference about $4.0\cdot10^{-7}$. At completion, 171 tests pass. A real checkpoint-backed replay CLI is available, but it reuses cached features and is not advertised as an arbitrary-video streaming application.
+\evidence{reports/video_pilot_protocol_20261016.md}
+\evidence{results/video_pilot_20261016/verification.json}

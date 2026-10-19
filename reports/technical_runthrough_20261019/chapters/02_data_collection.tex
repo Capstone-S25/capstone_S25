@@ -1,0 +1,88 @@
+\chapter{Data discovery, collection and annotation preparation}
+\label{ch:data}
+\section{Audit the local corpus before increasing its size}
+The initial problem was not simply a low sample cap. The local \path{data/} tree mixed COCO/YOLO exports, renamed images, augmented copies, raw video, MAT video volumes, foreground masks, action labels, person boxes and posture labels. A valid event test required separating those meanings. File totals could be large while usable task-specific negative labels, recording identities and temporal intervals were absent.
+
+The 13 October local audit counted 4,214 smoking images across two COCO exports. The smoking-video export contains 3,278 frames with Smoking/Not Smoking boxes and 16 camera/day sessions. The other CCTV export contains 936 images that are all smoking-positive; a \texttt{no\_vest} category does not establish smoking-negative scenes. The 3,278-frame export supports an exploratory development comparison, whereas the 936-image collection cannot supply a matched binary benchmark without additional genealogy and normal examples.
+
+Littering material contained 6,721 image files and 7,134 text label files. Its class names included dropping, dumping, putting-down, throwing and tossing. These are related actions rather than a uniform annotation of rubbish being discarded. The literal filename audit found 46 images lacking same-name labels and 45 labels lacking same-name images across train/test. Rename receipts can recover aliases, so these are review candidates rather than proof that every unmatched file is corrupt. Seven empty test labels are not sufficient grounds for declaring all those scenes event-negative. The exported validation labels lacked corresponding validation images, and train/test class distributions differed.
+
+The local loitering material contained 1,675 images, 95 videos and 37 MAT files. The image exports annotate people. Inspected Avenue MAT files contain grayscale video volumes under \texttt{vol}, with spatial shape 120 by 160 and a frame axis; they are not loitering interval annotations. VIRAT material requires its event/track mapping. A visible person box cannot label excessive dwell time, and a convenient abnormal-video label cannot automatically be mapped to loitering.
+
+The rough-sleeping exports contained 224 image files but only 112 unique file/RGB identities. Their labels concerned laying and standing, with duplicated source exports. They do not verify apparent sleep in public, bedding context or duration. The unattended material included 16 raw videos plus acquired CAVIAR/ABODA sources; reviewed CAVIAR leaving/pickup/walking intervals were usable for an initial small event/control study, whereas ABODA needed interval preparation. D2 foreground masks were auxiliary, not complete target event truth.
+\evidence{reports/data_readiness_20261013.json}
+\evidence{reports/workflow_review_20261013.md}
+
+\section{Data identity and standardization}
+Preparation used a common example schema with a target, label, source, recording/group identity, ordered input views and evidence qualifications. File hashes, decoded EXIF-corrected RGB pixel hashes and checksum-qualified source moments detect aliases at different levels. Byte-identical files are not the only duplicates: different filenames or encodings may decode to the same pixels. Conversely, two files sharing an old original name but different contents must not be merged silently.
+
+The corrected baseline preparation removed 104 aliases from 3,454 collected input rows. Its retained 3,350 inputs include repeated endpoint identities across frame/window protocols, so the total is a protocol-input count. The lookup path for original download names was also indexed. Previously, each lookup reparsed a roughly 3 MB rename receipt and scanned entries; the indexed implementation performs one receipt parse per file version and invalidates it when the receipt changes. A live check recorded more than 30,000 lookups with a single parse. This changes preparation efficiency, not model quality.
+
+Source moments, labels, hashes and split membership are checked together. Conflicting labels on duplicate pixels and cross-split aliases fail validation. Missing labels are unknown. Source grouping is conservative where camera identities are incomplete; perceptual similarity can identify related files but cannot prove all physical camera, person or film identities independent.
+
+\section{Expanded historical unattended intervals}
+The first reviewed unattended corpus had 36 endpoints: 20 development and 16 test. Expansion reviewed intervals across 18 recordings and retained 1,770 endpoints: 808 development and 962 test. The test labels comprise 242 positives and 720 normals, and five positive test recordings. Entire ABODA classroom and walkway families remain test; development draws from entrance, lobby and CAVIAR families. Thus the apparent 49.2-fold endpoint increase still yields only two held-out camera families.
+
+Uncertain cases were excluded rather than forced into binary truth: an occluded CAVIAR bag, an owner who remains present, ambiguous or occluded street placements, and a pre-existing item without visible deposition/owner history. Source copies were deduplicated. Positive CAVIAR intervals were checked against source XML, while broader timeline labels are provisional assistant visual review. They were prepared before the model predictions used in that study, but independent human verification is still absent.
+
+Each endpoint also generated a past-only, four-frame contact sheet over 20 seconds. This extends the earlier six-second sheet. It is a different input protocol: temporal coverage grows while each subimage occupies less spatial area. It must not be described as adding independent events, as native video processing, or as an isolated data-volume intervention.
+\input{generated/expanded_cohorts.tex}
+
+\section{Supervised training sources acquired on 15 October}
+\subsection{Stanford40 and CCTV smoking}
+Stanford40 contributes smoking photographs and confusable actions: drinking, blowing bubbles, brushing teeth, phoning and texting. The original author dataset is the source; a recorded public mirror was used for the image archive because the original image server was slow. Official test membership remains intact. Official training examples are split into grouped train/development pools after perceptual screening. Two previously used debug-test images are excluded from fresh holdout claims.
+
+The final combined smoking data has 2,097 training examples, 1,135 development examples, 646 CCTV test frames, and 806 separate official-test photographs. Camera c4 trains, c2 develops and c1 tests across dates. Historical CCTV results were already visible, so the camera holdout is retrospective. Stanford40 is an image holdout within a domain that contributes training photographs, not an entirely unseen dataset. Its primary-action labels are not exhaustive smoking annotations for every person.
+
+\subsection{MIVIA illegal waste dumping}
+The author-labelled MIVIA-IWDD release supplies action videos and hard negatives. Of 500 listed videos, 498 were acquired; two missing files, \texttt{vid0325.mp4} and \texttt{vid0346.mp4}, belong to training. All 100 official test videos were obtained. Conservative perceptual-source clustering excluded another 63 acquired training videos connected to official test material. The final manifest retains 435 clips: 274 train, 61 development and 100 official test.
+
+Eight frames are sampled uniformly across a full clip without using its event onset to choose test inputs. The source onset annotations are retained, but this experiment is offline video-level action classification. A sampled frame before the action is not independently labelled a dumping event. The release includes bulky waste dumping as well as small rubbish, so its relationship to pedestrian littering must remain explicit.
+
+\subsection{Street Scene supervised loitering re-split}
+Track/type annotations are mapped using the authors' event-index tables. The source paper numbers events from one whereas annotation track identifiers are zero-based; preparation accounts for that offset. Twenty seconds of past context is represented by four chronological views on a 15-second endpoint grid plus target-track endpoints. Other anomaly types are excluded as normal controls, avoiding training loitering to distinguish merely any abnormal scene.
+
+Whole recordings remain together. The result is a supervised research re-split of recordings originally belonging to the source Test collection, not the official unsupervised Street Scene benchmark. A single camera limits the generalization claim even when recording identities are kept separate. The final held-out subset has 75 windows and only 11 positives.
+
+\subsection{Apparent public sleep and matched controls}
+The first new photo study uses openly licensed Commons images. Positive provisional labels require a person visibly apparently asleep in a public area, or lying with bedding there. Controls include awake people on benches, awake people lying on grass, indoor sleepers and clear empty context. Ambiguous rest versus sleep, uncertain public/private context, paintings and animals are omitted. Author and perceptual-neighbor groups stay together. The retained 113 photos provide 74 train, 21 development and 18 test cases, with six positive test photos.
+
+These labels describe apparent visible sleep/posture/context; they neither label nor infer housing status. They were assistant-reviewed, not independently human-reviewed. They support a small image diagnostic and supervised learning experiment, not a strong persistent rough-sleeping event benchmark.
+\input{generated/training_counts.tex}
+\evidence{data/clip_training_20261015/dataset.json}
+\evidence{data/clip_training_20261015/iwdd_source_audit.json}
+
+\section{Further source acquisition on 16 October}
+\subsection{Additional smoking photos and HMDB action clips}
+A public smoking/control photo archive supplied 1,120 candidates. Two related images were rejected by source screening, retaining 1,118: 715 training (357 positive/358 normal), 179 development (89/90) and 224 official photo holdout (112/112). New training examples were screened against higher-priority and existing holdouts before acceptance. This grows the strategy training pool from 3,258 to 3,973 examples and development from 1,633 to 1,812.
+
+The author-hosted HMDB51 archive was acquired, and 906 clips were extracted for smoking and six confusable actions: drink, eat, chew, talk, sit and stand. The subset includes 109 smoking and 797 other-action clips. It is not the official 51-class HMDB benchmark. Primary action labels can omit incidental smoking. A first indexed-seek preparation appeared to fail on clips; sequential decoding successfully decoded all 906. The failed preparation is retained diagnostically and is not used for selecting models.
+
+In the strategy study the complete 906-clip subset is an unseen-source transfer test with eight views per whole clip. The later video pilot assigns title/recording groups to adaptation folds and uses 16 views. Ten known film-part aliases are then purged from training; the final pilot has 530 training, 161 development and 205 test clips. Its test was already inspected in the transfer study and is consequently retrospective.
+
+\subsection{Thermal human trajectories}
+The published thermal loitering annotations supply 874,936 human observations and 19,737 track identifiers across 31 dates. Files are checked against source Git blob identities at a recorded revision. Tracks with conflicting labels or fewer than eight observations are excluded, leaving 17,878 eligible trajectories. Dates split chronologically into 19 train, six development and six test dates.
+
+This supplies duration and movement evidence missing from person-only images. It still represents one thermal camera and complete provided tracks. It is a separate trajectory-component benchmark, not a test of RGB CLIP, automatic detection, identity recovery or online loitering onset.
+
+\subsection{MEVA abandonment actions and further public-sleep photos}
+MEVA annotations and 13 relevant source videos were obtained; one additional annotated video was unavailable in the public prefix. Fifteen abandonment-action windows and twelve matched pre-event controls are grouped across ten synchronized sessions and seven cameras. The windows are anchored using annotation-end knowledge. That is appropriate for the stated offline activity-transfer diagnostic, but it does not measure finding events in a continuous stream or certify a persistent unattended item.
+
+A focused public-sleep search downloaded 40 further human-context photographs. Provisional review retained 17 positives and 12 controls, omitting 11 ambiguous candidates. Excluding previously used photographers or related images leaves 28 new-author transfer photos: 17 positive, 11 normal and 25 author groups. These do not enter training in the strategy round. Explicitly linked public author copies and their license metadata are recorded.
+
+Additional littering collections were investigated. Some required an access form or did not provide an immediately accessible matching event release. No communication to dataset owners was sent as part of the recorded work. Garbage-object photographs were not substituted for disposal-action annotations simply to increase the count.
+
+\section{AVSS author annotations: a new source at first evaluation}
+The author AOD survey bundle supplies three AVSS2007 videos and temporal unattended-object annotations. The archive and extracted data have recorded hashes; downloaded source code was not executed. Actual encoded FPS determines time conversion rather than replacing it with nominal annotation FPS. The MEDIUM XML's unused schema descriptor is malformed; preparation reads the unchanged data block rather than silently rewriting event spans.
+
+EASY and MEDIUM event ends fall inside their decoded streams and form the two-event primary subset before scoring. HARD's annotated tail extends beyond its 5,311 decoded frames, and its actual FPS is 25 rather than the nominal 30. Its onset is retained without rescaling; only the end is clipped to the observed prefix, and the sequence is reported as right-censored separately. This is a data-quality exclusion specified before model scores, not a favorable subset chosen afterward.
+
+Physical camera identities are not verified; all three clips are conservatively one source group. A post-selection contact-sheet review indicates the same apparent railway-platform viewpoint. AVSS was new when first scored in the 16 October pilot. By the 17 October policy ablations it had already been inspected and no longer supports an untouched-test claim.
+\input{generated/avss_sources.tex}
+
+\section{17 October author release: reject source inflation}
+The additional author archive is pinned to a Git revision and SHA-256 and contains three bundled videos plus three entries explicitly pointing to ABODA footage already represented in the project. Those aliases do not count as independent new videos. The bundled sequences are short highway-debris scenes, approximately 7.6--14.6 seconds long. Their VoTT annotations provide small object boxes and timestamps, without owner histories, full normal intervals or 30-second stationary evidence.
+
+Ten annotated frames per bundled video are decoded using actual FPS, checked against annotated image dimensions, and paired with unchanged reference boxes. Beyond-stream annotation timestamps are exposed and omitted rather than rescaled. The resulting 30-frame sample is a small-object stress test, not three newly verified unattended-personal-item events. A 136-frame CAVIAR training-source item sample provides a compatible second component reference. Together they produce 166 frames for fixed full-image/tiling comparison.
+
+\finding{The data became more extensive in domains and raw volume. Independent labelled events, compatible negative controls and physical camera diversity remain much less extensive than the number of files or adjacent windows suggests.}

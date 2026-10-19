@@ -1,0 +1,36 @@
+\chapter{What the results establish and what remains unresolved}
+\label{ch:interpretation}
+\section{Smoking}
+Useful progress comes from task-labelled photos, person-region supervision, better crop coverage and a strong adapted-action ensemble. However, the main surveillance issue remains. Tiny smokers lose action detail under global resizing, confusable mouth/hand actions remain common, and camera-specific score offsets make conservative cutoffs miss most CCTV positives. Static historical frames cannot test causal action history. The .9645 HMDB result is a retrospective movie/web action result on 205 clips with 530 training clips; it is not a deployment smoking score.
+
+The next evidence should contain independently labelled surveillance videos from cameras not already inspected, person regions and matched drinking/eating/coughing/phone controls. Evaluate detector/crop coverage and event decisions separately. A photo collection with thousands of images from similar viewpoints can improve representation learning without providing that source-transfer evidence.
+
+\section{Littering}
+The strongest established result is improved ranking on the official 100-clip IWDD holdout: first supervised AP .858/.885 and later selected strategy .806/.893 for MobileCLIP/SigLIP. This is meaningful action supervision with real hard negatives, but includes larger dumping and uniform full-clip views. It does not establish small pedestrian litter disposal, localization of the responsible person/object, or online detection delay.
+
+More useful data would distinguish disposal from benign placing, picking up, carrying and object transfer, with complete temporal boundaries. Generic garbage presence and positive-only throwing boxes should remain component candidates. A full event pipeline must discover the action without annotation-end anchoring or oracle frame selection.
+
+\section{Loitering}
+Global CLIP fine-tuning fails on the first 75-window Street Scene test. Sparse geometry later improves retrospective AP, suggesting that movement/presence history matters. The separate thermal experiment demonstrates descriptor value beyond duration alone but also a large development-to-date-test drop. A provided complete track from one thermal camera excludes real detection and identity errors and does not guarantee RGB transfer.
+
+The next model needs automatic person identities, stable histories, source-compatible duration/activity labels and new camera/day controls. Merely increasing person-box frames does not label loitering. A person who waits for a legitimate activity or moves through the area is a necessary control, with unknown retained when the required history is unavailable.
+
+\section{Rough sleeping / apparent public sleep}
+The synthetic oracle posture test shows that some models can distinguish lying from standing under supplied crops. The public-photo study provides more relevant visible context and author-held-out controls, but remains small and provisionally reviewed. High AP on six initial positive test photos or 17 new-author positives cannot validate persistent sleep, repeated-camera behavior or varied rest contexts.
+
+The appropriate next evidence is independently reviewed public-scene video with persistence and matched awake-rest/lying/bench controls under the accepted visible-evidence definition. Housing status remains outside the target. A claim that a person is lying is neither a confirmed sleep event nor a reason to infer personal circumstances.
+
+\section{Unattended items}
+The data now includes reviewed historical intervals, published AVSS temporal annotations and qualified MEVA actions. The detector component improves strongly with open-vocabulary proposals and fixed tiling. Explicit same-item persistence/owner-away state outperforms global classifier alarm behavior on two clean AVSS events. Nevertheless, ownership remains a proximity hypothesis, normal exposure is only a few minutes, alarm delay is long, and crowded/occluded/pickup scenarios are not adequately covered.
+
+The next study should evaluate item recall, track identity, owner association, stationarity and alert accounting as separate components before claiming a better end-to-end model. New independently reviewed cameras need long normal streams and diverse positive events. Fixed tiling must run blindly on those complete streams rather than only on reference-positive frames before any event benefit can be asserted.
+
+\section{Generalization lessons across all stages}
+The experiments support five practical lessons. First, correct label semantics matter more than forcing every folder into an event taxonomy. Second, source-aware splits and duplicate guards are necessary but do not manufacture camera diversity. Third, learning a ranking and transferring its threshold are distinct problems; AP gains can coexist with nearly universal false alarms. Fourth, temporal tasks need identified histories rather than simply more independent-looking frames. Fifth, additional architecture complexity should remain optional when controlled ablations do not improve the event result.
+
+No result justifies a universal model choice across the five targets. Different candidates use different supervision, sensors, units, historical exposure and definitions. The correct comparison is within each documented protocol. The next decisive result should come from a new frozen source benchmark, rather than another retrospective headline selected from a familiar holdout.
+
+\section{Proposed next validation gates, not work already completed}
+Future work should independently review target event boundaries, ownership and matched controls; freeze new source-camera blocks before predictions are inspected; validate automatic component coverage/identity; train on source-balanced confirmed examples with all alternatives retained; and report event recall, onset delay, normal false alerts, repeats, unknown-time alerts and exposure-based uncertainty. These are recommendations at the reporting cutoff. They are not presented as experiments already run.
+
+Three zero-alert hours is only the conditional Poisson exposure calculation for an upper rate below one/hour; it is not a sufficient deployment certification. Source diversity, seasonal conditions, crowded scenes and changes in prevalence must also be represented. Unknown/abstain outputs remain appropriate when the operational evidence is missing.
