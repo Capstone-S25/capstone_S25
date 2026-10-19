@@ -1,4 +1,5 @@
 from datetime import UTC, datetime, timedelta
+from threading import Event
 from unittest.mock import MagicMock, Mock, call
 
 import pytest
@@ -229,3 +230,48 @@ def test_finalizes_entries_written_at_process_exit(
     process.kill.assert_not_called()
     process.wait.assert_called_once()
     process.stdin.close.assert_called_once()
+
+
+def test_exits_gracefully_when_stop_event_is_set(
+    worker_process, make_source, tmp_path, session_factory, monkeypatch
+):
+    process, session_dir, finalize = worker_process
+    stop_event = Event()
+    # 1. Start with one completed segment while FFmpeg is still running.
+    csv_path = session_dir / "completed.csv"
+    csv_path.write_text("000000.mp4.part,0.0,5.0\n", encoding="utf-8")
+
+    def request_stop(_seconds):
+        # 2. During the loop's pause, request shutdown after the first segment.
+        finalize.assert_called_once()
+        stop_event.set()
+
+    def close_recording(**kwargs):
+        # 3. Simulate FFmpeg writing its last segment when it receives "q\n".
+        with csv_path.open("a", encoding="utf-8") as file:
+            file.write("000001.mp4.part,5.0,7.5\n")
+        process.poll.return_value = 0
+        process.returncode = 0
+
+    monkeypatch.setattr(worker.time, "sleep", request_stop)
+    # Calling the mocked communicate() runs close_recording() instead of FFmpeg.
+    process.communicate.side_effect = close_recording
+
+    worker.run_recording_worker(
+        make_source(), tmp_path, session_factory=session_factory, stop_event=stop_event
+    )
+
+    # 4. Verify graceful shutdown and cleanup, without force-killing FFmpeg.
+    assert stop_event.is_set()
+    process.communicate.assert_called_once_with(input="q\n", timeout=10)
+    process.kill.assert_not_called()
+    process.wait.assert_called_once()
+    process.stdin.close.assert_called_once()
+
+    # 5. Both the initial and final partial segments must be finalized and registered.
+    finalized_entries = [call.args[0] for call in finalize.call_args_list]
+    assert finalized_entries == [
+        SegmentEntry("000000.mp4.part", 0.0, 5.0),
+        SegmentEntry("000001.mp4.part", 5.0, 7.5),
+    ]
+    _assert_segment_metadata_registered(finalize, session_factory, tmp_path)

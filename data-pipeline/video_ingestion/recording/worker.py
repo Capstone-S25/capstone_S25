@@ -3,6 +3,7 @@ import subprocess
 import time
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from threading import Event
 from uuid import uuid4
 
 from sqlalchemy.exc import InterfaceError, OperationalError
@@ -122,6 +123,17 @@ def _finalize_and_register_segment(
     return segment
 
 
+def _stop_ffmpeg(process: subprocess.Popen) -> None:
+    """Ask FFmpeg to close the current segment, forcing termination on timeout."""
+    if process.poll() is None:
+        try:
+            process.communicate(input="q\n", timeout=10)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait()
+            raise RuntimeError("FFmpeg did not stop within 10 seconds") from None
+
+
 def run_recording_worker(
     source: VideoSource,
     storage_root: Path,
@@ -129,7 +141,35 @@ def run_recording_worker(
     *,
     session_factory: sessionmaker[Session],
     retention_hours: float = 24,
+    stop_event: Event | None = None,
 ):
+    """Record and register segments until EOF, Ctrl+C, or a stop request.
+
+    Args:
+        source: Enabled file or RTSP video source to record.
+        storage_root: Base directory for recordings. Each run creates a new
+            session under storage_root / source.source_id / session_id.
+        segment_seconds: Target segment duration in seconds; defaults to 5.
+            Cuts occur at keyframes, so actual segment lengths can vary.
+        session_factory: Factory for short-lived transactions that register
+            finalized segment metadata and commit each insertion.
+        retention_hours: Positive, finite hours until each registered segment's
+            retention deadline; defaults to 24.
+        stop_event: Optional shared shutdown signal for a background recorder.
+            Set it to request graceful shutdown. Defaults to None.
+
+    Raises:
+        ValueError: If the source is disabled or unsupported, segment_seconds
+            is nonpositive, retention_hours is not positive and finite, or a
+            completed CSV entry or segment filename is invalid.
+        OSError: If FFmpeg cannot be launched or recording files cannot be
+            created, read, or renamed.
+        csv.Error: If a completed segment-list row contains malformed CSV.
+        sqlalchemy.exc.SQLAlchemyError: If metadata registration fails after
+            applicable retries. Already finalized video files remain on disk.
+        RuntimeError: If FFmpeg exits unsuccessfully without a stop request,
+            or does not stop within 10 seconds of a graceful shutdown request.
+    """
     if not math.isfinite(retention_hours) or retention_hours <= 0:
         raise ValueError("retention_hours must be positive and finite")
 
@@ -150,6 +190,11 @@ def run_recording_worker(
     try:
         # poll() returns None while FFmpeg is still running
         while process.poll() is None:
+            if stop_event is not None and stop_event.is_set():
+                stopped_by_user = True
+                _stop_ffmpeg(process)
+                break
+
             entries, csv_offset = read_segment_entries(csv_path, csv_offset)
 
             for entry in entries:
@@ -171,14 +216,7 @@ def run_recording_worker(
     except KeyboardInterrupt:
         stopped_by_user = True
 
-        if process.poll() is None:
-            try:
-                process.communicate(input="q\n", timeout=10)
-            except subprocess.TimeoutExpired:
-                # Force FFmpeg to stop if it does not respond in time
-                process.kill()
-                process.wait()
-                raise RuntimeError("FFmpeg did not stop within 10 seconds") from None
+        _stop_ffmpeg(process)
     finally:
         if process.poll() is None:
             process.kill()
