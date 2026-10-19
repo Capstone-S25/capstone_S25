@@ -1,4 +1,5 @@
 from unittest.mock import Mock
+from uuid import uuid4
 
 from sqlalchemy.orm import Session
 
@@ -14,7 +15,7 @@ def test_claims_pending_segment_with_lock_and_processing_status(monkeypatch):
     monkeypatch.setattr(worker, "get_oldest_video_segment", select_segment)
     monkeypatch.setattr(worker, "update_video_segment_status", update_status)
 
-    result = worker.claim_next_segment(db, source_id="camera_01")
+    result = worker._claim_next_segment(db, source_id="camera_01")
 
     assert result is segment
     select_segment.assert_called_once_with(
@@ -31,7 +32,30 @@ def test_no_available_segment_does_not_update_status(monkeypatch):
     update_status = Mock()
     monkeypatch.setattr(worker, "update_video_segment_status", update_status)
 
-    assert worker.claim_next_segment(db, source_id="camera_01") is None
+    assert worker._claim_next_segment(db, source_id="camera_01") is None
 
     update_status.assert_not_called()
     db.commit.assert_not_called()
+
+
+def test_claim_updates_status_without_claiming_same_row_twice(postgres_session):
+    db = postgres_session
+    segment = VideoSegment(
+        source_id="camera_01",
+        session_id=uuid4(),
+        path="clip.mp4",
+        start_at_ms=0,
+        end_at_ms=1000,
+    )
+    db.add(segment)
+    db.commit()
+
+    assert worker._claim_next_segment(db, source_id="camera_01") is segment
+    db.refresh(segment)
+    assert segment.status is SegmentStatus.PROCESSING
+    assert worker._claim_next_segment(db, source_id="camera_01") is None
+
+    # Rolling back the caller's transaction makes the row eligible again.
+    db.rollback()
+    db.refresh(segment)
+    assert segment.status is SegmentStatus.PENDING

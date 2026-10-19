@@ -7,14 +7,14 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
 
-from database import models  # noqa: F401 -- Register every table before create_all.
+from database import models  # noqa: F401
 from database.base import Base
 
 
 @pytest.fixture
 def postgres_session():
     """Isolate PostgreSQL tests in a transactional schema, leaving no rows."""
-    load_dotenv(Path(__file__).resolve().parents[2] / ".env", override=False)
+    load_dotenv(Path(__file__).resolve().parents[1] / ".env", override=False)
     url = os.environ.get("TEST_DATABASE_URL")
     if not url:
         if os.environ.get("CI"):
