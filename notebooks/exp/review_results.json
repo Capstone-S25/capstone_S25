@@ -1,0 +1,490 @@
+{
+  "summary": "Adversarial review of the four chosen recall modules before the held-out measurement",
+  "agentCount": 8,
+  "logs": [],
+  "result": [
+    {
+      "lens": "audit",
+      "module": "littering_act",
+      "verdict": "ok_with_caveats",
+      "issues": [
+        {
+          "severity": "minor",
+          "issue": "The baseline-suppression cache is keyed on id(result), is never cleared, and grows without limit. If a result object is freed and a new one gets the same id, or a result's observations are changed in place, the module reuses another sequence's baseline list and suppresses the wrong candidates.",
+          "evidence": "Lines 213 and 222-225: _BASE_CACHE[id(result)]. It held 316 entries after one audit run. Under the current harness the ids are stable because SPLITS keeps every result alive, and my forced-GC test did not reproduce a collision. Re-loading splits in the same process (for example load_splits(heldout=True) after the tune splits) could still trigger it.",
+          "fix": "Key the cache on (result.seq_id, len(result.observations)), or store the baseline list on the result object, or clear the cache at the start of each split evaluation. In the deployed system, query the live rule engine instead."
+        },
+        {
+          "severity": "minor",
+          "issue": "Under the event metric, littering clips are almost a free hit. The clips are 3 s long and every frame is GT-positive, while each candidate's clip window is t ± 2.5 s, so any firing anywhere in the clip counts as an event hit, whoever it fires on. Crop recall is the meaningful number for this module.",
+          "evidence": "Module alone on the littering tune clips: 157 events, of which only 73 have a correct crop under the evaluator's cand_correct, i.e. near the GT person within ±1 s. 151 of the 157 events are in clips with 2 or more people. Module alone scores littering event 54.8% against crop 30.9%. Deployed dedup(combine(baseline, A)) scores littering event 87.0% (baseline 75.7%) and crop 66.5% (baseline 52.2%).",
+          "fix": "Report crop recall and per-candidate precision as the main littering numbers for this module, and treat the event-recall gain as an upper bound."
+        },
+        {
+          "severity": "minor",
+          "issue": "The persistence window grows with 1/fps. At the very low nominal fps of the smoking sequences (0.07-0.14), need_low=4 can collect hits across about 50 s. That is still causal, but the 'persistence' no longer means sustained pose. False alarms are measured only on 12.5 fps Avenue, so the metric never sees this.",
+          "evidence": "Line 231: window = max(hit_window_s, (nmax-0.5)/fps). The smoking tune split reports fps 0.07-0.14, which gives a window of roughly 25-50 s. The module emits 33 smoking candidates.",
+          "fix": "Cap the window, e.g. min(window, 2 s), or require the hits to be consecutive samples."
+        },
+        {
+          "severity": "minor",
+          "issue": "A comment is wrong: tr.hs stores only box heights, not (t, h). H is the median of the last 60 heights including the current frame, which is causal, but the per-track 'median' covers samples rather than a time span.",
+          "evidence": "Line 82 comment '(t, box h)' against line 93 tr.hs.append(h_now).",
+          "fix": "Correct the comment. No change to behaviour is needed."
+        }
+      ],
+      "summary": "I read the module line by line and ran checks on the tune half only (STAGE1_HELDOUT unset), with params DEFAULTS plus extend_h=0.18 (point A). Scratch scripts are in /Users/ianvarella/capstone_S25/notebooks/exp/review_tmp/ (audit_litact.py, audit_litact_causal.py, audit_litact_score.py).\n\n(1) Causality holds. A prefix test cut littering, avenue and normal sequences at 25%, 50% and 75% of their observations and reran the method on each prefix. Over 237 runs, every event at or before the cut matched the full run exactly (0 mismatches). All state is built incrementally: deques of past heights, torsos and poses, the hit window and the cooldown. Medians use only samples seen so far. Baseline suppression replays the whole sequence up front but only consults baseline events with bt <= t. Those timestamps are each baseline event's own emission time, and the entity ids match because both sides use a deterministic TrackStitcher(BASE_CFG) and the person{cid} format.\n\n(2) It does not read ground truth, labels or the held-out half. There is no g/gt access, the dataset name is unused, and the only fitted values are thresholds the docstring says were swept on the tune halves.\n\n(3) I found no bug that inflates the metrics:\n- 0 timestamps fall outside the sequence.\n- Every roi exactly matches a detected person's box in that frame (\"person\" mode).\n- Median roi area is about 2% of the frame. The largest is 37% on Avenue, which is a near-camera person box, not a whole-frame roi.\n- Candidates are sparse: at most 3 per littering clip and 7 per Avenue video.\n- A few rois cover 2 or more people (9 littering, 5 avenue, 0 normal). These come from natural box overlap in crowds, not from any merging; group mode is off.\n\nPoint A, deployed as dedup(combine(baseline, A)), against the baseline on the tune half:\n- Littering event recall 75.7% → 87.0%, crop recall 52.2% → 66.5%.\n- Avenue event recall 76.0% → 84.0%, crop recall 56.0% → 68.0%, review reduction 43.6% → 24.8%.\n- Normal-footage false alarms 6.86 → 9.6 per minute.\n\nCaveats:\n- Only 73 of the 157 littering candidates point at the GT person within ±1 s. On 3 s clips the event metric is nearly free, so crop recall is the honest number.\n- The cache keyed on id(result) is a latent hazard for stale results.\n- The persistence window stretches at very low fps."
+    },
+    {
+      "lens": "skeptic",
+      "module": "littering_act",
+      "verdict": "reject",
+      "issues": [
+        {
+          "severity": "blocking",
+          "issue": "On the littering clips, a random-person control that fires the same number of times does as well as the module. So the +14 pp crop recall comes from firing more often, not from the cue finding the person who littered.",
+          "evidence": "I ran a control that adds the same number of extra candidates per clip as the module does (154 over 230 clips), each one on a random (frame, person >= 60 px) pair, on top of the baseline. Over 10 seeds it scored 62.6-68.3% littering crop recall, mean 65.7%. Point A scores 66.5% and the baseline 52.2%. Only 72 of the module's 154 clip candidates (47%) land on the actor. Picking a person at random lands on the actor 39% of the time (the actor's share of person observations). Because every frame of a 3 s clip is positive and the +-1 s tolerance covers the whole clip, timing earns no credit, so the only thing being scored is which person gets picked. For comparison, firing once on every person when they first appear gets 100% event and crop recall on the littering set (and 103 FA/min on normal). Script: /Users/ianvarella/capstone_S25/notebooks/exp/review_tmp/la_skeptic3.py.",
+          "fix": "Do not report the littering gain as cue skill. Score every littering variant against this rate-matched random control and report the lift over it. Evaluate on continuous footage with littering events embedded, or score candidate precision per person-minute, so that how often a rule fires cannot buy recall."
+        },
+        {
+          "severity": "blocking",
+          "issue": "The normal-footage false-alarm rate rests on 14 candidates in 5.1 minutes from one camera with small people, and the cue fires about 13x more often per person when people are large, as on other cameras.",
+          "evidence": "On normal footage the module adds 14 events in 5.1 min (2.74/min), which is 0.34 per person-minute; the median person is 112 px tall. On the littering clips, people who are not the actor (median clip person is 254 px) trigger it 4.47 times per person-minute (84 fires over 18.8 person-min). Avenue test footage gives 0.94 per person-minute, smoking (1 fps) 0.15. Normal videos add 0-4 events each. On a camera with near-field people at Avenue-like crowding (about 8 people on screen), 4.47 x 8 comes to roughly 36 extra candidates per minute, against the 2.7/min the metric shows. The cooldown limits each person to 12 per minute, so the load grows with the number of people in view.",
+          "fix": "Report false alarms per person-minute and broken down by person-height bin. Test on at least one other camera with larger people, and with crowds. Consider making extend_h depend on pixel height or keypoint confidence rather than a single fraction of body height."
+        },
+        {
+          "severity": "major",
+          "issue": "On Avenue the gain is about 2 events out of 25 above random, while the share of footage the operator no longer has to review drops from 43.6% to 24.8%.",
+          "evidence": "Avenue spatial hits go from 14 to 17 of 25 and temporal hits from 19 to 21. The rate-matched random control gets 14-17 spatial (mean 15.2) and 19-22 temporal (mean 20.5). Review reduction falls 43.6% -> 24.8%: the module adds 5.87 events/min on anomalous footage. Some of that may be real sensitivity to throwing or waving, but the recall it buys is close to chance.",
+          "fix": "Treat the Avenue gain as within noise, given 25 events and 11 videos. Count the drop in review reduction as a deployment cost alongside FA/min."
+        },
+        {
+          "severity": "major",
+          "issue": "The threshold sits on a steep part of the tradeoff curve and was picked using very few events.",
+          "evidence": "Sweeping extend_h on the tune half (littering crop / Avenue event / normal FA per min): 0.14: 73.5/100/24.5; 0.16: 70.0/96/14.3; 0.18: 66.5/84/9.6; 0.20: 63.5/76/8.2; off: 54.3/76/7.05. Moving from 0.18 to 0.20 changes Avenue event recall by 2 events and FA by 1.4/min. Every step along the curve resembles the random control: more fires, more recall. The bootstrap 95% CI on the littering gain is [10.0, 19.1] pp, but that is a gain over the baseline, not over random.",
+          "fix": "Choose the operating point by lift over the rate-matched control at equal FA/min, not by raw recall. Check stability on more Avenue/normal footage before treating 0.18 as better than 0.20."
+        },
+        {
+          "severity": "minor",
+          "issue": "Many of the new hits fire right at the start of a clip, before the track has any history.",
+          "evidence": "In clips the module gains, the first fire comes at a median of 0.9 s, and 39% come within 0.5 s of the clip start. Across all clip fires the median is 1.45 s. At that point the track's median height H rests on a handful of samples. In a 3 s clip any early fire still counts as overlapping the event, so this behaviour gets no penalty here.",
+          "fix": "Require a minimum track age or number of H samples before the cue can fire, and check what that costs on the clips."
+        },
+        {
+          "severity": "minor",
+          "issue": "The module has almost no effect on smoking footage at 1 fps, so it adds no cross-dataset evidence there.",
+          "evidence": "Smoking event recall goes 43.1 -> 43.6 and crop recall 17.2 -> 17.7, with 0.30 extra events/min. 12% of smoking person boxes are under 60 px and are skipped.",
+          "fix": "None needed. Do not cite smoking as validation."
+        }
+      ],
+      "summary": "Point A (extend_h=0.18) gets the reported tune-half numbers: littering crop recall 52.2 -> 66.5, Avenue event 76 -> 84 and crop 56 -> 68, normal false alarms 6.86 -> 9.6 per minute. These gains probably would not hold up on real continuous CCTV. On the 3 s littering clips, a random-person control firing the same number of times scores 65.7% crop recall, about the module's 66.5%. Every frame is positive, so the metric only scores which person gets picked. The module hits the actor 47% of the time; a random pick hits 39%. On Avenue, the +3 spatial events out of 25 are about 2 above that same random control, while review reduction drops from 43.6% to 24.8%. The false-alarm figure comes from 14 candidates in 5 minutes on one camera with 112 px people. People who are not the actor in the near-field littering clips trigger the cue 4.47 times per person-minute, against 0.34 on Avenue normal footage, so load on closer or busier cameras could be about 10x what the metric shows. The threshold sits where each step trades recall for firing rate roughly the way the random control does. The scratch scripts are in /Users/ianvarella/capstone_S25/notebooks/exp/review_tmp/ (la_skeptic1.py to la_skeptic4.py). All runs used the tune half only."
+    },
+    {
+      "lens": "audit",
+      "module": "motion_anomaly",
+      "verdict": "ok_with_caveats",
+      "issues": [
+        {
+          "severity": "major",
+          "issue": "In held-out mode the scene model gets refitted on the held-out normal videos",
+          "evidence": "scene_model() fits on SPLITS[\"normal\"] (line 251). In exp_harness.load_splits, SPLITS[\"normal\"] holds the even-numbered Avenue training videos when STAGE1_HELDOUT=1. So for the held-out run, the density/wrongdir histograms and the dens_q quantile threshold are rebuilt from held-out footage. Held-out avenue is then scored with a model fitted on held-out normal footage, and held-out normal FA becomes leave-one-out inside the held-out half. The docstring says the model is fitted 'ONLY on SPLITS[\"normal\"] (tune half...)', and that is only true in tune mode. I checked this by reading the code only, and did not load the held-out data.",
+          "fix": "Fit the scene model on a fixed set: always load_splits(heldout=False)[\"normal\"], or the tune-half pickle loaded explicitly. Drop leave-one-out when the dataset is the held-out normal split. Cache the model and dens threshold so they stay frozen across splits."
+        },
+        {
+          "severity": "minor",
+          "issue": "The FA rate on 'normal' (training videos) understates how often the density cue fires on test-session footage",
+          "evidence": "With DEFAULTS: normal has 11 events over about 5.1 min (about 2.2/min). The avenue tune videos have 63 events over about 5.3 min, and 60 of them are unusual_presence; test/01 alone has 19 in 57.6 s. Many fire on people cut off at the frame edge (roi x1 around 0, e.g. [0,195,39,312] and [0,94,72,279]) and re-fire every about 3 s. This is not leakage, but the FA/min figure comes from a different recording session than the anomaly videos.",
+          "fix": "Report candidate rate per minute on the avenue test videos too. Consider suppressing density fires for boxes that touch the left or right edge, which is already flagged in hist[4]."
+        },
+        {
+          "severity": "minor",
+          "issue": "roi_box is not clipped to the frame",
+          "evidence": "Observed rois [-10,120,50,314] (test/01) and [591,110,657,358] (test/11, width 640). make_event only casts to int.",
+          "fix": "Clip to [0,fw]x[0,fh] before make_event (the effect on crop recall is negligible)."
+        },
+        {
+          "severity": "minor",
+          "issue": "The item cue (off by default) can produce a multi-person or oversized roi, and raw_id None would collide",
+          "evidence": "_items unions the item box with the nearest person regardless of distance (lines 366-370), so a far-away person can make the crop span much of the frame. items.setdefault(it['raw_id']) and Linker.alias[p['raw_id']] would merge all untracked detections if raw_id is None. Avenue persons have 0 None ids, so this is latent.",
+          "fix": "Only union with the person when the distance is under about 1 box height. Skip or give unique keys to raw_id None."
+        },
+        {
+          "severity": "minor",
+          "issue": "The module contributes nothing on littering and smoking",
+          "evidence": "With DEFAULTS (cues fast+density): 0 events on 230 littering clips and on 169 smoking sequences. Density needs a scene model, and the fast cue never reaches 3 h/s there. Any recall gain is Avenue-only.",
+          "fix": "Present it as an Avenue-specific cue (or set datasets=('avenue','normal'))."
+        }
+      ],
+      "summary": "I found no causality violations, no use of ground truth, and no metric-inflating roi bugs in tune mode. The truncation test compared events with t <= T between a full-sequence run and a run on observations cut at T (30/55/80% points): 57 checks across avenue and normal, 0 mismatches. Observations are time-sorted, and all state is incremental (deques capped at 3 s, running counters). Grepping for gt/label/heldout/valid/test references finds none. Every emitted roi exactly equals a detected person box (0 exceptions), so no merged or whole-frame crops. Median roi area is 4-5% of the frame and the largest is 22.5% (a close-up person). All timestamps fall inside the sequence, and events are throttled by cooldown and backoff rather than emitted every frame. Leave-one-video-out for the normal split works: there are 8 separate cached models, each excluding its own train/NN video. The main caveat is that in STAGE1_HELDOUT=1 mode the scene model and quantile threshold are refitted on the held-out (even-numbered) normal training videos. The docstring claims a tune-only fit, so the fitted model needs freezing before the held-out run. Minor points: avenue test footage gets about 12 candidates/min versus 2.2/min on normal training footage, many on edge-clipped people; rois are not clipped to the frame; the off-by-default item cue has a latent wide-roi issue; the module adds nothing on littering and smoking. Scratch scripts: /Users/ianvarella/capstone_S25/notebooks/exp/review_tmp/ma_audit.py, /Users/ianvarella/capstone_S25/notebooks/exp/review_tmp/ma_causal.py, /Users/ianvarella/capstone_S25/notebooks/exp/review_tmp/ma_dist.py."
+    },
+    {
+      "lens": "skeptic",
+      "module": "motion_anomaly",
+      "verdict": "ok_with_caveats",
+      "issues": [
+        {
+          "severity": "major",
+          "issue": "The whole gain comes from the per-camera density cue, and that cue mostly reduces to \"there is a person very close to the Avenue camera\". This is the way Avenue anomalies were staged, not a general cue for anomalies.",
+          "evidence": "Deployed as dedup(combine(baseline, ma)): Avenue event 76->96%, crop 56->92%, normal FA 6.86->9.01/min. With only the density cue: 92/88. With only the fast cue: 80/60. Of the 60 density fires on Avenue, the median box height is 0.536 of the frame, and 75% are taller than the 99th-percentile normal person (0.473). I tried a trivial control with no tracker and no scene model: fire when a raw-id box is taller than the 99th percentile of normal box heights for 5 observations, re-firing every 3 s. It reaches 96% event / 88% crop at 8.82 FA/min, against 96/92 at 9.01 for motion_anomaly. Its threshold is in-sample, so this is slightly optimistic.",
+          "fix": "Present it as a scene-specific 'near-camera / unusual-place' prior, not as motion-anomaly detection. Compare it against the one-line big-box baseline in the report. Only claim the 4-D histogram adds value if it beats that baseline on the held-out half or on a second camera."
+        },
+        {
+          "severity": "major",
+          "issue": "The module does nothing on littering or smoking, which are the cameras without a fitted scene model, and those are the realistic cases for new CCTV. Its effect is limited to the camera it was fitted on.",
+          "evidence": "motion_anomaly produced 0 candidates on all 230 littering clips and 0 on the smoking tune split. Littering 75.7/52.2 and smoking 43.1/17.2 are identical to baseline. The fast cue (3.0 heights/s) fired only 4 times on 11 Avenue videos and once on 5 min of normal footage.",
+          "fix": "Report it as Avenue-only. A new camera needs a normal-footage collection and fitting step before deployment, plus a cold-start policy. Without them the deployed system is just the baseline."
+        },
+        {
+          "severity": "major",
+          "issue": "The density model is fragile to camera geometry changes, such as a PTZ nudge, re-mounting or a zoom change. The fixed-camera Avenue normal-FA metric can't show this.",
+          "evidence": "I shifted person boxes in the normal footage and used the leave-one-out model, measuring density-only FA/min. No shift: 1.96. Pan 5% / 10%: 2.16 / 1.96. Tilt 5%: 3.13. Tilt 10%: 21.55 (11x). Zoom 1.15x: 3.33. Zoom 1.3x: 8.03 (4x). Mirror: 3.92.",
+          "fix": "Add a drift monitor that tracks the rolling share of person observations below the density threshold and disables or refits the model when it goes over about 2x the expected 0.5%. Normalise foot-y and height by a calibrated ground plane rather than raw pixels."
+        },
+        {
+          "severity": "major",
+          "issue": "The scene model and thresholds rest on very little data: 5.1 min of normal footage, 25 GT events and 8 normal videos. The FA estimate is noisy and differs a lot between videos.",
+          "evidence": "There are 8 tune normal videos totalling 5.1 min. Per-video motion_anomaly fires/min: 2.2, 1.0, 3.7, 5.5, 0, 0, 0, 8.5. Training-budget sweep (fit on the first k videos, FA on the unseen rest): k=1 (0.9 min) gives 3.1/min, k=2 gives 2.81, k=4 gives 1.04, k=6 gives 4.17, so the curve isn't monotone. With FA measured in-sample instead of leave-one-out, ma-only FA is 1.37/min against 2.16 (37% optimistic), so the LOO protocol in the module matters. The recall gain amounts to 5 extra events out of 25 for temporal recall and 9 extra out of 25 for crop recall.",
+          "fix": "Report confidence intervals, or at least per-video spread, for FA/min. Fit on all available normal footage, which means many hours on real CCTV, and verify on the held-out half once before claiming the gain."
+        },
+        {
+          "severity": "minor",
+          "issue": "The review-load cost is much larger than the normal FA/min suggests. On anomalous or busy footage the rule forwards a lot more video to the VLM.",
+          "evidence": "Avenue review reduction falls from 43.6% to 21.2%: the share of frames forwarded goes from 56% to 79%, and candidates go from 76 to 134. On anomaly videos motion_anomaly fires 6-30 per min (test/19: 30.2, test/01: 19.8), compared with about 2 per min on normal. On normal footage review reduction falls from 60.6% to 52.4%. Load doesn't scale with crowding: the busiest normal videos (12-14 persons/frame) range from 0 to 8.5 fires/min, because the backoff limits repeats per location.",
+          "fix": "Track forwarded seconds per minute, as well as candidate count, as a deployment cost. Keep backoff_max_s and dedup in place, and consider a per-camera candidate budget."
+        },
+        {
+          "severity": "minor",
+          "issue": "There's a small advantage from short sequences: density can fire within the first second of a short Avenue test video, and the ±2.5 s window then covers an event that starts at t≈0.",
+          "evidence": "10% of the Avenue density fires come within the first second of the video, against 0% on normal. test/17 (GT from frame 0) and test/21 (3.0 s long, GT at 0.6 s) are both caught by fires at 0.32 s and 0.64 s. These are 2 of the 25 events. Threshold sensitivity is otherwise reasonable: dens_q 0.002-0.01 keeps event recall at 96%, and only 0.001 drops it to 88%.",
+          "fix": "The effect is minor. When reporting, give recall with events that start in the first 1 s excluded (here it would stay about 21/23)."
+        }
+      ],
+      "summary": "On the tune half, motion_anomaly raises Avenue event/crop recall from 76/56% to 96/92%, at +2.15 false alarms/min on normal footage (6.86 to 9.01). Nearly all of the gain comes from the per-camera density cue. That cue fires mostly on people unusually close to the Avenue camera: 75% of its fires are boxes taller than the 99th-percentile normal person. A trivial big-box-height rule gets 96/88% at 8.82 FA/min without the 4-D histogram, the tracker linking or the scene model. The module produced zero candidates on littering and smoking, because those cameras have no scene model, so it adds nothing on a new camera until normal footage has been collected and a model fitted. The model is also fragile to camera geometry changes: a 10% tilt raises density FA 11x, and a 1.3x zoom raises it 4x. It is fitted on only 5.1 min of normal footage, and FA/min varies from 0 to 8.5 between videos. Leave-one-out FA is needed (in-sample is 37% optimistic). Review reduction on Avenue falls from 43.6% to 21.2%. The gains are probably real for Avenue itself, but they won't carry over to continuous CCTV as general anomaly detection. Scratch scripts are in /Users/ianvarella/capstone_S25/notebooks/exp/review_tmp/ (ma_skeptic1.py through ma_skeptic4.py)."
+    },
+    {
+      "lens": "audit",
+      "module": "crop_policy",
+      "verdict": "ok_with_caveats",
+      "issues": [
+        {
+          "severity": "major",
+          "issue": "With radius_h=99 the 'neighbour' is not actually a neighbour. It is the most active other person anywhere in the frame. On 2-person littering clips, k=1 in practice means 'also crop the only other person', so most of the crop-recall gain comes from giving the VLM more crops per trigger, not from smarter packaging.",
+          "evidence": "Tune half, dedup(combine(baseline, m)): with radius_h=99, littering crop goes 52.2 -> 71.3, avenue crop 56 -> 68, smoking crop 17.2 -> 23.5, and normal FA goes 6.86 -> 9.21/min (+34%). With radius_h=1.0 the gains drop to 55.7 / 60 / 20.0 at 8.23 FA/min. At littering reach_down triggers the median is 2 persons per frame (54% of triggers have exactly 2), and in 43% of them the nearest other person is more than 1 body height away.",
+          "fix": "Report it as 'extra crop of the most active other person, anywhere in the frame' and always quote it next to the FA increase. Fix radius_h on the tune half (e.g. 1-2 heights) if it is meant to be a true neighbour policy. Before claiming the gain, compare against a control that simply crops every person at trigger time."
+        },
+        {
+          "severity": "minor",
+          "issue": "The DEFAULTS comment quotes the numbers for the wrist-trigger operating point (crop 73.9, avenue event 92, FA 14.5). Those do not apply to the packaging-only config under review (trigger_wrist=None), which produces no event-recall gain.",
+          "evidence": "Packaging-only config: littering event 75.7 and avenue event 76.0, both identical to baseline. The comment block at crop_policy.py lines 41-42 shows the trigger_wrist=0.36 numbers.",
+          "fix": "Quote separate numbers for the packaging-only and wrist-trigger configs in the report."
+        },
+        {
+          "severity": "minor",
+          "issue": "Timestamps can fall up to 0.01 s past the last observation because make_event rounds t to 2 decimals. On 1x1-scale smoking boxes, int() truncation makes the roi IoU with the person box about 0.91-0.95. This is cosmetic.",
+          "evidence": "9 smoking events with timestamp_s greater than the last obs.t, all by less than 0.01 s (e.g. 36.547 -> 36.55). In 42 of 302 smoking events the roi IoU with the nearest person box is between 0.91 and 0.95, and in every one of these cases the roi is the person box after rounding.",
+          "fix": "None needed. Optionally clamp the timestamp to the last obs.t."
+        }
+      ],
+      "summary": "I read crop_policy.py line by line and ran checks. No causality problems or ground-truth leakage found. The method replays RuleEngine one frame at a time. Activity is scored with a reference observation strictly before t, and the history deques only contain past observations. Nothing reads g.gt, labels or the held-out splits: the method only receives result.observations, and the module never touches load_splits or the held-out pickles.\n\nChecks run:\n- **Causality (prefix test):** 203 cuts at 1/3, 1/2 and 2/3 of each sequence, across all four tune datasets. Every truncated replay matched the full run's candidates up to the cut (0 mismatches). Earlier apparent mismatches were artifacts of my test: single-frame sequences, and rounding of timestamp_s.\n- **Tracker ids:** across 81,944 person observations there are no None raw_ids and no duplicate ids within a frame, so activity histories never mix people.\n- **Inflation checks:**\n  - No whole-frame rois: padded crop area median about 5-6% of the frame, max 0.33.\n  - Events are not emitted every frame: 1.1-3.6 extra events per sequence, with a 5 s cooldown per person.\n  - Every roi is one detected person's box at that frame. Only a few cover a second person, and only where people overlap.\n  - Timestamps stay inside the sequence apart from the rounding noted below.\n\nMain caveat: radius_h=99 turns 'neighbour' into 'most active other person anywhere in the frame'. On the tune half the crop-recall gains are real, but they cost +2.35 false alarms per minute, and most of the gain disappears with a real neighbourhood radius (radius_h=1.0). Event recall is unchanged from baseline, as expected for packaging only.\n\nScratch scripts: /Users/ianvarella/capstone_S25/notebooks/exp/review_tmp/cp_audit.py through cp_audit5.py."
+    },
+    {
+      "lens": "skeptic",
+      "module": "crop_policy",
+      "verdict": "ok_with_caveats",
+      "issues": [
+        {
+          "severity": "major",
+          "issue": "The 'activity' ranking does almost no work. Most of the gain comes from adding one crop of any other person in the frame whenever reach_down fires, so the module is really 'also crop a random bystander'. The tune-half numbers say the bystander is often the actor, and that is a property of these datasets, not of the policy.",
+          "evidence": "Tune half, dedup(combine(baseline, method)) with trigger_wrist=None. Littering crop recall: base 52.2, activity rank 71.3, random rank (score monkeypatched to random.random()) 69.6, dist rank 68.7. Avenue crop: 56, 68, 64 (random), 60 (dist). Avenue has 25 events, so activity vs random is a 1-event difference. Smoking crop: 17.2, 23.5, 24.0 (random beats activity). Script: /Users/ianvarella/capstone_S25/notebooks/exp/review_tmp/cp_skeptic2.py",
+          "fix": "Describe and present this as an 'extra bystander crop' policy, not activity-guided neighbour selection. Keep a random-rank control row in every table. Do not claim that the activity score picks the actor unless the held-out half shows activity beating random by more than a single event."
+        },
+        {
+          "severity": "major",
+          "issue": "The default radius_h=99 means the neighbour can be anyone in the frame. On continuous, busy CCTV the most 'active' person (motion + 2*pose) will usually be someone walking past, not someone next to the triggering person. The extra load grows with the number of reach_down firings, and those happen more often in crowded frames.",
+          "evidence": "The extra crops fire mostly in crowded frames. Avenue test: frames hold 4-9 persons (counts by person count {4:4, 5:5, 6:9, 7:8, 8:4, 9:6, ...}); on normal footage 6 of the 12 extras fall in 7-person frames. Extra candidates per minute: normal +2.35 (6.86 -> 9.21, +34%), avenue test +7.0 on top of 14.4 base, smoking +2.9 on top of 4.7. Precision of the extra crops (how often they hit a GT anomaly): avenue 22.5% (40 extras), smoking 15.6% (302), littering 53.4%. Limiting the radius to radius_h=1.5 keeps littering crop at 63.9 with FA 8.23/min. Script: /Users/ianvarella/capstone_S25/notebooks/exp/review_tmp/cp_skeptic.py",
+          "fix": "Ship with a bounded radius (about 1.5-3 trigger heights) and a per-camera cap on extra crops per minute. Report extras per reach_down as a function of crowd size. Before claiming deployability, test on at least one crowded or different camera; the normal-footage FA metric comes from a single sparse Avenue scene."
+        },
+        {
+          "severity": "major",
+          "issue": "The 3 s littering clips make the timing of the extra crop irrelevant. Every frame is GT-positive and the extra crop is emitted at the trigger time with a ±2.5 s window, so any extra crop of the actor anywhere in the clip counts as a hit. Many rescues fire at t=0.0-0.3 s, at the very start of the clip. On continuous footage the crop would also have to land near the actual littering moment.",
+          "evidence": "44 littering clips rescued. Emission times include 0.0 s in 15 clips and <=0.3 s in 24. 25 of the 44 rescued clips have at most 2 persons, so 'other person' is simply the actor. The gain does still hold in clips with >=3 persons (54.0 -> 70.8 vs 50.4 -> 71.8 in clips with <=2), so this is not entirely a 2-person artefact.",
+          "fix": "Re-score littering with the crop timestamp required to fall within ±1 s of the annotated action moment (or the clip's middle frames), rather than anywhere in the all-positive clip. Report rescues separately for clips where the extra crop fires in the first 0.5 s."
+        },
+        {
+          "severity": "minor",
+          "issue": "On 1 fps smoking footage the 0.5 s activity window is ignored. When no history entry falls inside the window, the reference falls back to d[-2], which can be 1-5 s old. The activity score then mixes walking displacement over seconds with pose change, so on sparse sources the ranking is meaningless.",
+          "evidence": "In _Activity.score, the reference is chosen with `ref = next((e for e in d if e[0] >= t - self.window_s and e[0] < t), d[-2])`. Smoking crop recall with random rank (24.0) is at least as good as with activity rank (23.5).",
+          "fix": "Normalise motion and pose by the elapsed time dt, or skip activity ranking (use dist or random) when the source fps is below about 3."
+        },
+        {
+          "severity": "minor",
+          "issue": "The DEFAULTS comment quotes headline numbers for the wrist-trigger configuration (littering crop 73.9, avenue event 92, FA 14.5/min), not for the packaging-only configuration under review. Anyone reading the module could credit packaging with event-recall gains it cannot produce.",
+          "evidence": "With trigger_wrist=None, event recall is unchanged on every set (littering 75.7, avenue 76.0, smoking 43.1). Normal FA is 9.21/min, not 14.5.",
+          "fix": "Put separate packaging-only numbers in the docstring (littering crop 52.2 -> 71.3, avenue crop 56 -> 68, smoking crop 17.2 -> 23.5, FA 6.86 -> 9.21)."
+        }
+      ],
+      "summary": "I checked crop_policy with DEFAULTS and trigger_wrist=None (packaging only), on the tune half only. As designed, it changes no event recall (littering 75.7, avenue 76.0, smoking 43.1). It raises crop recall: littering 52.2 -> 71.3, avenue 56 -> 68 (3 of 25 events), smoking 17.2 -> 23.5. The cost is normal-footage false alarms going from 6.86 to 9.21 per minute (+34%).\n\nThe gains are probably real in direction but oversold in explanation. A random-neighbour control gets most of the way (littering 69.6, avenue 64, smoking 24.0), so the activity ranking adds about 1 avenue event and nothing on smoking. The mechanism is just 'also crop another person in the frame', and in these datasets that person is often the actor.\n\nOn real continuous CCTV, three things cut against it:\n- The neighbour search covers the whole frame (radius_h=99), and the extras fire mostly in 4-9-person frames. On a busy camera the extra crop will usually go to someone walking past. Hit rates of the extras are only 22.5% on avenue and 15.6% on smoking.\n- The littering credit is inflated by the 3 s all-positive clips. Many rescuing crops fire at t=0-0.3 s, and any crop of the actor anywhere in the clip counts.\n- On 1 fps sources the activity window falls back to multi-second gaps, so the ranking means nothing there.\n\nThe gain does hold in clips with 3 or more people (54 -> 70.8), and the cost is bounded (k=1, 5 s cooldown per person). So it is reasonable to deploy with these changes:\n- A bounded radius (radius_h=1.5 keeps 63.9 littering crop at 8.23 FA/min).\n- A cap on extra crops per minute.\n- A random-rank control row in every reported table.\n- Littering re-scored with a timing requirement, plus a test on a crowded camera.\n\nThe analysis scripts are /Users/ianvarella/capstone_S25/notebooks/exp/review_tmp/cp_skeptic.py and /Users/ianvarella/capstone_S25/notebooks/exp/review_tmp/cp_skeptic2.py."
+    },
+    {
+      "lens": "audit",
+      "module": "smoking_dwell",
+      "verdict": "ok_with_caveats",
+      "issues": [
+        {
+          "severity": "major",
+          "issue": "Grouping builds one multi-person union ROI, and that pushes up crop recall. The crop metric only checks how much of the GT box the padded ROI covers and never penalises a big ROI, so a larger union box scores better for free.",
+          "evidence": "A_lean has group_h=8.0 and group_max_frac=0.6. The cap applies to width and height separately, so a union box can reach 0.36 of the frame area, and box_hit's 40% pad on each side turns that into a 1.08x frame crop. Measured on the tune half with exp/review_tmp/audit_smoking_dwell.py: 180 of 257 littering events (70%) cover 2 or more people (up to 7). On smoking it is 216 of 330 events, and on normal footage all 8. Padded crop area: littering median 0.30 of the frame, 26.5% of events at 50% of the frame or more, max 1.0. Avenue median 0.57, with 56% of events at 50% or more. Ablation with dedup(combine(baseline, m)) in exp/review_tmp/audit_smoking_dwell3.py, A_lean vs group_h=0: littering crop 96.1 vs 88.3, avenue crop 64.0 vs 56.0, smoking crop 36.1 vs 29.6. Event recall barely changes (smoking actually goes 64.1 vs 66.2). So about 6-8 points of the reported crop gain come from wider crops, not from finding the right person.",
+          "fix": "Report crop recall with group_h=0 next to the grouped number. Alternatively, cap the union ROI by area *after* the 40% pad (for example at most 0.25 of the frame), or score grouped events with per-member boxes. If a crop covers several people, say so wherever crop recall is quoted."
+        },
+        {
+          "severity": "major",
+          "issue": "Littering event recall (100%) is close to guaranteed by how the clips are built, not by the rule. first_seen fires on the first frame where an interior person appears, every clip frame is labelled positive, and pad_s=2.5 covers almost the whole 3 s clip.",
+          "evidence": "Littering events land at clip-start offsets with quantiles 10/50/90% = 0.00/0.00/0.22 s. 237 of 257 littering events are first_seen. Littering event recall stays at 100.0 even with first_snapshot=False, because dwell_s=1.0 fires inside any 3 s clip with a standing person. Avenue and normal events are also mostly first_seen (14/16 and 8/8).",
+          "fix": "Don't present littering event or crop recall as evidence for this module. Any rule that fires once per clip with a person box gets close to 100%. Use per-candidate precision or Avenue/smoking for comparisons, or evaluate littering on longer context windows that include negative frames."
+        },
+        {
+          "severity": "minor",
+          "issue": "DEFAULTS gets reassigned to the B_mid operating point at module level, so 'A_lean on top of DEFAULTS' actually means _ALL + B_mid + A_lean. That is confusing, though harmless here.",
+          "evidence": "Line 73: DEFAULTS = {**_ALL, **OPERATING_POINTS['B_mid']}. A_lean puts back group_h=8.0 through _G, and dedupe_h/cooldown/spot_keep are overridden too. Resolved params (printed by method.params) were checked and match A_lean as intended: group_h=8.0, cooldown_s=60, dedupe_h=2.0, spot_keep_s=60, first_snapshot=True.",
+          "fix": "Keep the raw defaults under one name and have make_method merge the requested operating point explicitly, or rename the reassigned dict RECOMMENDED."
+        },
+        {
+          "severity": "minor",
+          "issue": "The group radius is divided by the anchor person's height only, and 8 body heights covers most of a 640x360 frame. In practice only group_max_frac limits the group, so 'nearby' does not mean near.",
+          "evidence": "Line 234 divides distance by h of the anchor person. With roughly 60 px Avenue people, that is a 480 px radius. Group sizes of up to 8 people were observed on Avenue and normal.",
+          "fix": "Use a smaller group_h (2-3), or normalise by max(h_i, h_j)."
+        }
+      ],
+      "summary": "Audit of smoking_dwell with A_lean on the tune half only. Scratch scripts are in /Users/ianvarella/capstone_S25/notebooks/exp/review_tmp/audit_smoking_dwell{,2,3}.py.\n\n(1) Causality holds, checked by running the code. The module keeps per-frame streaming state (deque history, EMA spot centres, a dwell anchor chosen from past points only); the only sorts are within a single frame. A truncation test cut each sequence after observation k and checked that the method gives exactly the same event prefix. It covered all tune sequences, 668 cuts, with 0 mismatches. An earlier timestamp-based version showed 5 mismatches, but those come from timestamp_s being rounded to 2 decimals, not from lookahead.\n\n(2) It reads no ground truth or labels. It only touches result.fps, obs.t, obs.persons (box, raw_id, kpts) and obs.frame_hw. Nothing is fitted, and no file in exp/ references HELDOUT or litter_clips.pkl.\n\n(3) The basic ROI and timestamp sanity checks all pass: every timestamp is a real observation time inside the sequence, every ROI fully contains at least one person in that frame, and at most 13 events come from one sequence. There is no per-frame flooding.\n\nThe two real caveats are about the metrics:\n- Grouping (group_h=8, group_max_frac=0.6 per dimension) makes multi-person union ROIs; 70% of littering events and 65% of smoking events cover 2+ people. With the 40% pad, crops can reach the whole frame, and that adds about 6-8 points of crop recall (A_lean vs group_h=0: littering 96.1 vs 88.3, avenue 64 vs 56, smoking 36.1 vs 29.6).\n- Littering event recall of 100% is close to guaranteed: first_seen fires at clip offset 0 s in 3 s clips where every frame is positive.\n\nCombined A_lean numbers (dedup(combine(baseline, m)), tune half): littering 100/96.1, avenue 84/64, smoking 64.1/36.1 (event %/crop %), normal 8.42 false alarms/min vs baseline 6.86. The module is sound; quote crop recall with the grouping caveat or show the ungrouped numbers next to it."
+    },
+    {
+      "lens": "skeptic",
+      "module": "smoking_dwell",
+      "verdict": "ok_with_caveats",
+      "issues": [
+        {
+          "severity": "blocking",
+          "issue": "The whole littering gain is a start-of-clip artefact. The first_seen rule (and dwell with dwell_s=1) fires within the first second of every 3 s clip. With pad 2.5 s, that one window covers the entire event, and the roi is the person who is on screen for the whole clip.",
+          "evidence": "Tune half, dedup(baseline+A_lean). Littering event/crop recall goes from 75.7/52.2 (baseline) to 100.0/96.1. 235 of 257 SD candidates on littering are first_seen at t<=1 s, and in 103 of 106 rescued clips the first SD event is first_seen at t=0. If SD candidates stamped in each sequence's first w seconds are dropped: w=0.5 gives 79.6/57.4, w=1 gives 79.1/57.0, w=2 gives 75.7/52.6 (back to baseline). Even before that, review reduction falls from 26.8% to 5.0%. On continuous CCTV the litterer would have been visible (and first_seen, if ever) long before the act, and walking people never satisfy dwell.",
+          "fix": "Do not report any littering improvement for this module. Score it with a warm-up (ignore its candidates in the first ~2 s of each sequence), or exclude it from the littering column."
+        },
+        {
+          "severity": "major",
+          "issue": "About 40-55% of the smoking gain also comes from sequence boundaries. The smoking sequences are cut at gaps longer than 15 s, and the GT often starts on frame 0 of a sequence, so a 'new spot' snapshot at sequence start lands on the event by construction.",
+          "evidence": "Of the GT-bearing smoking sequences, 50.4% have GT on frame 0 and 63% within 2.5 s. Smoking event/crop/reduction: baseline 43.1/17.2/55.6, A_lean 64.1/36.1/37.7. With a 1 s warm-up: 54.8/28.7/45.5. I also re-ran it causally on each camera-day stitched into one stream using the wall-clock times in the filenames: 55.9/28.2/43.6 with the real gaps, 55.5/28.0/45.1 with gaps capped at 10 s, 53.1/27.7/46.2 capped at 2 s. So the realistic gain is about +10-13 pts event and +11 pts crop, not +21/+19, and it costs ~10-12 pts of review reduction (about +2 candidates/min over baseline on the stitched streams: 621 vs 426 candidates in 91.5 min).",
+          "fix": "Report the stitched-stream (per camera-day) numbers as the headline, or at least the warm-up numbers. Add a stitched-stream evaluation mode to the harness for the smoking set before touching the held-out half."
+        },
+        {
+          "severity": "major",
+          "issue": "Part of the crop-recall gain comes from the grouping union ROI. Big crops cover more of the GT box, and the crop metric (>=30% of the GT box covered after 40% padding) rewards them, even though a big crop is a worse VLM input at 640x360 or low-res CCTV.",
+          "evidence": "Median SD roi area as a fraction of the frame (p90 in brackets): littering 9.5% (23%), avenue 17.9% (25%), smoking 5.6% (19%), normal 21%. Baseline candidates are around 1.3-2.0%, and SD candidates average 2-4.8 people. With group_h=0: smoking crop 36.1 to 29.6, avenue crop 64.0 to 56.0 (= baseline), littering crop 96.1 to 88.3.",
+          "fix": "Report crop recall with group_h=0 alongside, or cap union roi area (for example <=8% of the frame) and check that the VLM still resolves a cigarette at that crop size. A crop-size-aware metric would help."
+        },
+        {
+          "severity": "major",
+          "issue": "The 'dwell' mechanism this module is named for contributes almost nothing on tune. The gain is from first_seen, so the design story (position-spot dwell across broken tracks) is not what the numbers support.",
+          "evidence": "first_seen only (dwell_s=1e9): littering 98.7/95.2, avenue 80/60, smoking 64.8/31.7, FA 8.42, which matches or beats A_lean on event recall. Varying dwell_s over 1/5/10/20 moves smoking event recall by only 63.6-65.0. On Avenue tune, dwell fired 2 times in total.",
+          "fix": "Describe the operating point honestly as 'snapshot every newly seen person, then re-sample stationary spots every 60 s'. Ablate each cue on the stitched smoking stream before claiming the dwell rule works."
+        },
+        {
+          "severity": "minor",
+          "issue": "The normal-footage false-alarm metric cannot see the steady-state re-sampling cost. Every Avenue normal video is shorter than cooldown_s=60, so dwell never re-fires, and all of the added FA is one first_seen per video at t=0.",
+          "evidence": "Normal tune is 8 videos, 5.1 min, each 0.24-0.99 min. Added SD candidates: 8, all first_seen at video start, so with a 1 s warm-up the FA delta is 0 (6.86/min, same as baseline). Chaining the 8 videos into one continuous stream gives 10 SD candidates (9 dwell, 1 first_seen) in 5.1 min, about 1.96/min. The cost is roughly the same size but comes from a different rule. Subsampling to 1 fps also stays bounded (1.96/min normal, 3.2/min avenue), so load on low-fps cameras looks fine on this data. A camera with many separated stationary groups (queues, bus stops, a smokers' corner) would add about one candidate per group per minute indefinitely; this data cannot test that.",
+          "fix": "Measure FA on chained or long normal footage, and report the per-camera steady-state rate as about 1 candidate per stationary group per minute. Consider enabling budget_per_min for busy cameras."
+        },
+        {
+          "severity": "minor",
+          "issue": "Avenue and per-camera conclusions rest on very few events and the same cameras.",
+          "evidence": "The Avenue tune half has 25 GT events. A_lean adds 2 (76 to 84%), and only 1 survives a 0.5 s warm-up (80%). Smoking tune covers only cameras c1, c2, c4, and the held-out split is by camera-day on the same cameras, so it says nothing about a new camera viewpoint. Nothing is fitted per camera, which limits the risk.",
+          "fix": "Treat the Avenue delta as noise (+/-1 event). State that the smoking held-out half tests new days, not new cameras."
+        }
+      ],
+      "summary": "I tested A_lean on the tune half only. It looks like a big win in the numbers, but most of the gain would not survive on continuous CCTV. Scratch scripts are in /Users/ianvarella/capstone_S25/notebooks/exp/review_tmp/ (sd_skeptic.py, sd_stream.py, sd_roi.py, sd_1fps.py).\n\nHeadline, dedup(baseline+A_lean): littering event/crop 75.7/52.2 to 100/96.1, avenue 76/56 to 84/64, smoking 43.1/17.2 to 64.1/36.1, normal FA 6.86 to 8.42/min.\n\nWhat drives it:\n- **Littering:** almost all of the gain is the first_seen rule firing at t=0 of each 3 s clip. With a 1 s warm-up the gain is +3.4/+4.8, and with a 2 s warm-up it is zero.\n- **Avenue:** the gain is 2 events out of 25, and only 1 survives a warm-up.\n- **Smoking:** the gain is real but about half the size. Smoking sequences start where the GT starts (50% have GT on frame 0). Re-running causally on per-camera-day streams stitched by wall-clock time gives 55.9/28.2 (+12.8/+11). Review reduction drops from 55.6 to about 44-46%.\n- **Crop recall:** part of the gain is from union ROIs 5-10x larger than baseline crops; with group_h=0, smoking crop falls to 29.6.\n- **The dwell rule itself:** it adds almost nothing. first_seen alone matches A_lean.\n- **False alarms:** the normal FA metric misses the 60 s re-sampling cost because every normal video is under 60 s. Chained, the cost is still about 2 candidates/min and stays bounded at 1 fps.\n\nRecommendation: keep the module as a smoking-only re-sampler, but report the stitched-stream or warm-up numbers and a no-grouping crop recall. Drop all littering and Avenue claims."
+    }
+  ],
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Review"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "littering_act:audit",
+      "phaseIndex": 1,
+      "phaseTitle": "Review",
+      "agentId": "ab5e3c56d3d2d0e9a",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792528873643,
+      "queuedAt": 1792528873625,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "littering_act",
+      "promptPreview": "Project: Stage 1 of a YOLO->VLM surveillance pipeline. Cheap rules on cached YOLO detections (persons with\nboxes, tracker ids, pose keypoints) propose candidate moments for a VLM. A module /Users/ianvarella/capstone_S25/notebooks/exp/<name>.py exposes\nmake_method(**params) -> method(result, dataset_name) -> list of candidate events; it is deployed as\ndedup(combine(baseline, method)) (see /Users/ia…",
+      "promptFramed": true,
+      "lastProgressAt": 1792528999885,
+      "tokens": 46935,
+      "toolCalls": 8,
+      "durationMs": 126241,
+      "resultPreview": "{\"module\":\"littering_act\",\"verdict\":\"ok_with_caveats\",\"issues\":[{\"severity\":\"minor\",\"issue\":\"The baseline-suppression cache is keyed on id(result), is never cleared, and grows without limit. If a result object is freed and a new one gets the same id, or a result's observations are changed in place, the module reuses another sequence's baseline list and suppresses the wrong candidates.\",\"evidence\":…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "littering_act:skeptic",
+      "phaseIndex": 1,
+      "phaseTitle": "Review",
+      "agentId": "a9d2ed57a1e3a8379",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792528873643,
+      "queuedAt": 1792528873626,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "littering_act",
+      "promptPreview": "Project: Stage 1 of a YOLO->VLM surveillance pipeline. Cheap rules on cached YOLO detections (persons with\nboxes, tracker ids, pose keypoints) propose candidate moments for a VLM. A module /Users/ianvarella/capstone_S25/notebooks/exp/<name>.py exposes\nmake_method(**params) -> method(result, dataset_name) -> list of candidate events; it is deployed as\ndedup(combine(baseline, method)) (see /Users/ia…",
+      "promptFramed": true,
+      "lastProgressAt": 1792529074358,
+      "tokens": 47364,
+      "toolCalls": 8,
+      "durationMs": 198521,
+      "resultPreview": "{\"module\":\"littering_act\",\"verdict\":\"reject\",\"issues\":[{\"severity\":\"blocking\",\"issue\":\"On the littering clips, a random-person control that fires the same number of times does as well as the module. So the +14 pp crop recall comes from firing more often, not from the cue finding the person who littered.\",\"evidence\":\"I ran a control that adds the same number of extra candidates per clip as the modu…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 3,
+      "label": "motion_anomaly:audit",
+      "phaseIndex": 1,
+      "phaseTitle": "Review",
+      "agentId": "a672aa0d47d2468fb",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792528873643,
+      "queuedAt": 1792528873626,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "motion_anomaly",
+      "promptPreview": "Project: Stage 1 of a YOLO->VLM surveillance pipeline. Cheap rules on cached YOLO detections (persons with\nboxes, tracker ids, pose keypoints) propose candidate moments for a VLM. A module /Users/ianvarella/capstone_S25/notebooks/exp/<name>.py exposes\nmake_method(**params) -> method(result, dataset_name) -> list of candidate events; it is deployed as\ndedup(combine(baseline, method)) (see /Users/ia…",
+      "promptFramed": true,
+      "lastProgressAt": 1792529044412,
+      "tokens": 43340,
+      "toolCalls": 7,
+      "durationMs": 168573,
+      "resultPreview": "{\"module\":\"motion_anomaly\",\"verdict\":\"ok_with_caveats\",\"issues\":[{\"severity\":\"major\",\"issue\":\"In held-out mode the scene model gets refitted on the held-out normal videos\",\"evidence\":\"scene_model() fits on SPLITS[\\\"normal\\\"] (line 251). In exp_harness.load_splits, SPLITS[\\\"normal\\\"] holds the even-numbered Avenue training videos when STAGE1_HELDOUT=1. So for the held-out run, the density/wrongdir …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 4,
+      "label": "motion_anomaly:skeptic",
+      "phaseIndex": 1,
+      "phaseTitle": "Review",
+      "agentId": "a8ebb78aff56477ac",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792528873643,
+      "queuedAt": 1792528873626,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "motion_anomaly",
+      "promptPreview": "Project: Stage 1 of a YOLO->VLM surveillance pipeline. Cheap rules on cached YOLO detections (persons with\nboxes, tracker ids, pose keypoints) propose candidate moments for a VLM. A module /Users/ianvarella/capstone_S25/notebooks/exp/<name>.py exposes\nmake_method(**params) -> method(result, dataset_name) -> list of candidate events; it is deployed as\ndedup(combine(baseline, method)) (see /Users/ia…",
+      "promptFramed": true,
+      "lastProgressAt": 1792530287231,
+      "tokens": 64988,
+      "toolCalls": 12,
+      "durationMs": 1411391,
+      "resultPreview": "{\"module\":\"motion_anomaly\",\"verdict\":\"ok_with_caveats\",\"issues\":[{\"severity\":\"major\",\"issue\":\"The whole gain comes from the per-camera density cue, and that cue mostly reduces to \\\"there is a person very close to the Avenue camera\\\". This is the way Avenue anomalies were staged, not a general cue for anomalies.\",\"evidence\":\"Deployed as dedup(combine(baseline, ma)): Avenue event 76->96%, crop 56->9…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 5,
+      "label": "crop_policy:audit",
+      "phaseIndex": 1,
+      "phaseTitle": "Review",
+      "agentId": "a363a0946a3502e59",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792528873643,
+      "queuedAt": 1792528873626,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "crop_policy",
+      "promptPreview": "Project: Stage 1 of a YOLO->VLM surveillance pipeline. Cheap rules on cached YOLO detections (persons with\nboxes, tracker ids, pose keypoints) propose candidate moments for a VLM. A module /Users/ianvarella/capstone_S25/notebooks/exp/<name>.py exposes\nmake_method(**params) -> method(result, dataset_name) -> list of candidate events; it is deployed as\ndedup(combine(baseline, method)) (see /Users/ia…",
+      "promptFramed": true,
+      "lastProgressAt": 1792529001464,
+      "tokens": 42203,
+      "toolCalls": 8,
+      "durationMs": 125623,
+      "resultPreview": "{\"module\":\"crop_policy\",\"verdict\":\"ok_with_caveats\",\"issues\":[{\"severity\":\"major\",\"issue\":\"With radius_h=99 the 'neighbour' is not actually a neighbour. It is the most active other person anywhere in the frame. On 2-person littering clips, k=1 in practice means 'also crop the only other person', so most of the crop-recall gain comes from giving the VLM more crops per trigger, not from smarter pack…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 6,
+      "label": "crop_policy:skeptic",
+      "phaseIndex": 1,
+      "phaseTitle": "Review",
+      "agentId": "acb17b4cb79ecbe8c",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792528873643,
+      "queuedAt": 1792528873626,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "crop_policy",
+      "promptPreview": "Project: Stage 1 of a YOLO->VLM surveillance pipeline. Cheap rules on cached YOLO detections (persons with\nboxes, tracker ids, pose keypoints) propose candidate moments for a VLM. A module /Users/ianvarella/capstone_S25/notebooks/exp/<name>.py exposes\nmake_method(**params) -> method(result, dataset_name) -> list of candidate events; it is deployed as\ndedup(combine(baseline, method)) (see /Users/ia…",
+      "promptFramed": true,
+      "lastProgressAt": 1792529023259,
+      "tokens": 47176,
+      "toolCalls": 7,
+      "durationMs": 147417,
+      "resultPreview": "{\"module\":\"crop_policy\",\"verdict\":\"ok_with_caveats\",\"issues\":[{\"severity\":\"major\",\"issue\":\"The 'activity' ranking does almost no work. Most of the gain comes from adding one crop of any other person in the frame whenever reach_down fires, so the module is really 'also crop a random bystander'. The tune-half numbers say the bystander is often the actor, and that is a property of these datasets, not…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 7,
+      "label": "smoking_dwell:audit",
+      "phaseIndex": 1,
+      "phaseTitle": "Review",
+      "agentId": "ae239d092e4e24217",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792528873643,
+      "queuedAt": 1792528873626,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "smoking_dwell",
+      "promptPreview": "Project: Stage 1 of a YOLO->VLM surveillance pipeline. Cheap rules on cached YOLO detections (persons with\nboxes, tracker ids, pose keypoints) propose candidate moments for a VLM. A module /Users/ianvarella/capstone_S25/notebooks/exp/<name>.py exposes\nmake_method(**params) -> method(result, dataset_name) -> list of candidate events; it is deployed as\ndedup(combine(baseline, method)) (see /Users/ia…",
+      "promptFramed": true,
+      "lastProgressAt": 1792529022236,
+      "tokens": 47253,
+      "toolCalls": 9,
+      "durationMs": 146394,
+      "resultPreview": "{\"module\":\"smoking_dwell\",\"verdict\":\"ok_with_caveats\",\"issues\":[{\"severity\":\"major\",\"issue\":\"Grouping builds one multi-person union ROI, and that pushes up crop recall. The crop metric only checks how much of the GT box the padded ROI covers and never penalises a big ROI, so a larger union box scores better for free.\",\"evidence\":\"A_lean has group_h=8.0 and group_max_frac=0.6. The cap applies to wi…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 8,
+      "label": "smoking_dwell:skeptic",
+      "phaseIndex": 1,
+      "phaseTitle": "Review",
+      "agentId": "a516f862e76e9e788",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1792528873643,
+      "queuedAt": 1792528873626,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "smoking_dwell",
+      "promptPreview": "Project: Stage 1 of a YOLO->VLM surveillance pipeline. Cheap rules on cached YOLO detections (persons with\nboxes, tracker ids, pose keypoints) propose candidate moments for a VLM. A module /Users/ianvarella/capstone_S25/notebooks/exp/<name>.py exposes\nmake_method(**params) -> method(result, dataset_name) -> list of candidate events; it is deployed as\ndedup(combine(baseline, method)) (see /Users/ia…",
+      "promptFramed": true,
+      "lastProgressAt": 1792529113447,
+      "tokens": 57434,
+      "toolCalls": 10,
+      "durationMs": 237604,
+      "resultPreview": "{\"module\":\"smoking_dwell\",\"verdict\":\"ok_with_caveats\",\"issues\":[{\"severity\":\"blocking\",\"issue\":\"The whole littering gain is a start-of-clip artefact. The first_seen rule (and dwell with dwell_s=1) fires within the first second of every 3 s clip. With pad 2.5 s, that one window covers the entire event, and the roi is the person who is on screen for the whole clip.\",\"evidence\":\"Tune half, dedup(base…"
+    }
+  ],
+  "totalTokens": 396693,
+  "totalToolCalls": 69
+}

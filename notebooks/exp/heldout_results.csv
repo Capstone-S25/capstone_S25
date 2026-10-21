@@ -1,0 +1,5 @@
+method,littering_event_%,littering_crop_%,avenue_event_%,avenue_crop_%,avenue_reduction_%,smoking_event_%,smoking_crop_%,smoking_reduction_%,normal_FA_per_min
+current rules,75.0,55.0,90.0,55.0,41.6,28.0,9.3,71.5,8.41
++ unusual-place prior (motion module),75.0,55.0,100.0,85.0,27.8,28.0,9.3,71.5,12.32
++ very-tall-box rule (control),75.0,55.0,100.0,85.0,22.6,28.0,9.3,71.5,11.73
++ littering act cues (rejected),86.0,63.0,95.0,75.0,26.6,29.9,9.6,69.1,13.1
