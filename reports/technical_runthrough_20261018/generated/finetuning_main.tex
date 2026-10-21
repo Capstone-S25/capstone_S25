@@ -1,0 +1,24 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.1320\linewidth}>{\raggedright\arraybackslash}p{0.1740\linewidth}>{\raggedright\arraybackslash}p{0.0660\linewidth}>{\raggedright\arraybackslash}p{0.0780\linewidth}>{\raggedright\arraybackslash}p{0.0780\linewidth}>{\raggedright\arraybackslash}p{0.0780\linewidth}>{\raggedright\arraybackslash}p{0.1440\linewidth}>{\raggedright\arraybackslash}p{0.0900\linewidth}@{}}
+\caption[Finetuning main]{Primary seed 42 AP and development routing; pretrained baseline is last-frame text scoring.}\label{tab:finetuning_main}\\
+\toprule
+\textbf{Model} & \textbf{Target} & \textbf{N} & \textbf{Zero} & \textbf{Probe} & \textbf{Tuned} & \textbf{Dev route} & \textbf{Route AP} \\
+\midrule\endfirsthead
+\multicolumn{8}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{Model} & \textbf{Target} & \textbf{N} & \textbf{Zero} & \textbf{Probe} & \textbf{Tuned} & \textbf{Dev route} & \textbf{Route AP} \\
+\midrule\endhead
+\midrule\multicolumn{8}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+Mobile\allowbreak{}CLIP & Smoking & 646 & 0.642 & 0.594 & 0.564 & finetuned & 0.564 \\
+Mobile\allowbreak{}CLIP & Dumping / littering & 100 & 0.424 & 0.861 & 0.858 & finetuned & 0.858 \\
+Mobile\allowbreak{}CLIP & Loitering & 75 & 0.320 & 0.113 & 0.093 & finetuned & 0.093 \\
+Mobile\allowbreak{}CLIP & Public sleep & 18 & 0.502 & 0.976 & 0.976 & finetuned & 0.976 \\
+Mobile\allowbreak{}CLIP & Unattended & 962 & 0.209 & 0.361 & 0.652 & finetuned & 0.652 \\
+SigLIP & Smoking & 646 & 0.669 & 0.670 & 0.650 & finetuned & 0.650 \\
+SigLIP & Dumping / littering & 100 & 0.499 & 0.885 & 0.864 & linear probe & 0.885 \\
+SigLIP & Loitering & 75 & 0.097 & 0.107 & 0.110 & zero shot & 0.097 \\
+SigLIP & Public sleep & 18 & 0.733 & 0.915 & 0.976 & linear probe & 0.915 \\
+SigLIP & Unattended & 962 & 0.309 & 0.855 & 0.896 & finetuned & 0.896 \\
+\end{longtable}\endgroup

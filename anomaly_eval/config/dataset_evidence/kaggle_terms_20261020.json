@@ -1,0 +1,18 @@
+{
+  "sujaykapadnis/smoking": {
+    "licenseName": "Attribution 4.0 International (CC BY 4.0)",
+    "licenses": null,
+    "currentVersionNumber": 5,
+    "title": "Smoker Detection [Image] classification Dataset",
+    "lastUpdated": "2023-11-16T13:08:39.997Z",
+    "description": "The dataset contains 1120 images divided equally into two classes, where 560 images are of Smoking (smokers) and remaining 560 images belong to NotSmoking  (non-smokers) class. The dataset is curated by scanning through various search engines by entering multiple keywords that include cigarette smoking, smoker, person, coughing, taking inhaler, person on the phone, drinking water etc. We tried to consider versatile images in both classes for creating a certain degree of inter-class confusion in order to better train the model. For instance, Smoking class contains images of smokers from multiple angles and various gestures. Moreover, the images in NotSmoking class consists of images of non-smokers with slightly similar gestures as that of smoking images such as people drinking water, using inhaler, holding the mobile phone, coughing etc. The dataset can be used by the prospective researchers to propose deep learning algorithms for automated detection and screening of smoker towards ensuring the green environment and performing surveillance in smart cities. All images in the dataset are preprocessed and resized to a resolution of 250\u00d7250. We considered 80% of the data for training and validation purposes and 20% for the testing.\n\ncitation: Khan, Ali (2022), \u201cSmoker Detection Dataset\u201d, Mendeley Data, V1, doi: 10.17632/j45dj8bgfc.1"
+  },
+  "airslab2020/xrf55-rgb-depth-ir": {
+    "licenseName": "Other (specified in description)",
+    "licenses": null,
+    "currentVersionNumber": 6,
+    "title": "XRF55 RGB Public",
+    "lastUpdated": "2026-08-14T17:47:49.227Z",
+    "description": "Public RGB clips from all four scenes (27 consenting subjects)."
+  }
+}

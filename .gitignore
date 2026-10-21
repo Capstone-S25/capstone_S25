@@ -3,7 +3,27 @@ results/
 models/
 .env
 .venv
+.venv-gpu/
 __pycache__/
 *.py[cod]
 .ruff_cache/
+cookies.txt
+cookies*.txt
+
+*.egg-info/
+build/
+dist/
+config/server.json
+reports/evaluation**
+
+.DS_Store
+
+# Stage 1 (YOLO): local data, model weights and generated outputs
+Littering/
+*.pt
 notebooks/bench_cache/
+notebooks/vlm_handoff*/
+notebooks/sweep*.pkl
+notebooks/exp/explorer_work/
+notebooks/exp/review_tmp/
+notebooks/exp/*.pkl

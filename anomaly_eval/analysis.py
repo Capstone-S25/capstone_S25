@@ -1,0 +1,633 @@
+"""Matched-cohort statistics, calibration, figures and reports."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import math
+import random
+from collections import defaultdict
+from itertools import combinations
+from pathlib import Path
+
+import numpy as np
+
+from anomaly_eval.metrics import (
+    detection_metrics,
+    frame_metrics,
+    percentile,
+    select_threshold,
+)
+from anomaly_eval.paths import resolve_arguments, resolve_path
+
+
+def _ci(values):
+    finite = [v for v in values if v is not None and math.isfinite(v)]
+    return (
+        [percentile(finite, 0.025), percentile(finite, 0.975)]
+        if len(finite) > 1
+        else None
+    )
+
+
+def _extract(m):
+    return {
+        "accuracy_including_failures": m["accuracy_including_failures"],
+        "macro_f1": m["macro_f1"],
+        "binary_f1": m["binary"]["f1"],
+        "roc_auc": m["binary"]["roc_auc"],
+        "average_precision": m["binary"]["average_precision"],
+    }
+
+
+def analyze(directory, bootstrap=2000, seed=12345):
+    run = json.loads((directory / "run.json").read_text())
+    labels = list(run["definitions"])
+    if run.get("metric_version") != 2 or not run.get("experiment_fingerprint"):
+        raise ValueError(
+            "Legacy run lacks corrected metric version/provenance; rerun inference"
+        )
+    expected = {
+        (r["path"], r["label"], r["group_id"])
+        for r in run["samples"]
+        if r["split"] == "test"
+    }
+    allrows = {}
+    summaries = {}
+    for model in run["models"]:
+        summary = json.loads((directory / model / "summary.json").read_text())
+        summaries[model] = summary
+        raw = [
+            json.loads(line)
+            for line in (directory / model / "predictions.jsonl")
+            .read_text()
+            .splitlines()
+            if line.strip()
+        ]
+        rows = [r for r in raw if r["repeat"] == 0 and r["label"] is not None]
+        actual = [(r["path"], r["label"], r["group_id"]) for r in rows]
+        if (
+            len(set(actual)) != len(actual)
+            or set(actual) != expected
+            or len(raw) != len(expected) * run["options"]["repeats"]
+        ):
+            raise ValueError(
+                f"Incomplete or mismatched planned prediction cohort: {model}"
+            )
+        point = detection_metrics(rows, labels)
+        if point != summary.get("metrics"):
+            raise ValueError(
+                f"Saved metrics disagree with corrected predictions: {model}"
+            )
+        allrows[model] = {r["path"]: r for r in rows}
+    first = next(iter(allrows.values()))
+    supported = [l for l in labels if any(r["label"] == l for r in first.values())]
+    groups = defaultdict(list)
+    for path, r in first.items():
+        groups[r["group_id"]].append(path)
+    keys = sorted(groups)
+    rng = random.Random(seed)
+    metrics = {
+        m: _extract(detection_metrics(list(rows.values()), labels, supported))
+        for m, rows in allrows.items()
+    }
+    draws = {m: {k: [] for k in metrics[m]} for m in metrics}
+    for _ in range(bootstrap):
+        paths = [p for group in rng.choices(keys, k=len(keys)) for p in groups[group]]
+        for m, rows in allrows.items():
+            values = _extract(
+                detection_metrics([rows[p] for p in paths], labels, supported)
+            )
+            for k, v in values.items():
+                draws[m][k].append(v)
+    result = {
+        "unit": "source_group",
+        "n_groups": len(keys),
+        "uncertainty_warning": "Few independent source groups; intervals are exploratory"
+        if len(keys) < 10
+        else None,
+        "seed": seed,
+        "bootstrap": bootstrap,
+        "experiment_fingerprint": run["experiment_fingerprint"],
+        "labels": labels,
+        "scored_labels": supported,
+        "models": {},
+        "paired_differences": {},
+    }
+    for m, point in metrics.items():
+        full = detection_metrics(list(allrows[m].values()), labels, supported)
+        result["models"][m] = {
+            "point": point,
+            "ci95": {k: _ci(v) for k, v in draws[m].items()},
+            "per_class": full["per_class"],
+            "coverage": full["prediction_coverage"],
+            "abstentions": full["abstentions"],
+            "errors": full["errors"],
+        }
+    for a, b in combinations(metrics, 2):
+        result["paired_differences"][a + " minus " + b] = {
+            k: {
+                "point": metrics[a][k] - metrics[b][k]
+                if metrics[a][k] is not None and metrics[b][k] is not None
+                else None,
+                "ci95": _ci(
+                    [
+                        x - y if x is not None and y is not None else None
+                        for x, y in zip(draws[a][k], draws[b][k])
+                    ]
+                ),
+            }
+            for k in metrics[a]
+        }
+    (directory / "improvements.json").write_text(
+        json.dumps(result, indent=2, allow_nan=False) + "\n"
+    )
+    return result
+
+
+def load_rows(directory, model):
+    return [
+        json.loads(l)
+        for l in (directory / model / "predictions.jsonl").read_text().splitlines()
+        if l.strip() and json.loads(l)["repeat"] == 0
+    ]
+
+
+def fpr_threshold(y, score, target=0.05):
+    if not ((y == 0).any() and (y == 1).any()):
+        raise ValueError("Both classes required in development")
+    candidates = np.r_[np.nextafter(score.max(), np.inf), np.unique(score)]
+    feasible = [t for t in candidates if np.mean(score[y == 0] >= t) <= target]
+    return float(min(feasible))
+
+
+def calibrate(dev_dir: Path, test_dir: Path, target_fpr=0.05):
+    dev = json.loads((dev_dir / "run.json").read_text())
+    test = json.loads((test_dir / "run.json").read_text())
+    if (
+        dev["evaluation_split"] != "dev"
+        or test["evaluation_split"] != "test"
+        or dev["definitions"] != test["definitions"]
+        or dev["models"] != test["models"]
+    ):
+        raise ValueError("Development/test protocols or model lists disagree")
+    settings = (
+        "models",
+        "seed",
+        "threads",
+        "duty_cycle",
+        "max_samples_per_second",
+        "max_side",
+        "image_policy",
+        "max_new_tokens",
+        "cpu_cores",
+        "repeats",
+        "device",
+        "dtype",
+        "batch_size",
+        "workers",
+    )
+    if any(
+        dev.get("options", {}).get(k) != test.get("options", {}).get(k)
+        for k in settings
+    ) or dev.get("code_sha256") != test.get("code_sha256"):
+        raise ValueError("Development/test inference settings or code differ")
+    dev_groups = {r["group_id"] for r in dev["samples"]}
+    test_groups = {r["group_id"] for r in test["samples"]}
+    if dev_groups & test_groups:
+        raise ValueError("Development/test groups overlap")
+    task = next(l for l in test["definitions"] if l != "normal")
+    result = {"task": task, "target_fpr": target_fpr, "models": {}}
+    for model in test["models"]:
+        dr, tr = load_rows(dev_dir, model), load_rows(test_dir, model)
+        expected_dev = sum(r["split"] == "test" for r in dev["samples"])
+        expected_test = sum(r["split"] == "test" for r in test["samples"])
+        if len(dr) != expected_dev or len(tr) != expected_test:
+            raise ValueError("Calibration needs complete planned cohorts")
+        if any(r.get("anomaly_score") is None for r in dr + tr):
+            result["models"][model] = {
+                "status": "no_continuous_score",
+                "categorical": detection_metrics(tr, list(test["definitions"])),
+                "note": "No invented hard-label AUC or threshold for VLMs",
+            }
+            continue
+        yd = np.array([r["label"] != "normal" for r in dr], dtype=int)
+        sd = np.array([r["anomaly_score"] for r in dr])
+        yt = np.array([r["label"] != "normal" for r in tr], dtype=int)
+        st = np.array([r["anomaly_score"] for r in tr])
+        thresholds = {
+            "dev_max_f1": select_threshold(yd, sd),
+            "dev_fpr_budget": fpr_threshold(yd, sd, target_fpr),
+        }
+        out = {
+            "thresholds": thresholds,
+            "development_negatives": int((yd == 0).sum()),
+            "development_fpr_resolution": 1 / int((yd == 0).sum()),
+            "operating_points": {},
+        }
+        for name, t in thresholds.items():
+            scored = [
+                {**r, "prediction": task if r["anomaly_score"] >= t else "normal"}
+                for r in tr
+            ]
+            out["operating_points"][name] = {
+                "all_samples": detection_metrics(scored, list(test["definitions"])),
+                "score_metrics": frame_metrics(yt, st, t),
+            }
+        result["models"][model] = out
+    (test_dir / "calibration.json").write_text(
+        json.dumps(result, indent=2, allow_nan=False) + "\n"
+    )
+    return result
+
+
+def generate(results_dir: Path, out_dir: Path):
+    import os
+    import tempfile
+
+    os.environ.setdefault(
+        "MPLCONFIGDIR", str(Path(tempfile.gettempdir()) / "capstone-matplotlib")
+    )
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    run = json.loads((results_dir / "run.json").read_text())
+    if run.get("metric_version") != 2:
+        raise ValueError("Figures require corrected metric version 2")
+    results = json.loads((results_dir / "results.json").read_text())["models"]
+    improvements = (
+        json.loads((results_dir / "improvements.json").read_text())
+        if (results_dir / "improvements.json").is_file()
+        else {}
+    )
+    models = [r["model"] for r in results]
+    xs = np.arange(len(models))
+    out_dir.mkdir(parents=True, exist_ok=True)
+    panels = [
+        ("Accuracy, all samples", "accuracy_including_failures"),
+        ("Binary anomaly F1", "binary_f1"),
+        ("Continuous score AUROC", "roc_auc"),
+        ("Prediction coverage", "prediction_coverage"),
+        ("End-to-end p95 seconds", "latency_p95_seconds"),
+        ("Peak worker RSS MiB", "peak_rss_mb"),
+    ]
+    fig, axes = plt.subplots(2, 3, figsize=(14, 8))
+    for ax, (title, key) in zip(axes.flat, panels):
+        for i, r in enumerate(results):
+            m = r.get("metrics", {})
+            b = m.get("binary") or {}
+            v = (
+                b.get("f1")
+                if key == "binary_f1"
+                else b.get("roc_auc")
+                if key == "roc_auc"
+                else m.get(key, r.get(key))
+            )
+            if v is None:
+                ax.text(i, 0, "NA", ha="center")
+                continue
+            ax.bar(i, v, color="#4C72B0")
+            ci = (
+                improvements.get("models", {})
+                .get(r["model"], {})
+                .get("ci95", {})
+                .get(key)
+            )
+            if ci:
+                ax.vlines(i, ci[0], ci[1], color="black")
+                ax.hlines(ci, [i - 0.08] * 2, [i + 0.08] * 2, color="black")
+        ax.set_title(title)
+        ax.set_xticks(xs)
+        ax.set_xticklabels(models, rotation=30, ha="right", fontsize=8)
+    fig.suptitle(
+        f"{run['evaluation_split']} · identical cohort · cluster intervals where available"
+    )
+    fig.tight_layout()
+    path = out_dir / "comparison.png"
+    fig.savefig(path, dpi=160)
+    plt.close(fig)
+    return path
+
+
+def write_report(output, state, args):
+    mode = getattr(args, "mode", "evaluation")
+    mode_note = (
+        f"Deployment simulation: sequential sampled inputs paced at {args.camera_fps:g}/s, "
+        f"with duty cycle {args.duty_cycle:g}. This is not a camera capture/queue test."
+        if mode == "deployment"
+        else "Accuracy evaluation: no duty-cycle or camera-rate sleeps; available GPUs are used when selected."
+    )
+    lines = [
+        "# Corrected evaluation run",
+        "",
+        f"Run: `{output.name}`. Execution status: **{state['status']}**.",
+        "",
+        f"Mode: **{mode}**. {mode_note}",
+        f"Requested/resolved device: **{getattr(args, 'device', 'cpu')}**; CPU threads per worker: {getattr(args, 'threads', 'unrecorded')}; concurrent model workers: {getattr(args, 'workers', 1)}; RAM cap: {getattr(args, 'max_rss_mb', None) or 'none'} MiB.",
+        "",
+        (
+            f"Requested tasks: {', '.join(args.tasks)}. Input protocols: {', '.join(args.protocols)}. "
+            f"Sample cap per task/protocol/split: {getattr(args, 'limit', 0) or 'all'}."
+        ),
+        "",
+        "Measurements describe the recorded host. CPU throttling does not emulate a Ryzen AI Max+ 395.",
+        "",
+        "All models in each task/protocol see the same images and source groups. Quality scores include failures and abstentions. Continuous-score operating thresholds are chosen on development data; VLM hard decisions have no invented AUC.",
+        "",
+        "Available dataset coverage below describes prepared data, before any inference sample cap. Unrequested tasks/protocols are not evaluated.",
+        "",
+        "| Task / input | Available data |",
+        "|---|---|",
+    ]
+    for task, protocols in state["dataset"]["coverage"].items():
+        if not protocols:
+            lines.append(f"| {task} | Needs verified event and matched normal labels |")
+        for protocol, c in protocols.items():
+            lines.append(
+                f"| {task} / {protocol} | {'Dev/test available' if c['eligible_for_calibrated_test'] else 'Development only'}; counts {c['counts']} |"
+            )
+    deduplication = state["dataset"].get("deduplication")
+    if deduplication:
+        lines += [
+            "",
+            f"Input deduplication: {deduplication['removed_rows']} aliases removed from {deduplication['input_rows']} collected rows, using source moments and decoded RGB pixels. Provenance is saved in `evaluation.json`.",
+        ]
+    sampling = state["dataset"].get("sampling", {})
+    if sampling:
+        lines += [
+            "",
+            f"Preparation retained {sampling['selected_rows']} / {sampling['available_unique_rows']} unique confirmed inputs; per-recording/label/protocol cap: {sampling['per_group'] or 'none'}.",
+        ]
+    if (
+        mode != "evaluation"
+        or getattr(args, "limit", 0)
+        or (sampling and sampling["selected_rows"] < sampling["available_unique_rows"])
+    ):
+        lines += [
+            "",
+            "This is a subset/pilot measurement. Reduced label and recording counts limit quality conclusions, confidence intervals and false-positive calibration; use an uncapped evaluation for model selection.",
+        ]
+    if state["benchmarks"]:
+        lines += [
+            "",
+            "| Task / input / split | Selected / available inputs | Selected labels | Source groups | Groups per label |",
+            "|---|---:|---|---:|---|",
+        ]
+        for record in state["benchmarks"]:
+            selection = record.get("selection")
+            if selection:
+                lines.append(
+                    f"| {record['cohort']} / {record['split']} | "
+                    f"{selection['selected_samples']} / {selection['available_samples']} | "
+                    f"{selection['selected_label_counts']} | {selection['selected_groups']} | {selection.get('selected_groups_per_label', 'unrecorded')} |"
+                )
+    lines += [
+        "",
+        "## Measured model comparisons",
+        "",
+        "| Task / input / split | Model | Status | Coverage | Precision | Recall | Binary F1 | FPR | AP | AUROC | Device |",
+        "|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|",
+    ]
+
+    def fmt(v):
+        return "NA" if v is None else f"{v:.3f}"
+
+    response_rows = []
+    resource_rows = []
+    calibration_rows = []
+    failures = []
+
+    for record in state["benchmarks"]:
+        path = resolve_path(record["output"], output) / "results.json"
+        if not path.is_file():
+            continue
+        for model in json.loads(path.read_text())["models"]:
+            m = model.get("metrics", {})
+            b = m.get("binary") or {}
+            lat = model.get("latency_p95_seconds")
+            rss = model.get("peak_rss_mb")
+            diagnostics = model.get("response_diagnostics", {})
+            decisions = model.get("prediction_counts", {})
+            response_rows.append(
+                f"| {record['cohort']} / {record['split']} | {model['model']} | {decisions or 'unrecorded'} | "
+                f"{fmt(diagnostics.get('json_label_fraction'))} | {diagnostics.get('abstention_reasons', {})} |"
+            )
+            baselines = model.get("naive_baselines", {})
+            if baselines:
+                state.setdefault("naive_baselines", {})[
+                    record["cohort"] + "/" + record["split"]
+                ] = {
+                    k: {
+                        "accuracy": v["accuracy_including_failures"],
+                        "binary_f1": v["binary"]["f1"],
+                    }
+                    for k, v in baselines.items()
+                }
+            feasible = (
+                lat is not None
+                and rss is not None
+                and lat / (args.duty_cycle if mode == "deployment" else 1)
+                <= 1 / args.camera_fps
+                and (args.max_rss_mb is None or rss <= args.max_rss_mb)
+                and model["status"] == "ok"
+            )
+            values = [
+                record["cohort"] + " / " + record["split"],
+                model["model"],
+                model["status"],
+                fmt(m.get("prediction_coverage")),
+                fmt(b.get("precision")),
+                fmt(b.get("recall")),
+                fmt(b.get("f1")),
+                fmt(b.get("false_positive_rate")),
+                fmt(b.get("average_precision")),
+                fmt(b.get("roc_auc")),
+                model.get("input_policy", {}).get("device", "unrecorded"),
+            ]
+            lines.append("| " + " | ".join(values) + " |")
+            resource_rows.append(
+                "| "
+                + " | ".join(
+                    [
+                        record["cohort"] + " / " + record["split"],
+                        model["model"],
+                        fmt(lat),
+                        fmt(model.get("active_samples_per_second")),
+                        fmt(rss),
+                        fmt(model.get("peak_gpu_allocated_mb")),
+                        str(model.get("batch_size", 1)),
+                        model.get("latency_kind", "single_input"),
+                        ("passes sampled frame budget" if feasible else "fails/unknown")
+                        if mode == "deployment"
+                        else "accuracy run; measure CPU deployment separately",
+                    ]
+                )
+                + " |"
+            )
+            if model.get("error"):
+                failures.append(
+                    f"- {record['cohort']}/{record['split']} / {model['model']}: `{model['error']}`"
+                )
+        calibration_path = path.parent / "calibration.json"
+        if calibration_path.is_file():
+            for name, calibrated in json.loads(calibration_path.read_text())[
+                "models"
+            ].items():
+                for operating_point, measured in calibrated.get(
+                    "operating_points", {}
+                ).items():
+                    m = measured["score_metrics"]
+                    calibration_rows.append(
+                        "| "
+                        + " | ".join(
+                            [
+                                record["cohort"],
+                                name,
+                                operating_point,
+                                fmt(m["threshold"]),
+                                fmt(m["precision"]),
+                                fmt(m["recall"]),
+                                fmt(m["f1"]),
+                                fmt(m["false_positive_rate"]),
+                                fmt(m["aupr"]),
+                                fmt(m["auroc"]),
+                            ]
+                        )
+                        + " |"
+                    )
+    if failures:
+        lines += ["", "Execution failures:", "", *failures]
+    if calibration_rows:
+        lines += [
+            "",
+            "## Development-calibrated test performance",
+            "",
+            "Thresholds were fitted on development data and frozen for test. AP/AUROC use continuous scores. The small CAVIAR source count limits these estimates.",
+            "",
+            "| Task / input | Model | Operating point | Threshold | Precision | Recall | F1 | FPR | AP | AUROC |",
+            "|---|---|---|---:|---:|---:|---:|---:|---:|---:|",
+            *calibration_rows,
+        ]
+    if resource_rows:
+        lines += [
+            "",
+            "## Resource measurements",
+            "",
+            "Accuracy-run timings describe the recorded device and precision. CPU latency comparisons require a separate frozen CPU run with batch size one.",
+            "",
+            "| Task / input / split | Model | p95 seconds | Active inputs/s | RSS MiB | GPU allocated MiB | Batch | Timing kind | Host budget |",
+            "|---|---|---:|---:|---:|---:|---:|---|---|",
+            *resource_rows,
+        ]
+    if response_rows:
+        lines += [
+            "",
+            "## Response diagnostics",
+            "",
+            "Counts cover measured inference attempts, including repeats. Exact labels are case-insensitive; unknown and invalid responses remain separate. JSON label compliance includes structured `unknown` answers. Constant categorical predictions do not demonstrate event discrimination.",
+            "",
+            "| Task / input / split | Model | Categorical prediction counts | JSON label fraction | Abstention reasons |",
+            "|---|---|---|---:|---|",
+            *response_rows,
+        ]
+    if state.get("naive_baselines"):
+        lines += [
+            "",
+            "Constant-prediction baselines (quality only):",
+            "",
+            "```json",
+            json.dumps(state["naive_baselines"], indent=2),
+            "```",
+        ]
+    lines += [
+        "",
+        f"Deployment reference: one stream sampled at {args.camera_fps:g} frames/s, p95 inference ≤ {1 / args.camera_fps:g}s. Host RAM cap: {args.max_rss_mb or 'none'} MiB. This excludes queueing and camera decoding; verify on the deployment box.",
+        "",
+        "Inference latency excludes pacing sleeps. Active throughput, wall throughput and pacing sleep seconds are saved separately in `results.json` and `comparison.csv`; deployment duty-cycle overhead is included in the host-budget screen.",
+        "",
+        "Raw model argmax and development-calibrated operating points are separate in `calibration.json`. Group-bootstrap intervals and paired differences are in each run's `improvements.json`. Unsupported tasks are not zero-scored or pooled into a model ranking.",
+        "",
+        "A final choice requires adequate recall at an acceptable false-alert rate on verified events from the deployment domain. A small staged set cannot establish a five-task deployment winner.",
+        "",
+        "## Limitations",
+        "",
+    ]
+    lines += ["- " + s for s in state["dataset"]["limitations"]]
+    lines += [
+        "- Data preparation issue: " + issue
+        for issue in state["dataset"].get("issues", [])
+    ]
+    if state.get("vadclip"):
+        lines += [
+            "",
+            "## Supervised offline VadCLIP smoking study",
+            "",
+            f"Execution status: **{state['vadclip']['status']}**.",
+            "",
+            "VadCLIP results are a supervised offline smoking adaptation with frozen CLIP-B/16 features and a separate train/dev/test protocol. Adapter timing excludes the image encoder and is not comparable to end-to-end VLM FPS. It uses future context within each sparse session and is not a streaming detector.",
+        ]
+        vad_rows = []
+        for relative in (
+            "vadclip/adapter/eval.json",
+            "vadclip/baselines/baselines.json",
+        ):
+            p = output / relative
+            if p.is_file():
+                result = json.loads(p.read_text())
+                for name, m in result["metrics"].items():
+                    vad_rows.append(
+                        "| "
+                        + " | ".join(
+                            [
+                                name,
+                                str(m["n"]),
+                                fmt(m["precision"]),
+                                fmt(m["recall"]),
+                                fmt(m["f1"]),
+                                fmt(m["false_positive_rate"]),
+                                fmt(m["aupr"]),
+                                fmt(m["auroc"]),
+                            ]
+                        )
+                        + " |"
+                    )
+        if vad_rows:
+            lines += [
+                "",
+                "Operating thresholds are frozen on the adapter's development groups. These supervised results use a different cohort from the main zero-shot benchmark.",
+                "",
+                "| Branch / baseline | Test frames | Precision | Recall | F1 | FPR | AP | AUROC |",
+                "|---|---:|---:|---:|---:|---:|---:|---:|",
+                *vad_rows,
+            ]
+    (output / "report.md").write_text("\n".join(lines) + "\n")
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--results-dir", type=Path, required=True)
+    parser.add_argument(
+        "--dev-dir",
+        type=Path,
+        help="Optional development run for frozen-threshold calibration",
+    )
+    parser.add_argument("--bootstrap", type=int, default=2000)
+    parser.add_argument("--seed", type=int, default=12345)
+    parser.add_argument("--target-fpr", type=float, default=0.05)
+    parser.add_argument("--no-figures", action="store_true")
+    args = resolve_arguments(parser.parse_args(argv))
+    if args.bootstrap < 1:
+        parser.error("bootstrap must be positive")
+    directory = resolve_path(args.results_dir)
+    result = analyze(directory, args.bootstrap, args.seed)
+    if args.dev_dir:
+        calibrate(resolve_path(args.dev_dir), directory, args.target_fpr)
+    if not args.no_figures:
+        generate(directory, directory / "figures")
+    print(
+        f"Analyzed {len(result['models'])} models in {result['n_groups']} independent source groups"
+    )
+    return 0

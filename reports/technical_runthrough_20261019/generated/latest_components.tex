@@ -1,0 +1,22 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.1851\linewidth}>{\raggedright\arraybackslash}p{0.2136\linewidth}>{\raggedright\arraybackslash}p{0.0712\linewidth}>{\raggedright\arraybackslash}p{0.1139\linewidth}>{\raggedright\arraybackslash}p{0.1139\linewidth}>{\raggedright\arraybackslash}p{0.1424\linewidth}@{}}
+\caption[Latest components]{Full-image versus fixed full-plus-tiles item reference recall; partial references do not support precision.}\label{tab:latest_components}\\
+\toprule
+\textbf{Source} & \textbf{Input} & \textbf{IoU} & \textbf{Matches} & \textbf{Recall} & \textbf{Predicted items} \\
+\midrule\endfirsthead
+\multicolumn{6}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{Source} & \textbf{Input} & \textbf{IoU} & \textbf{Matches} & \textbf{Recall} & \textbf{Predicted items} \\
+\midrule\endhead
+\midrule\multicolumn{6}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+CAVIAR train & full & 0.3 & 69/136 & 50.7\% & 675 \\
+CAVIAR train & full & 0.5 & 66/136 & 48.5\% & 675 \\
+CAVIAR train & full plus tiles & 0.3 & 117/136 & 86.0\% & 1442 \\
+CAVIAR train & full plus tiles & 0.5 & 116/136 & 85.3\% & 1442 \\
+Highway debris & full & 0.3 & 0/30 & 0.0\% & 13 \\
+Highway debris & full & 0.5 & 0/30 & 0.0\% & 13 \\
+Highway debris & full plus tiles & 0.3 & 7/30 & 23.3\% & 40 \\
+Highway debris & full plus tiles & 0.5 & 7/30 & 23.3\% & 40 \\
+\end{longtable}\endgroup

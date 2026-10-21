@@ -1,0 +1,26 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.1043\linewidth}>{\raggedright\arraybackslash}p{0.2609\linewidth}>{\raggedright\arraybackslash}p{0.0522\linewidth}>{\raggedright\arraybackslash}p{0.0522\linewidth}>{\raggedright\arraybackslash}p{0.0678\linewidth}>{\raggedright\arraybackslash}p{0.0678\linewidth}>{\raggedright\arraybackslash}p{0.0678\linewidth}>{\raggedright\arraybackslash}p{0.0835\linewidth}>{\raggedright\arraybackslash}p{0.0835\linewidth}@{}}
+\caption[Strategy historical]{Previously inspected source holdouts: previous bundle versus primary selected strategy; max-dev-F1 decisions.}\label{tab:strategy_historical}\\
+\toprule
+\textbf{Model} & \textbf{Source/cohort} & \textbf{N} & \textbf{+} & \textbf{Old AP} & \textbf{New AP} & \textbf{F1} & \textbf{Recall} & \textbf{FPR} \\
+\midrule\endfirsthead
+\multicolumn{9}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{Model} & \textbf{Source/cohort} & \textbf{N} & \textbf{+} & \textbf{Old AP} & \textbf{New AP} & \textbf{F1} & \textbf{Recall} & \textbf{FPR} \\
+\midrule\endhead
+\midrule\multicolumn{9}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+Mobile\allowbreak{}CLIP & Smoking: historical CCTV c1 & 646 & 393 & 0.564 & 0.690 & 0.727 & 85.0\% & 75.9\% \\
+Mobile\allowbreak{}CLIP & Smoking: historical Stanford photos & 806 & 140 & 0.901 & 0.880 & 0.709 & 95.7\% & 15.6\% \\
+Mobile\allowbreak{}CLIP & Littering/waste dumping: historical IWDD & 100 & 50 & 0.858 & 0.806 & 0.830 & 88.0\% & 24.0\% \\
+Mobile\allowbreak{}CLIP & Loitering: historical Street Scene & 75 & 11 & 0.093 & 0.489 & 0.000 & 0.0\% & 0.0\% \\
+Mobile\allowbreak{}CLIP & Public sleep: historical photos & 18 & 6 & 0.976 & 0.931 & 0.727 & 66.7\% & 8.3\% \\
+Mobile\allowbreak{}CLIP & Unattended: historical camera holdout & 962 & 242 & 0.652 & 0.980 & 0.403 & 100.0\% & 99.7\% \\
+SigLIP & Smoking: historical CCTV c1 & 646 & 393 & 0.650 & 0.722 & 0.757 & 94.1\% & 84.6\% \\
+SigLIP & Smoking: historical Stanford photos & 806 & 140 & 0.954 & 0.937 & 0.776 & 94.3\% & 10.2\% \\
+SigLIP & Littering/waste dumping: historical IWDD & 100 & 50 & 0.885 & 0.893 & 0.828 & 82.0\% & 16.0\% \\
+SigLIP & Loitering: historical Street Scene & 75 & 11 & 0.097 & 0.550 & 0.375 & 27.3\% & 3.1\% \\
+SigLIP & Public sleep: historical photos & 18 & 6 & 0.915 & 0.883 & 0.667 & 50.0\% & 0.0\% \\
+SigLIP & Unattended: historical camera holdout & 962 & 242 & 0.896 & 0.925 & 0.402 & 100.0\% & 100.0\% \\
+\end{longtable}\endgroup

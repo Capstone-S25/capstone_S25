@@ -1,0 +1,38 @@
+\chapter{Expanded four-model accuracy evaluation}
+\label{ch:expanded}
+\section{Why this expansion was necessary}
+The initial unattended test had only four positive endpoints and a single positive sequence per split. More source footage was already available, but required interval review, grouping and duplicate handling. The expansion therefore retained eligible inputs after review rather than imposing an arbitrary fixed sample cap. It also attempted the other three requested targets with explicitly weaker diagnostics, avoiding an unsupported claim that all source labels were already standardized anomaly events.
+
+Finalized on 14 October, the study evaluates 13,789 input/protocol instances per model and 55,156 predictions total across seven cohorts. The frame/window unattended protocols share the same 1,770 endpoints and have 20-second past context for sheets. Littering weak candidates contribute 6,667 development-only images, person/loitering 1,675, rough-sleeping weak candidates 111, and the synthetic oracle posture study 121 person crops across source-held-out development/test.
+
+\section{GPU execution policy}
+The four models run in isolated GPU workers, with eight CPU threads per worker. CLIP uses batch 64 and float32; VLMs use one input per call and unquantized automatic bfloat16. Shared 768-pixel letterbox preprocessing, deterministic generation, the 64-token budget and MiniCPM's one-slice baseline are retained. No default accuracy RAM cap, camera-rate sleep or latency repetitions are introduced. Model revisions, source hashes and raw responses remain available.
+
+All 40 model/cohort/split summaries complete successfully. There are zero runtime errors. Across all new input/protocol calls, SmolVLM has 1,457 abstentions (approximately 10.6\%) and MiniCPM 45 (approximately .33\%). A valid unknown/invalid answer is not silently dropped when computing categorical quality.
+
+\section{Expanded unattended endpoint results}
+\input{generated/expanded_unattended.tex}
+MiniCPM has the strongest raw frame F1, .479, with 77.1\% precision, 34.7\% recall and 3.47\% FPR: 84 TP, 25 FP, 158 FN and 695 TN. Its earlier constant-normal behavior does not persist on the broader cohort. It still misses nearly two thirds of positive endpoints. MobileCLIP and SmolVLM flag many positive frames but also 74.6\% and 93.8\% of normal frames. SigLIP's raw frame decision finds no positives, although its continuous ranking has AP .309 and AUROC .675 against positive prevalence .252.
+
+Contact sheets change the tradeoff. MiniCPM window recall falls to 10.74\%, FPR to .14\% and F1 to .193. SmolVLM window recall is 96.28\% with 97.36\% FPR and 14 unanswered inputs. This does not show that the architectures cannot model video; it shows that this particular reduced contact-sheet protocol is insufficient and entangles temporal context with spatial resolution.
+
+\section{Frozen development cutoffs and interval alarm screen}
+The development 5\% FPR-budget cutoff gives MobileCLIP 20.3\% frame-test FPR and 35.1\% sheet-test FPR. SigLIP sheets obtain 7.0\% recall at 5.14\% FPR under the budget point, or 55.4\% recall at 30.0\% FPR with the max-dev-F1 point. None of these cutoffs is fitted to test labels. The transfer failure is part of the result rather than a reason to recalibrate on the test set.
+
+An auxiliary interval screen counts whether any raw categorical alarm occurs inside each reviewed positive or normal interval. There are five positive and seven normal test intervals. It has no persistence rule and is sensitive to interval length; it is not event onset detection or alerts/hour. In the frame screen, MobileCLIP and SmolVLM hit 5/5 positive intervals but alarm in 7/7 normal intervals. MiniCPM hits 3/5 and alarms in 3/7 normals. The later causal pilot replaces this loose screen with explicit alarm-time accounting.
+
+\section{What the three weak target cohorts measured}
+\input{generated/weak_diagnostics.tex}
+These rates describe model behavior on candidates, not verified event recall. The littering actions are not uniformly rubbish disposal; the person images lack duration; synthetic lying lacks established public-sleep context. No precision, FPR, AP or F1 is inferred from an all-positive proxy. The entire weak collection remains development-only because source identities or task labels are insufficient for a strong held-out claim.
+
+The person-presence check is useful for localizing the problem. On the same 1,675 person-labelled images, SmolVLM/MiniCPM identify people at 92.7\%/96.1\% but predict loitering at only .12\%/4.60\%. That is not proof of loitering failure: a visible person is compatible with normal passage and missing duration. Conversely, high SigLIP loitering or rough-sleeping candidate rates cannot establish event accuracy.
+
+\section{Oracle lying-versus-standing posture diagnostic}
+Source boxes crop 111 lying/fallen people and ten standing people, keeping source images together. The test contains 44 lying and four standing crops. These boxes are supplied free to the diagnostic; they are not automatic detections and cannot be assumed available during deployment.
+\input{generated/oracle_pose.tex}
+SigLIP correctly separates all 48 test crops. MiniCPM finds 40/44 lying crops and all four standing controls, F1 .952. SmolVLM finds 26/44 and abstains on the remaining 18, with all four standing controls correct. MobileCLIP's FPR is 100\% in this tiny control sample. These results identify a potentially useful posture component and crop sensitivity, not persistent rough-sleeping event accuracy. Four negative crops cannot provide a stable false-positive estimate.
+
+\section{What this study changed in the next plan}
+The larger cohort demonstrated that model behavior and ranking were not captured by the first small sequence test. It also showed that more endpoints alone did not stabilize thresholds or provide duration/ownership reasoning. The next step became source-qualified supervised learning on actual action/track labels, with a clean distinction between image posture, full-clip action, source-camera transfer and event detection.
+\evidence{results/expanded_accuracy_20261013/quality_summary.json}
+\evidence{results/expanded_accuracy_20261013/verification.json}

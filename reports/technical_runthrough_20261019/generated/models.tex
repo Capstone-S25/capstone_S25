@@ -1,0 +1,19 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.1515\linewidth}>{\raggedright\arraybackslash}p{0.1377\linewidth}>{\raggedright\arraybackslash}p{0.2754\linewidth}>{\raggedright\arraybackslash}p{0.2754\linewidth}@{}}
+\caption[Models]{Models and comparison scope; pinned revisions appear in the appendix.}\label{tab:models}\\
+\toprule
+\textbf{Model} & \textbf{Family} & \textbf{Checkpoint / feature source} & \textbf{Role} \\
+\midrule\endfirsthead
+\multicolumn{4}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{Model} & \textbf{Family} & \textbf{Checkpoint / feature source} & \textbf{Role} \\
+\midrule\endhead
+\midrule\multicolumn{4}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+Mobile\allowbreak{}CLIP & openclip & \path{timm/MobileCLIP2-S2-OpenCLIP} & Frozen image comparison; CLIP later adapted \\
+SigLIP & siglip & \path{google/siglip2-base-patch16-224} & Frozen image comparison; CLIP later adapted \\
+SmolVLM & vlm & \path{HuggingFaceTB/SmolVLM-500M-Instruct} & Original prompted comparison; 19 Oct language-layer LoRA with binary scoring \\
+MiniCPM & minicpm & \path{openbmb/MiniCPM-V-4} & Prompted image comparison only \\
+VadCLIP & Supervised video adapter & Frozen CLIP-B/16 features & Separate offline smoking protocol \\
+\end{longtable}\endgroup

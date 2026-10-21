@@ -1,0 +1,908 @@
+{
+  "models": [
+    {
+      "model": "mobileclip2-s2",
+      "checkpoint": "timm/MobileCLIP2-S2-OpenCLIP",
+      "model_revision": "ac6b37c8fc40b62b623d09ed228a6f0c9bc29fe6",
+      "status": "ok",
+      "resolved_revision": "ac6b37c8fc40b62b623d09ed228a6f0c9bc29fe6",
+      "input_policy": {
+        "max_side": 768,
+        "image_policy": "letterbox",
+        "native_processor": "Compose(\n    Resize(size=256, interpolation=bilinear, max_size=None, antialias=True)\n    CenterCrop(size=(256, 256))\n    MaybeConvertMode()\n    MaybeToTensor()\n    Normalize(mean=[0.0, 0.0, 0.0], std=[1.0, 1.0, 1.0])\n)",
+        "max_new_tokens": 64,
+        "dtype": "float32",
+        "device": "cpu"
+      },
+      "load_seconds": 3.311690009199083,
+      "reference_seconds": 8.204951882362366e-07,
+      "warmup_seconds": 0.08611002564430237,
+      "samples": 8,
+      "repeats": 1,
+      "attempts": 8,
+      "completed_inferences": 8,
+      "errors": 0,
+      "abstentions": 0,
+      "latency_mean_seconds": 0.05137677269522101,
+      "latency_p50_seconds": 0.050565862096846104,
+      "latency_p95_seconds": 0.055145217757672074,
+      "active_samples_per_second": 19.464048587330176,
+      "wall_samples_per_second": 19.214637715995394,
+      "measured_wall_seconds": 0.4163492498919368,
+      "measured_cpu_seconds": 6.565070876,
+      "throttle_sleep_seconds": 0.0,
+      "average_cpu_cores": 15.768182307771566,
+      "peak_rss_mb": 929.8984375,
+      "metrics": {
+        "metric_version": 2,
+        "labeled_samples": 8,
+        "valid_predictions": 8,
+        "scored_labels": [
+          "normal",
+          "smoking"
+        ],
+        "unsupported_labels": [],
+        "prediction_coverage": 1.0,
+        "abstentions": 0,
+        "errors": 0,
+        "accuracy_including_failures": 0.5,
+        "accuracy": 0.5,
+        "conditional_accuracy": 0.5,
+        "macro_f1": 0.3333333333333333,
+        "per_class": {
+          "normal": {
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666,
+            "support": 4,
+            "unanswered": 0
+          },
+          "smoking": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 4,
+            "unanswered": 0
+          }
+        },
+        "confusion_matrix": {
+          "normal": {
+            "normal": 4,
+            "smoking": 0,
+            "__unanswered__": 0
+          },
+          "smoking": {
+            "normal": 4,
+            "smoking": 0,
+            "__unanswered__": 0
+          }
+        },
+        "binary": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 4,
+          "tn": 4,
+          "unanswered_normal": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "false_positive_rate": 0.0,
+          "specificity": 1.0,
+          "roc_auc": 0.5,
+          "auc_samples": 8,
+          "score_coverage": 1.0
+        }
+      },
+      "naive_baselines": {
+        "always_normal": {
+          "metric_version": 2,
+          "labeled_samples": 8,
+          "valid_predictions": 8,
+          "scored_labels": [
+            "normal",
+            "smoking"
+          ],
+          "unsupported_labels": [],
+          "prediction_coverage": 1.0,
+          "abstentions": 0,
+          "errors": 0,
+          "accuracy_including_failures": 0.5,
+          "accuracy": 0.5,
+          "conditional_accuracy": 0.5,
+          "macro_f1": 0.3333333333333333,
+          "per_class": {
+            "normal": {
+              "precision": 0.5,
+              "recall": 1.0,
+              "f1": 0.6666666666666666,
+              "support": 4,
+              "unanswered": 0
+            },
+            "smoking": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 4,
+              "unanswered": 0
+            }
+          },
+          "confusion_matrix": {
+            "normal": {
+              "normal": 4,
+              "smoking": 0,
+              "__unanswered__": 0
+            },
+            "smoking": {
+              "normal": 4,
+              "smoking": 0,
+              "__unanswered__": 0
+            }
+          },
+          "binary": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 4,
+            "tn": 4,
+            "unanswered_normal": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "false_positive_rate": 0.0,
+            "specificity": 1.0,
+            "roc_auc": null,
+            "auc_samples": 0,
+            "score_coverage": 0.0
+          }
+        },
+        "always_anomaly": {
+          "metric_version": 2,
+          "labeled_samples": 8,
+          "valid_predictions": 8,
+          "scored_labels": [
+            "normal",
+            "smoking"
+          ],
+          "unsupported_labels": [],
+          "prediction_coverage": 1.0,
+          "abstentions": 0,
+          "errors": 0,
+          "accuracy_including_failures": 0.5,
+          "accuracy": 0.5,
+          "conditional_accuracy": 0.5,
+          "macro_f1": 0.3333333333333333,
+          "per_class": {
+            "normal": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 4,
+              "unanswered": 0
+            },
+            "smoking": {
+              "precision": 0.5,
+              "recall": 1.0,
+              "f1": 0.6666666666666666,
+              "support": 4,
+              "unanswered": 0
+            }
+          },
+          "confusion_matrix": {
+            "normal": {
+              "normal": 0,
+              "smoking": 4,
+              "__unanswered__": 0
+            },
+            "smoking": {
+              "normal": 0,
+              "smoking": 4,
+              "__unanswered__": 0
+            }
+          },
+          "binary": {
+            "tp": 4,
+            "fp": 4,
+            "fn": 0,
+            "tn": 0,
+            "unanswered_normal": 0,
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666,
+            "false_positive_rate": 1.0,
+            "specificity": 0.0,
+            "roc_auc": null,
+            "auc_samples": 0,
+            "score_coverage": 0.0
+          }
+        }
+      },
+      "package_versions": {
+        "torch": "2.14.1+cpu",
+        "transformers": "4.57.1",
+        "timm": "1.0.30",
+        "open_clip_torch": "3.3.0",
+        "Pillow": "12.3.0",
+        "psutil": "7.2.2"
+      },
+      "total_wall_seconds": 4.453155804425478,
+      "total_cpu_seconds": 18.476978919
+    },
+    {
+      "model": "siglip2-b16-224",
+      "checkpoint": "google/siglip2-base-patch16-224",
+      "model_revision": "75de2d55ec2d0b4efc50b3e9ad70dba96a7b2fa2",
+      "status": "ok",
+      "resolved_revision": "75de2d55ec2d0b4efc50b3e9ad70dba96a7b2fa2",
+      "input_policy": {
+        "max_side": 768,
+        "image_policy": "letterbox",
+        "native_processor": "SiglipProcessor:\n- image_processor: SiglipImageProcessor {\n  \"do_convert_rgb\": null,\n  \"do_normalize\": true,\n  \"do_rescale\": true,\n  \"do_resize\": true,\n  \"image_mean\": [\n    0.5,\n    0.5,\n    0.5\n  ],\n  \"image_processor_type\": \"SiglipImageProcessor\",\n  \"image_std\": [\n    0.5,\n    0.5,\n    0.5\n  ],\n  \"processor_class\": \"SiglipProcessor\",\n  \"resample\": 2,\n  \"rescale_factor\": 0.00392156862745098,\n  \"size\": {\n    \"height\": 224,\n    \"width\": 224\n  }\n}\n\n- tokenizer: GemmaTokenizer(name_or_path='google/siglip2-base-patch16-224', vocab_size=256000, model_max_length=1000000000000000019884624838656, is_fast=False, padding_side='right', truncation_side='right', special_tokens={'bos_token': '<bos>', 'eos_token': '<eos>', 'unk_token': '<unk>', 'pad_token': '<pad>', 'additional_special_tokens': ['<start_of_turn>', '<end_of_turn>']}, clean_up_tokenization_spaces=False, added_tokens_decoder={\n\t0: AddedToken(\"<pad>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t1: AddedToken(\"<eos>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t2: AddedToken(\"<bos>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t3: AddedToken(\"<unk>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t4: AddedToken(\"<mask>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t5: AddedToken(\"<2mass>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t6: AddedToken(\"[@BOS@]\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t7: AddedToken(\"<unused0>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t8: AddedToken(\"<unused1>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t9: AddedToken(\"<unused2>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t10: AddedToken(\"<unused3>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t11: AddedToken(\"<unused4>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t12: AddedToken(\"<unused5>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t13: AddedToken(\"<unused6>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t14: AddedToken(\"<unused7>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t15: AddedToken(\"<unused8>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t16: AddedToken(\"<unused9>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t17: AddedToken(\"<unused10>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t18: AddedToken(\"<unused11>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t19: AddedToken(\"<unused12>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t20: AddedToken(\"<unused13>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t21: AddedToken(\"<unused14>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t22: AddedToken(\"<unused15>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t23: AddedToken(\"<unused16>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t24: AddedToken(\"<unused17>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t25: AddedToken(\"<unused18>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t26: AddedToken(\"<unused19>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t27: AddedToken(\"<unused20>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t28: AddedToken(\"<unused21>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t29: AddedToken(\"<unused22>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t30: AddedToken(\"<unused23>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t31: AddedToken(\"<unused24>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t32: AddedToken(\"<unused25>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t33: AddedToken(\"<unused26>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t34: AddedToken(\"<unused27>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t35: AddedToken(\"<unused28>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t36: AddedToken(\"<unused29>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t37: AddedToken(\"<unused30>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t38: AddedToken(\"<unused31>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t39: AddedToken(\"<unused32>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t40: AddedToken(\"<unused33>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t41: AddedToken(\"<unused34>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t42: AddedToken(\"<unused35>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t43: AddedToken(\"<unused36>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t44: AddedToken(\"<unused37>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t45: AddedToken(\"<unused38>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t46: AddedToken(\"<unused39>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t47: AddedToken(\"<unused40>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t48: AddedToken(\"<unused41>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t49: AddedToken(\"<unused42>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t50: AddedToken(\"<unused43>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t51: AddedToken(\"<unused44>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t52: AddedToken(\"<unused45>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t53: AddedToken(\"<unused46>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t54: AddedToken(\"<unused47>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t55: AddedToken(\"<unused48>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t56: AddedToken(\"<unused49>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t57: AddedToken(\"<unused50>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t58: AddedToken(\"<unused51>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t59: AddedToken(\"<unused52>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t60: AddedToken(\"<unused53>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t61: AddedToken(\"<unused54>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t62: AddedToken(\"<unused55>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t63: AddedToken(\"<unused56>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t64: AddedToken(\"<unused57>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t65: AddedToken(\"<unused58>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t66: AddedToken(\"<unused59>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t67: AddedToken(\"<unused60>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t68: AddedToken(\"<unused61>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t69: AddedToken(\"<unused62>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t70: AddedToken(\"<unused63>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t71: AddedToken(\"<unused64>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t72: AddedToken(\"<unused65>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t73: AddedToken(\"<unused66>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t74: AddedToken(\"<unused67>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t75: AddedToken(\"<unused68>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t76: AddedToken(\"<unused69>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t77: AddedToken(\"<unused70>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t78: AddedToken(\"<unused71>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t79: AddedToken(\"<unused72>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t80: AddedToken(\"<unused73>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t81: AddedToken(\"<unused74>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t82: AddedToken(\"<unused75>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t83: AddedToken(\"<unused76>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t84: AddedToken(\"<unused77>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t85: AddedToken(\"<unused78>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t86: AddedToken(\"<unused79>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t87: AddedToken(\"<unused80>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t88: AddedToken(\"<unused81>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t89: AddedToken(\"<unused82>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t90: AddedToken(\"<unused83>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t91: AddedToken(\"<unused84>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t92: AddedToken(\"<unused85>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t93: AddedToken(\"<unused86>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t94: AddedToken(\"<unused87>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t95: AddedToken(\"<unused88>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t96: AddedToken(\"<unused89>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t97: AddedToken(\"<unused90>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t98: AddedToken(\"<unused91>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t99: AddedToken(\"<unused92>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t100: AddedToken(\"<unused93>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t101: AddedToken(\"<unused94>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t102: AddedToken(\"<unused95>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t103: AddedToken(\"<unused96>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t104: AddedToken(\"<unused97>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t105: AddedToken(\"<unused98>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t106: AddedToken(\"<start_of_turn>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t107: AddedToken(\"<end_of_turn>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t108: AddedToken(\"\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t109: AddedToken(\"\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t110: AddedToken(\"\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t111: AddedToken(\"\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t112: AddedToken(\"\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t113: AddedToken(\"\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t114: AddedToken(\"\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t115: AddedToken(\"\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t116: AddedToken(\"\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t117: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t118: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t119: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t120: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t121: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t122: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t123: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t124: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t125: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t126: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t127: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t128: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t129: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t130: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t131: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t132: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t133: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t134: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t135: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t136: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t137: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t138: AddedToken(\"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t139: AddedToken(\"\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t140: AddedToken(\"\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t141: AddedToken(\"\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t142: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t143: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t144: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t145: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t146: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t147: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t148: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t149: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t150: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t151: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t152: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t153: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t154: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t155: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t156: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t157: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t158: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t159: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t160: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t161: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t162: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t163: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t164: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t165: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t166: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t167: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t168: AddedToken(\"\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\u2581\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t169: AddedToken(\"<table>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t170: AddedToken(\"<caption>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t171: AddedToken(\"<thead>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t172: AddedToken(\"<tbody>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t173: AddedToken(\"<tfoot>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t174: AddedToken(\"<tr>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t175: AddedToken(\"<th>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t176: AddedToken(\"<td>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t177: AddedToken(\"</table>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t178: AddedToken(\"</caption>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t179: AddedToken(\"</thead>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t180: AddedToken(\"</tbody>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t181: AddedToken(\"</tfoot>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t182: AddedToken(\"</tr>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t183: AddedToken(\"</th>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t184: AddedToken(\"</td>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t185: AddedToken(\"<h1>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t186: AddedToken(\"<h2>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t187: AddedToken(\"<h3>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t188: AddedToken(\"<h4>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t189: AddedToken(\"<h5>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t190: AddedToken(\"<h6>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t191: AddedToken(\"<blockquote>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t192: AddedToken(\"</h1>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t193: AddedToken(\"</h2>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t194: AddedToken(\"</h3>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t195: AddedToken(\"</h4>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t196: AddedToken(\"</h5>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t197: AddedToken(\"</h6>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t198: AddedToken(\"</blockquote>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t199: AddedToken(\"<strong>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t200: AddedToken(\"<em>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t201: AddedToken(\"<b>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t202: AddedToken(\"<i>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t203: AddedToken(\"<u>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t204: AddedToken(\"<s>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t205: AddedToken(\"<sub>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t206: AddedToken(\"<sup>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t207: AddedToken(\"<code>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t208: AddedToken(\"</strong>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t209: AddedToken(\"</em>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t210: AddedToken(\"</b>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t211: AddedToken(\"</i>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t212: AddedToken(\"</u>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t213: AddedToken(\"</s>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t214: AddedToken(\"</sub>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t215: AddedToken(\"</sup>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t216: AddedToken(\"</code>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255968: AddedToken(\"[toxicity=0]\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255969: AddedToken(\"\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255970: AddedToken(\"\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255971: AddedToken(\"\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255972: AddedToken(\"\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255973: AddedToken(\"\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255974: AddedToken(\"\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255975: AddedToken(\"\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255976: AddedToken(\"\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255977: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255978: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255979: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255980: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255981: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255982: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255983: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255984: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255985: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255986: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255987: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255988: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255989: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255990: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255991: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255992: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255993: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255994: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255995: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255996: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255997: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255998: AddedToken(\"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n\t255999: AddedToken(\"<unused99>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=False),\n}\n)\n\n{\n  \"processor_class\": \"SiglipProcessor\"\n}\n",
+        "max_new_tokens": 64,
+        "dtype": "float32",
+        "device": "cpu"
+      },
+      "load_seconds": 4.8648553574457765,
+      "reference_seconds": 2.2230669856071472e-06,
+      "warmup_seconds": 0.05268807150423527,
+      "samples": 8,
+      "repeats": 1,
+      "attempts": 8,
+      "completed_inferences": 8,
+      "errors": 0,
+      "abstentions": 0,
+      "latency_mean_seconds": 0.053927341708913445,
+      "latency_p50_seconds": 0.051152650732547045,
+      "latency_p95_seconds": 0.06074613728560507,
+      "active_samples_per_second": 18.543469199682686,
+      "wall_samples_per_second": 18.327598377173754,
+      "measured_wall_seconds": 0.4365001805126667,
+      "measured_cpu_seconds": 6.652391912000001,
+      "throttle_sleep_seconds": 0.0,
+      "average_cpu_cores": 15.240295901336875,
+      "peak_rss_mb": 1266.83984375,
+      "metrics": {
+        "metric_version": 2,
+        "labeled_samples": 8,
+        "valid_predictions": 8,
+        "scored_labels": [
+          "normal",
+          "smoking"
+        ],
+        "unsupported_labels": [],
+        "prediction_coverage": 1.0,
+        "abstentions": 0,
+        "errors": 0,
+        "accuracy_including_failures": 0.5,
+        "accuracy": 0.5,
+        "conditional_accuracy": 0.5,
+        "macro_f1": 0.3333333333333333,
+        "per_class": {
+          "normal": {
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666,
+            "support": 4,
+            "unanswered": 0
+          },
+          "smoking": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 4,
+            "unanswered": 0
+          }
+        },
+        "confusion_matrix": {
+          "normal": {
+            "normal": 4,
+            "smoking": 0,
+            "__unanswered__": 0
+          },
+          "smoking": {
+            "normal": 4,
+            "smoking": 0,
+            "__unanswered__": 0
+          }
+        },
+        "binary": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 4,
+          "tn": 4,
+          "unanswered_normal": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "false_positive_rate": 0.0,
+          "specificity": 1.0,
+          "roc_auc": 0.5625,
+          "auc_samples": 8,
+          "score_coverage": 1.0
+        }
+      },
+      "naive_baselines": {
+        "always_normal": {
+          "metric_version": 2,
+          "labeled_samples": 8,
+          "valid_predictions": 8,
+          "scored_labels": [
+            "normal",
+            "smoking"
+          ],
+          "unsupported_labels": [],
+          "prediction_coverage": 1.0,
+          "abstentions": 0,
+          "errors": 0,
+          "accuracy_including_failures": 0.5,
+          "accuracy": 0.5,
+          "conditional_accuracy": 0.5,
+          "macro_f1": 0.3333333333333333,
+          "per_class": {
+            "normal": {
+              "precision": 0.5,
+              "recall": 1.0,
+              "f1": 0.6666666666666666,
+              "support": 4,
+              "unanswered": 0
+            },
+            "smoking": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 4,
+              "unanswered": 0
+            }
+          },
+          "confusion_matrix": {
+            "normal": {
+              "normal": 4,
+              "smoking": 0,
+              "__unanswered__": 0
+            },
+            "smoking": {
+              "normal": 4,
+              "smoking": 0,
+              "__unanswered__": 0
+            }
+          },
+          "binary": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 4,
+            "tn": 4,
+            "unanswered_normal": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "false_positive_rate": 0.0,
+            "specificity": 1.0,
+            "roc_auc": null,
+            "auc_samples": 0,
+            "score_coverage": 0.0
+          }
+        },
+        "always_anomaly": {
+          "metric_version": 2,
+          "labeled_samples": 8,
+          "valid_predictions": 8,
+          "scored_labels": [
+            "normal",
+            "smoking"
+          ],
+          "unsupported_labels": [],
+          "prediction_coverage": 1.0,
+          "abstentions": 0,
+          "errors": 0,
+          "accuracy_including_failures": 0.5,
+          "accuracy": 0.5,
+          "conditional_accuracy": 0.5,
+          "macro_f1": 0.3333333333333333,
+          "per_class": {
+            "normal": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 4,
+              "unanswered": 0
+            },
+            "smoking": {
+              "precision": 0.5,
+              "recall": 1.0,
+              "f1": 0.6666666666666666,
+              "support": 4,
+              "unanswered": 0
+            }
+          },
+          "confusion_matrix": {
+            "normal": {
+              "normal": 0,
+              "smoking": 4,
+              "__unanswered__": 0
+            },
+            "smoking": {
+              "normal": 0,
+              "smoking": 4,
+              "__unanswered__": 0
+            }
+          },
+          "binary": {
+            "tp": 4,
+            "fp": 4,
+            "fn": 0,
+            "tn": 0,
+            "unanswered_normal": 0,
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666,
+            "false_positive_rate": 1.0,
+            "specificity": 0.0,
+            "roc_auc": null,
+            "auc_samples": 0,
+            "score_coverage": 0.0
+          }
+        }
+      },
+      "package_versions": {
+        "torch": "2.14.1+cpu",
+        "transformers": "4.57.1",
+        "timm": "1.0.30",
+        "open_clip_torch": "3.3.0",
+        "Pillow": "12.3.0",
+        "psutil": "7.2.2"
+      },
+      "total_wall_seconds": 6.007690488360822,
+      "total_cpu_seconds": 13.111574326
+    },
+    {
+      "model": "smolvlm-500m",
+      "checkpoint": "HuggingFaceTB/SmolVLM-500M-Instruct",
+      "model_revision": "a7da5b986cb59b408707209984f360a5f4ad7e47",
+      "status": "ok",
+      "resolved_revision": "a7da5b986cb59b408707209984f360a5f4ad7e47",
+      "input_policy": {
+        "max_side": 768,
+        "image_policy": "letterbox",
+        "native_processor": "Idefics3Processor:\n- image_processor: Idefics3ImageProcessor {\n  \"do_convert_rgb\": true,\n  \"do_image_splitting\": true,\n  \"do_normalize\": true,\n  \"do_pad\": true,\n  \"do_rescale\": true,\n  \"do_resize\": true,\n  \"image_mean\": [\n    0.5,\n    0.5,\n    0.5\n  ],\n  \"image_processor_type\": \"Idefics3ImageProcessor\",\n  \"image_std\": [\n    0.5,\n    0.5,\n    0.5\n  ],\n  \"max_image_size\": {\n    \"longest_edge\": 512\n  },\n  \"processor_class\": \"Idefics3Processor\",\n  \"resample\": 1,\n  \"rescale_factor\": 0.00392156862745098,\n  \"size\": {\n    \"longest_edge\": 768\n  }\n}\n\n- tokenizer: GPT2TokenizerFast(name_or_path='HuggingFaceTB/SmolVLM-500M-Instruct', vocab_size=49152, model_max_length=8192, is_fast=True, padding_side='right', truncation_side='left', special_tokens={'bos_token': '<|im_start|>', 'eos_token': '<end_of_utterance>', 'unk_token': '<|endoftext|>', 'pad_token': '<|im_end|>', 'additional_special_tokens': ['<fake_token_around_image>', '<image>', '<end_of_utterance>']}, clean_up_tokenization_spaces=False, added_tokens_decoder={\n\t0: AddedToken(\"<|endoftext|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t1: AddedToken(\"<|im_start|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t2: AddedToken(\"<|im_end|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t3: AddedToken(\"<repo_name>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t4: AddedToken(\"<reponame>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t5: AddedToken(\"<file_sep>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t6: AddedToken(\"<filename>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t7: AddedToken(\"<gh_stars>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t8: AddedToken(\"<issue_start>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t9: AddedToken(\"<issue_comment>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t10: AddedToken(\"<issue_closed>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t11: AddedToken(\"<jupyter_start>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t12: AddedToken(\"<jupyter_text>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t13: AddedToken(\"<jupyter_code>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t14: AddedToken(\"<jupyter_output>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t15: AddedToken(\"<jupyter_script>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t16: AddedToken(\"<empty_output>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49152: AddedToken(\"<global-img>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49153: AddedToken(\"<row_1_col_1>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49154: AddedToken(\"<row_1_col_2>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49155: AddedToken(\"<row_1_col_3>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49156: AddedToken(\"<row_1_col_4>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49157: AddedToken(\"<row_1_col_5>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49158: AddedToken(\"<row_1_col_6>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49159: AddedToken(\"<row_2_col_1>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49160: AddedToken(\"<row_2_col_2>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49161: AddedToken(\"<row_2_col_3>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49162: AddedToken(\"<row_2_col_4>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49163: AddedToken(\"<row_2_col_5>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49164: AddedToken(\"<row_2_col_6>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49165: AddedToken(\"<row_3_col_1>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49166: AddedToken(\"<row_3_col_2>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49167: AddedToken(\"<row_3_col_3>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49168: AddedToken(\"<row_3_col_4>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49169: AddedToken(\"<row_3_col_5>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49170: AddedToken(\"<row_3_col_6>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49171: AddedToken(\"<row_4_col_1>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49172: AddedToken(\"<row_4_col_2>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49173: AddedToken(\"<row_4_col_3>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49174: AddedToken(\"<row_4_col_4>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49175: AddedToken(\"<row_4_col_5>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49176: AddedToken(\"<row_4_col_6>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49177: AddedToken(\"<row_5_col_1>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49178: AddedToken(\"<row_5_col_2>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49179: AddedToken(\"<row_5_col_3>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49180: AddedToken(\"<row_5_col_4>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49181: AddedToken(\"<row_5_col_5>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49182: AddedToken(\"<row_5_col_6>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49183: AddedToken(\"<row_6_col_1>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49184: AddedToken(\"<row_6_col_2>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49185: AddedToken(\"<row_6_col_3>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49186: AddedToken(\"<row_6_col_4>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49187: AddedToken(\"<row_6_col_5>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49188: AddedToken(\"<row_6_col_6>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49189: AddedToken(\"<fake_token_around_image>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49190: AddedToken(\"<image>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49191: AddedToken(\"<|reserved_special_token_0|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49192: AddedToken(\"<|reserved_special_token_1|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49193: AddedToken(\"<|reserved_special_token_2|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49194: AddedToken(\"<|reserved_special_token_3|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49195: AddedToken(\"<|reserved_special_token_4|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49196: AddedToken(\"<|reserved_special_token_5|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49197: AddedToken(\"<|reserved_special_token_6|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49198: AddedToken(\"<|reserved_special_token_7|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49199: AddedToken(\"<|reserved_special_token_8|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49200: AddedToken(\"<|reserved_special_token_9|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49201: AddedToken(\"<|reserved_special_token_10|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49202: AddedToken(\"<|reserved_special_token_11|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49203: AddedToken(\"<|reserved_special_token_12|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49204: AddedToken(\"<|reserved_special_token_13|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49205: AddedToken(\"<|reserved_special_token_14|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49206: AddedToken(\"<|reserved_special_token_15|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49207: AddedToken(\"<|reserved_special_token_16|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49208: AddedToken(\"<|reserved_special_token_17|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49209: AddedToken(\"<|reserved_special_token_18|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49210: AddedToken(\"<|reserved_special_token_19|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49211: AddedToken(\"<|reserved_special_token_20|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49212: AddedToken(\"<|reserved_special_token_21|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49213: AddedToken(\"<|reserved_special_token_22|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49214: AddedToken(\"<|reserved_special_token_23|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49215: AddedToken(\"<|reserved_special_token_24|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49216: AddedToken(\"<|reserved_special_token_25|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49217: AddedToken(\"<|reserved_special_token_26|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49218: AddedToken(\"<|reserved_special_token_27|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49219: AddedToken(\"<|reserved_special_token_28|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49220: AddedToken(\"<|reserved_special_token_29|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49221: AddedToken(\"<|reserved_special_token_30|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49222: AddedToken(\"<|reserved_special_token_31|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49223: AddedToken(\"<|reserved_special_token_32|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49224: AddedToken(\"<|reserved_special_token_33|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49225: AddedToken(\"<|reserved_special_token_34|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49226: AddedToken(\"<|reserved_special_token_35|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49227: AddedToken(\"<|reserved_special_token_36|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49228: AddedToken(\"<|reserved_special_token_37|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49229: AddedToken(\"<|reserved_special_token_38|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49230: AddedToken(\"<|reserved_special_token_39|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49231: AddedToken(\"<|reserved_special_token_40|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49232: AddedToken(\"<|reserved_special_token_41|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49233: AddedToken(\"<|reserved_special_token_42|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49234: AddedToken(\"<|reserved_special_token_43|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49235: AddedToken(\"<|reserved_special_token_44|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49236: AddedToken(\"<|reserved_special_token_45|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49237: AddedToken(\"<|reserved_special_token_46|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49238: AddedToken(\"<|reserved_special_token_47|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49239: AddedToken(\"<|reserved_special_token_48|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49240: AddedToken(\"<|reserved_special_token_49|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49241: AddedToken(\"<|reserved_special_token_50|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49242: AddedToken(\"<|reserved_special_token_51|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49243: AddedToken(\"<|reserved_special_token_52|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49244: AddedToken(\"<|reserved_special_token_53|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49245: AddedToken(\"<|reserved_special_token_54|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49246: AddedToken(\"<|reserved_special_token_55|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49247: AddedToken(\"<|reserved_special_token_56|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49248: AddedToken(\"<|reserved_special_token_57|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49249: AddedToken(\"<|reserved_special_token_58|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49250: AddedToken(\"<|reserved_special_token_59|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49251: AddedToken(\"<|reserved_special_token_60|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49252: AddedToken(\"<|reserved_special_token_61|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49253: AddedToken(\"<|reserved_special_token_62|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49254: AddedToken(\"<|reserved_special_token_63|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49255: AddedToken(\"<|reserved_special_token_64|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49256: AddedToken(\"<|reserved_special_token_65|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49257: AddedToken(\"<|reserved_special_token_66|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49258: AddedToken(\"<|reserved_special_token_67|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49259: AddedToken(\"<|reserved_special_token_68|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49260: AddedToken(\"<|reserved_special_token_69|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49261: AddedToken(\"<|reserved_special_token_70|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49262: AddedToken(\"<|reserved_special_token_71|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49263: AddedToken(\"<|reserved_special_token_72|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49264: AddedToken(\"<|reserved_special_token_73|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49265: AddedToken(\"<|reserved_special_token_74|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49266: AddedToken(\"<|reserved_special_token_75|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49267: AddedToken(\"<|reserved_special_token_76|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49268: AddedToken(\"<|reserved_special_token_77|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49269: AddedToken(\"<|reserved_special_token_78|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49270: AddedToken(\"<|reserved_special_token_79|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49271: AddedToken(\"<|reserved_special_token_80|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49272: AddedToken(\"<|reserved_special_token_81|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49273: AddedToken(\"<|reserved_special_token_82|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49274: AddedToken(\"<|reserved_special_token_83|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49275: AddedToken(\"<|reserved_special_token_84|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49276: AddedToken(\"<|reserved_special_token_85|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49277: AddedToken(\"<|reserved_special_token_86|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49278: AddedToken(\"<|reserved_special_token_87|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t49279: AddedToken(\"<end_of_utterance>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n}\n)\n\n{\n  \"image_seq_len\": 64,\n  \"processor_class\": \"Idefics3Processor\"\n}\n",
+        "max_new_tokens": 64,
+        "dtype": "float32",
+        "device": "cpu"
+      },
+      "load_seconds": 4.5465802028775215,
+      "reference_seconds": 1.923181116580963e-06,
+      "warmup_seconds": 3.4210753785446286,
+      "samples": 8,
+      "repeats": 1,
+      "attempts": 8,
+      "completed_inferences": 8,
+      "errors": 0,
+      "abstentions": 8,
+      "latency_mean_seconds": 3.3717964723473415,
+      "latency_p50_seconds": 3.3761032791808248,
+      "latency_p95_seconds": 3.417785135284066,
+      "active_samples_per_second": 0.29657780598596767,
+      "wall_samples_per_second": 0.2965212672180999,
+      "measured_wall_seconds": 26.97951507847756,
+      "measured_cpu_seconds": 293.031405878,
+      "throttle_sleep_seconds": 0.0,
+      "average_cpu_cores": 10.86125547570574,
+      "peak_rss_mb": 3164.28125,
+      "metrics": {
+        "metric_version": 2,
+        "labeled_samples": 8,
+        "valid_predictions": 0,
+        "scored_labels": [
+          "normal",
+          "smoking"
+        ],
+        "unsupported_labels": [],
+        "prediction_coverage": 0.0,
+        "abstentions": 8,
+        "errors": 0,
+        "accuracy_including_failures": 0.0,
+        "accuracy": null,
+        "conditional_accuracy": null,
+        "macro_f1": 0.0,
+        "per_class": {
+          "normal": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 4,
+            "unanswered": 4
+          },
+          "smoking": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 4,
+            "unanswered": 4
+          }
+        },
+        "confusion_matrix": {
+          "normal": {
+            "normal": 0,
+            "smoking": 0,
+            "__unanswered__": 4
+          },
+          "smoking": {
+            "normal": 0,
+            "smoking": 0,
+            "__unanswered__": 4
+          }
+        },
+        "binary": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 4,
+          "tn": 0,
+          "unanswered_normal": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "false_positive_rate": 0.0,
+          "specificity": 0.0,
+          "roc_auc": null,
+          "auc_samples": 0,
+          "score_coverage": 0.0
+        }
+      },
+      "naive_baselines": {
+        "always_normal": {
+          "metric_version": 2,
+          "labeled_samples": 8,
+          "valid_predictions": 8,
+          "scored_labels": [
+            "normal",
+            "smoking"
+          ],
+          "unsupported_labels": [],
+          "prediction_coverage": 1.0,
+          "abstentions": 0,
+          "errors": 0,
+          "accuracy_including_failures": 0.5,
+          "accuracy": 0.5,
+          "conditional_accuracy": 0.5,
+          "macro_f1": 0.3333333333333333,
+          "per_class": {
+            "normal": {
+              "precision": 0.5,
+              "recall": 1.0,
+              "f1": 0.6666666666666666,
+              "support": 4,
+              "unanswered": 0
+            },
+            "smoking": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 4,
+              "unanswered": 0
+            }
+          },
+          "confusion_matrix": {
+            "normal": {
+              "normal": 4,
+              "smoking": 0,
+              "__unanswered__": 0
+            },
+            "smoking": {
+              "normal": 4,
+              "smoking": 0,
+              "__unanswered__": 0
+            }
+          },
+          "binary": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 4,
+            "tn": 4,
+            "unanswered_normal": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "false_positive_rate": 0.0,
+            "specificity": 1.0,
+            "roc_auc": null,
+            "auc_samples": 0,
+            "score_coverage": 0.0
+          }
+        },
+        "always_anomaly": {
+          "metric_version": 2,
+          "labeled_samples": 8,
+          "valid_predictions": 8,
+          "scored_labels": [
+            "normal",
+            "smoking"
+          ],
+          "unsupported_labels": [],
+          "prediction_coverage": 1.0,
+          "abstentions": 0,
+          "errors": 0,
+          "accuracy_including_failures": 0.5,
+          "accuracy": 0.5,
+          "conditional_accuracy": 0.5,
+          "macro_f1": 0.3333333333333333,
+          "per_class": {
+            "normal": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 4,
+              "unanswered": 0
+            },
+            "smoking": {
+              "precision": 0.5,
+              "recall": 1.0,
+              "f1": 0.6666666666666666,
+              "support": 4,
+              "unanswered": 0
+            }
+          },
+          "confusion_matrix": {
+            "normal": {
+              "normal": 0,
+              "smoking": 4,
+              "__unanswered__": 0
+            },
+            "smoking": {
+              "normal": 0,
+              "smoking": 4,
+              "__unanswered__": 0
+            }
+          },
+          "binary": {
+            "tp": 4,
+            "fp": 4,
+            "fn": 0,
+            "tn": 0,
+            "unanswered_normal": 0,
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666,
+            "false_positive_rate": 1.0,
+            "specificity": 0.0,
+            "roc_auc": null,
+            "auc_samples": 0,
+            "score_coverage": 0.0
+          }
+        }
+      },
+      "package_versions": {
+        "torch": "2.14.1+cpu",
+        "transformers": "4.57.1",
+        "timm": "1.0.30",
+        "open_clip_torch": "3.3.0",
+        "Pillow": "12.3.0",
+        "psutil": "7.2.2"
+      },
+      "total_wall_seconds": 35.589053246192634,
+      "total_cpu_seconds": 337.305985648
+    },
+    {
+      "model": "minicpm-v4",
+      "checkpoint": "openbmb/MiniCPM-V-4",
+      "model_revision": "6f69a8235885be89608f3a71ffd40695b379e1e7",
+      "status": "ok",
+      "resolved_revision": "6f69a8235885be89608f3a71ffd40695b379e1e7",
+      "input_policy": {
+        "max_side": 768,
+        "image_policy": "letterbox",
+        "native_processor": "MiniCPMVProcessor:\n- image_processor: MiniCPMVImageProcessor {\n  \"auto_map\": {\n    \"AutoImageProcessor\": \"image_processing_minicpmv.MiniCPMVImageProcessor\",\n    \"AutoProcessor\": \"processing_minicpmv.MiniCPMVProcessor\"\n  },\n  \"im_end\": \"</image>\",\n  \"im_end_token\": \"</image>\",\n  \"im_id_end\": \"</image_id>\",\n  \"im_id_start\": \"<image_id>\",\n  \"im_start\": \"<image>\",\n  \"im_start_token\": \"<image>\",\n  \"image_feature_size\": 64,\n  \"image_processor_type\": \"MiniCPMVImageProcessor\",\n  \"max_slice_nums\": 9,\n  \"mean\": [\n    0.5,\n    0.5,\n    0.5\n  ],\n  \"norm_mean\": [\n    0.5,\n    0.5,\n    0.5\n  ],\n  \"norm_std\": [\n    0.5,\n    0.5,\n    0.5\n  ],\n  \"patch_size\": 14,\n  \"processor_class\": \"MiniCPMVProcessor\",\n  \"scale_resolution\": 448,\n  \"slice_end\": \"</slice>\",\n  \"slice_end_token\": \"</slice>\",\n  \"slice_mode\": true,\n  \"slice_start\": \"<slice>\",\n  \"slice_start_token\": \"<slice>\",\n  \"std\": [\n    0.5,\n    0.5,\n    0.5\n  ],\n  \"unk\": \"<unk>\",\n  \"unk_token\": \"<unk>\",\n  \"use_image_id\": true,\n  \"version\": 3.0\n}\n\n- tokenizer: MiniCPMVTokenizerFast(name_or_path='openbmb/MiniCPM-V-4', vocab_size=73440, model_max_length=1000000000000000019884624838656, is_fast=True, padding_side='left', truncation_side='right', special_tokens={'bos_token': '<s>', 'eos_token': '<|im_end|>', 'unk_token': '<unk>', 'additional_special_tokens': ['<|im_end|>', '<|im_start|>', '<|tool_call|>', '<|execute_start|>', '<|execute_end|>', '<|fim_prefix|>', '<|fim_middle|>', '<|fim_suffix|>']}, clean_up_tokenization_spaces=False, added_tokens_decoder={\n\t0: AddedToken(\"<unk>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t1: AddedToken(\"<s>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t2: AddedToken(\"</s>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t101: AddedToken(\"<image>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t102: AddedToken(\"</image>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t103: AddedToken(\"<ref>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t104: AddedToken(\"</ref>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t105: AddedToken(\"<box>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t106: AddedToken(\"</box>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t107: AddedToken(\"<quad>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t108: AddedToken(\"</quad>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t109: AddedToken(\"<point>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t110: AddedToken(\"</point>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t111: AddedToken(\"<slice>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t112: AddedToken(\"</slice>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t113: AddedToken(\"<image_id>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t114: AddedToken(\"</image_id>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t115: AddedToken(\"<unit>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t116: AddedToken(\"</unit>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t117: AddedToken(\"<think>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t118: AddedToken(\"</think>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t119: AddedToken(\"<answer>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t120: AddedToken(\"</answer>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t121: AddedToken(\"<focus>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t122: AddedToken(\"</focus>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t123: AddedToken(\"<line>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t124: AddedToken(\"</line>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t125: AddedToken(\"<perception>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t126: AddedToken(\"</perception>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t127: AddedToken(\"<source_image>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t128: AddedToken(\"</source_image>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t129: AddedToken(\"<image_save_to>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t130: AddedToken(\"</image_save_to>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t131: AddedToken(\"<|audio_start|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t132: AddedToken(\"<|audio|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t133: AddedToken(\"<|audio_end|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t134: AddedToken(\"<|spk_bos|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t135: AddedToken(\"<|spk|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t136: AddedToken(\"<|spk_eos|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t137: AddedToken(\"<|tts_bos|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t138: AddedToken(\"<|tts_eos|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t139: AddedToken(\"<|listen|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t140: AddedToken(\"<|speak|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t141: AddedToken(\"<|interrupt|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t142: AddedToken(\"<|vad_start|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t143: AddedToken(\"<|vad_end|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t144: AddedToken(\"<|emotion_start|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t145: AddedToken(\"<|emotion_end|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t146: AddedToken(\"<|speed_start|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t147: AddedToken(\"<|speed_end|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t148: AddedToken(\"<|pitch_start|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t149: AddedToken(\"<|pitch_end|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t150: AddedToken(\"<|timbre_0|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t151: AddedToken(\"<|timbre_1|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t152: AddedToken(\"<|timbre_2|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t153: AddedToken(\"<|timbre_3|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t154: AddedToken(\"<|timbre_4|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t155: AddedToken(\"<|timbre_5|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t156: AddedToken(\"<|timbre_6|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t157: AddedToken(\"<|timbre_7|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t158: AddedToken(\"<|timbre_8|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t159: AddedToken(\"<|timbre_9|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t160: AddedToken(\"<|timbre_10|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t161: AddedToken(\"<|timbre_11|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t162: AddedToken(\"<|timbre_12|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t163: AddedToken(\"<|timbre_13|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t164: AddedToken(\"<|timbre_14|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t165: AddedToken(\"<|timbre_15|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t166: AddedToken(\"<|timbre_16|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t167: AddedToken(\"<|timbre_17|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t168: AddedToken(\"<|timbre_18|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t169: AddedToken(\"<|timbre_19|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t170: AddedToken(\"<|timbre_20|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t171: AddedToken(\"<|timbre_21|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t172: AddedToken(\"<|timbre_22|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t173: AddedToken(\"<|timbre_23|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t174: AddedToken(\"<|timbre_24|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t175: AddedToken(\"<|timbre_25|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t176: AddedToken(\"<|timbre_26|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t177: AddedToken(\"<|timbre_27|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t178: AddedToken(\"<|timbre_28|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t179: AddedToken(\"<|timbre_29|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t180: AddedToken(\"<|timbre_30|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t181: AddedToken(\"<|timbre_31|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t73440: AddedToken(\"<|im_end|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t73441: AddedToken(\"<|im_start|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t73442: AddedToken(\"<|tool_call|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t73443: AddedToken(\"<|execute_start|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t73444: AddedToken(\"<|execute_end|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t73445: AddedToken(\"<|fim_prefix|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t73446: AddedToken(\"<|fim_middle|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n\t73447: AddedToken(\"<|fim_suffix|>\", rstrip=False, lstrip=False, single_word=False, normalized=False, special=True),\n}\n)\n\n{\n  \"processor_class\": \"MiniCPMVProcessor\"\n}\n",
+        "max_new_tokens": 64,
+        "dtype": "float32",
+        "device": "cpu"
+      },
+      "load_seconds": 6.0632033087313175,
+      "reference_seconds": 1.821666955947876e-06,
+      "warmup_seconds": 5.7036531288176775,
+      "samples": 8,
+      "repeats": 1,
+      "attempts": 8,
+      "completed_inferences": 8,
+      "errors": 0,
+      "abstentions": 0,
+      "latency_mean_seconds": 5.840097327716649,
+      "latency_p50_seconds": 5.83583970181644,
+      "latency_p95_seconds": 5.940556935733184,
+      "active_samples_per_second": 0.17123002304329374,
+      "wall_samples_per_second": 0.17121126775067194,
+      "measured_wall_seconds": 46.72589663695544,
+      "measured_cpu_seconds": 443.933234783,
+      "throttle_sleep_seconds": 0.0,
+      "average_cpu_cores": 9.500796490481767,
+      "peak_rss_mb": 18088.75390625,
+      "metrics": {
+        "metric_version": 2,
+        "labeled_samples": 8,
+        "valid_predictions": 8,
+        "scored_labels": [
+          "normal",
+          "smoking"
+        ],
+        "unsupported_labels": [],
+        "prediction_coverage": 1.0,
+        "abstentions": 0,
+        "errors": 0,
+        "accuracy_including_failures": 0.5,
+        "accuracy": 0.5,
+        "conditional_accuracy": 0.5,
+        "macro_f1": 0.3333333333333333,
+        "per_class": {
+          "normal": {
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666,
+            "support": 4,
+            "unanswered": 0
+          },
+          "smoking": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 4,
+            "unanswered": 0
+          }
+        },
+        "confusion_matrix": {
+          "normal": {
+            "normal": 4,
+            "smoking": 0,
+            "__unanswered__": 0
+          },
+          "smoking": {
+            "normal": 4,
+            "smoking": 0,
+            "__unanswered__": 0
+          }
+        },
+        "binary": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 4,
+          "tn": 4,
+          "unanswered_normal": 0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "false_positive_rate": 0.0,
+          "specificity": 1.0,
+          "roc_auc": null,
+          "auc_samples": 0,
+          "score_coverage": 0.0
+        }
+      },
+      "naive_baselines": {
+        "always_normal": {
+          "metric_version": 2,
+          "labeled_samples": 8,
+          "valid_predictions": 8,
+          "scored_labels": [
+            "normal",
+            "smoking"
+          ],
+          "unsupported_labels": [],
+          "prediction_coverage": 1.0,
+          "abstentions": 0,
+          "errors": 0,
+          "accuracy_including_failures": 0.5,
+          "accuracy": 0.5,
+          "conditional_accuracy": 0.5,
+          "macro_f1": 0.3333333333333333,
+          "per_class": {
+            "normal": {
+              "precision": 0.5,
+              "recall": 1.0,
+              "f1": 0.6666666666666666,
+              "support": 4,
+              "unanswered": 0
+            },
+            "smoking": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 4,
+              "unanswered": 0
+            }
+          },
+          "confusion_matrix": {
+            "normal": {
+              "normal": 4,
+              "smoking": 0,
+              "__unanswered__": 0
+            },
+            "smoking": {
+              "normal": 4,
+              "smoking": 0,
+              "__unanswered__": 0
+            }
+          },
+          "binary": {
+            "tp": 0,
+            "fp": 0,
+            "fn": 4,
+            "tn": 4,
+            "unanswered_normal": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "false_positive_rate": 0.0,
+            "specificity": 1.0,
+            "roc_auc": null,
+            "auc_samples": 0,
+            "score_coverage": 0.0
+          }
+        },
+        "always_anomaly": {
+          "metric_version": 2,
+          "labeled_samples": 8,
+          "valid_predictions": 8,
+          "scored_labels": [
+            "normal",
+            "smoking"
+          ],
+          "unsupported_labels": [],
+          "prediction_coverage": 1.0,
+          "abstentions": 0,
+          "errors": 0,
+          "accuracy_including_failures": 0.5,
+          "accuracy": 0.5,
+          "conditional_accuracy": 0.5,
+          "macro_f1": 0.3333333333333333,
+          "per_class": {
+            "normal": {
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0,
+              "support": 4,
+              "unanswered": 0
+            },
+            "smoking": {
+              "precision": 0.5,
+              "recall": 1.0,
+              "f1": 0.6666666666666666,
+              "support": 4,
+              "unanswered": 0
+            }
+          },
+          "confusion_matrix": {
+            "normal": {
+              "normal": 0,
+              "smoking": 4,
+              "__unanswered__": 0
+            },
+            "smoking": {
+              "normal": 0,
+              "smoking": 4,
+              "__unanswered__": 0
+            }
+          },
+          "binary": {
+            "tp": 4,
+            "fp": 4,
+            "fn": 0,
+            "tn": 0,
+            "unanswered_normal": 0,
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666,
+            "false_positive_rate": 1.0,
+            "specificity": 0.0,
+            "roc_auc": null,
+            "auc_samples": 0,
+            "score_coverage": 0.0
+          }
+        }
+      },
+      "package_versions": {
+        "torch": "2.14.1+cpu",
+        "transformers": "4.57.1",
+        "timm": "1.0.30",
+        "open_clip_torch": "3.3.0",
+        "Pillow": "12.3.0",
+        "psutil": "7.2.2"
+      },
+      "total_wall_seconds": 59.12708522193134,
+      "total_cpu_seconds": 514.200354776
+    }
+  ]
+}

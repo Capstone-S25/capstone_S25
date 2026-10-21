@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "slides": 46,
+  "metric_rows_compared_with_original_results": 619,
+  "dataset_rows_recounted": 49,
+  "pptx_text_and_notes_checked": 46,
+  "summary_slides_checked": 1,
+  "pdf_words_within_bounds": 5523,
+  "fonts_embedded": true,
+  "source_files_checked": 69,
+  "new_model_inference": false,
+  "artifacts_sha256": {
+    "reports/slides/model_training_evaluation_20261020.pdf": "0c0ef4ebb995ee8af1e70b6e0c5382b2703e95622cead7048bc0912d1f9cad51",
+    "reports/slides/training_stages_summary_20261020.pdf": "10afcce067bf4a8d4093b5b12687c88394b7e6728f6e7ad649578da6cf1cde7b",
+    "reports/slides/training_stages_summary_20261020.pptx": "b22bc15a461c4d39cc009cb8c725cb3c35530d9b57e3fd2e8944b71132504748",
+    "reports/slides/model_training_evaluation_20261020.pptx": "d0d7f34e68a82e92b8e73e16cc5e60ecf763730ad6473fe410473e2d7769579e",
+    "reports/slides/training_evaluation_20261020/metrics.csv": "2359e3f3bfa6a38b895f7e3084204673f84cc58c9471fd71719ed1d39e7cb19a",
+    "reports/slides/training_evaluation_20261020/dataset_counts.csv": "f2026ed8bdb93ce21b66201a1c1b21be346a8f8dfac3ce720bdfd57d19ceef9d",
+    "scripts/validate_training_evaluation_slides_20261020.py": "9ea92119243683254efd15826d51f17ea74284fd4af9d55d64792b8851b3b6ac"
+  }
+}

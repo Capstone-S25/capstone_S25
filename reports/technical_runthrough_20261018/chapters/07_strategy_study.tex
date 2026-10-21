@@ -1,0 +1,51 @@
+\chapter{Expanded sources and the 330-configuration strategy study}
+\label{ch:strategy}
+\section{Motivation and controlled strategy families}
+The first supervised study established that useful learning was possible, but global-scene features and development thresholds did not transfer consistently. The next round therefore expanded source data and compared representations, frozen classifiers and controlled blends of the earlier fine-tuned visual weights. It did not launch 330 new CNN/transformer fine-tunes.
+
+For each target and each backbone there are 33 configurations: one endpoint zero-shot reference, ten representation recipes each with linear $C\in\{.1,1,10\}$, and two MLP representations. Across five targets and two models this gives 330 configurations, including 320 newly fitted classifiers and ten zero-shot references. Primary seed 42 makes it an exploratory screen rather than a repeat of the three-seed visual study.
+
+Full-scene pooled features use endpoint, mean, max and endpoint-minus-first embeddings. Ordered features concatenate four evenly indexed view embeddings plus mean and max. Automatic contextual region features are added to full-scene context. The fixed COCO Faster R-CNN ResNet50 FPN v2 detector uses confidence .5 and contextual padding; its selected person/item crop falls back to the scene when detections are absent. Ground-truth boxes never choose inference crops.
+
+The sparse geometry representation records person/item counts and presence, minimum person-item distance, and nearest-view person-overlap persistence. It is not an identity tracker and does not know ownership. It supplies a controlled geometry hypothesis that may help timed tasks, not a full MOT implementation.
+
+\section{Visual weight interpolation and classifier fitting}
+For the visual parameters updated in the earlier study, interpolation forms
+\begin{equation}
+\theta_\alpha=(1-\alpha)\theta_{\mathrm{pretrained}}+\alpha\theta_{\mathrm{adapted}},
+\qquad \alpha\in\{0,.25,.5,1\}.
+\end{equation}
+Each resulting full-scene representation receives a newly fitted classifier using the current training split. The older adapted weights used only their recorded training data. An interpolation coefficient is a development candidate, not an assumed robustness improvement.
+
+The MLP uses one 64-unit ReLU hidden layer, dropout .3 and a binary output, AdamW learning rate .001/weight decay .01, batch 128, up to 80 epochs and patience eight. Task/source/class weights are retained. Full-scene pooled and full-plus-crop pooled representations supply the two MLP recipes. Linear classifiers use L-BFGS with maximum 400 iterations; serialized coefficients are float32. All final visual extraction uses float32 with TF32 disabled.
+
+\section{Selection timing and source protection}
+Primary per-target routes maximize mean development-source AP. They freeze before the 224-photo holdout is scored. A secondary worst-development-source analysis is specified after those photo results are available but before HMDB/MEVA transfer predictions. Its photo result is therefore exploratory and does not replace the primary route. Transfer-family hyperparameters are fixed from saved development results.
+
+Related new training images are screened against old holdouts. Inaccessible files, rejected related examples and source labels are recorded. No unlabeled objective is turned into normal and no unrelated anomaly type is used merely to fill a target class. The full candidate-development table is reproduced in the appendix, so the report shows how a route was selected rather than only its final test AP.
+\input{generated/strategy_routes.tex}
+
+\section{Historical source results}
+\input{generated/strategy_historical.tex}
+Automatic region/context features are selected for smoking, sparse geometry for loitering and ordered views on the adapted encoder for unattended items. Historical AP improves strongly in some targets: loitering rises from .093/.097 to .489/.550 and unattended to .980/.925. MobileCLIP dumping falls from .858 to .806, and both public-sleep photo routes regress. These are already inspected holdouts and remain retrospective diagnostics.
+
+High AP again does not yield a stable global threshold. Historical unattended max-dev-F1 cutoffs produce 99.7\% and 100\% FPR. Their raw-zero F1 is .087 and .131, worse than the prior SigLIP raw-zero .749. The source ranking has improved while score scale and source offsets make the frozen operating point unsuitable. Historical CCTV smoking max-dev-F1 FPR remains 75.9\%/84.6\%.
+
+\section{New photo holdout and source-transfer results}
+\input{generated/strategy_transfer.tex}
+The new 224-photo holdout is nearly perfectly ranked by both encoders, but shares a collection with the added training photos. Both primary strategies regress slightly on the entirely new HMDB movie/web source before any HMDB training: MobileCLIP .605 to .576 and SigLIP .685 to .664. MEVA action-proxy AP also falls, .569 to .545 and .637 to .621. Public-sleep new-author point estimates are mixed: MobileCLIP .925 to .952, SigLIP .943 to .933.
+
+\fig{strategy_transfer.pdf}{0.96}{Strategy-study transfer AP, comparing the previous bundle with the development-selected strategy. Photos share a training collection; HMDB is movie/web action evidence; MEVA is an abandonment-action proxy; public-sleep labels are provisional.}
+This is evidence against a broad claim that crops or adapted weights alone solved source generalization. The strong photo score and weak video transfer are both retained. The later HMDB-adapted pilot changes training data and evaluation cohort and must not be treated as a direct continuation of the same 906-clip AP curve.
+
+\section{Separate thermal trajectory component}
+Four candidates use the complete provided thermal trajectories: duration-only logistic regression, regularized linear descriptors, a random forest and histogram gradient boosting. The 14 descriptors include log duration/observation count, temporal coverage, path length, net displacement, straightness, spatial extent, spread, speed quantiles, stationary fraction and turning/reversal summaries. Frame-span units are retained rather than inventing an unverified source FPS.
+
+Chronological splitting uses 19/6/6 dates. The development-selected 400-tree depth-eight forest reaches mean development-source AP .863 and test AP .577, compared with duration-only test AP .283. Its max-dev-F1 operating point gives F1 .664 and FPR .187. The date/season transfer drop is substantial despite a single physical camera and provided identities.
+\input{generated/thermal.tex}
+The serialized estimator and replayed held-out scores are exported separately. These results indicate that movement history contains useful information beyond duration alone; they do not validate an automatic RGB loitering pipeline, online onset detection or unseen-camera transfer.
+
+\section{Integrity checks and outcome}
+All 117,612 recorded strategy predictions are replayed, all 330 development selections and 20,980 image identities checked, and real saved-head inference exercised for all five targets on both backbones. The maximum observed live-versus-saved difference is below .000005. At completion, 159 tests pass. The outcome is a better set of representation candidates and a clearer source-transfer failure diagnosis, not a five-task deployment guarantee.
+\evidence{reports/strategy_protocol_20261016.md}
+\evidence{results/strategy_study_20261016/verification.json}

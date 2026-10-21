@@ -1,161 +1,159 @@
-# CPU anomaly detection experiments
+# CLIP/VLM anomaly-model evaluation
 
-Compare generative VLMs, text/image similarity, and frozen vision features for
-smoking, loitering, unattended items, littering, and rough sleeping. The scripts
-run inference on CPU, one model at a time. No model weights are trained.
+Compare MobileCLIP2-S2, SigLIP2-B/16-224, SmolVLM-500M and MiniCPM-V 4.0 on shared, reviewed task data. VadCLIP is a separately supervised offline smoking study. The current evaluation, data utilities and reporting use one CLI: `anomaly-eval`.
 
-Use Python 3.10–3.12 (3.12 recommended). From the repository root:
+Use Python 3.12 and install `ffmpeg`/`ffprobe` for video preparation. From a checkout:
 
 ```bash
 python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 python -m pip install -r requirements.txt
+python -m pip install -e . --no-deps
 ```
 
-Alternatively, create the environment with `uv venv --python 3.12`, then use
-`uv pip install` for the two install commands. The CPU wheel index avoids
-installing CUDA dependencies. Video preparation also requires `ffmpeg` on PATH.
-
-The source is this [Google Drive folder](https://drive.google.com/drive/folders/1sj9yoyBsmaqMxpnueemZOoPDNrb4p54j).
-It contains nested datasets, videos, ZIP archives, and documents. Preview before
-downloading, or fetch just one category to start:
+The CPU wheel index is for CPU deployments. For GPU accuracy evaluation, install a CUDA-enabled PyTorch build compatible with the server driver instead. `anomaly-eval` and `python -m anomaly_eval` work from any directory after installation. Without installation, use `python /path/to/checkout/scripts/evaluate.py` with the same arguments.
 
 ```bash
-python scripts/fetch_data.py --list-only
-python scripts/fetch_data.py --category smoking --list-only
-python scripts/fetch_data.py --category smoking --extract-zip --speed-mbps 20
-# Download all categories instead:
-python scripts/fetch_data.py --extract-zip
+anomaly-eval run --prepare-only
+anomaly-eval run --mode quick
+# Accuracy: GPU when available, all confirmed data, no pacing or default RAM cap:
+anomaly-eval run --device auto
+# Explicit GPU request fails clearly if CUDA is unavailable:
+anomaly-eval run --device cuda --batch-size 32
+# Separate CPU latency replay with fixed resources and batch size one:
+anomaly-eval run --mode deployment --device cpu --threads 4 --max-rss-mb 24576 --camera-fps 1 --repeats 3
+# Include the supervised smoking adapter when the original COCO corpus is available:
+anomaly-eval run --vadclip
 ```
 
-Downloads resume and completed files are skipped when rerun. `--retries 2` retries
-a failed folder transfer. `--output` changes the destination (default `data/raw`);
-a category download adds its category directory. `--url` accepts a different
-public Drive folder. Drive must permit public downloads; quota or permission
-errors return a nonzero exit code. ZIP extraction is explicit and rejects paths
-outside the extraction directory. Other archives must be extracted separately.
-Documents are downloaded as supporting material and are not benchmark inputs.
+Full evaluation and quick mode run without pacing sleeps. Accuracy defaults to
+available CPU threads, automatic GPU selection, GPU CLIP batches of 32 (CPU: 1),
+and no host RAM cap. Generative VLMs run one input at a time. CPU uses float32;
+CUDA generative models use bfloat16 when supported, otherwise float16. Override
+with `--device`, `--dtype`, `--threads` and `--batch-size`. Full preparation retains
+all confirmed examples; `--per-group N` explicitly caps each recording/label.
+Use `--workers N` to run isolated models concurrently when RAM/VRAM allows;
+`--threads` is per worker. Deployment mode requires one worker and batch size one.
 
-Create an image manifest, optionally sampling videos at one frame every five
-seconds, at most 32 frames per video:
+This workspace also has a separate `.venv-gpu` and verified local NVIDIA libraries
+for the host's driver/library mismatch. [evaluate_gpu.sh](scripts/evaluate_gpu.sh)
+launches that environment without altering the system driver or CPU environment:
+`scripts/evaluate_gpu.sh run --device cuda`. It checks the loaded kernel version
+before selecting local driver libraries. Allow roughly 9–10 GiB of free VRAM for
+MiniCPM in this configuration; its completed CUDA run peaked at 8,116 MiB reserved.
+Quick mode uses at most
+8 inputs per task/split and frame inputs by default. `--mode deployment` enables
+camera-rate pacing on a smaller cohort (16 inputs per task/split by default).
+Override these with `--limit`; `--skip-prepare` retains any earlier preparation
+cap, which is recorded in `dataset.json`. See the evaluation guide for full settings and
+the current five-task coverage gaps.
+
+If prepared data was created before the source/pixel duplicate correction, run
+without `--skip-prepare` to rebuild it. Older prepared schemas are rejected.
+
+For another server, configure independent data, results and cache roots. From the
+checkout, this example uses your existing `data/` and directories owned by your user:
 
 ```bash
-python scripts/init.py --sample-videos
-# For a directory containing only images:
-python scripts/init.py --data-dir data/raw --manifest data/manifest.csv
+python -m anomaly_eval --data-root "$PWD/data" \
+  --results-root "$PWD/results" \
+  --cache-root "$HOME/.cache/huggingface" run --threads 4 --max-rss-mb 24576
 ```
 
-Frames are saved in `data/frames`. `--fps`, `--max-frames-per-video`, `--max-side`,
-and `--threads` control extraction cost. The script refuses to overwrite an
-existing manifest or frame sequence, preserving reviewed labels. Use fresh paths
-when changing extraction settings.
+Point `--data-root` at the directory containing your actual `raw/` and
+`additional/` data. `/srv/...`, `/mnt/...` and `/scratch/...` paths in deployment
+examples are placeholders for locations already provisioned on your server.
+Run inside the activated virtual environment without `sudo`.
 
-Review `data/manifest.csv` before evaluating accuracy. Paths are relative to the
-manifest's directory. `suggested_label` is a folder hint only; `label` starts
-empty because category folders can contain normal frames and unrelated examples.
-COCO/Roboflow bounding boxes and temporal annotations are not imported automatically.
-Assign a verified image-level label or leave it empty for timing-only experiments:
+Alternatively, copy [server.example.json](config/server.example.json) to `config/server.json`, edit its locations and use `anomaly-eval --workspace-config config/server.json run`. Relative paths in that JSON resolve against the JSON file. Environment variables `CAPSTONE_DATA_DIR`, `CAPSTONE_RESULTS_DIR`, `CAPSTONE_CACHE_DIR`, `CAPSTONE_BUNDLE_DIR` and `CAPSTONE_CONFIG_DIR` are supported. `anomaly-eval paths` shows the resolved locations.
 
-```csv
-path,label,split,group_id,suggested_label
-raw/smoking/example.jpg,smoking,test,scene_001,smoking
-raw/normal/walk.jpg,normal,test,scene_002,normal
-raw/reference/smoke.jpg,smoking,reference,scene_003,smoking
-```
+The implementation lives in `anomaly_eval/`: shared manifests/provenance, datasets, models, resource controls, analysis and the temporal adapter. [evaluation.ipynb](notebooks/evaluation.ipynb) is the single notebook front end. New manifests and caches use portable paths; machine locations remain diagnostic metadata rather than experiment identities.
 
-Allowed labels and prompts are in `scripts/anomalies.json`: `normal`, `smoking`,
-`loitering`, `unattended_items`, `littering`, and `rough_sleeping`. Edit descriptions
-to match your operational definitions, or supply another JSON with `--definitions`.
-This first experiment assigns one best category per image; it does not provide
-bounding boxes or multiple simultaneous labels.
+The [expanded accuracy evaluation](reports/expanded_accuracy_review_20261014.md)
+adds 55,156 GPU predictions and increases unattended-item coverage from 36 to
+1,770 endpoints. It also attempts littering, loitering and rough sleeping as
+explicitly qualified diagnostics. The [14 October slide deck](reports/slides/model_evaluation_expanded_20261014.pdf)
+covers the findings and methodology without an additional latency experiment.
 
-Set `split` to `test`, `reference`, or `ignore`. Vision baselines require at least
-one verified `reference` image for **every configured class**, including normal.
-Use several varied examples if possible. Keep all frames from the same video or
-scene in the same split; `group_id` is the source video for sampled frames, and the
-benchmark rejects groups shared between reference and test. For related still
-images, manually assign the same `group_id`. Add normal test examples to measure
-false positives; ROC-AUC is unavailable with only one binary class.
+The [supervised CLIP training workflow](docs/training.md) adds masked five-target
+heads, frozen-feature probes and actual visual fine-tuning for MobileCLIP2-S2 and
+SigLIP2. Its [source-holdout protocol](reports/clip_training_protocol_20261015.md)
+uses new labelled video/photo sources and selects checkpoints on development data.
+Training results are kept separately under `results/clip_finetuning_20261015/`.
+The [completed training findings](reports/clip_finetuning_findings_20261016.md)
+cover all six GPU runs, stronger waste-dumping/unattended ranking, mixed smoking
+transfer and unresolved loitering. The [research model card](results/clip_finetuning_20261015/model_card.md)
+links the checkpoints and records input and threshold limitations.
 
-List models and run a small comparison:
+The [expanded strategy study](results/strategy_study_20261016/report.md) adds new
+smoking images, HMDB action clips, MEVA abandonment windows, public-sleep photos
+and a separate date-held-out thermal loitering study. It compares 330 candidate
+configurations and keeps genuine new-source transfer separate from historical
+diagnostics. [Strategy reproduction and experimental inference](docs/strategy_study.md)
+describe the saved heads, automatic crops, ordered features and weight blending.
+The [findings overview](reports/strategy_findings_20261016.md) summarizes the
+historical gains, new-source transfer failures and remaining threshold problems.
 
-```bash
-python scripts/benchmark.py --list-models
-python scripts/benchmark.py --manifest data/manifest.csv \
-  --models clip-vit-b32 smolvlm-256m --limit 20 --threads 2 --duty-cycle 0.5
+The [causal video pilot](reports/video_pilot_findings_20261016.md) follows those
+failures with a five-objective error audit, smoking/person supervision, temporal
+heads, automatic tracking, an open-vocabulary item-detector ablation and fresh
+AVSS source annotations. It reports event recall and actual alert exposure,
+separating source criteria and disjoint-recording calibration. See the
+[workflow and saved-prediction guide](docs/video_pilot.md) for reproduction.
 
-# Once reference images are labeled:
-python scripts/benchmark.py --manifest data/manifest.csv \
-  --models mobilenet-v3-small resnet18 dinov2-small --limit 20
+The [17 October improvements](reports/event_improvements_findings_20261017.md)
+compare 38 source-aware smoking policies, item-state/memory ablations and fixed
+tiled item detection. Tiling raises CAVIAR reference-item recall at IoU 0.5 from
+48.5% to 85.3%; the SigLIP ensemble improves retrospective HMDB AP, while CCTV
+recall remains poor. Extra event memory does not improve the primary AVSS result.
+New highway-debris videos are component stress tests, not verified unattended
+events. The [reproduction guide](docs/event_improvements.md) records these limits.
 
-# Compare every registered model:
-python scripts/benchmark.py --manifest data/manifest.csv --models all \
-  --limit 50 --repeats 3 --timeout-seconds 1800 --max-rss-mb 4096
-```
+The [19 October SmolVLM fine-tuning study](reports/smolvlm_finetuning_findings_20261019.md)
+extends actual model adaptation to all five target definitions with language-layer
+LoRA, 512-pixel ordered image inputs and source-separated supervision. It compares
+the original model, a joint adapter and development-selected target routes, with
+matched historical/transfer cohorts against the earlier CLIP strategies. The
+[training and inference guide](docs/smolvlm_finetuning.md) explains partial labels,
+temporal input guards, checkpoints and the limits of the binary query interface.
 
-| Model name | Approach | Reference images |
-| --- | --- | --- |
-| `clip-vit-b32`, `clip-vit-b16` | CLIP similarity to anomaly descriptions | No |
-| `smolvlm-256m`, `smolvlm-500m` | SmolVLM, deterministic JSON label generation | No |
-| `mobilenet-v3-small`, `resnet18` | Frozen timm features + nearest labeled reference | Every class |
-| `dinov2-small` | Frozen DINOv2 features + nearest labeled reference | Every class |
+The dedicated [training and evaluation slides](reports/slides/model_training_evaluation_20261020.pdf)
+compare MobileCLIP, SigLIP2, SmolVLM and VadCLIP across completed training stages:
+original/zero-shot, linear probing, visual updates, LoRA, temporal adapters and
+later source-data experiments. The [editable deck](reports/slides/model_training_evaluation_20261020.pptx)
+and [companion dataset/metric tables](reports/slides/training_evaluation_20261020/README.md)
+preserve the different test protocols and unavailable model stages explicitly.
 
-Model adapters follow the [CLIP API](https://huggingface.co/docs/transformers/v4.57.1/model_doc/clip),
-[SmolVLM model card](https://huggingface.co/HuggingFaceTB/SmolVLM-256M-Instruct),
-[DINOv2 API](https://huggingface.co/docs/transformers/v4.57.1/model_doc/dinov2), and
-[timm feature extraction API](https://huggingface.co/docs/timm/feature_extraction).
-Add checkpoints/adapters in `scripts/models.py` to extend the comparison.
+The [20 October public-source pilot](reports/generalization_pilot_20261020/report.md)
+adds 740 scripted action clips, 36 controlled CLIP classifier fits, a frozen
+SmolVLM transfer comparison and a complete-stream tiling test. Mixed SigLIP
+improves proxy-source AP but regresses CCTV AP and false-positive rate; tiling
+reduces primary unattended-event recall from 2/2 to 1/2. The new clips remain
+weak gesture evidence, and no model is promoted. See the
+[PDF addendum](reports/generalization_pilot_20261020/runthrough.pdf),
+[ten-slide PDF](reports/slides/model_generalization_pilot_20261020.pdf),
+[editable slides](reports/slides/model_generalization_pilot_20261020.pptx), and
+[reproduction guide](docs/generalization_pilot.md).
 
-`--threads` limits PyTorch and numerical-library threads. `--duty-cycle 0.5`
-sleeps for the duration of each inference or reference operation; `1` disables
-that pacing. `--max-samples-per-second 1` adds a start-to-start operation rate cap.
-These are cooperative limits: a forward pass can occupy all configured threads
-until it finishes. Model loading is not duty-cycle paced. Optional `--cpu-cores`
-sets Linux affinity to available CPU IDs. `--timeout-seconds` bounds each worker's
-entire run, including downloads, loading, references, warmups, and sleeps.
-`--max-rss-mb` terminates workers that exceed the sampled RSS limit; it is not a
-hard OS memory reservation and brief spikes may be missed.
+The [unified dataset downloader](docs/dataset_fetching.md) now includes the later
+research acquisitions through XRF55, with configurable sources, concurrent
+resumable transfers, integrity checks and failure recovery. Run
+`.venv/bin/python scripts/fetch_all_datasets.py --plan` to inspect the plan, then
+remove `--plan` to fetch it. The [consolidated source/license registry](docs/dataset_sources.md)
+includes every recorded download link, version/hash and per-image Commons/Flickr
+attribution. Acquisition counts are kept separate from eligible training samples.
 
-All models use CPU float32 and eager attention. Input images are capped at 512
-pixels on the longest edge by default; VLM output is capped at 32 new tokens.
-Small objects such as cigarettes may need higher resolution. First runs download
-weights; use `--cache-dir models` for a project-local cache and `--offline` after
-warming it. `--limit 0` selects all test images. Selection is shuffled with
-`--seed 42`, shared by every model, and recorded for reproducibility.
+The full-history [45-slide progress PDF](reports/slides/model_evaluation_progress_20261019.pdf)
+and [editable PowerPoint](reports/slides/model_evaluation_progress_20261019.pptx)
+cover all evaluation, data expansion, training and improvement stages, including
+the three SmolVLM LoRA runs and their matched-control results. See the
+[slide index](reports/slides/README.md) for the summary, notes and source hashes.
 
-Each run creates `results/<UTC timestamp>/`:
+The [complete technical runthrough](reports/technical_runthrough_20261019/model_evaluation_runthrough_20261019.pdf)
+documents the work through 19 October in 102 pages: data collection and audits,
+evaluation protocols, actual training, iterative strategies, event metrics,
+results and remaining generalization limits. Its [LaTeX source and build guide](reports/technical_runthrough_20261019/README.md)
+include the full candidate appendices, numeric exports and source hashes.
 
-- `comparison.csv` and `results.json`: latency, throughput, RSS, failures, and metrics.
-- `run.json`: selected samples, definitions, settings, input hashes, and host details.
-- `<model>/predictions.jsonl`: streamed predictions, scores, raw VLM responses, and errors.
-- `<model>/summary.json` and `worker.log`: per-model measurements and diagnostics.
-
-Latency includes image decoding, preprocessing, model inference, and output
-parsing. It excludes model loading, reference preparation, warmups, and deliberate
-sleep. Active throughput uses completed inference time; wall throughput includes
-pacing and failed attempts. RSS is sampled across worker setup, loading, and
-inference. Each model gets a fresh process so memory from earlier models is freed.
-
-Accuracy, per-class precision/recall/F1, binary anomaly F1, confusion matrices, and
-ROC-AUC use verified test labels from the first repeat. `accuracy`, `macro_f1`,
-and binary metrics describe valid predictions; inspect `prediction_coverage` and
-`accuracy_including_failures` alongside them. VLM `unknown` or malformed replies
-are abstentions, never automatic normal predictions. CLIP scores are relative
-candidate weights, not calibrated probabilities; vision scores are cosine
-similarities and anomaly scores are the anomaly-vs-normal similarity margin.
-VLMs have no numeric anomaly score, so their ROC-AUC is unavailable. A failed model
-does not stop the remaining comparison; partial/failed runs return exit code 1.
-
-Loitering, littering actions, and whether an item is unattended depend on time.
-This frame-level benchmark tests visible cues and cannot establish persistence,
-ownership, or an action from a single still. Video-level labels should not be
-copied onto every sampled frame. Use reviewed frame labels for this experiment;
-temporal windows or tracking will be needed to evaluate those event definitions.
-For rough sleeping, assess visible posture/bedding without inferring housing status.
-
-Run local checks without downloading weights:
-
-```bash
-python -m unittest discover -s tests -v
-```
+See [the evaluation guide](docs/evaluation.md) for data fetching, reviewed-label imports, metric definitions and all commands; [server setup and migration](docs/server.md) covers relocated datasets/caches and old commands. [The original workflow review](reports/workflow_review_20261013.md) records the preceding analysis and measurements. The historical bundle is development only, and confirmed held-out coverage for all five anomalies is still incomplete.

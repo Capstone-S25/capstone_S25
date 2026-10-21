@@ -1,0 +1,415 @@
+{
+  "schema": 1,
+  "updated_on": "2026-10-20",
+  "description": "Recorded acquisition plan, not a training sample manifest or automatic license grant.",
+  "checksum_basis": "SHA-256 recorded from acquired local bytes or historical receipts; not publisher-authenticated unless explicitly noted.",
+  "profiles": {
+    "research": [
+      "aboda",
+      "caviar",
+      "stanford40",
+      "iwdd",
+      "street_scene",
+      "smoking_kaggle",
+      "thermal_loitering",
+      "commons_photos",
+      "hmdb51",
+      "meva",
+      "avss2007",
+      "small_item_component",
+      "xrf55_rgb_public"
+    ],
+    "legacy": [
+      "aboda",
+      "caviar",
+      "d2_cdnet"
+    ],
+    "latest": [
+      "xrf55_rgb_public"
+    ],
+    "all": [
+      "aboda",
+      "caviar",
+      "stanford40",
+      "iwdd",
+      "street_scene",
+      "smoking_kaggle",
+      "thermal_loitering",
+      "commons_photos",
+      "hmdb51",
+      "meva",
+      "avss2007",
+      "small_item_component",
+      "xrf55_rgb_public",
+      "d2_cdnet",
+      "drive_original",
+      "roboflow_suspicious",
+      "roboflow_objects"
+    ]
+  },
+  "sources": [
+    {
+      "id": "aboda",
+      "title": "ABODA abandoned-object videos",
+      "homepage": "https://github.com/kevinlin311tw/ABODA",
+      "availability": "recorded_public_assets",
+      "license": {
+        "id": "not_specified",
+        "url": null,
+        "evidence_url": "https://github.com/kevinlin311tw/ABODA",
+        "checked_on": "2026-10-20",
+        "notes": "No dataset license located in the author repository; public download is not a license grant."
+      },
+      "revision": "08284de80c5a8c5120e95902b5b44f548a691321",
+      "purpose": "Unattended-item video evidence; project review required for event timing.",
+      "manifest": "dataset_assets/aboda.jsonl",
+      "manifest_sha256": "68aab9c943ed5bcacc5c554d3f2ef46acd5915d528e48f5ea5bc73ba60c995a8",
+      "asset_count": 12,
+      "pinned_payload_bytes": 270330889
+    },
+    {
+      "id": "caviar",
+      "title": "CAVIAR INRIA selected videos and XML",
+      "homepage": "https://homepages.inf.ed.ac.uk/rbf/CAVIARDATA1/",
+      "availability": "recorded_public_assets",
+      "license": {
+        "id": "CC-BY-SA (version unspecified)",
+        "url": null,
+        "evidence_url": "https://homepages.inf.ed.ac.uk/rbf/CAVIARDATA1/",
+        "checked_on": "2026-10-20",
+        "notes": "Author page explicitly states CC BY-SA without a version. Acknowledge EC Funded CAVIAR / IST 2001 37540."
+      },
+      "purpose": "Eight selected sequences; object presence alone is not an unattended state.",
+      "manifest": "dataset_assets/caviar.jsonl",
+      "manifest_sha256": "d3f41881aaf9e64df35d8434f96e1744ca1163f6280cb7a0eb601ca01cf8d57e",
+      "asset_count": 17,
+      "pinned_payload_bytes": 116252962
+    },
+    {
+      "id": "stanford40",
+      "title": "Stanford 40 Actions",
+      "homepage": "http://vision.stanford.edu/Datasets/40actions.html",
+      "availability": "recorded_public_assets",
+      "license": {
+        "id": "not_specified",
+        "url": null,
+        "evidence_url": "http://vision.stanford.edu/Datasets/40actions.html",
+        "checked_on": "2026-10-20",
+        "notes": "Author page requests citation; no explicit dataset license located in the saved page. The Hugging Face mirror does not establish original rights."
+      },
+      "purpose": "40 action classes, 9,532 images. Smoking and action confusers; acquired primary archives and one independent mirror archive.",
+      "mirrors": [
+        "https://huggingface.co/datasets/zrchen03/Stanford40_Dataset"
+      ],
+      "citation": "Yao et al., Human Action Recognition by Learning Bases of Action Attributes and Parts, ICCV 2011.",
+      "manifest": "dataset_assets/stanford40.jsonl",
+      "manifest_sha256": "f13468b5b9a331b3876437e7e32312d9f33379c9d20f3437347b5ca4dfc66745",
+      "asset_count": 5,
+      "pinned_payload_bytes": 616563107
+    },
+    {
+      "id": "iwdd",
+      "title": "MIVIA Illegal Waste Dumping Dataset",
+      "homepage": "https://github.com/MiviaLab/IllegalWasteDumping",
+      "availability": "recorded_public_assets",
+      "license": {
+        "id": "not_specified",
+        "url": null,
+        "evidence_url": "https://github.com/MiviaLab/IllegalWasteDumping",
+        "checked_on": "2026-10-20",
+        "notes": "No explicit data license located in the author repository. The Drive host does not determine licensing."
+      },
+      "purpose": "Littering/dumping videos and event annotations. 500 listed videos; 498 acquired. Study partitions contain 435 after source-relationship exclusion.",
+      "unavailable_files": [
+        {
+          "path": "training_sources_20261015/mivia_iwdd/train/videos/vid0325.mp4",
+          "url": "https://drive.google.com/file/d/1CWFd9qoK3F8YjWuHhBzhurOGIWRBdR9C/view",
+          "reason": "Not acquired: inaccessible at original acquisition"
+        },
+        {
+          "path": "training_sources_20261015/mivia_iwdd/train/videos/vid0346.mp4",
+          "url": "https://drive.google.com/file/d/12IRPmM19WRNXX_Yj2mbZpt4zjOlS1lWA/view",
+          "reason": "Not acquired: inaccessible at original acquisition"
+        }
+      ],
+      "manifest": "dataset_assets/iwdd.jsonl",
+      "manifest_sha256": "91c60525b46b8d1e0357a93977c820a53851925a4537fec8f43ad60823f5a661",
+      "asset_count": 999,
+      "pinned_payload_bytes": 2212184533
+    },
+    {
+      "id": "street_scene",
+      "title": "Street Scene (selected frames and track annotations)",
+      "homepage": "https://zenodo.org/records/10870472",
+      "availability": "recorded_public_assets",
+      "license": {
+        "id": "CC-BY-SA-4.0",
+        "url": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "evidence_url": "https://zenodo.org/records/10870472",
+        "checked_on": "2026-10-20",
+        "notes": "Author Zenodo release lists CC BY-SA 4.0."
+      },
+      "purpose": "RGB loitering proxy from published tracks and anomaly types. Supervised research re-split of original Test videos; not the official benchmark.",
+      "archive": {
+        "url": "https://zenodo.org/records/10870472/files/StreetScene.zip?download=1",
+        "bytes": 48975796813,
+        "md5": "md5:a74c51e99881c860d97e1ebb51ee1f2c"
+      },
+      "citation": "Ramachandra and Jones, Street Scene: A New Dataset and Evaluation Protocol for Video Anomaly Detection, WACV 2020.",
+      "manifest": "dataset_assets/street_scene.jsonl",
+      "manifest_sha256": "2406099099b968b32c092be73efdfdb9c3301a829c6f7699e9653e9738a3e9d7",
+      "asset_count": 2464,
+      "pinned_payload_bytes": 607185264
+    },
+    {
+      "id": "smoking_kaggle",
+      "title": "Smoker Detection image classification dataset",
+      "homepage": "https://www.kaggle.com/datasets/sujaykapadnis/smoking",
+      "availability": "recorded_public_assets",
+      "license": {
+        "id": "CC-BY-4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidence_url": "https://www.kaggle.com/api/v1/datasets/view/sujaykapadnis/smoking",
+        "checked_on": "2026-10-20",
+        "notes": "Kaggle API licenseName verified and saved in dataset_evidence/kaggle_terms_20261020.json; uploader declaration."
+      },
+      "revision": "datasetVersionNumber=5",
+      "purpose": "Smoking image transfer set; not independent CCTV evidence.",
+      "manifest": "dataset_assets/smoking_kaggle.jsonl",
+      "manifest_sha256": "d6ce085c1086d4f314af6d00721fa3dc6459f648591c4ce58a6dd1c704b855ac",
+      "asset_count": 1,
+      "pinned_payload_bytes": 66851896
+    },
+    {
+      "id": "thermal_loitering",
+      "title": "RS-WACV24 thermal loitering trajectories",
+      "homepage": "https://github.com/johnnynunez/RS-WACV24_Loitering",
+      "availability": "recorded_public_assets",
+      "license": {
+        "id": "MIT (repository release)",
+        "url": "https://github.com/johnnynunez/RS-WACV24_Loitering/blob/64e6ffdda4dad87b8d13daf69e8b2b9655a6459c/LICENSE",
+        "evidence_url": "https://github.com/johnnynunez/RS-WACV24_Loitering",
+        "checked_on": "2026-10-20",
+        "notes": "MIT is the repository license. Separate original sensor-data rights are not documented; this entry covers the published CSV repository files, not arbitrary raw thermal videos."
+      },
+      "revision": "64e6ffdda4dad87b8d13daf69e8b2b9655a6459c",
+      "purpose": "19,737 trajectories; 17,878 eligible. Single thermal camera over 31 dates; separate modality study, not RGB CLIP training.",
+      "manifest": "dataset_assets/thermal_loitering.jsonl",
+      "manifest_sha256": "9be92f6b3f7bcb90ffbe1dd6b49d4d7cc3f2707267dbf9cdb0288f03a730a4c6",
+      "asset_count": 6,
+      "pinned_payload_bytes": 132331192
+    },
+    {
+      "id": "commons_photos",
+      "title": "Wikimedia Commons / original Flickr photographs",
+      "homepage": "https://commons.wikimedia.org/",
+      "availability": "recorded_public_assets",
+      "license": {
+        "id": "per-file (CC-BY / CC-BY-SA / CC0 / public domain / other)",
+        "url": null,
+        "evidence_url": "https://commons.wikimedia.org/",
+        "checked_on": "2026-10-20",
+        "notes": "Each file has its own original author, source page, license URL, usage terms and restrictions in its manifest and docs/commons_attribution.csv. No blanket license applies. Candidate collection is larger than the reviewed training subset."
+      },
+      "purpose": "Apparently sleeping/resting people and controls. Project proxy labels do not establish housing status; most acquired candidates are not training examples.",
+      "manifest": "dataset_assets/commons_photos.jsonl",
+      "manifest_sha256": "d1224b9340ec9f90459a12f1f34be0dfc7f3b83319dbf9ddffa152a04e6a2bc8",
+      "asset_count": 259,
+      "pinned_payload_bytes": 59796401
+    },
+    {
+      "id": "hmdb51",
+      "title": "HMDB51 original action archive",
+      "homepage": "https://serre.lab.brown.edu/",
+      "availability": "recorded_public_assets",
+      "license": {
+        "id": "not_specified",
+        "url": null,
+        "evidence_url": "https://serre.lab.brown.edu/",
+        "checked_on": "2026-10-20",
+        "notes": "Original Brown download URL retained. No explicit current data license verified; underlying movie/Internet sources may retain rights. Do not infer a license from third-party mirrors."
+      },
+      "purpose": "Seven extracted confuser/smoking classes, 906 clips; downloaded archive includes all 51 classes. The fetcher retrieves the archive only.",
+      "instructions": "Extract the selected classes with scripts/extract_hmdb_sources.py after acquisition.",
+      "manifest": "dataset_assets/hmdb51.jsonl",
+      "manifest_sha256": "bec43b93337f29b68d7240f78578c5b522c947fc8aac61dd4816943bfd5130d7",
+      "asset_count": 1,
+      "pinned_payload_bytes": 2124008126
+    },
+    {
+      "id": "meva",
+      "title": "MEVA abandon-package video subset",
+      "homepage": "https://mevadata.org/",
+      "availability": "recorded_public_assets",
+      "license": {
+        "id": "CC-BY-4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidence_url": "https://mevadata.org/",
+        "checked_on": "2026-10-20",
+        "notes": "Official MEVA page states all data are CC BY 4.0. Cite the MEVA dataset paper; source video and annotation provenance retained."
+      },
+      "purpose": "13 acquired videos of 14 annotation matches. Abandon-package actions are distinct from persistent unattended states.",
+      "annotation_repository": "https://gitlab.kitware.com/meva/meva-data-repo",
+      "annotation_revision": "421841a75577b697c314e952e585aecbb1b99e17",
+      "annotation_snapshot": "dataset_evidence/meva_annotations.json",
+      "citation": "Corona et al., MEVA: A Large-Scale Multiview, Multimodal Video Dataset for Activity Detection, WACV 2021.",
+      "manifest": "dataset_assets/meva.jsonl",
+      "manifest_sha256": "d8329c623dcff020ab94bc74d1322da6aaa5a04507bd321b4719e6e5065a0968",
+      "asset_count": 13,
+      "pinned_payload_bytes": 1566143090
+    },
+    {
+      "id": "avss2007",
+      "title": "AVSS 2007 abandoned-baggage pilot (AODsurvey bundle)",
+      "homepage": "http://www-vpu.eps.uam.es/publications/AODsurvey/",
+      "availability": "recorded_public_assets",
+      "license": {
+        "id": "not_specified",
+        "url": null,
+        "evidence_url": "http://www-vpu.eps.uam.es/publications/AODsurvey/",
+        "checked_on": "2026-10-20",
+        "notes": "Redistribution bundle contains AVSS footage and separate code. No explicit footage license verified. A code license would not establish video licensing."
+      },
+      "purpose": "Three EASY/MEDIUM/HARD videos plus original annotations. Data extraction only; downloaded source code is never executed.",
+      "manifest": "dataset_assets/avss2007.jsonl",
+      "manifest_sha256": "bcabf9e4f97056cd96e7a793a7fc5406989385bff81b886b5a96a5c8c166627b",
+      "asset_count": 1,
+      "pinned_payload_bytes": 975334940
+    },
+    {
+      "id": "small_item_component",
+      "title": "Author small-item video component",
+      "homepage": "https://github.com/hangsuuuu/video-of-abandoned-object-detection",
+      "availability": "recorded_public_assets",
+      "license": {
+        "id": "not_specified",
+        "url": null,
+        "evidence_url": "https://github.com/hangsuuuu/video-of-abandoned-object-detection",
+        "checked_on": "2026-10-20",
+        "notes": "No explicit dataset license verified in author release. Three highway/debris clips serve as a component probe. Bundled ABODA aliases are not independent data."
+      },
+      "revision": "966439fcac1103b392c49d4135f128860a39d1f8",
+      "purpose": "Item/owner component investigation; not a full unattended-baggage benchmark.",
+      "manifest": "dataset_assets/small_item_component.jsonl",
+      "manifest_sha256": "d45e4761e3491448ade6e1837c8eea5e1264485c76b021df978bc842295080bc",
+      "asset_count": 1,
+      "pinned_payload_bytes": 28582066
+    },
+    {
+      "id": "xrf55_rgb_public",
+      "title": "XRF55 RGB Public (selected scene/subject pilot)",
+      "homepage": "https://www.kaggle.com/datasets/airslab2020/xrf55-rgb-depth-ir",
+      "availability": "recorded_public_assets",
+      "license": {
+        "id": "CC-BY-NC-4.0",
+        "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "evidence_url": "https://www.kaggle.com/datasets/airslab2020/xrf55-rgb-depth-ir",
+        "checked_on": "2026-10-20",
+        "notes": "The public release README specifies CC BY-NC 4.0. Kaggle says Other (specified in description). Repository code licensing is separate."
+      },
+      "revision": "datasetVersionNumber=6",
+      "author_repository": "https://github.com/airslab2020/XRF55-repo",
+      "license_snapshot": "dataset_evidence/xrf55_public_release_README.md",
+      "purpose": "740 selected five-second RGB clips (886,570,077 bytes) from the 43.36 GB release; smoking gesture plus phone/drink/eat controls. Weak action labels, not verified cigarette visibility.",
+      "manifest": "dataset_assets/xrf55_rgb_public.jsonl",
+      "manifest_sha256": "b94f14f7a0588fa2b7db2df3cab07da4521aa707c92dc4a908c9a7bbdb9d6651",
+      "asset_count": 740,
+      "pinned_payload_bytes": 886570077
+    },
+    {
+      "id": "d2_cdnet",
+      "title": "D2-CDNet foreground segmentation (metadata only)",
+      "homepage": "https://huggingface.co/datasets/tauseefakhund/D2-CDNet",
+      "availability": "recorded_public_assets",
+      "license": {
+        "id": "Apache-2.0 (mirror declaration; upstream unresolved)",
+        "url": "https://huggingface.co/datasets/tauseefakhund/D2-CDNet/blob/main/README.md",
+        "evidence_url": "https://huggingface.co/datasets/tauseefakhund/D2-CDNet",
+        "checked_on": "2026-10-20",
+        "notes": "The mirror README declares Apache-2.0. The repack contains CDnet-derived material; original CDnet terms are separate and not established by the mirror declaration."
+      },
+      "revision": "298666656aa857471fc6668b03f0225e3c3d9eef",
+      "purpose": "Metadata fetched; optional multi-GB shards are auxiliary masks, not anomaly event labels.",
+      "instructions": "anomaly-eval fetch --sources d2_cdnet --d2-shards intermittentObjectMotion",
+      "manifest": "dataset_assets/d2_cdnet.jsonl",
+      "manifest_sha256": "bc3739ca0b7b284449fbd2d52cdf90151bc55adbe7192b4ecc62af6271eecb14",
+      "asset_count": 1,
+      "pinned_payload_bytes": 3457
+    },
+    {
+      "id": "drive_original",
+      "title": "Original shared Drive corpus",
+      "homepage": "https://drive.google.com/drive/folders/1sj9yoyBsmaqMxpnueemZOoPDNrb4p54j",
+      "availability": "external_fetch",
+      "license": {
+        "id": "mixed / partly unspecified",
+        "url": null,
+        "evidence_url": "https://drive.google.com/drive/folders/1sj9yoyBsmaqMxpnueemZOoPDNrb4p54j",
+        "checked_on": "2026-10-20",
+        "notes": "An aggregation, not a single licensed dataset. Preserve component export notices. Some subsets are synthetic, object-only or lack reliable event labels."
+      },
+      "instructions": "anomaly-eval fetch-drive --output DATA_ROOT/raw --extract-zip --continue-on-error --anonymous-listing --workers 8 --name-conflicts rename",
+      "purpose": "Initial smoking, littering, loitering, rough-sleeping and unattended-item folders; 19,678 listed file entries in the original receipt. Listing and retrieval remain dynamic in the existing concurrent Drive downloader.",
+      "upstream_components": [
+        {
+          "name": "ATMGUARD-Loitering-Tracking v2",
+          "url": "https://universe.roboflow.com/s-workspace-1cynf/atmguard-loitering-tracking",
+          "license": "CC-BY-4.0 (bundled README.dataset.txt)",
+          "evidence": "data/raw/datasets/loitering/Roboflow Dataset (New Workspace)/README.dataset.txt"
+        },
+        {
+          "name": "Farjana Hossain Loitering Detection v1",
+          "url": "https://universe.roboflow.com/farjana-hossain-d6hl9/loitering-detection-6ir62",
+          "license": "CC-BY-4.0 (bundled README.dataset.txt)",
+          "evidence": "data/raw/datasets/loitering/Roboflow Dataset (Farjana Hossain)/README.dataset.txt"
+        },
+        {
+          "name": "Simuletic synthetic fall/pose sample",
+          "url": "https://simuletic.com/datasets",
+          "license": "CC-BY-4.0 (bundled Hugging Face README)",
+          "evidence": "data/raw/datasets/rough sleeping/hugging_face/README.md",
+          "qualification": "Synthetic falls/lying are not verified real rough sleeping."
+        },
+        {
+          "name": "Littering YOLOv12 export, smoking-person-1 and smoking CCTV COCO exports",
+          "url": null,
+          "license": "Not specified in bundled export notices",
+          "qualification": "Exact upstream project URLs not present in the export README; aggregation URL remains available."
+        }
+      ],
+      "provider": "drive"
+    },
+    {
+      "id": "roboflow_suspicious",
+      "title": "roboflow suspicious",
+      "homepage": "https://universe.roboflow.com/abandoned-object/abandoned-object-detection-9fijk",
+      "availability": "external_fetch",
+      "license": {
+        "id": "not_verified (export access required)",
+        "url": null,
+        "evidence_url": "https://universe.roboflow.com/abandoned-object/abandoned-object-detection-9fijk",
+        "checked_on": "2026-10-20",
+        "notes": "Read the selected project/version license before redistribution. API access credentials are not license evidence."
+      },
+      "instructions": "anomaly-eval fetch --sources roboflow_suspicious --roboflow-version roboflow_suspicious=VERSION",
+      "purpose": "Object-annotation candidates; unacquired gated exports; no claim that object presence labels unattended state.",
+      "provider": "roboflow"
+    },
+    {
+      "id": "roboflow_objects",
+      "title": "roboflow objects",
+      "homepage": "https://universe.roboflow.com/getting/abandoned-w7arq",
+      "availability": "external_fetch",
+      "license": {
+        "id": "not_verified (export access required)",
+        "url": null,
+        "evidence_url": "https://universe.roboflow.com/getting/abandoned-w7arq",
+        "checked_on": "2026-10-20",
+        "notes": "Read the selected project/version license before redistribution. API access credentials are not license evidence."
+      },
+      "instructions": "anomaly-eval fetch --sources roboflow_objects --roboflow-version roboflow_objects=VERSION",
+      "purpose": "Object-annotation candidates; unacquired gated exports; no claim that object presence labels unattended state.",
+      "provider": "roboflow"
+    }
+  ]
+}

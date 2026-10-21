@@ -1,0 +1,92 @@
+\documentclass[11pt,a4paper,oneside]{report}
+\usepackage[margin=23mm,headheight=15pt]{geometry}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,longtable,tabularx,array}
+\usepackage{graphicx,float,pdflscape}
+\usepackage[table]{xcolor}
+\usepackage{enumitem,listings,fancyhdr}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{xurl}
+\usepackage[colorlinks=true,linkcolor=teal!65!black,urlcolor=teal!65!black,citecolor=teal!65!black,bookmarksnumbered=true]{hyperref}
+\definecolor{navy}{HTML}{142C40}
+\definecolor{teal}{HTML}{007E80}
+\definecolor{pale}{HTML}{F0F6F6}
+\definecolor{orange}{HTML}{C86535}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\setlength{\tabcolsep}{4pt}
+\setlength{\emergencystretch}{3em}
+\renewcommand{\arraystretch}{1.15}
+\setlist{itemsep=3pt,topsep=4pt,leftmargin=*}
+\setlist[description]{style=nextline,leftmargin=0pt,labelsep=.5em}
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{2}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{navy}{CAPSTONE S25 --- technical runthrough}}
+\fancyhead[R]{\small 19 October 2026}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\lstset{basicstyle=\ttfamily\footnotesize,breaklines=true,columns=fullflexible,keepspaces=true,frame=single,rulecolor=\color{black!15},backgroundcolor=\color{black!2},showstringspaces=false,aboveskip=8pt,belowskip=8pt}
+\newcommand{\evidence}[1]{\par{\footnotesize\textcolor{teal}{Evidence:} \path{#1}}\par}
+\newcommand{\finding}[1]{\par\smallskip\noindent\colorbox{pale}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{\textbf{Finding.} #1}}\par\smallskip}
+\newcommand{\limit}[1]{\par\smallskip\noindent\textcolor{orange}{\textbf{Interpretation limit.}} #1\par\smallskip}
+\newcommand{\modelm}{MobileCLIP2-S2}
+\newcommand{\capstonesig}{SigLIP2-B/16-224}
+\newcommand{\fig}[3]{\begin{figure}[htbp]\centering\includegraphics[width=#2\linewidth]{figures/#1}\caption{#3}\end{figure}}
+\hypersetup{pdftitle={Five-anomaly model evaluation: complete technical runthrough},pdfauthor={Capstone S25},pdfsubject={Data acquisition, evaluation, training and iterative improvements through 19 October 2026}}
+
+\begin{document}
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+\centering
+\vspace*{18mm}
+{\Large\textcolor{teal}{CAPSTONE S25}\par}
+\vspace{12mm}
+{\Huge\bfseries\textcolor{navy}{Five-anomaly model evaluation}\par}
+\vspace{8mm}
+{\LARGE Complete technical runthrough\par}
+\vspace{9mm}
+{\large Data collection, annotation audits, standardized testing,\par supervised CLIP and SmolVLM adaptation, temporal modeling,\par component improvements and results\par}
+\vspace{15mm}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\textbf{Targets} & Smoking; littering; loitering; public rough sleeping; unattended items\\[5pt]
+\textbf{Image models} & MobileCLIP2-S2; SigLIP2-B/16-224;\\
+& SmolVLM-500M-Instruct; MiniCPM-V 4.0\\[5pt]
+\textbf{Video baseline} & Separately supervised offline VadCLIP smoking adaptation\\[5pt]
+\textbf{Experiment coverage} & Historical work and completed studies, 11--19 October 2026\\[5pt]
+\textbf{Report prepared} & 19 October 2026, Asia/Jakarta
+\end{tabularx}
+\vfill
+\begin{minipage}{0.91\linewidth}
+\textbf{Status at the reporting cutoff.} Several recognition and object-detection components improved. Reliable generalization across all five target events has not been established. Previously inspected tests, provisional labels, source proxies, numerical corrections and unsuccessful strategies are identified throughout this document. This reporting task performs no new model training, quality inference or latency benchmark.
+\end{minipage}
+\vspace{12mm}
+\end{titlepage}
+\pagenumbering{roman}
+\hypersetup{pageanchor=true}
+\input{chapters/00_reading_guide}
+\tableofcontents
+\listoftables
+\listoffigures
+\clearpage
+\pagenumbering{arabic}
+\input{chapters/01_scope_history}
+\input{chapters/02_data_collection}
+\input{chapters/03_methodology}
+\input{chapters/04_initial_comparison}
+\input{chapters/05_expanded_accuracy}
+\input{chapters/06_visual_finetuning}
+\input{chapters/07_strategy_study}
+\input{chapters/08_video_pilot}
+\input{chapters/09_event_evaluation}
+\input{chapters/10_latest_improvements}
+\input{chapters/11_smolvlm_adaptation}
+\input{chapters/11_interpretation}
+\input{chapters/12_reproduction}
+\appendix
+\input{chapters/13_appendices}
+\end{document}

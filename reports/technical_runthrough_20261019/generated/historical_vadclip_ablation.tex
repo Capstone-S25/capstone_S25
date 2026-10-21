@@ -1,0 +1,20 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.1583\linewidth}>{\raggedright\arraybackslash}p{0.0852\linewidth}>{\raggedright\arraybackslash}p{0.0974\linewidth}>{\raggedright\arraybackslash}p{0.0852\linewidth}>{\raggedright\arraybackslash}p{0.0852\linewidth}>{\raggedright\arraybackslash}p{0.0852\linewidth}>{\raggedright\arraybackslash}p{0.1096\linewidth}>{\raggedright\arraybackslash}p{0.1339\linewidth}@{}}
+\caption[Historical vadclip ablation]{Superseded validation-only adapter records; target/compression and implementation defects preclude a clean architecture claim.}\label{tab:historical_vadclip_ablation}\\
+\toprule
+\textbf{Run} & \textbf{Length} & \textbf{Window} & \textbf{Graph} & \textbf{Reps} & \textbf{+ reps} & \textbf{Old AP} & \textbf{Old opt F1} \\
+\midrule\endfirsthead
+\multicolumn{8}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{Run} & \textbf{Length} & \textbf{Window} & \textbf{Graph} & \textbf{Reps} & \textbf{+ reps} & \textbf{Old AP} & \textbf{Old opt F1} \\
+\midrule\endhead
+\midrule\multicolumn{8}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+full & 256 & 8 & on & 383 & 115 & 0.5253 & 0.4891 \\
+no graph & 256 & 8 & off & 383 & 115 & 0.5105 & 0.4934 \\
+win 1 & 256 & 1 & on & 383 & 115 & 0.5419 & 0.4635 \\
+win 16 & 256 & 16 & on & 383 & 115 & 0.5361 & 0.4870 \\
+vl 128 & 128 & 8 & on & 255 & 60 & 0.6374 & 0.5778 \\
+vl 512 & 512 & 8 & on & 639 & 276 & 0.5814 & 0.6033 \\
+\end{longtable}\endgroup

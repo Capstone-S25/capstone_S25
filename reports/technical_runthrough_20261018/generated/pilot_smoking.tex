@@ -1,0 +1,22 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.1185\linewidth}>{\raggedright\arraybackslash}p{0.2692\linewidth}>{\raggedright\arraybackslash}p{0.0646\linewidth}>{\raggedright\arraybackslash}p{0.0969\linewidth}>{\raggedright\arraybackslash}p{0.0969\linewidth}>{\raggedright\arraybackslash}p{0.0969\linewidth}>{\raggedright\arraybackslash}p{0.0969\linewidth}@{}}
+\caption[Pilot smoking]{Pilot smoking: same-pilot scene AP versus selected route, with dev-FPR-budget recall/FPR.}\label{tab:pilot_smoking}\\
+\toprule
+\textbf{Model} & \textbf{Source} & \textbf{N} & \textbf{Scene AP} & \textbf{Pick AP} & \textbf{Recall} & \textbf{FPR} \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{Model} & \textbf{Source} & \textbf{N} & \textbf{Scene AP} & \textbf{Pick AP} & \textbf{Recall} & \textbf{FPR} \\
+\midrule\endhead
+\midrule\multicolumn{7}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+Mobile\allowbreak{}CLIP & smoking cctv & 646 & 0.626 & 0.725 & 16.5\% & 7.9\% \\
+Mobile\allowbreak{}CLIP & hmdb51 action transfer & 205 & 0.842 & 0.908 & 86.7\% & 2.9\% \\
+Mobile\allowbreak{}CLIP & kaggle sujaykapadnis smoking & 224 & 0.996 & 0.995 & 92.9\% & 1.8\% \\
+Mobile\allowbreak{}CLIP & stanford40 & 806 & 0.874 & 0.874 & 70.7\% & 2.9\% \\
+SigLIP & smoking cctv & 646 & 0.717 & 0.688 & 2.3\% & 1.6\% \\
+SigLIP & hmdb51 action transfer & 205 & 0.888 & 0.778 & 66.7\% & 1.7\% \\
+SigLIP & kaggle sujaykapadnis smoking & 224 & 1.000 & 1.000 & 100.0\% & 3.6\% \\
+SigLIP & stanford40 & 806 & 0.930 & 0.938 & 86.4\% & 3.0\% \\
+\end{longtable}\endgroup

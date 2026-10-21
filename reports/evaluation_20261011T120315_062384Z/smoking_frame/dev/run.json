@@ -1,0 +1,279 @@
+{
+  "created_at": "2026-10-11T12:08:15.543751+00:00",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "platform": "Linux-7.0.0-28-generic-x86_64-with-glibc2.39",
+  "cpu_model": "AMD Ryzen Threadripper PRO 7975WX 32-Cores",
+  "physical_cpus": 32,
+  "logical_cpus": 64,
+  "total_ram_mb": 257066.55859375,
+  "available_cpu_cores": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63
+  ],
+  "options": {
+    "manifest": "${DATA_ROOT}/evaluation/smoking_frame.csv",
+    "definitions": "${RESULTS_ROOT}/evaluation_20261011T120315_062384Z/smoking_frame_definitions.json",
+    "models": [
+      "mobileclip2-s2",
+      "siglip2-b16-224",
+      "smolvlm-500m",
+      "minicpm-v4"
+    ],
+    "list_models": false,
+    "output": "${RESULTS_ROOT}/evaluation_20261011T120315_062384Z/smoking_frame/dev",
+    "limit": 8,
+    "image_policy": "letterbox",
+    "split": "dev",
+    "repeats": 1,
+    "warmup": 1,
+    "seed": 42,
+    "max_side": 768,
+    "max_new_tokens": 64,
+    "timeout_seconds": 3600.0,
+    "max_rss_mb": 24576.0,
+    "cache_dir": "${CACHE_ROOT}/hub",
+    "offline": false,
+    "worker_config": null,
+    "threads": 16,
+    "duty_cycle": 1.0,
+    "max_samples_per_second": null,
+    "cpu_cores": null
+  },
+  "workspace": {
+    "data_dir": "/home/g31/projects/test_here/capstone_S25/data",
+    "results_dir": "/home/g31/projects/test_here/capstone_S25/results",
+    "cache_dir": "/home/g31/.cache/huggingface",
+    "bundle_dir": "/home/g31/projects/test_here/capstone_S25/test_data",
+    "config_dir": "/home/g31/projects/test_here/capstone_S25/anomaly_eval/config"
+  },
+  "definitions": {
+    "normal": "An ordinary scene with no evidence of smoking.",
+    "smoking": "A person visibly smoking a cigarette, cigar, or pipe, with a smoking object near the mouth or visible smoke."
+  },
+  "manifest_sha256": "df70492d1bd53322250ebaa4d434c3905c411098a756ac536d01d594409b6b2e",
+  "definitions_sha256": "951edc92afc94d265a528bdd0c7ac236485bb7153c6bf183990911eed2c59335",
+  "samples": [
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000555_2025-10-13_11-39-13-277_AM_jpg.rf.f5dc01a49a1145f24b19445e3221087b.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_022188_2025-09-15_03-36-04-651_PM_jpg.rf.700b1e42eba48b1f7d379df08d983af5.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_010983_2025-10-26_03-18-23-796_PM_jpg.rf.bdd6a0f315c05e2dfe9eb64fd4c7166d.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_004179_2025-09-11_12-58-19-604_PM_jpg.rf.a3d0b03288a214ac2d63e3ce04642832.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_003664_2025-09-11_12-49-22-326_PM_jpg.rf.aab4dfb1b13ba0c2a9a47f4a1ffe575e.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001312_2025-09-15_09-32-49-510_AM_jpg.rf.24322b70eacf053efe2fbbc0ca0fa7c0.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_001418_2025-10-26_12-31-28-231_PM_jpg.rf.1939ba54a106f34498c2c33d3585e09e.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_001220_2025-10-13_11-50-49-996_AM_jpg.rf.cbc17cdeef140ee6fbae3f53acf47ea5.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13"
+    }
+  ],
+  "selection": {
+    "available_samples": 236,
+    "selected_samples": 8,
+    "available_label_counts": {
+      "smoking": 116,
+      "normal": 120
+    },
+    "selected_label_counts": {
+      "normal": 4,
+      "smoking": 4
+    },
+    "available_groups": 16,
+    "selected_groups": 4,
+    "policy": "label_proportional_group_round_robin_v1"
+  },
+  "models": [
+    "mobileclip2-s2",
+    "siglip2-b16-224",
+    "smolvlm-500m",
+    "minicpm-v4"
+  ],
+  "evaluation_split": "dev",
+  "sample_identity": [
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000555_2025-10-13_11-39-13-277_AM_jpg.rf.f5dc01a49a1145f24b19445e3221087b.jpg",
+      "sha256": "cfde33cce53efc5a96c8926eb3ed3ed28931a88f52e3a953926d059693c6b251",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_022188_2025-09-15_03-36-04-651_PM_jpg.rf.700b1e42eba48b1f7d379df08d983af5.jpg",
+      "sha256": "4ffecd5b1da84fcd0334fc719d412c52f520669149a9d838cadf422c7b38594e",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_010983_2025-10-26_03-18-23-796_PM_jpg.rf.bdd6a0f315c05e2dfe9eb64fd4c7166d.jpg",
+      "sha256": "f38149cb4ef0358c747ea31502595cce36f2a20988764e0ef442338c22567c0e",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_004179_2025-09-11_12-58-19-604_PM_jpg.rf.a3d0b03288a214ac2d63e3ce04642832.jpg",
+      "sha256": "f900df93fa9416e0d8a9edd7806f687445bb1a4cce965ac55f4a5797c63caf55",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_003664_2025-09-11_12-49-22-326_PM_jpg.rf.aab4dfb1b13ba0c2a9a47f4a1ffe575e.jpg",
+      "sha256": "a2ba306a7ff19d8f63923202fec7bdc376582b411db63bd370c87d3810e8e317",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001312_2025-09-15_09-32-49-510_AM_jpg.rf.24322b70eacf053efe2fbbc0ca0fa7c0.jpg",
+      "sha256": "17d3dcc971618a41c9ee3be62c6aa5c4a62143d8a8742259f5285d016e2e9772",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_001418_2025-10-26_12-31-28-231_PM_jpg.rf.1939ba54a106f34498c2c33d3585e09e.jpg",
+      "sha256": "ef9b9230e864cc5c6ff50300843acc05b4ef4a86baaa2f65c7b653c5a008f7c5",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_001220_2025-10-13_11-50-49-996_AM_jpg.rf.cbc17cdeef140ee6fbae3f53acf47ea5.jpg",
+      "sha256": "dfe24775073ab377ed804d282974e6af1d882dd15f0cbf11cb2d88092f0392e0",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13"
+    }
+  ],
+  "code_sha256": {
+    "anomaly_eval/__init__.py": "ebf262f97615be95b2bf3279450d241d22fffa559c07002ee12fce877018e8e9",
+    "anomaly_eval/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "anomaly_eval/analysis.py": "0d34c9588241abfb71c6d8b3a56a7d0ab9dcbcb79b8e458ad25931f40ad01c00",
+    "anomaly_eval/audit.py": "da6434126cacd43c8a69aed816154d89cc8cdc10d75e233da7185abaf55adfe6",
+    "anomaly_eval/benchmark.py": "b9549f46325874e0965100c7585048106809bd1aaf2afb3dafd38f0d7009b53b",
+    "anomaly_eval/cli.py": "462ed3487cfaab2774437ab8ce4f6792a064d71535107ceaf8543ff7e3178674",
+    "anomaly_eval/config/anomalies.json": "589882c0a43d846b9ad6c6d88073129bb666a15014919f585849ab830a95038c",
+    "anomaly_eval/config/caviar_review_intervals.json": "14893df2f779cadf2313279117fc0fc20b6e8c76d5ad0509013fcb3283a54d8d",
+    "anomaly_eval/data.py": "80559db94d2b0bf8e88d7e316cabc1a5602ff26620d4029cbebb19225bc61a87",
+    "anomaly_eval/datasets/__init__.py": "63f341a36e2bbbe47168e1204ee7c0d702969be07a971a1c098d13ff1dd6f98f",
+    "anomaly_eval/datasets/drive.py": "b53907ec66ca147557727af0aa35a22eafbf8d8d6c695c06774f88049ea85853",
+    "anomaly_eval/datasets/fetch.py": "224e6289c89334aa9f4aaa5c7319ac412f6a87b477bf5aefc835a35b38d53a11",
+    "anomaly_eval/datasets/labels.py": "a8042a5c0edeebb189beab519e25e9166476dda66871f2a65f7967238c4a9ca6",
+    "anomaly_eval/datasets/prepare.py": "6742ab2af8de07a449299bbdf05d12bf24d6d4e691083b25da398f97c47562eb",
+    "anomaly_eval/datasets/tools.py": "0dec4c56fcd3b47b97fe36afc15a2a95e8cb0b5fe84142beb378ab18ec711c48",
+    "anomaly_eval/metrics.py": "d33bb68d0cdde2fd3c7f89fde41475dc76e10159905f5ff8e334b94a0e4f2e3e",
+    "anomaly_eval/models.py": "6e13e771adbcb4f524aebe2d3c05611035aba3e0bb62f626e0ed8abf5a393658",
+    "anomaly_eval/paths.py": "90c2ba6ecbefba8da90ae072912c277a73ed05cb3b66d9809f6523ba233fee14",
+    "anomaly_eval/resources.py": "f71f2004bafbbd8d8c99e53a2ea111799efb3450aa5c8380772f35cf54bcb3f9",
+    "anomaly_eval/runner.py": "ee495cf17d6389e2db2999fad7ac2c97a3b51f2a75eee13eb6d76b336017ddba",
+    "anomaly_eval/vadclip/__init__.py": "e49e2f18d1b7db331d7d49553af57222f5bad1b6a81f761e4fb2231b5f73cd7c",
+    "anomaly_eval/vadclip/baselines.py": "1432c6343e15b2f7b0828262e334858ed2e73483b7de388aa87be8708d132d40",
+    "anomaly_eval/vadclip/clip_b16.py": "ecd3b7963b703c3ddf48c93ac4dacdf5051df7c9159657b0174e2c8868bb9c4f",
+    "anomaly_eval/vadclip/data.py": "cae28cda5deb6aac393a8b553f7b578172f3648f765f5488b257f3757e049344",
+    "anomaly_eval/vadclip/evaluate.py": "d8b698b8611b62b5d44d5792cbe018bf4a47bff5b9fe390e71583632d6b4fd5e",
+    "anomaly_eval/vadclip/extract_features.py": "316a6d757984856cea51012c4f1451c239f5d520a07132483596b0775c5e7262",
+    "anomaly_eval/vadclip/model.py": "27c5fac657ceceb0fa5ea9116ef19e0c12c1b6558311dd6d38a6ff0aa03c87ce",
+    "anomaly_eval/vadclip/train.py": "b38e51e2e8cd0f8f81f6d4a640b8cbb3077f34962ff816d9d4fd0426c4c714b9"
+  },
+  "metric_version": 2,
+  "experiment_fingerprint": "7c0517139764f10ebdc2392a70040548d1388e42d5493af1cea7b25015adea00"
+}

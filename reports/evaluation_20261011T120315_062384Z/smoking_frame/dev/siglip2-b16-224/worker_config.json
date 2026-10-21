@@ -1,0 +1,87 @@
+{
+  "model": "siglip2-b16-224",
+  "output": "${RESULTS_ROOT}/evaluation_20261011T120315_062384Z/smoking_frame/dev/siglip2-b16-224",
+  "options": {
+    "manifest": "${DATA_ROOT}/evaluation/smoking_frame.csv",
+    "definitions": "${RESULTS_ROOT}/evaluation_20261011T120315_062384Z/smoking_frame_definitions.json",
+    "models": [
+      "mobileclip2-s2",
+      "siglip2-b16-224",
+      "smolvlm-500m",
+      "minicpm-v4"
+    ],
+    "list_models": false,
+    "output": "${RESULTS_ROOT}/evaluation_20261011T120315_062384Z/smoking_frame/dev",
+    "limit": 8,
+    "image_policy": "letterbox",
+    "split": "dev",
+    "repeats": 1,
+    "warmup": 1,
+    "seed": 42,
+    "max_side": 768,
+    "max_new_tokens": 64,
+    "timeout_seconds": 3600.0,
+    "max_rss_mb": 24576.0,
+    "cache_dir": "${CACHE_ROOT}/hub",
+    "offline": false,
+    "worker_config": null,
+    "threads": 16,
+    "duty_cycle": 1.0,
+    "max_samples_per_second": null,
+    "cpu_cores": null
+  },
+  "definitions": {
+    "normal": "An ordinary scene with no evidence of smoking.",
+    "smoking": "A person visibly smoking a cigarette, cigar, or pipe, with a smoking object near the mouth or visible smoke."
+  },
+  "samples": [
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_000555_2025-10-13_11-39-13-277_AM_jpg.rf.f5dc01a49a1145f24b19445e3221087b.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_022188_2025-09-15_03-36-04-651_PM_jpg.rf.700b1e42eba48b1f7d379df08d983af5.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_010983_2025-10-26_03-18-23-796_PM_jpg.rf.bdd6a0f315c05e2dfe9eb64fd4c7166d.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_004179_2025-09-11_12-58-19-604_PM_jpg.rf.a3d0b03288a214ac2d63e3ce04642832.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_003664_2025-09-11_12-49-22-326_PM_jpg.rf.aab4dfb1b13ba0c2a9a47f4a1ffe575e.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-11"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c2_001312_2025-09-15_09-32-49-510_AM_jpg.rf.24322b70eacf053efe2fbbc0ca0fa7c0.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c2:2025-09-15"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_001418_2025-10-26_12-31-28-231_PM_jpg.rf.1939ba54a106f34498c2c33d3585e09e.jpg",
+      "label": "normal",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-26"
+    },
+    {
+      "path": "${DATA_ROOT}/raw/datasets/smoking/smoking-video.v1i.coco/train/frame_c1_001220_2025-10-13_11-50-49-996_AM_jpg.rf.cbc17cdeef140ee6fbae3f53acf47ea5.jpg",
+      "label": "smoking",
+      "split": "test",
+      "group_id": "smoke:c1:2025-10-13"
+    }
+  ]
+}

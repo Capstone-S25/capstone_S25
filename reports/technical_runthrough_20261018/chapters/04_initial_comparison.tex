@@ -1,0 +1,48 @@
+\chapter{Corrected workflow and the first complete GPU comparison}
+\label{ch:baseline}
+\section{Make quality testing use the available hardware}
+The original environment contained CPU-only Torch 2.14.1, while the host's NVIDIA kernel module and user-space NVML library disagreed: kernel 580.159.03 versus NVML 580.178. Consequently \texttt{nvidia-smi} failed, even though an RTX 5000 Ada GPU was physically present. The solution was an isolated CUDA environment rather than altering the system driver. Official matching NVIDIA user-space libraries were downloaded and checksum-verified under the project data tree. Torch 2.8.0+cu128 and torchvision 0.23.0 were installed in \path{.venv-gpu}; real CUDA tensor multiplication and CLIP inference verified the path.
+
+The GPU launcher checks the loaded kernel module version before selecting matching local libraries. The original CPU environment and system installation remain unchanged. Initially only 4,275 MiB of the approximately 32,760 MiB device was free. After the user freed memory, 30,115 MiB became available and the complete unquantized MiniCPM GPU run succeeded. Its observed peak reserved tensor memory was 8,116 MiB. This explains the earlier interruption and why a failed small CPU-era run is not treated as the final quality result.
+
+\section{Workflow changes implemented before the full comparison}
+Device configuration was propagated through the image adapters and all VadCLIP stages. Explicit CUDA requests now fail clearly if unavailable; automatic placement records a CPU fallback rather than hiding it. Dtype selection keeps CPU inference float32 and uses supported BF16/FP16 for generative GPU models while preserving CLIP float32 defaults. Native CLIP batching and optional isolated model workers retain input order and distinguish batch-amortized timing from one-input latency.
+
+The full accuracy runner removed its default host RAM cap and artificial sleeps, increased the timeout to four hours, and uses available CPU affinity unless explicitly constrained. A hidden per-group preparation cap was removed: all confirmed inputs are retained unless a cap is requested. Reusing an older preparation can still retain its old cap, which is why counts and preparation identity are recorded. Collector failures are isolated; reviewed protocol names and whitespace are validated; weight/cache paths are configurable; and the official VadCLIP feature encoder checksum is verified.
+
+Reports were expanded to include confusion counts, precision, recall, F1, FPR, AP, AUROC, response coverage, calibrated operating points and qualified resource measurements. Assembly of separate jobs checks ordered sample identities, pixel hashes, definitions, package code hashes, metric version and inference settings before combining them. It rejects duplicate model names and recomputes metrics rather than merely concatenating report text.
+
+\section{The completed 13 October accuracy cohort}
+All four image models process 3,350 confirmed protocol inputs each, totaling 13,400 predictions: 3,278 smoking development frames and 72 unattended frame/window inputs. The smoking set has 1,422 positives and 1,856 normals across 16 already inspected camera/day groups. The unattended frame and six-second-window protocols each have 20 development endpoints (4 positive/16 normal) and 16 test endpoints (4/12), with one positive source sequence per split.
+
+The CLIP batch size is 32; VLMs use one input per call. Generation is deterministic with a 64-token budget; CLIP uses float32 and the unquantized VLMs use bfloat16. There is one quality prediction per selected input and no pacing. All runtime attempts succeed. SmolVLM returns 14 invalid smoking responses, which remain in the quality denominator.
+
+\input{generated/baseline_smoking.tex}
+\finding{At the recorded raw decision, MobileCLIP finds eight smoking positives, SmolVLM 77, and SigLIP/MiniCPM none. These are development results on previously inspected sessions, not new-camera performance.}
+
+The positive prevalence is approximately 0.434; a constant-score ranking has AP at that reference level. CLIP AP values close to it and paired confidence intervals crossing zero difference do not establish a reliable winner. An always-normal answer reaches approximately 56.6\% accuracy while missing every event. The development diagnosis therefore focuses on recall and false positives rather than ordinary accuracy.
+
+\input{generated/baseline_unattended.tex}
+SmolVLM predicts unattended items for every small-cohort input. Its test F1 0.400 equals the always-positive baseline with FPR 100\%. MiniCPM is always normal. A MobileCLIP contact sheet finds one of four positives but falsely flags three normals. Development threshold fitting can increase recall at severe false-positive cost or drive recall to zero under the empirical FPR budget. It does not solve the underlying source/decision problem.
+
+\section{Prompt and sampling diagnostics}
+A separate short-description CLIP check uses every smoking development frame on CPU float32 with the same images. It changes the text to ordinary activity versus a person smoking a cigarette. MobileCLIP recall rises to 0.533 and F1 to 0.490, but FPR rises to 0.494 and AP is only 0.460. SigLIP remains always normal. This exposes strong prompt-dependent decision bias; it is not a validated new detector and does not justify choosing prompts from test outcomes.
+
+The recording-balanced CPU comparison has 308 inputs, and the full CLIP CPU run has 3,350. They are diagnostic artifacts for sampling/numerical differences. The uncapped completed GPU study is the principal frozen-model quality comparison. CPU float32 and GPU BF16 VLM decisions need not be identical, so model quality is not inferred from mixing those runs.
+
+\section{Separate supervised offline VadCLIP smoking study}
+VadCLIP uses nine training sessions (1,910 frames), four development sessions (312 frames) and three test sessions (1,056 frames, 560 positive/496 normal). It trains a temporal adapter over frozen CLIP-B/16 features. The selected dual-mean branch uses a development threshold of approximately 0.738177, giving 290 TP, 177 FP, 270 FN and 319 TN. The alternative align, visual, dual-max and feature baselines are retained.
+\input{generated/vadclip.tex}
+The visual and dual-max branches collapse to all-positive decisions, yielding an apparently higher F1 around .693 while AUROC is .5. Dual-mean has some ranking discrimination but 35.7\% FPR at 51.8\% recall is not a usable alert point. A development-only learning-rate sweep over $10^{-5},10^{-4},10^{-3}$ selects $10^{-3}$ and epoch one, with test AP approximately .632, close to the main GPU result. Only the chosen sweep candidate is evaluated on its test split. The small sweep does not exhaust architecture or training choices.
+
+This is supervised, offline and split differently from the zero-shot image comparison. It is not the original weakly supervised benchmark protocol and does not establish five-target performance. Context within a sparse whole session may include future information relative to a frame; it is not a causal streaming detector.
+
+\section{Historical CPU latency pilot: recorded, not rerun}
+For completeness, a separate historical CPU replay used the Threadripper PRO 7975WX, four fixed logical CPUs, four Torch threads, float32, one worker and batch size one. All models saw the same eight development images, with three warmups and three measured repeats, giving 24 observations per model. Decode/preprocess/parse are included; model load/warmup are excluded from per-input latency. Peak RSS includes loading and warmup.
+\input{generated/historical_latency.tex}
+This is a small replay on the recorded host, not emulation of another CPU or a modern deployment estimate. It does not include camera queueing, longer answers or larger native inputs. After the user removed latency testing from the objective, later work did not repeat it. Event onset delay reported later is a detection-quality metric, not a replacement latency benchmark.
+\evidence{results/gpu_all_models_20261013/report.md}
+\evidence{reports/hardware_20261013.json}
+
+\section{Validation at this stage}
+The completed workflow review records 144 tests passing in both CPU and isolated GPU environments, including device placement, token dtypes, native batching, AP ties, uncapped preparation, rename-receipt invalidation, source/pixel leakage and incompatible-report rejection. All 13,400 planned predictions are checked and metrics recomputed. This supports execution and artifact integrity; it cannot compensate for the small number of event sources or missing task labels.

@@ -1,0 +1,22 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.1043\linewidth}>{\raggedright\arraybackslash}p{0.2609\linewidth}>{\raggedright\arraybackslash}p{0.0522\linewidth}>{\raggedright\arraybackslash}p{0.0522\linewidth}>{\raggedright\arraybackslash}p{0.0678\linewidth}>{\raggedright\arraybackslash}p{0.0678\linewidth}>{\raggedright\arraybackslash}p{0.0678\linewidth}>{\raggedright\arraybackslash}p{0.0835\linewidth}>{\raggedright\arraybackslash}p{0.0835\linewidth}@{}}
+\caption[Strategy transfer]{New-source/image-holdout results at first strategy evaluation; not later HMDB-adapted cohorts.}\label{tab:strategy_transfer}\\
+\toprule
+\textbf{Model} & \textbf{Source/cohort} & \textbf{N} & \textbf{+} & \textbf{Old AP} & \textbf{New AP} & \textbf{F1} & \textbf{Recall} & \textbf{FPR} \\
+\midrule\endfirsthead
+\multicolumn{9}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{Model} & \textbf{Source/cohort} & \textbf{N} & \textbf{+} & \textbf{Old AP} & \textbf{New AP} & \textbf{F1} & \textbf{Recall} & \textbf{FPR} \\
+\midrule\endhead
+\midrule\multicolumn{9}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+Mobile\allowbreak{}CLIP & Smoking: new photo holdout & 224 & 112 & 0.953 & 0.997 & 0.945 & 100.0\% & 11.6\% \\
+Mobile\allowbreak{}CLIP & Smoking: new HMDB action source & 906 & 109 & 0.605 & 0.576 & 0.496 & 58.7\% & 10.7\% \\
+Mobile\allowbreak{}CLIP & Public sleep: new author photos & 28 & 17 & 0.925 & 0.952 & 0.640 & 47.1\% & 0.0\% \\
+Mobile\allowbreak{}CLIP & Unattended: new MEVA action proxy & 27 & 15 & 0.569 & 0.545 & 0.683 & 93.3\% & 100.0\% \\
+SigLIP & Smoking: new photo holdout & 224 & 112 & 0.995 & 1.000 & 0.966 & 100.0\% & 7.1\% \\
+SigLIP & Smoking: new HMDB action source & 906 & 109 & 0.685 & 0.664 & 0.371 & 84.4\% & 37.0\% \\
+SigLIP & Public sleep: new author photos & 28 & 17 & 0.943 & 0.933 & 0.522 & 35.3\% & 0.0\% \\
+SigLIP & Unattended: new MEVA action proxy & 27 & 15 & 0.637 & 0.621 & 0.629 & 73.3\% & 75.0\% \\
+\end{longtable}\endgroup

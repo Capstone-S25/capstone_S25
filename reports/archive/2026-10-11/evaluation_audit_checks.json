@@ -1,0 +1,643 @@
+{
+  "audit_date": "2026-10-11",
+  "python": "3.12.14",
+  "bundle": {
+    "n_images": 80,
+    "class_counts": {
+      "loitering": 16,
+      "littering": 16,
+      "smoking": 16,
+      "rough_sleeping": 16,
+      "normal": 16
+    },
+    "unique_groups": 60,
+    "groups_per_class": {
+      "normal": 16,
+      "littering": 12,
+      "loitering": 16,
+      "rough_sleeping": 16,
+      "smoking": 16,
+      "unattended_items": 0
+    },
+    "group_counts": {
+      "loit:03672_png_jpg.rf.ae341294be00e3006d586afa9fcb6e2b": 1,
+      "loit:384_png_jpg.rf.4adc48433797be737d20aaab553300d0": 1,
+      "litter:video_5": 1,
+      "loit:00036_png_jpg.rf.1700083b9d754d7652c4a42253619388": 1,
+      "litter:video_12": 2,
+      "loit:02313_png_jpg.rf.5cfe18d4f5f2667cc616e7fca81a49f8": 1,
+      "smoke:c1:2025-10-07": 2,
+      "rough:laying111": 1,
+      "loit:03762_png_jpg.rf.06f3f3eb2ad58cbc453e5793c0a8e935": 1,
+      "rough:laying12": 1,
+      "smoke:c2:2025-10-29": 2,
+      "smoke:c1:2025-09-18": 2,
+      "loit:00846_png_jpg.rf.15cde9b5489e917e88c86fc822e08d87": 1,
+      "rough:laying104": 1,
+      "rough:laying109": 1,
+      "loit:00342_png_jpg.rf.8aaded0491c0549c114e9bf325e7d82c": 1,
+      "litter:video_6": 1,
+      "loit:359_png_jpg.rf.aa95b5e36a23e247bce7ffccf3cba318": 1,
+      "smoke:c1:2025-10-13": 2,
+      "smoke:c4:2025-10-28": 2,
+      "loit:29_png_jpg.rf.e40152d5c5a1b30fc18d72f90a777098": 1,
+      "smoke:c1:2025-09-14": 2,
+      "litter:video_10": 2,
+      "litter:video_1": 1,
+      "rough:laying69": 1,
+      "rough:laying32": 1,
+      "rough:laying47": 1,
+      "loit:02529_png_jpg.rf.18b307c77e4f703070c75da23358ecb1": 1,
+      "rough:laying62": 1,
+      "smoke:c1:2025-09-15": 2,
+      "smoke:c4:2025-10-16": 2,
+      "smoke:c2:2025-10-14": 2,
+      "litter:video_11": 2,
+      "rough:laying15": 1,
+      "litter:video_8": 1,
+      "rough:laying49": 1,
+      "litter:video_2": 1,
+      "smoke:c1:2025-09-11": 2,
+      "loit:00990_png_jpg.rf.d17feb5039e563e372299d33427939dd": 1,
+      "smoke:c2:2025-09-15": 2,
+      "loit:03546_png_jpg.rf.350e1840c2a106ed1fe661286455ed24": 1,
+      "litter:video_9": 1,
+      "smoke:c2:2025-09-11": 2,
+      "loit:259_png_jpg.rf.8fd54da3aa8b2d0c7c495c11c49f6e80": 1,
+      "loit:02151_png_jpg.rf.a413e381552b8d5106955626e417a663": 1,
+      "loit:376_png_jpg.rf.875d1ec3f9bca2fe485ac77cbd5da02f": 1,
+      "rough:laying70": 1,
+      "smoke:c4:2025-10-26": 2,
+      "litter:video_7": 1,
+      "rough:laying36": 1,
+      "rough:laying89": 1,
+      "rough:laying48": 1,
+      "rough:laying102": 1,
+      "smoke:c1:2025-10-26": 2,
+      "litter:video_3": 2,
+      "litter:video_4": 1,
+      "smoke:c2:2025-10-07": 2,
+      "smoke:c2:2025-09-14": 2,
+      "loit:01170_png_jpg.rf.4ebb366aa9db84b72deb190798c8c958": 1,
+      "rough:laying67": 1
+    },
+    "dimensions": {
+      "loitering": {
+        "(640, 640)": 16
+      },
+      "littering": {
+        "(1920, 1080)": 16
+      },
+      "smoking": {
+        "(640, 480)": 16
+      },
+      "rough_sleeping": {
+        "(1024, 1024)": 16
+      },
+      "normal": {
+        "(640, 480)": 16
+      }
+    },
+    "hash_errors": [],
+    "exact_duplicate_groups": [],
+    "similarity_candidates": [
+      {
+        "first": "loitering/03672_png_jpg.rf.ae341294be00e3006d586afa9fcb6e2b.jpg",
+        "second": "loitering/00036_png_jpg.rf.1700083b9d754d7652c4a42253619388.jpg",
+        "first_label": "loitering",
+        "second_label": "loitering",
+        "dhash_distance": 4
+      },
+      {
+        "first": "loitering/03672_png_jpg.rf.ae341294be00e3006d586afa9fcb6e2b.jpg",
+        "second": "loitering/03546_png_jpg.rf.350e1840c2a106ed1fe661286455ed24.jpg",
+        "first_label": "loitering",
+        "second_label": "loitering",
+        "dhash_distance": 4
+      },
+      {
+        "first": "loitering/03672_png_jpg.rf.ae341294be00e3006d586afa9fcb6e2b.jpg",
+        "second": "loitering/02151_png_jpg.rf.a413e381552b8d5106955626e417a663.jpg",
+        "first_label": "loitering",
+        "second_label": "loitering",
+        "dhash_distance": 2
+      },
+      {
+        "first": "loitering/03672_png_jpg.rf.ae341294be00e3006d586afa9fcb6e2b.jpg",
+        "second": "loitering/01170_png_jpg.rf.4ebb366aa9db84b72deb190798c8c958.jpg",
+        "first_label": "loitering",
+        "second_label": "loitering",
+        "dhash_distance": 4
+      },
+      {
+        "first": "loitering/00036_png_jpg.rf.1700083b9d754d7652c4a42253619388.jpg",
+        "second": "loitering/02151_png_jpg.rf.a413e381552b8d5106955626e417a663.jpg",
+        "first_label": "loitering",
+        "second_label": "loitering",
+        "dhash_distance": 4
+      },
+      {
+        "first": "loitering/02313_png_jpg.rf.5cfe18d4f5f2667cc616e7fca81a49f8.jpg",
+        "second": "loitering/03762_png_jpg.rf.06f3f3eb2ad58cbc453e5793c0a8e935.jpg",
+        "first_label": "loitering",
+        "second_label": "loitering",
+        "dhash_distance": 4
+      },
+      {
+        "first": "loitering/02313_png_jpg.rf.5cfe18d4f5f2667cc616e7fca81a49f8.jpg",
+        "second": "loitering/00846_png_jpg.rf.15cde9b5489e917e88c86fc822e08d87.jpg",
+        "first_label": "loitering",
+        "second_label": "loitering",
+        "dhash_distance": 0
+      },
+      {
+        "first": "loitering/02313_png_jpg.rf.5cfe18d4f5f2667cc616e7fca81a49f8.jpg",
+        "second": "loitering/00342_png_jpg.rf.8aaded0491c0549c114e9bf325e7d82c.jpg",
+        "first_label": "loitering",
+        "second_label": "loitering",
+        "dhash_distance": 2
+      },
+      {
+        "first": "loitering/02313_png_jpg.rf.5cfe18d4f5f2667cc616e7fca81a49f8.jpg",
+        "second": "loitering/02529_png_jpg.rf.18b307c77e4f703070c75da23358ecb1.jpg",
+        "first_label": "loitering",
+        "second_label": "loitering",
+        "dhash_distance": 2
+      },
+      {
+        "first": "loitering/02313_png_jpg.rf.5cfe18d4f5f2667cc616e7fca81a49f8.jpg",
+        "second": "loitering/00990_png_jpg.rf.d17feb5039e563e372299d33427939dd.jpg",
+        "first_label": "loitering",
+        "second_label": "loitering",
+        "dhash_distance": 4
+      },
+      {
+        "first": "loitering/03762_png_jpg.rf.06f3f3eb2ad58cbc453e5793c0a8e935.jpg",
+        "second": "loitering/00846_png_jpg.rf.15cde9b5489e917e88c86fc822e08d87.jpg",
+        "first_label": "loitering",
+        "second_label": "loitering",
+        "dhash_distance": 4
+      },
+      {
+        "first": "loitering/03762_png_jpg.rf.06f3f3eb2ad58cbc453e5793c0a8e935.jpg",
+        "second": "loitering/00342_png_jpg.rf.8aaded0491c0549c114e9bf325e7d82c.jpg",
+        "first_label": "loitering",
+        "second_label": "loitering",
+        "dhash_distance": 2
+      },
+      {
+        "first": "loitering/03762_png_jpg.rf.06f3f3eb2ad58cbc453e5793c0a8e935.jpg",
+        "second": "loitering/02529_png_jpg.rf.18b307c77e4f703070c75da23358ecb1.jpg",
+        "first_label": "loitering",
+        "second_label": "loitering",
+        "dhash_distance": 4
+      },
+      {
+        "first": "normal/frame_c1_004197_2025-09-18_10-43-26-612_AM_jpg.rf.d048e93a33b81491994efe04e344bbea.jpg",
+        "second": "smoking/frame_c1_004205_2025-09-18_10-43-34-993_AM_jpg.rf.c1efab7ea84f2dd89cde590ff9185676.jpg",
+        "first_label": "normal",
+        "second_label": "smoking",
+        "dhash_distance": 5
+      },
+      {
+        "first": "loitering/00846_png_jpg.rf.15cde9b5489e917e88c86fc822e08d87.jpg",
+        "second": "loitering/00342_png_jpg.rf.8aaded0491c0549c114e9bf325e7d82c.jpg",
+        "first_label": "loitering",
+        "second_label": "loitering",
+        "dhash_distance": 2
+      },
+      {
+        "first": "loitering/00846_png_jpg.rf.15cde9b5489e917e88c86fc822e08d87.jpg",
+        "second": "loitering/02529_png_jpg.rf.18b307c77e4f703070c75da23358ecb1.jpg",
+        "first_label": "loitering",
+        "second_label": "loitering",
+        "dhash_distance": 2
+      },
+      {
+        "first": "loitering/00846_png_jpg.rf.15cde9b5489e917e88c86fc822e08d87.jpg",
+        "second": "loitering/00990_png_jpg.rf.d17feb5039e563e372299d33427939dd.jpg",
+        "first_label": "loitering",
+        "second_label": "loitering",
+        "dhash_distance": 4
+      },
+      {
+        "first": "loitering/00342_png_jpg.rf.8aaded0491c0549c114e9bf325e7d82c.jpg",
+        "second": "loitering/02529_png_jpg.rf.18b307c77e4f703070c75da23358ecb1.jpg",
+        "first_label": "loitering",
+        "second_label": "loitering",
+        "dhash_distance": 2
+      },
+      {
+        "first": "loitering/00342_png_jpg.rf.8aaded0491c0549c114e9bf325e7d82c.jpg",
+        "second": "loitering/00990_png_jpg.rf.d17feb5039e563e372299d33427939dd.jpg",
+        "first_label": "loitering",
+        "second_label": "loitering",
+        "dhash_distance": 4
+      },
+      {
+        "first": "littering/video_12_13_jpg.rf.44dcf0a7fa4618e2a1876fa9c0a13a5a.jpg",
+        "second": "littering/video_11_20_jpg.rf.180a4c7df038216eef248bacba96d16b.jpg",
+        "first_label": "littering",
+        "second_label": "littering",
+        "dhash_distance": 5
+      },
+      {
+        "first": "normal/frame_c1_004010_2025-09-14_11-31-39-326_AM_jpg.rf.510b797c8950162e8402397a4922a612.jpg",
+        "second": "smoking/frame_c1_003406_2025-09-14_11-21-08-646_AM_jpg.rf.dcd7a5b9450630750d3316278bfd6dad.jpg",
+        "first_label": "normal",
+        "second_label": "smoking",
+        "dhash_distance": 1
+      },
+      {
+        "first": "smoking/frame_c2_001753_2025-10-14_12-15-17-615_PM_jpg.rf.8ebcf5c4b7b1d2f031684d761198a244.jpg",
+        "second": "normal/frame_c2_001773_2025-10-14_12-15-38-493_PM_jpg.rf.87abf481353f03bb8de2a0357bb2579e.jpg",
+        "first_label": "smoking",
+        "second_label": "normal",
+        "dhash_distance": 4
+      },
+      {
+        "first": "smoking/frame_c1_003730_2025-09-11_12-50-33-021_PM_jpg.rf.3ba238c9d8fa1f18174f05762ef22650.jpg",
+        "second": "normal/frame_c1_004363_2025-09-11_01-01-33-934_PM_jpg.rf.850b22ec914153b5f88e497cdc15398f.jpg",
+        "first_label": "smoking",
+        "second_label": "normal",
+        "dhash_distance": 2
+      },
+      {
+        "first": "loitering/03546_png_jpg.rf.350e1840c2a106ed1fe661286455ed24.jpg",
+        "second": "loitering/02151_png_jpg.rf.a413e381552b8d5106955626e417a663.jpg",
+        "first_label": "loitering",
+        "second_label": "loitering",
+        "dhash_distance": 2
+      },
+      {
+        "first": "normal/frame_c2_011421_2025-09-14_01-40-32-402_PM_jpg.rf.e66af77d01729e7a3d6fb010639730ce.jpg",
+        "second": "smoking/frame_c2_011407_2025-09-14_01-40-17-843_PM_jpg.rf.2e8d9a5679f738f51a6ff59c2bde3d7f.jpg",
+        "first_label": "normal",
+        "second_label": "smoking",
+        "dhash_distance": 4
+      }
+    ],
+    "manifest_columns": [
+      "file",
+      "label",
+      "group_id",
+      "split",
+      "source_path",
+      "sha256"
+    ],
+    "original_source_files_available": 0,
+    "dimension_only_diagnostic": {
+      "labeled_samples": 80,
+      "valid_predictions": 80,
+      "prediction_coverage": 1.0,
+      "accuracy_including_failures": 0.8,
+      "accuracy": 0.8,
+      "macro_f1": 0.7333333333333333,
+      "per_class": {
+        "normal": {
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "support": 16
+        },
+        "littering": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 16
+        },
+        "loitering": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 16
+        },
+        "rough_sleeping": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 16
+        },
+        "smoking": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 16
+        },
+        "unattended_items": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        }
+      },
+      "confusion_matrix": {
+        "normal": {
+          "normal": 16,
+          "littering": 0,
+          "loitering": 0,
+          "rough_sleeping": 0,
+          "smoking": 0,
+          "unattended_items": 0
+        },
+        "littering": {
+          "normal": 0,
+          "littering": 16,
+          "loitering": 0,
+          "rough_sleeping": 0,
+          "smoking": 0,
+          "unattended_items": 0
+        },
+        "loitering": {
+          "normal": 0,
+          "littering": 0,
+          "loitering": 16,
+          "rough_sleeping": 0,
+          "smoking": 0,
+          "unattended_items": 0
+        },
+        "rough_sleeping": {
+          "normal": 0,
+          "littering": 0,
+          "loitering": 0,
+          "rough_sleeping": 16,
+          "smoking": 0,
+          "unattended_items": 0
+        },
+        "smoking": {
+          "normal": 16,
+          "littering": 0,
+          "loitering": 0,
+          "rough_sleeping": 0,
+          "smoking": 0,
+          "unattended_items": 0
+        },
+        "unattended_items": {
+          "normal": 0,
+          "littering": 0,
+          "loitering": 0,
+          "rough_sleeping": 0,
+          "smoking": 0,
+          "unattended_items": 0
+        }
+      },
+      "binary": {
+        "tp": 48,
+        "fp": 0,
+        "fn": 16,
+        "tn": 16,
+        "precision": 1.0,
+        "recall": 0.75,
+        "f1": 0.8571428571428571,
+        "false_positive_rate": 0.0,
+        "roc_auc": 0.875,
+        "auc_samples": 80
+      }
+    },
+    "diagnostic_caveat": "The dimension rule was designed after inspecting this dataset; it diagnoses source confounding and is not a model benchmark."
+  },
+  "portable_manifest_samples": 80,
+  "classification_probes": {
+    "macro_f1_without_unattended_support": {
+      "current": 1.0,
+      "fixed_six_class_average": 0.8333333333333334
+    },
+    "abstentions_excluded_from_f1": {
+      "current_metrics": {
+        "labeled_samples": 3,
+        "valid_predictions": 2,
+        "prediction_coverage": 0.6666666666666666,
+        "accuracy_including_failures": 0.6666666666666666,
+        "accuracy": 1.0,
+        "macro_f1": 1.0,
+        "per_class": {
+          "normal": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 1
+          },
+          "littering": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 0
+          },
+          "loitering": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 0
+          },
+          "rough_sleeping": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 0
+          },
+          "smoking": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 1
+          },
+          "unattended_items": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 0
+          }
+        },
+        "confusion_matrix": {
+          "normal": {
+            "normal": 1,
+            "littering": 0,
+            "loitering": 0,
+            "rough_sleeping": 0,
+            "smoking": 0,
+            "unattended_items": 0
+          },
+          "littering": {
+            "normal": 0,
+            "littering": 0,
+            "loitering": 0,
+            "rough_sleeping": 0,
+            "smoking": 0,
+            "unattended_items": 0
+          },
+          "loitering": {
+            "normal": 0,
+            "littering": 0,
+            "loitering": 0,
+            "rough_sleeping": 0,
+            "smoking": 0,
+            "unattended_items": 0
+          },
+          "rough_sleeping": {
+            "normal": 0,
+            "littering": 0,
+            "loitering": 0,
+            "rough_sleeping": 0,
+            "smoking": 0,
+            "unattended_items": 0
+          },
+          "smoking": {
+            "normal": 0,
+            "littering": 0,
+            "loitering": 0,
+            "rough_sleeping": 0,
+            "smoking": 1,
+            "unattended_items": 0
+          },
+          "unattended_items": {
+            "normal": 0,
+            "littering": 0,
+            "loitering": 0,
+            "rough_sleeping": 0,
+            "smoking": 0,
+            "unattended_items": 0
+          }
+        },
+        "binary": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "tn": 1,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "false_positive_rate": 0.0,
+          "roc_auc": null,
+          "auc_samples": 0
+        }
+      },
+      "all_sample_smoking_recall": 0.5,
+      "all_sample_binary_f1_if_abstention_means_no_detection": 0.6666666666666666
+    },
+    "always_anomaly_f1_at_bundle_prevalence": 0.8888888888888888,
+    "siglip_confusion_matrices_consistent_with_reported_rounded_f1s": [
+      {
+        "tp": 55,
+        "fp": 14,
+        "fn": 9,
+        "tn": 2,
+        "false_positive_rate": 0.875
+      }
+    ],
+    "reconstruction_caveat": "Inferred from the report's class counts/full coverage and rounded F1s, not verified against absent per-image predictions."
+  },
+  "vadclip_probes": {
+    "versions": {
+      "numpy": "2.5.4",
+      "sklearn": "1.9.1",
+      "torch": "2.14.1+cpu"
+    },
+    "threshold_index": {
+      "reported": {
+        "n": 2,
+        "n_pos": 1,
+        "n_neg": 1,
+        "auroc": 1.0,
+        "aupr": 1.0,
+        "f1_opt": 1.0,
+        "precision_opt": 1.0,
+        "recall_opt": 1.0,
+        "threshold_opt": 0.1,
+        "acc_at_f1opt": 0.5
+      },
+      "actual_at_reported_threshold": {
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6666666666666666
+      },
+      "correct_threshold_for_reported_prf": 0.9
+    },
+    "all_positive_optimum": {
+      "n": 2,
+      "n_pos": 1,
+      "n_neg": 1,
+      "auroc": 0.5,
+      "aupr": 0.5,
+      "f1_opt": 0.6666666666666666,
+      "precision_opt": 0.5,
+      "recall_opt": 1.0,
+      "threshold_opt": "inf",
+      "acc_at_f1opt": 0.5
+    },
+    "fractional_labels": {
+      "raw_labels": [
+        0,
+        1,
+        1,
+        0
+      ],
+      "soft_targets": [
+        0.5,
+        0.5
+      ],
+      "evaluation_targets_after_astype_int": [
+        0,
+        0
+      ],
+      "raw_positive_count": 2,
+      "evaluation_positive_count": 0
+    },
+    "best_state_alias": {
+      "saved_value_before_update": 1.0,
+      "saved_value_after_update": 2.0,
+      "shares_storage": true
+    },
+    "unannotated_frame_labels": {
+      "frame_manifest_samples": 0,
+      "vadclip_session_labels": {
+        "c1:2025-01-01": [
+          0
+        ]
+      }
+    },
+    "padding_invariance": {
+      "real_frames": 2,
+      "padded_frames": 6,
+      "max_real_visual_logit_change_when_only_padding_changes": 2.1023049354553223,
+      "max_real_alignment_logit_change_when_only_padding_changes": 0.9713642597198486,
+      "caveat": "Tiny random model and synthetic perturbation; proves unmasked dependencies, not a measured change in published accuracy."
+    },
+    "nondivisible_attention_window": {
+      "visual_length": 8,
+      "window": 3,
+      "fully_masked_rows": [
+        6,
+        7
+      ],
+      "caveat": "Latent CLI configuration bug; reported windows 1/8/16 at lengths 128/256/512 divide evenly."
+    }
+  },
+  "source_sha256": {
+    "scripts/__init__.py": "2d45d2b4f310637894f3128cc0b96d79c7b348dfd37411762aef82e3194e2ca6",
+    "scripts/audit_evaluations.py": "54af72810c6aae85a00c27930203d4bd0c3e409d810dcc5ed7f18c599341c81b",
+    "scripts/benchmark.py": "9b30a9e349637564058dc04754db50a9407a27488f776f0d00b1a72c47d54baa",
+    "scripts/benchmark_improve.py": "77093b4b41b4056edfbaeb2cde65f29de7787f825315f953ccc57e584b40f3b5",
+    "scripts/build_manifest.py": "2dff716f458dcacac94533fb474871466ee11a34006acc8ce08efd283d711fd0",
+    "scripts/data.py": "a1a62c5a150e8307007787f74d19bfc1f7fb5c7b5c65ee4fe4ec9aea194f9dbf",
+    "scripts/derive_labels.py": "2d53079e007f41f73ce072628a2a9f1b2c777ca25a6a3e7fbe2d57f6b9581014",
+    "scripts/fetch_data.py": "8009b1294b8dc816f6a661395a9584d554b44c2f52b37a3d0eb2e2997ab29b4e",
+    "scripts/init.py": "00ec9d390529b5e358cac23c02145b6e968ef71bd0a1af8ac83ca0b28cbdce49",
+    "scripts/make_report_figures.py": "e858309ef138d9b88b5b07201180f0f736f0372c6c23bb84e4a3a2ca93410af4",
+    "scripts/make_test_data.py": "258ef4ee9509e667661ee5da9d44d2997e6ed783da641d15be11dfa2104ac114",
+    "scripts/metrics.py": "28814b60620118de9b33e965aaebfd0074ddaccb8055e3f01d60cab5f564c1c2",
+    "scripts/models.py": "851e194bb0ecd55f81602d67f31935e52b700504273b33a81fcd5db1a3e37cae",
+    "scripts/throttle.py": "8d2d33d6cc30cf0a3a70ee3fb8932e428a02190870827c4387e111abe4b40552",
+    "scripts/vadclip/__init__.py": "f9e5b3728d9a00c5eb69c07bc4a0bbf64e5cae464291f38c41a94d858a092644",
+    "scripts/vadclip/baselines.py": "252956f00cbbdcf7e6651fc99ed6e5b1b159f94453ef37779908ff6802919b29",
+    "scripts/vadclip/clip_b16.py": "209d4d63a1d3fdc42b1e31a573eabaca22441b9148c3c6efb4f3039eaf0dd92e",
+    "scripts/vadclip/data.py": "787ad077bd49ecd2621ffde533cb48c8762fb4a7b14e3f1a0b72f5bc1a3d5b99",
+    "scripts/vadclip/evaluate.py": "b96b6486ca39d28186ecb4b0ee2c4a88bfa0ea7184ac769cf0f373d50f387cde",
+    "scripts/vadclip/extract_features.py": "f47b4fa5e5dd98cf341cb06fed14b332b30b6d8aeb591d17eba412bc2ec0e117",
+    "scripts/vadclip/layers.py": "325dc96e5d39764e4402857c9dd6947a3bf53ef05931ef16b4d0f0e66dd38c7e",
+    "scripts/vadclip/metrics.py": "5d345429dd4b67b294f8709a082ae3391d66a8bb8d83194f88485f1c5a6451aa",
+    "scripts/vadclip/model.py": "fb46fba940f823cc1d989f8b3be55dc2a0517e2b89929140b0a18aefd25fee4d",
+    "scripts/vadclip/train.py": "102e3b5753592fb6d66e5b422f1f241e47dcd578cde138b0a9488518dfc09a24",
+    "scripts/vadclip.py": "7a70614e5e5ed46e44db3833ade0aaf230285bd1434693166b816d07827049fb"
+  },
+  "raw_results_present": false
+}

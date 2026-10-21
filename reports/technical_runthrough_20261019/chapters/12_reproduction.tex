@@ -1,0 +1,81 @@
+\chapter{Software, artifacts, reproducibility and reporting}
+\label{ch:reproduction}
+\section{Repository organization and portable execution}
+The common package \path{anomaly_eval/} contains data/provenance, datasets, model adapters, resource controls, metrics and training code. The primary entry point is \texttt{anomaly-eval} or \texttt{python -m anomaly\_eval}; the notebook is a front end rather than an independent evaluation implementation. Data, results, cache, bundle and configuration roots can be supplied through command-line options, a workspace JSON configuration or documented environment variables. Machine-specific paths are diagnostic metadata rather than experiment identities.
+
+Existing pretrained caches and pinned revisions are retained. The GPU launcher selects matching project-local driver libraries and \path{.venv-gpu}. CPU preparation can add isolated OpenCV dependencies to \texttt{PYTHONPATH}. Model accuracy is unpaced; explicit concurrency/batch choices use the GPU's actual capacity. Download source rate limits are respected independently of compute utilization.
+
+\section{Reproduce a new study without overwriting completed output}
+Completed training/evaluation directories are intentionally immutable. Use new output paths for changed protocols. The following are representative commands; the linked study guides contain acquisition dependencies and each dated launcher's fixed-path behavior.
+\begin{lstlisting}
+# Original shared image quality run, available GPU, all confirmed inputs.
+scripts/evaluate_gpu.sh run --device cuda --batch-size 32
+
+# New actual visual fine-tune: use a new output directory.
+scripts/evaluate_gpu.sh train-clip \
+  --manifest data/clip_training_20261015/samples.jsonl \
+  --model siglip2-b16-224 --output results/new_training_run \
+  --batch-size 32 --workers 6 --threads 8 --epochs 10 \
+  --learning-rates 1e-5 3e-5 --seed 42
+
+# New policy replay output; does not retrain CLIP or rerun the VLMs.
+PYTHONPATH="$PWD" .venv/bin/python scripts/run_event_improvements.py \
+  --output results/new_event_policy_replay
+\end{lstlisting}
+
+The primary inference interface can classify a static image, timed views or an offline dumping clip using the trained routing. Duration-dependent objectives return unknown without sufficient history. Strategy and video-pilot experimental prediction scripts replay saved checkpoints/features under their documented scope. In particular, the pilot cached-feature CLI is not a complete arbitrary-new-video decoder/tracker service.
+
+\section{What is saved for every major stage}
+The frozen image studies retain cohorts, definitions, ordered identities, processor/model revisions, raw responses, summaries and calibrated thresholds. Fine-tuning adds actual visual/head checkpoints, training histories, selected learning rates/epochs, three-seed selections, parameter-delta evidence, the original AMP results and final float32 scoring. The strategy screen adds all candidate-development summaries, fitted heads, feature/weight identities, source transfer policies and the separate thermal estimator. The video pilot adds causal recordings/windows, detector outputs, automatic tracks, region arrays, per-head selections, event policies, alarm-time metrics and review queues.
+
+The 17 October round adds all 38 smoking-policy summaries, held-out score replays, item-state trace decisions, raw per-tile detections, independently rebuilt merged detections, annotation-compatibility audits, the acquisition receipt and the explicitly invalid initial aggregate. It preserves historical completed runs unchanged.
+
+The 19 October SmolVLM study adds pinned base/manifest identities, original development scores, frozen visual caches, three actual language-adapter checkpoints, complete epoch histories, task routes, exact cutoffs, ten-cohort source results, response-token mass checks, a second optimization seed, portable adapter metadata, native-image comparisons and an explicitly retrospective optional routing rule. The inference bundle retains its research status.
+
+\section{SmolVLM reproduction and controls}
+The isolated additional dependencies are PEFT 0.17.1 and Accelerate 1.10.1 under \path{data/tools/smol_training_deps}; the existing CUDA PyTorch and Transformers environment is retained. The fixed default study output is already complete. For another experiment, use the training script's output option and a new directory; do not overwrite these checkpoints. The launcher help and guide document the exact interface.
+\begin{lstlisting}
+# Inspect/verify existing results, without changing their selection.
+bash scripts/smolvlm_gpu.sh verify
+
+# Real input inference with the default primary task routing.
+bash scripts/smolvlm_gpu.sh predict --task smoking --images /path/frame.jpg
+
+# Timed history required for unattended items.
+bash scripts/smolvlm_gpu.sh predict --task unattended_items \
+  --images /path/t0.jpg /path/t7.jpg /path/t13.jpg /path/t20.jpg \
+  --timestamps 0 7 13 20
+
+# Distinct controls; do not combine routing options.
+bash scripts/smolvlm_gpu.sh predict --original \
+  --task smoking --images /path/frame.jpg
+bash scripts/smolvlm_gpu.sh predict --joint \
+  --task smoking --images /path/frame.jpg
+bash scripts/smolvlm_gpu.sh predict --repeated-gains \
+  --task loitering \
+  --images /path/t0.jpg /path/t7.jpg /path/t13.jpg /path/t20.jpg \
+  --timestamps 0 7 13 20
+\end{lstlisting}
+The repeated-gain option is exploratory and retrospective. Missing required temporal evidence returns unknown; valid timestamps alone do not verify ownership or persistent identity. Raw scores, selected cutoffs and route names must be retained when interpreting a decision. The guide also records training, transfer evaluation, export and checkpoint-replay commands; these are separate from the reporting build.
+
+\section{Verification progression}
+\input{generated/verification.tex}
+Counts of passing tests are historical snapshots at the stated stages, not independent experimental replications. The strongest verification is layered: unit tests check semantics such as masking, causal padding, source leakage and threshold ties; source/pixel manifests check identity; metric replays check summaries against predictions; and live encoder/checkpoint cases check saved predictions against actual model execution. A successful script exit alone would be weaker evidence.
+
+This documentation task checks the saved artifact status and source hashes, regenerates report tables from structured outputs, validates derived count/metric relationships and compiles the LaTeX. It does not rerun the historical model evaluations or claim new accuracy measurements. Separate report-build validation records page count, references, compiler warnings and the source-package contents.
+
+\section{Presentations and this LaTeX report}
+The first presentation summarized the 13 October comparison; the 14 October expanded deck contained 16 slides. The 17 October progress review contains 32 editable slides and a matching vector PDF, plus speaker notes, source hashes, a summary slide and rendered previews. It covers the training and iterative studies without repeating latency testing. The updated 19 October presentation adds the SmolVLM methods, complete source-level comparisons, threshold failures, replication and current assessment, with an editable deck and matching PDF. Historical decks are preserved.
+
+This report expands that content into a technical account with equations, data semantics, acquisition exclusions, hyperparameters, selection timing, failed interventions and appendices. Numeric tables are generated from saved JSON/CSV sources, with full source SHA-256 identities in \path{source_manifest.json}. Pinned model identities and acquisition URLs are reproduced from recorded metadata, not represented as a new 19 October availability survey.
+
+No TeX compiler was initially installed. A portable official Tectonic 0.17.0 binary is installed under the project's ignored data/tools tree after its archive digest is checked against the release identity. Required TeX packages are fetched to a workspace-local cache; no system driver, system Python or system LaTeX installation is changed. The source ZIP includes the LaTeX chapters, generated tables/figures, source registry and build instructions, so it can be compiled separately with a normal LaTeX installation or the recorded compiler bootstrap.
+
+\evidence{docs/evaluation.md}
+\evidence{docs/training.md}
+\evidence{docs/strategy_study.md}
+\evidence{docs/video_pilot.md}
+\evidence{docs/event_improvements.md}
+
+\evidence{docs/smolvlm_finetuning.md}
+\evidence{scripts/smolvlm_gpu.sh}

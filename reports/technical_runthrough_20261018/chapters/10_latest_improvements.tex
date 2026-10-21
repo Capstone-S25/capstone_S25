@@ -1,0 +1,45 @@
+\chapter{17 October improvements: ensembles, item memory and tiling}
+\label{ch:latest}
+\section{A focused round rather than another broad fine-tune}
+This stage isolates three ideas suggested by the preceding failures: select smoking routes at a conservative source-aware operating point; preserve causal item/alarm identity through detector jitter and short track fragmentation; and use fixed tiling to preserve small-object detail. It also tests the compatibility of another author dataset. No visual backbone is updated, no VLM is retrained and no latency benchmark is run. Every historical smoking/CAVIAR/AVSS policy comparison is explicitly retrospective.
+
+\section{Nineteen smoking policies per encoder}
+For each backbone, 14 saved smoking heads form individual candidates. Four additional candidates average sigmoid-transformed scores within the three-seed region, region-plus-track, person-supervised and hard-negative families. A final candidate averages all 14 heads. This yields 19 policies per model, 38 total. Equal weights are fixed; there are no fitted stacking coefficients, and a sigmoid-transformed value is not claimed to be a calibrated probability.
+
+One cutoff must meet no more than 5\% empirical FPR separately in every development source. Policy selection maximizes worst-source recall at that cutoff, then mean recall, then worst/mean AP. Both encoders' complete selections are written before loading held-out predictions. An AP-selected alternative and the previous primary with its original pooled cutoff remain visible for comparison.
+\input{generated/latest_smoking.tex}
+SigLIP selects the all-head ensemble. On the same retrospective 205 HMDB clips, AP rises from .7779 to .964485, and recall from 66.7\% to 76.7\% at the same observed 1.71\% FPR. CCTV AP rises from .6876 to .7195, but recall falls from 2.29\% to 1.78\% while FPR stays 1.58\%. The good movie/web result therefore does not resolve surveillance smoking.
+
+MobileCLIP retains the same person-supervised hard-negative head with a stricter cutoff. CCTV recall falls 16.54\% to 10.94\%, while FPR decreases 7.91\% to 5.53\%. HMDB ranking stays .9078 and recall 86.7\%, with FPR reduced 2.86\% to 2.29\%. Source-wise development constraints are a more transparent operating-point design, but their test failure remains part of the evidence. Repeated reuse of a small development set also makes the policy screen exploratory.
+
+\section{Causal stationarity smoothing}
+The original tracker remains intact as a control. The alternative computes a trailing median of three observed centers. A displacement beyond the original .015 normalized-frame threshold must persist for one second before resetting the stationary evidence. Pending motion blocks an alert immediately. Gaps longer than two seconds discard that evidence. This rejects isolated box jitter while attempting to preserve a clear motion reset; it does not establish a physical stationary-object ground truth.
+
+The new state policy still requires the same item stationary for 30 seconds and a previously associated owner away for .5 seconds, plus two seconds alarm persistence. Owner association remains the existing proximity heuristic, without appearance ReID or new ownership annotations. Thus the ablation addresses jitter, not the full owner-association problem.
+
+\section{Per-item alarm memory}
+The memory alternative assigns observed items one-to-one to spatial memories by box overlap or small center distance. This can preserve an emitted alarm across a short track-ID change while never inventing stationary duration or owner history for the new track. Simultaneous items have separate memories rather than collapsing to one global alarm.
+
+An emitted item alarm remains latched until sustained owner return for five seconds, sustained movement for three seconds or memory expiry after 30 seconds without observation. Gaps reset pending persistence. These are fixed engineering choices rather than test-fitted hyperparameters. Synthetic regression tests check independent simultaneous items, ID fragmentation, missing observations, rearming, monotonic time, jitter and sustained motion.
+\input{generated/latest_events.tex}
+Neither smoothing nor memory improves the two-event AVSS primary result. All four rule variants detect 2/2 with zero normal false or repeated alarms; median delay increases from 34.818 to 35.068 seconds with smoothing. The historical five-event state diagnostic stays 4/5 with no normal false and one unknown-time alert; it uses provisional boundaries and a different source criterion from the previous classifier metrics. On censored HARD, memory increases repeated alarms from one to two. The added complexity is therefore retained as a research alternative rather than promoted as an accuracy improvement.
+
+\section{New-source compatibility review}
+The pinned additional author archive is 28,582,066 bytes and is acquired without executing bundled code. Three entries explicitly alias ABODA; three bundled clips show highway debris. Their boxes are tiny and useful for spatial stress testing, but their duration is below 15 seconds and they have no complete owner/normal interval labels. Ten positive reference frames per bundled clip are decoded, with original box coordinates and timestamp/FPS alignment checked. The short, out-of-domain collection cannot increase the count of verified unattended personal-item events.
+
+\section{Fixed overlapping tiles: a measurable component gain}
+The detector comparison uses the same pinned Grounding DINO weights, generic query, score thresholds and class NMS. Every input receives a full-image view plus four fixed corner tiles covering 60\% of image width and height, at normalized offsets zero or .4. Tiles overlap by 20\%. Tile boxes map back to normalized full-image coordinates and merge with full-image predictions using NMS at IoU .5. Reference boxes never select tile locations.
+
+The 166 source-annotated frames comprise 136 CAVIAR training-source item frames and 30 highway-debris frames. Five views each yield 830 actual GPU image views, float32 with TF32 disabled, batch eight and no pacing.
+\input{generated/latest_components.tex}
+\fig{tiled_recall.pdf}{0.88}{Full-image versus full-plus-tiles reference-box recall at IoU .5. CAVIAR is a training-source component diagnostic; highway debris is an out-of-domain stress test. Neither bar measures object precision or event detection.}
+
+CAVIAR recall at IoU .5 improves from 66/136 (48.5\%) to 116/136 (85.3\%); at .3 it improves 69/136 to 117/136. Highway-debris recall increases from 0/30 to 7/30 at both thresholds. Partial reference labels omit other objects, so unmatched detections cannot establish false positives. Adjacent source frames are correlated. The new tiled detector has not yet been validated as a full causal tracking/event replacement; the completed pilot's tracks and heads are not overwritten.
+
+\section{Aggregation correction and independent replay}
+The initial in-memory detector aggregation compared tuple tile coordinates with a list, accidentally omitting full-image baseline detections from the initial metric export. Raw GPU detections were intact. A cached-output replay with canonical tuple comparison restored the correct full-image baseline of 66/136. Invalid initial exports remain explicitly labelled, and the correction file explains the issue.
+
+Verification now independently rebuilds full/tiled view selection and greedy NMS from serialized raw detections before recomputing Hungarian reference matches. It also recomputes all 38 development-policy scores/cutoffs/selections from the original dev predictions, replays 5,643 held-out smoking-policy predictions and 6,390 causal trace decisions, including 29 emitted memory alarms. All eight component metric cells match. The repository finishes this stage with 182 passing tests and clean lint/format/whitespace checks.
+\evidence{results/event_improvements_20261017/report.md}
+\evidence{results/event_improvements_20261017/verification.json}
+\evidence{results/event_improvements_20261017/component_correction.json}

@@ -1,0 +1,28 @@
+{
+  "status": "complete",
+  "slides": 45,
+  "editable_pptx_slides": 45,
+  "speaker_notes": 45,
+  "all_source_and_builder_hashes_match": true,
+  "pdf_pages_checked_including_summary": 46,
+  "fonts_embedded": true,
+  "pdf_text_within_page_boundaries": true,
+  "text_fit_and_geometry": "checked by builder; rechecked against saved layout",
+  "primary_artifact_sha256": {
+    "model_evaluation_progress_20261019.pdf": "203d4f0c8a2068e3fa21f116aa7a93fd6ee5aae0555ffde9d1df901b29dddace",
+    "model_evaluation_progress_20261019.pptx": "9c87a951db375983e7ed34bbddcc5f81c994ef31b128040ea5a18ea03c188bec",
+    "summary_slide_progress_20261019.pdf": "f9a1c9ee1711c365e33fbe7418d92f154f67e57f92322378cd4b73d4488c1374",
+    "summary_slide_progress_20261019.pptx": "1cf0b6b27590b882604e77f051ae247e78c4353b2687d66c9bbfd8159cfd07d1"
+  },
+  "source_manifest_sha256": "9811cba7be74428792b67fa83f8df225c22b56ac49d42d1b630d96bf1703022b",
+  "pdf_pages_rendered": 45,
+  "visual_review": {
+    "pdf_sha256": "203d4f0c8a2068e3fa21f116aa7a93fd6ee5aae0555ffde9d1df901b29dddace",
+    "pages_rendered": 45,
+    "contact_sheets_visually_reviewed": 5,
+    "additional_full_page_checks": [
+      15
+    ],
+    "assessment": "All pages rendered and visually reviewed in contact sheets; full-page table check confirms no clipped task names. All text fits measured boxes and agrees with editable slide content; PDF fonts are embedded."
+  }
+}

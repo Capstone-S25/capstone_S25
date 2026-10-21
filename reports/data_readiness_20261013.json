@@ -1,0 +1,393 @@
+{
+  "root": "data/raw/datasets",
+  "tasks": {
+    "littering": {
+      "files": 13856,
+      "images": 6721,
+      "videos": 0,
+      "extensions": {
+        ".txt": 7134,
+        ".yaml": 1,
+        ".jpg": 6721
+      }
+    },
+    "unattended items": {
+      "files": 18,
+      "images": 0,
+      "videos": 16,
+      "extensions": {
+        ".avi": 11,
+        ".mpg": 5,
+        ".txt": 1,
+        ".docx": 1
+      }
+    },
+    "loitering": {
+      "files": 1818,
+      "images": 1675,
+      "videos": 95,
+      "extensions": {
+        "": 1,
+        ".mp4": 58,
+        ".txt": 4,
+        ".mat": 37,
+        ".avi": 37,
+        ".jpg": 1675,
+        ".json": 6
+      }
+    },
+    "rough sleeping": {
+      "files": 679,
+      "images": 224,
+      "videos": 0,
+      "extensions": {
+        ".md": 1,
+        "": 2,
+        ".yaml": 2,
+        ".png": 224,
+        ".tag": 1,
+        ".metadata": 226,
+        ".json": 1,
+        ".txt": 222
+      },
+      "unique_file_hashes": 112,
+      "unique_rgb_hashes": 112
+    },
+    "smoking": {
+      "files": 4223,
+      "images": 4214,
+      "videos": 0,
+      "extensions": {
+        ".docx": 1,
+        ".zip": 1,
+        ".txt": 2,
+        ".jpg": 4214,
+        ".json": 5
+      }
+    }
+  },
+  "coco": [
+    {
+      "path": "data/raw/datasets/loitering/Roboflow Dataset (New Workspace)/test/_annotations.coco.json",
+      "images": 39,
+      "annotations": 89,
+      "classes": {
+        "0": "ATMGUARD-Loitering-Tracking",
+        "1": "person"
+      },
+      "images_per_class": {
+        "person": 39
+      },
+      "unannotated_images": 0,
+      "missing_images": 0,
+      "orphan_annotations": 0,
+      "example_filenames": [
+        "00558_png_jpg.rf.cf855f36585e2a9f42e4a2432ca82866.jpg",
+        "NVR-09_Trim_new_Trim-0213_jpg.rf.def0cbb50b09067415ac9b8f45c8b441.jpg",
+        "01584_png_jpg.rf.3ee000db97ef42e6d5e79b0a4e20122e.jpg"
+      ]
+    },
+    {
+      "path": "data/raw/datasets/loitering/Roboflow Dataset (New Workspace)/valid/_annotations.coco.json",
+      "images": 76,
+      "annotations": 140,
+      "classes": {
+        "0": "ATMGUARD-Loitering-Tracking",
+        "1": "person"
+      },
+      "images_per_class": {
+        "person": 76
+      },
+      "unannotated_images": 0,
+      "missing_images": 0,
+      "orphan_annotations": 0,
+      "example_filenames": [
+        "02250_png_jpg.rf.93af0282ed5afb134fc00d98849681c7.jpg",
+        "CCTV_151_png_jpg.rf.97a9682e26ef8608a80f6fda09a878d3.jpg",
+        "261_png_jpg.rf.30bf8d138e1cbb21abee20be5a43e9e2.jpg"
+      ]
+    },
+    {
+      "path": "data/raw/datasets/loitering/Roboflow Dataset (New Workspace)/train/_annotations.coco.json",
+      "images": 268,
+      "annotations": 538,
+      "classes": {
+        "0": "ATMGUARD-Loitering-Tracking",
+        "1": "person"
+      },
+      "images_per_class": {
+        "person": 268
+      },
+      "unannotated_images": 0,
+      "missing_images": 0,
+      "orphan_annotations": 0,
+      "example_filenames": [
+        "00351_png_jpg.rf.1bf938888523c43d85e85b288566ee57.jpg",
+        "320_png_jpg.rf.5701f6371570bfb20e79efd6fbd68bb7.jpg",
+        "460_png_jpg.rf.df08bb1c8dd78be7479c07948b05b445.jpg"
+      ]
+    },
+    {
+      "path": "data/raw/datasets/loitering/Roboflow Dataset (Farjana Hossain)/test/_annotations.coco.json",
+      "images": 54,
+      "annotations": 403,
+      "classes": {
+        "0": "person",
+        "1": "person"
+      },
+      "images_per_class": {
+        "person": 54
+      },
+      "unannotated_images": 0,
+      "missing_images": 0,
+      "orphan_annotations": 0,
+      "example_filenames": [
+        "06_mp4-0028_jpg.rf.e4084197898d03dbd0698dc434046d9b.jpg",
+        "16_mp4-0013_jpg.rf.8332cfecc811bcc2eb23896953dd7773.jpg",
+        "16_mp4-0008_jpg.rf.d9f98070714346c3132c74296e770552.jpg"
+      ]
+    },
+    {
+      "path": "data/raw/datasets/loitering/Roboflow Dataset (Farjana Hossain)/valid/_annotations.coco.json",
+      "images": 107,
+      "annotations": 791,
+      "classes": {
+        "0": "person",
+        "1": "person"
+      },
+      "images_per_class": {
+        "person": 107
+      },
+      "unannotated_images": 0,
+      "missing_images": 0,
+      "orphan_annotations": 0,
+      "example_filenames": [
+        "01_mp4-0013_jpg.rf.e97a27d041ec903ce33e2718821f6c46.jpg",
+        "09_mp4-0028_jpg.rf.41395cc485d18504d7bdebd2cf792dc5.jpg",
+        "04_mp4-0022_jpg.rf.3cf394d3dd895142da4aba9ea02b5a06.jpg"
+      ]
+    },
+    {
+      "path": "data/raw/datasets/loitering/Roboflow Dataset (Farjana Hossain)/train/_annotations.coco.json",
+      "images": 1131,
+      "annotations": 8373,
+      "classes": {
+        "0": "person",
+        "1": "person"
+      },
+      "images_per_class": {
+        "person": 1131
+      },
+      "unannotated_images": 0,
+      "missing_images": 0,
+      "orphan_annotations": 0,
+      "example_filenames": [
+        "12_mp4-0050_jpg.rf.e7729944ba2ddb5e78b0658877d70820.jpg",
+        "09_mp4-0037_jpg.rf.94d741d59989ec0b8175d56298209056.jpg",
+        "02_mp4-0011_jpg.rf.bd76547e0ccddc0af8e8c961cce8a0b2.jpg"
+      ]
+    },
+    {
+      "path": "data/raw/datasets/smoking/smoking-video.v1i.coco/valid/_annotations.coco.json",
+      "images": 654,
+      "annotations": 3695,
+      "classes": {
+        "0": "smoking-person-1",
+        "1": "Not Smoking",
+        "2": "Smoking",
+        "3": "person"
+      },
+      "images_per_class": {
+        "Not Smoking": 575,
+        "Smoking": 273,
+        "person": 654
+      },
+      "unannotated_images": 0,
+      "missing_images": 0,
+      "orphan_annotations": 0,
+      "example_filenames": [
+        "frame_c1_000512_2025-10-07_03-20-45-990_PM_jpg.rf.35f8f2a94033e7d336bf4156a71ac9bb.jpg",
+        "frame_c1_000409_2025-10-07_03-18-58-093_PM_jpg.rf.ab2f5edef08a31efc48016698ff637de.jpg",
+        "frame_c1_000438_2025-10-07_03-19-28-585_PM_jpg.rf.4a133ce604a9c2d16a119dbb72a3f6b1.jpg"
+      ]
+    },
+    {
+      "path": "data/raw/datasets/smoking/smoking-video.v1i.coco/train/_annotations.coco.json",
+      "images": 2624,
+      "annotations": 14544,
+      "classes": {
+        "0": "smoking-person-1",
+        "1": "Not Smoking",
+        "2": "Smoking",
+        "3": "person"
+      },
+      "images_per_class": {
+        "Smoking": 1149,
+        "person": 2624,
+        "Not Smoking": 2277
+      },
+      "unannotated_images": 0,
+      "missing_images": 0,
+      "orphan_annotations": 0,
+      "example_filenames": [
+        "frame_c1_000293_2025-10-26_12-11-50-019_PM_jpg.rf.a83a6f43cc0bd8de28f97ebc4be70f78.jpg",
+        "frame_c1_000186_2025-10-26_12-09-57-921_PM_jpg.rf.e541ac0c2ce526517fe7b4ae28f3b9e8.jpg",
+        "frame_c1_000398_2025-10-26_12-13-40-170_PM_jpg.rf.cbb2d009d59e20fb4229071ca1333eb0.jpg"
+      ]
+    },
+    {
+      "path": "data/raw/datasets/smoking/smoking_cctv_image.v1i.coco/test/_annotations.coco.json",
+      "images": 88,
+      "annotations": 150,
+      "classes": {
+        "0": "smoking",
+        "1": "no_vest",
+        "2": "smoking"
+      },
+      "images_per_class": {
+        "smoking": 88,
+        "no_vest": 42
+      },
+      "unannotated_images": 0,
+      "missing_images": 0,
+      "orphan_annotations": 0,
+      "example_filenames": [
+        "smoking_2423_alert_f171c234f9944c13b2ff297d0331c5c0_jpg.rf.00395258bf0366240bee0f3438944e4c.jpg",
+        "smoking_3200_alert_4311b6c43db04cb49b4a9991f743dcb2_jpg.rf.2583e75e2c0ae788b99c203d59f51deb.jpg",
+        "smoking_0614_alert_38fdd20ce9bc4f21875fd827c2af2f0c_jpg.rf.86a32c851e48a300776c0b9a74c4fa62.jpg"
+      ]
+    },
+    {
+      "path": "data/raw/datasets/smoking/smoking_cctv_image.v1i.coco/valid/_annotations.coco.json",
+      "images": 180,
+      "annotations": 359,
+      "classes": {
+        "0": "smoking",
+        "1": "no_vest",
+        "2": "smoking"
+      },
+      "images_per_class": {
+        "smoking": 180,
+        "no_vest": 83
+      },
+      "unannotated_images": 0,
+      "missing_images": 0,
+      "orphan_annotations": 0,
+      "example_filenames": [
+        "smoking_2286_alert_bf39f84f5ee34b9a85eba9e6e682f45c_jpg.rf.b46b11a9968e2ffe4c774f19f24f0174.jpg",
+        "smoking_4214_alert_d7a4d1219f4a4e8fb8ddb5d7a77ed9d1_jpg.rf.f5219fdc7e3c696092a906116c00c7f4.jpg",
+        "smoking_1045_alert_dbeb93e1b4764984affc4424aeb56172_jpg.rf.b9c87264ae986d7245d6cca5be0e5c7f.jpg"
+      ]
+    },
+    {
+      "path": "data/raw/datasets/smoking/smoking_cctv_image.v1i.coco/train/_annotations.coco.json",
+      "images": 668,
+      "annotations": 1232,
+      "classes": {
+        "0": "smoking",
+        "1": "no_vest",
+        "2": "smoking"
+      },
+      "images_per_class": {
+        "no_vest": 325,
+        "smoking": 668
+      },
+      "unannotated_images": 0,
+      "missing_images": 0,
+      "orphan_annotations": 0,
+      "example_filenames": [
+        "smoking_0508_alert_25c7e0666b9646ac802e224b5a9c7232_jpg.rf.7efd7173fb6a536efc48af7fe862cc1e.jpg",
+        "smoking_3055_alert_c032f197496942c28606abd23a7870b2_jpg.rf.d7af8f8e994795a5e236f3368823f412.jpg",
+        "smoking_1012_alert_9225bd858b3247d2b4e7ecdef01c91eb_jpg.rf.5bc70d0316237180cc59f1f3086ca90e.jpg"
+      ]
+    }
+  ],
+  "yolo": [
+    {
+      "path": "data/raw/datasets/littering/Littering/test",
+      "images": 1226,
+      "label_files": 1229,
+      "labels_without_image": 6,
+      "images_without_label": 3,
+      "empty_label_files": 7,
+      "boxes_per_class_id": {
+        "0": 976,
+        "1": 246
+      },
+      "invalid_detection_box_lines": 0
+    },
+    {
+      "path": "data/raw/datasets/littering/Littering/train",
+      "images": 5495,
+      "label_files": 5491,
+      "labels_without_image": 39,
+      "images_without_label": 43,
+      "empty_label_files": 0,
+      "boxes_per_class_id": {
+        "2": 1450,
+        "3": 1448,
+        "4": 1450,
+        "1": 1146
+      },
+      "invalid_detection_box_lines": 0
+    },
+    {
+      "path": "data/raw/datasets/rough sleeping/hugging_face/laying_dataset",
+      "images": 111,
+      "label_files": 111,
+      "labels_without_image": 0,
+      "images_without_label": 0,
+      "empty_label_files": 0,
+      "boxes_per_class_id": {
+        "0": 111,
+        "1": 10
+      },
+      "invalid_detection_box_lines": 0
+    },
+    {
+      "path": "data/raw/datasets/rough sleeping/hugging_face/.cache/huggingface/download/laying_dataset",
+      "images": 0,
+      "label_files": 0,
+      "labels_without_image": 0,
+      "images_without_label": 0,
+      "empty_label_files": 0,
+      "boxes_per_class_id": {},
+      "invalid_detection_box_lines": 0
+    },
+    {
+      "path": "data/raw/datasets/rough sleeping/kaggle/laying_dataset",
+      "images": 111,
+      "label_files": 111,
+      "labels_without_image": 0,
+      "images_without_label": 0,
+      "empty_label_files": 0,
+      "boxes_per_class_id": {
+        "0": 111,
+        "1": 10
+      },
+      "invalid_detection_box_lines": 0
+    }
+  ],
+  "avenue_mat_examples": [
+    {
+      "path": "loitering/Avenue Dataset/training_vol/vol07.mat",
+      "key": "vol",
+      "shape": [
+        120,
+        160,
+        1099
+      ],
+      "dtype": "uint8"
+    },
+    {
+      "path": "loitering/Avenue Dataset/testing_vol/vol07.mat",
+      "key": "vol",
+      "shape": [
+        120,
+        160,
+        605
+      ],
+      "dtype": "uint8"
+    }
+  ]
+}

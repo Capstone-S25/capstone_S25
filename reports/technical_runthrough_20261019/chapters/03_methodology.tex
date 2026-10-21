@@ -1,0 +1,54 @@
+\chapter{Common evaluation and generalization methodology}
+\label{ch:method}
+\section{Define the unit of evaluation}
+A single image, a four-image contact sheet, four native chronological views, eight whole-clip views and a continuous 2 Hz stream answer different questions. Within a stated protocol, competing models receive the same planned examples, order, definitions and split identities. Across protocols, a change in AP or recall cannot automatically be attributed to the model: temporal coverage, image detail, training exposure or label meaning may also change.
+
+The report keeps clip classification separate from event discovery. A whole-clip dumping classifier may use frames after the action begins; it does not establish online onset detection. A supplied complete trajectory may use its entire path; it cannot be advertised as a causal loitering alert. The later GRU windows end at the actual decision timestamp, and their event alarms use only prior evidence. The CCTV smoking test remains static where no original continuous video is available.
+
+\section{Grouping and leakage controls}
+Source recordings, cameras, synchronized views, author groups and known near-duplicates remain in one fold. Hash validation checks exact input identity; conservative perceptual clustering checks related exports. Official partitions are retained when available, and related training sources are excluded instead of moving official test videos into training. The split search uses annotation counts to ensure both classes exist and is not driven by model predictions.
+
+These safeguards have limits. Supplied title prefixes do not verify all film or actor aliases. Perceptual hashes do not prove camera independence. A camera that contributes only a different day is not a new physical camera. Reusing a previously inspected holdout makes subsequent experiments retrospective even if its labels are not directly loaded into optimization. The correct next confirmation is a new frozen source block rather than another random frame split.
+
+\section{Shared image protocols and response parsing}
+Original four-model evaluation letterboxes the image to a common square with maximum side 768 pixels before model-native preprocessing. CLIP models use their pinned processors; image embeddings and text scores are model-specific. Generative VLM generation is deterministic with a 64-token budget. MiniCPM retains a one-slice baseline setting. This is a reproducible common baseline rather than a complete search of each model's best native high-resolution or video capability.
+
+The classification prompt asks for one label from the defined set, permits unknown when evidence such as ownership or duration is insufficient, and requests a JSON object. Parsing accepts case-insensitive exact labels or the documented structured form. It does not search arbitrary explanatory prose for a convenient class word. An explicit unknown and an invalid response remain distinct reasons for abstention. Categorical quality denominators retain failures/abstentions; otherwise a model could appear stronger merely by declining difficult cases.
+
+\section{Classification metrics}
+For a fixed positive target, let $TP,FP,FN,TN$ denote confusion counts. The reported operating-point metrics are
+\begin{align}
+\operatorname{precision}&=\frac{TP}{TP+FP}, &
+\operatorname{recall}&=\frac{TP}{TP+FN},\\
+F_1&=\frac{2TP}{2TP+FP+FN}, &
+\operatorname{FPR}&=\frac{FP}{FP+TN}.
+\end{align}
+Implementation handles empty denominators explicitly rather than producing undefined favorable scores. Coverage is reported separately. An always-normal model can have high ordinary accuracy in a rare-event corpus and zero event recall. An always-positive model can have apparently high F1 when positives dominate. Both constant baselines are therefore preserved.
+
+Average precision summarizes the precision--recall ranking from genuine continuous scores, with grouped score ties handled consistently. AUROC assesses positive-versus-negative rank discrimination. AP depends on prevalence and cohort composition, so a .96 AP on photographs cannot be compared directly with .72 AP on surveillance frames as if only the model changed. Hard VLM labels are not assigned fabricated probability rankings. The later SmolVLM adaptation instead records genuine first-answer-token logit margins under a matched binary protocol; its AP is valid for that protocol and is not inferred from old categorical outputs. Positive-only weak cohorts report target-prediction rates, not AP, precision, FPR or verified recall.
+
+\section{Development-only operating points}
+Three classification operating points recur: a fixed raw decision (zero for binary logits), a maximum-development-F1 cutoff, and a cutoff constrained to no more than 5\% empirical development FPR. The classification selector enumerates observed score cutoffs, includes a strict above-maximum option and breaks ties consistently. Test labels never refit the threshold. In the first small unattended development set, 16 normal endpoints mean one false positive changes FPR by 6.25 percentage points; a 5\% budget therefore permits zero observed false positives but does not establish a population guarantee.
+
+The 17 October smoking selector is stronger at the development-source level: one global cutoff must satisfy the empirical budget in every source. If $n_s$ normal examples exist in source $s$ and $k_s=\lfloor0.05n_s\rfloor$, the cutoff must strictly exceed that source's first disallowed descending normal score, with ties treated conservatively. The final cutoff is the maximum across sources. This constrains development data and can still fail after a camera/domain shift.
+
+\section{Model selection and multiple comparisons}
+The first fine-tuning study averages AP within each task's sources, then across tasks; per-target routing among zero-shot, probe and fine-tuned scores is also development-selected. Seed 42 is primary in advance; 43/44 measure optimization variation. The strategy screen selects mean development-source AP within each task and preserves a secondary worst-source analysis with its timing qualification. The video pilot selects worst-source AP, then mean AP, retaining all three seeds. Latest smoking selection prioritizes worst-source recall under its source-wise FPR cutoff, then mean recall and AP ties.
+
+These rules prevent selecting the best test score, but they do not remove all selection optimism. Trying 330 configurations against a small familiar development set can overfit that set. Seed variation measures training noise under fixed data, not variation across deployment cameras. A strong final claim requires a previously untouched source test with enough event/normal exposure.
+
+\section{Event metrics and unknown time}
+An event detector emits alarms at real decision times after persistence, rather than backdating them to the first high score. A labelled positive interval can match one alarm whose start falls inside it. Additional alarms inside it are duplicates. Alarms inside reviewed normal intervals are normal false alerts; alarms in unreviewed transition gaps are unknown-time alerts. An alarm emitted before onset and continuing into the positive interval is not automatically converted into a true positive later.
+
+Let $N_F$ be normal false alerts and $T_N$ reviewed normal seconds. The measured rate is
+\begin{equation}
+\widehat\lambda_F = 3600\frac{N_F}{T_N}\quad\text{alerts per normal camera-hour}.
+\end{equation}
+Unknown time contributes neither normal exposure nor invented negative labels. Delay is measured from the annotated event onset to actual alarm emission. Historical onset labels are provisional; an unknown-time alarm may be a useful early detection rather than a confirmed failure. The raw counts remain visible so that this uncertainty is not hidden in an aggregate metric.
+
+\section{Uncertainty and numerical reproducibility}
+The original comparison uses recording-group bootstrap and paired resampling, with 2,000 draws where recorded. Later HMDB AP intervals use supplied title/recording groups and 500 resamples. Adjacent frames do not become independent bootstrap subjects. With too few independently identified cameras, the reports explicitly withhold or qualify intervals rather than attach a precise but misleading frame-wise confidence estimate.
+
+Numerical policy also matters. Fine-tuning uses float32 weights and bfloat16 autocast, but a consistency audit found AMP inference scores sensitive to batch shape. The final evaluation uses float32 and disables TF32 across methods/seeds. Learned weights, hyperparameters and selected routes stay fixed; only thresholds are recomputed from float32 development scores. Original AMP artifacts remain preserved. This correction addresses consistency and is not a new test-driven model search.
+
+Exact identity metadata includes model revisions, source/pixel hashes, input definitions, preprocessing, pooling, code snapshots and raw predictions. Cached frozen features are keyed to those identities. Fine-tuned features cannot silently reuse pretrained-feature caches. Live checkpoint and feature replays test whether the saved artifacts reproduce the reported score, rather than only checking that a JSON file says a run completed.

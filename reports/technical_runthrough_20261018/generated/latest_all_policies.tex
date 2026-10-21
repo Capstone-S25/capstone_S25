@@ -1,0 +1,52 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.0477\linewidth}>{\raggedright\arraybackslash}p{0.3341\linewidth}>{\raggedright\arraybackslash}p{0.0573\linewidth}>{\raggedright\arraybackslash}p{0.0859\linewidth}>{\raggedright\arraybackslash}p{0.0955\linewidth}>{\raggedright\arraybackslash}p{0.0955\linewidth}>{\raggedright\arraybackslash}p{0.0859\linewidth}>{\raggedright\arraybackslash}p{0.0382\linewidth}@{}}
+\caption[Latest all policies]{All 38 smoking-policy development summaries; equal sigmoid averages are not calibrated probabilities.}\label{tab:latest_all_policies}\\
+\toprule
+\textbf{M/S} & \textbf{Policy} & \textbf{n} & \textbf{Cutoff} & \textbf{Worst recall} & \textbf{Mean recall} & \textbf{Worst AP} & \textbf{*} \\
+\midrule\endfirsthead
+\multicolumn{8}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{M/S} & \textbf{Policy} & \textbf{n} & \textbf{Cutoff} & \textbf{Worst recall} & \textbf{Mean recall} & \textbf{Worst AP} & \textbf{*} \\
+\midrule\endhead
+\midrule\multicolumn{8}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+M & scene linear & 1 & 0.60429 & 0.0\% & 50.6\% & 0.3733 &  \\
+M & region linear & 1 & 0.58476 & 0.0\% & 54.3\% & 0.4544 &  \\
+M & region temporal seed 42 & 1 & 0.59187 & 5.3\% & 64.6\% & 0.5427 &  \\
+M & region temporal seed 43 & 1 & 0.88623 & 12.7\% & 62.0\% & 0.5162 &  \\
+M & region temporal seed 44 & 1 & 0.56992 & 1.5\% & 61.2\% & 0.5173 &  \\
+M & region track temporal seed 42 & 1 & 0.40928 & 12.2\% & 61.2\% & 0.5492 &  \\
+M & region track temporal seed 43 & 1 & 0.59090 & 12.7\% & 60.1\% & 0.5274 &  \\
+M & region track temporal seed 44 & 1 & 0.64229 & 8.1\% & 64.1\% & 0.5175 &  \\
+M & person supervised seed 42 & 1 & 0.68699 & 15.8\% & 56.6\% & 0.5704 &  \\
+M & person supervised seed 43 & 1 & 0.71093 & 10.2\% & 56.5\% & 0.5723 &  \\
+M & person supervised seed 44 & 1 & 0.69508 & 11.7\% & 57.2\% & 0.5723 &  \\
+M & person supervised hardneg seed 42 & 1 & 0.67886 & 16.5\% & 58.7\% & 0.5736 & * \\
+M & person supervised hardneg seed 43 & 1 & 0.68530 & 14.5\% & 56.3\% & 0.5670 &  \\
+M & person supervised hardneg seed 44 & 1 & 0.67189 & 15.3\% & 56.2\% & 0.5719 &  \\
+M & region temporal ensemble & 3 & 0.55311 & 11.5\% & 64.9\% & 0.5307 &  \\
+M & region track temporal ensemble & 3 & 0.52465 & 12.5\% & 61.3\% & 0.5344 &  \\
+M & person supervised ensemble & 3 & 0.69209 & 13.0\% & 57.8\% & 0.5711 &  \\
+M & person supervised hardneg ensemble & 3 & 0.67862 & 15.5\% & 56.5\% & 0.5712 &  \\
+M & all head ensemble & 14 & 0.52609 & 15.3\% & 65.8\% & 0.5717 &  \\
+S & scene linear & 1 & 0.58306 & 0.0\% & 57.1\% & 0.3723 &  \\
+S & region linear & 1 & 0.53811 & 0.0\% & 59.6\% & 0.4293 &  \\
+S & region temporal seed 42 & 1 & 0.87444 & 15.0\% & 64.7\% & 0.5810 &  \\
+S & region temporal seed 43 & 1 & 0.54643 & 13.5\% & 65.6\% & 0.5393 &  \\
+S & region temporal seed 44 & 1 & 0.63610 & 13.7\% & 66.3\% & 0.5435 &  \\
+S & region track temporal seed 42 & 1 & 0.75900 & 14.0\% & 65.7\% & 0.5710 &  \\
+S & region track temporal seed 43 & 1 & 0.79908 & 13.7\% & 64.4\% & 0.5530 &  \\
+S & region track temporal seed 44 & 1 & 0.85386 & 14.5\% & 62.1\% & 0.5774 &  \\
+S & person supervised seed 42 & 1 & 0.57632 & 0.0\% & 69.2\% & 0.4921 &  \\
+S & person supervised seed 43 & 1 & 0.63885 & 4.3\% & 70.3\% & 0.5531 &  \\
+S & person supervised seed 44 & 1 & 0.62491 & 5.9\% & 70.7\% & 0.5542 &  \\
+S & person supervised hardneg seed 42 & 1 & 0.53053 & 0.0\% & 68.9\% & 0.4890 &  \\
+S & person supervised hardneg seed 43 & 1 & 0.63121 & 5.6\% & 70.6\% & 0.5471 &  \\
+S & person supervised hardneg seed 44 & 1 & 0.61131 & 6.1\% & 70.8\% & 0.5506 &  \\
+S & region temporal ensemble & 3 & 0.65598 & 14.2\% & 64.5\% & 0.5584 &  \\
+S & region track temporal ensemble & 3 & 0.78296 & 15.8\% & 63.7\% & 0.5715 &  \\
+S & person supervised ensemble & 3 & 0.61597 & 3.1\% & 70.0\% & 0.5497 &  \\
+S & person supervised hardneg ensemble & 3 & 0.59184 & 4.8\% & 70.4\% & 0.5479 &  \\
+S & all head ensemble & 14 & 0.54582 & 16.8\% & 66.4\% & 0.5789 & * \\
+\end{longtable}\endgroup

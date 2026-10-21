@@ -1,0 +1,359 @@
+{
+  "unit": "source_group",
+  "n_groups": 3,
+  "uncertainty_warning": "Few independent source groups; intervals are exploratory",
+  "seed": 42,
+  "bootstrap": 2000,
+  "experiment_fingerprint": "e48d90bc166f5fe74f278085b1fe7e0cd77e6070f88f0236ea0445a97978bdfc",
+  "labels": [
+    "normal",
+    "unattended_items"
+  ],
+  "scored_labels": [
+    "normal",
+    "unattended_items"
+  ],
+  "models": {
+    "mobileclip2-s2": {
+      "point": {
+        "accuracy_including_failures": 0.8,
+        "macro_f1": 0.4444444444444444,
+        "binary_f1": 0.0,
+        "roc_auc": 0.484375
+      },
+      "ci95": {
+        "accuracy_including_failures": [
+          0.5,
+          1.0
+        ],
+        "macro_f1": [
+          0.3333333333333333,
+          0.5
+        ],
+        "binary_f1": [
+          0.0,
+          0.0
+        ],
+        "roc_auc": [
+          0.25,
+          0.525
+        ]
+      },
+      "per_class": {
+        "normal": {
+          "precision": 0.8,
+          "recall": 1.0,
+          "f1": 0.8888888888888888,
+          "support": 16,
+          "unanswered": 0
+        },
+        "unattended_items": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4,
+          "unanswered": 0
+        }
+      },
+      "coverage": 1.0,
+      "abstentions": 0,
+      "errors": 0
+    },
+    "siglip2-b16-224": {
+      "point": {
+        "accuracy_including_failures": 0.8,
+        "macro_f1": 0.4444444444444444,
+        "binary_f1": 0.0,
+        "roc_auc": 0.546875
+      },
+      "ci95": {
+        "accuracy_including_failures": [
+          0.5,
+          1.0
+        ],
+        "macro_f1": [
+          0.3333333333333333,
+          0.5
+        ],
+        "binary_f1": [
+          0.0,
+          0.0
+        ],
+        "roc_auc": [
+          0.3125,
+          0.6125
+        ]
+      },
+      "per_class": {
+        "normal": {
+          "precision": 0.8,
+          "recall": 1.0,
+          "f1": 0.8888888888888888,
+          "support": 16,
+          "unanswered": 0
+        },
+        "unattended_items": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4,
+          "unanswered": 0
+        }
+      },
+      "coverage": 1.0,
+      "abstentions": 0,
+      "errors": 0
+    },
+    "smolvlm-500m": {
+      "point": {
+        "accuracy_including_failures": 0.2,
+        "macro_f1": 0.16666666666666666,
+        "binary_f1": 0.3333333333333333,
+        "roc_auc": null
+      },
+      "ci95": {
+        "accuracy_including_failures": [
+          0.0,
+          0.5
+        ],
+        "macro_f1": [
+          0.0,
+          0.3333333333333333
+        ],
+        "binary_f1": [
+          0.0,
+          0.6666666666666666
+        ],
+        "roc_auc": null
+      },
+      "per_class": {
+        "normal": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 16,
+          "unanswered": 0
+        },
+        "unattended_items": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "f1": 0.3333333333333333,
+          "support": 4,
+          "unanswered": 0
+        }
+      },
+      "coverage": 1.0,
+      "abstentions": 0,
+      "errors": 0
+    },
+    "minicpm-v4": {
+      "point": {
+        "accuracy_including_failures": 0.8,
+        "macro_f1": 0.4444444444444444,
+        "binary_f1": 0.0,
+        "roc_auc": null
+      },
+      "ci95": {
+        "accuracy_including_failures": [
+          0.5,
+          1.0
+        ],
+        "macro_f1": [
+          0.3333333333333333,
+          0.5
+        ],
+        "binary_f1": [
+          0.0,
+          0.0
+        ],
+        "roc_auc": null
+      },
+      "per_class": {
+        "normal": {
+          "precision": 0.8,
+          "recall": 1.0,
+          "f1": 0.8888888888888888,
+          "support": 16,
+          "unanswered": 0
+        },
+        "unattended_items": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4,
+          "unanswered": 0
+        }
+      },
+      "coverage": 1.0,
+      "abstentions": 0,
+      "errors": 0
+    }
+  },
+  "paired_differences": {
+    "mobileclip2-s2 minus siglip2-b16-224": {
+      "accuracy_including_failures": {
+        "point": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "macro_f1": {
+        "point": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "binary_f1": {
+        "point": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "roc_auc": {
+        "point": -0.0625,
+        "ci95": [
+          -0.08750000000000002,
+          -0.020833333333333315
+        ]
+      }
+    },
+    "mobileclip2-s2 minus smolvlm-500m": {
+      "accuracy_including_failures": {
+        "point": 0.6000000000000001,
+        "ci95": [
+          0.0,
+          1.0
+        ]
+      },
+      "macro_f1": {
+        "point": 0.2777777777777778,
+        "ci95": [
+          0.0,
+          0.5
+        ]
+      },
+      "binary_f1": {
+        "point": -0.3333333333333333,
+        "ci95": [
+          -0.6666666666666666,
+          -0.2857142857142857
+        ]
+      },
+      "roc_auc": {
+        "point": null,
+        "ci95": null
+      }
+    },
+    "mobileclip2-s2 minus minicpm-v4": {
+      "accuracy_including_failures": {
+        "point": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "macro_f1": {
+        "point": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "binary_f1": {
+        "point": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "roc_auc": {
+        "point": null,
+        "ci95": null
+      }
+    },
+    "siglip2-b16-224 minus smolvlm-500m": {
+      "accuracy_including_failures": {
+        "point": 0.6000000000000001,
+        "ci95": [
+          0.0,
+          1.0
+        ]
+      },
+      "macro_f1": {
+        "point": 0.2777777777777778,
+        "ci95": [
+          0.0,
+          0.5
+        ]
+      },
+      "binary_f1": {
+        "point": -0.3333333333333333,
+        "ci95": [
+          -0.6666666666666666,
+          -0.2857142857142857
+        ]
+      },
+      "roc_auc": {
+        "point": null,
+        "ci95": null
+      }
+    },
+    "siglip2-b16-224 minus minicpm-v4": {
+      "accuracy_including_failures": {
+        "point": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "macro_f1": {
+        "point": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "binary_f1": {
+        "point": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      },
+      "roc_auc": {
+        "point": null,
+        "ci95": null
+      }
+    },
+    "smolvlm-500m minus minicpm-v4": {
+      "accuracy_including_failures": {
+        "point": -0.6000000000000001,
+        "ci95": [
+          -1.0,
+          0.0
+        ]
+      },
+      "macro_f1": {
+        "point": -0.2777777777777778,
+        "ci95": [
+          -0.5,
+          0.0
+        ]
+      },
+      "binary_f1": {
+        "point": 0.3333333333333333,
+        "ci95": [
+          0.2857142857142857,
+          0.6666666666666666
+        ]
+      },
+      "roc_auc": {
+        "point": null,
+        "ci95": null
+      }
+    }
+  }
+}

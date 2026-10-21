@@ -1,0 +1,44 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.1266\linewidth}>{\raggedright\arraybackslash}p{0.0575\linewidth}>{\raggedright\arraybackslash}p{0.1726\linewidth}>{\raggedright\arraybackslash}p{0.1496\linewidth}>{\raggedright\arraybackslash}p{0.0748\linewidth}>{\raggedright\arraybackslash}p{0.0748\linewidth}>{\raggedright\arraybackslash}p{0.0921\linewidth}>{\raggedright\arraybackslash}p{0.0921\linewidth}@{}}
+\caption[Finetuning seeds]{All seed-specific routed results at maximum-dev-F1 cutoffs; seed 42 remains primary.}\label{tab:finetuning_seeds}\\
+\toprule
+\textbf{Model} & \textbf{Seed} & \textbf{Target} & \textbf{Dev route} & \textbf{AP} & \textbf{F1} & \textbf{Recall} & \textbf{FPR} \\
+\midrule\endfirsthead
+\multicolumn{8}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{Model} & \textbf{Seed} & \textbf{Target} & \textbf{Dev route} & \textbf{AP} & \textbf{F1} & \textbf{Recall} & \textbf{FPR} \\
+\midrule\endhead
+\midrule\multicolumn{8}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+Mobile\allowbreak{}CLIP & 42 & Smoking & finetuned & 0.564 & 0.735 & 93.1\% & 93.7\% \\
+Mobile\allowbreak{}CLIP & 42 & Dumping / littering & finetuned & 0.858 & 0.841 & 90.0\% & 24.0\% \\
+Mobile\allowbreak{}CLIP & 42 & Loitering & finetuned & 0.093 & 0.000 & 0.0\% & 12.5\% \\
+Mobile\allowbreak{}CLIP & 42 & Public sleep & finetuned & 0.976 & 0.909 & 83.3\% & 0.0\% \\
+Mobile\allowbreak{}CLIP & 42 & Unattended & finetuned & 0.652 & 0.408 & 100.0\% & 97.6\% \\
+Mobile\allowbreak{}CLIP & 43 & Smoking & linear probe & 0.594 & 0.752 & 98.0\% & 97.2\% \\
+Mobile\allowbreak{}CLIP & 43 & Dumping / littering & linear probe & 0.861 & 0.847 & 94.0\% & 28.0\% \\
+Mobile\allowbreak{}CLIP & 43 & Loitering & finetuned & 0.099 & 0.097 & 27.3\% & 75.0\% \\
+Mobile\allowbreak{}CLIP & 43 & Public sleep & finetuned & 1.000 & 0.909 & 83.3\% & 0.0\% \\
+Mobile\allowbreak{}CLIP & 43 & Unattended & finetuned & 0.697 & 0.405 & 100.0\% & 98.6\% \\
+Mobile\allowbreak{}CLIP & 44 & Smoking & finetuned & 0.590 & 0.756 & 100.0\% & 100.0\% \\
+Mobile\allowbreak{}CLIP & 44 & Dumping / littering & finetuned & 0.799 & 0.760 & 76.0\% & 24.0\% \\
+Mobile\allowbreak{}CLIP & 44 & Loitering & finetuned & 0.111 & 0.000 & 0.0\% & 9.4\% \\
+Mobile\allowbreak{}CLIP & 44 & Public sleep & finetuned & 0.976 & 0.909 & 83.3\% & 0.0\% \\
+Mobile\allowbreak{}CLIP & 44 & Unattended & finetuned & 0.513 & 0.406 & 100.0\% & 98.5\% \\
+SigLIP & 42 & Smoking & finetuned & 0.650 & 0.727 & 91.3\% & 93.3\% \\
+SigLIP & 42 & Dumping / littering & linear probe & 0.885 & 0.811 & 86.0\% & 26.0\% \\
+SigLIP & 42 & Loitering & zero shot & 0.097 & 0.035 & 9.1\% & 70.3\% \\
+SigLIP & 42 & Public sleep & linear probe & 0.915 & 0.500 & 33.3\% & 0.0\% \\
+SigLIP & 42 & Unattended & finetuned & 0.896 & 0.403 & 100.0\% & 99.6\% \\
+SigLIP & 43 & Smoking & finetuned & 0.665 & 0.756 & 100.0\% & 100.0\% \\
+SigLIP & 43 & Dumping / littering & linear probe & 0.885 & 0.811 & 86.0\% & 26.0\% \\
+SigLIP & 43 & Loitering & zero shot & 0.097 & 0.035 & 9.1\% & 70.3\% \\
+SigLIP & 43 & Public sleep & linear probe & 0.915 & 0.500 & 33.3\% & 0.0\% \\
+SigLIP & 43 & Unattended & finetuned & 0.902 & 0.403 & 100.0\% & 99.4\% \\
+SigLIP & 44 & Smoking & finetuned & 0.692 & 0.755 & 99.5\% & 99.6\% \\
+SigLIP & 44 & Dumping / littering & linear probe & 0.885 & 0.811 & 86.0\% & 26.0\% \\
+SigLIP & 44 & Loitering & finetuned & 0.095 & 0.000 & 0.0\% & 7.8\% \\
+SigLIP & 44 & Public sleep & linear probe & 0.915 & 0.500 & 33.3\% & 0.0\% \\
+SigLIP & 44 & Unattended & linear probe & 0.855 & 0.402 & 100.0\% & 100.0\% \\
+\end{longtable}\endgroup

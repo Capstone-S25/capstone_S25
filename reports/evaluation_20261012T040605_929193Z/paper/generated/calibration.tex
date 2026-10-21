@@ -1,0 +1,14 @@
+\begin{longtable}{lllrrrrrrrrr}
+\toprule
+Protocol & Model & Rule & Threshold & TP & FP & FN & TN & Recall & F1 & FPR & AP \\
+\midrule\endhead
+Frame test & MobileCLIP2-S2 & Max dev F1 & 0.225322 & 4 & 8 & 0 & 4 & 1.000 & 0.500 & 0.667 & 0.233 \\
+Frame test & MobileCLIP2-S2 & Dev FPR budget & 0.396164 & 0 & 0 & 4 & 12 & 0.000 & 0.000 & 0.000 & 0.233 \\
+Frame test & SigLIP2-B/16 & Max dev F1 & -1.925811 & 0 & 5 & 4 & 7 & 0.000 & 0.000 & 0.417 & 0.189 \\
+Frame test & SigLIP2-B/16 & Dev FPR budget & -0.079415 & 0 & 0 & 4 & 12 & 0.000 & 0.000 & 0.000 & 0.189 \\
+Window test & MobileCLIP2-S2 & Max dev F1 & 0.408146 & 4 & 12 & 0 & 0 & 1.000 & 0.400 & 1.000 & 0.275 \\
+Window test & MobileCLIP2-S2 & Dev FPR budget & 0.561465 & 0 & 1 & 4 & 11 & 0.000 & 0.000 & 0.083 & 0.275 \\
+Window test & SigLIP2-B/16 & Max dev F1 & -1.323678 & 4 & 12 & 0 & 0 & 1.000 & 0.400 & 1.000 & 0.196 \\
+Window test & SigLIP2-B/16 & Dev FPR budget & 0.144867 & 0 & 1 & 4 & 11 & 0.000 & 0.000 & 0.083 & 0.196 \\
+\bottomrule
+\end{longtable}

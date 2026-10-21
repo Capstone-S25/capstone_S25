@@ -1,0 +1,24 @@
+\begingroup\footnotesize
+\setlength{\LTpre}{5pt}\setlength{\LTpost}{8pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.1185\linewidth}>{\raggedright\arraybackslash}p{0.1508\linewidth}>{\raggedright\arraybackslash}p{0.2369\linewidth}>{\raggedright\arraybackslash}p{0.0862\linewidth}>{\raggedright\arraybackslash}p{0.0538\linewidth}>{\raggedright\arraybackslash}p{0.0969\linewidth}>{\raggedright\arraybackslash}p{0.0969\linewidth}@{}}
+\caption[Strategy routes]{Primary strategy routes and development scores; alpha suffixes denote visual interpolation.}\label{tab:strategy_routes}\\
+\toprule
+\textbf{Model} & \textbf{Target} & \textbf{Representation} & \textbf{Head} & \textbf{C} & \textbf{Mean AP} & \textbf{Worst AP} \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Table \thetable\ continued}}\\
+\toprule
+\textbf{Model} & \textbf{Target} & \textbf{Representation} & \textbf{Head} & \textbf{C} & \textbf{Mean AP} & \textbf{Worst AP} \\
+\midrule\endhead
+\midrule\multicolumn{7}{r}{\textit{Continued on next page}}\\\endfoot
+\bottomrule\endlastfoot
+Mobile\allowbreak{}CLIP & Smoking & full crop pool a0 & linear & 10 & 0.800 & 0.510 \\
+Mobile\allowbreak{}CLIP & Dumping / littering & full pool a0.5 & linear & 0.1 & 0.923 & 0.923 \\
+Mobile\allowbreak{}CLIP & Loitering & full geometry a0 & linear & 0.1 & 0.486 & 0.486 \\
+Mobile\allowbreak{}CLIP & Public sleep & full pool a0.25 & linear & 0.1 & 1.000 & 1.000 \\
+Mobile\allowbreak{}CLIP & Unattended & full ordered a1 & linear & 10 & 0.947 & 0.947 \\
+SigLIP & Smoking & full crop pool a0 & mlp & -- & 0.821 & 0.505 \\
+SigLIP & Dumping / littering & full geometry a0 & linear & 10 & 0.926 & 0.926 \\
+SigLIP & Loitering & full geometry a0 & linear & 0.1 & 0.522 & 0.522 \\
+SigLIP & Public sleep & full pool a0 & linear & 0.1 & 1.000 & 1.000 \\
+SigLIP & Unattended & full ordered a1 & linear & 10 & 0.968 & 0.968 \\
+\end{longtable}\endgroup

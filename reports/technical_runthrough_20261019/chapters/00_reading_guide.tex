@@ -1,0 +1,28 @@
+\chapter*{Reading guide and executive findings}
+\addcontentsline{toc}{chapter}{Reading guide and executive findings}
+
+This report reconstructs the project from the files actually present in the shared workspace. It explains what data was found, what additional data was acquired, how labels and splits were checked, how the models were evaluated, which learning strategies were tried, what changed in the results, and what remains unresolved. The account includes the early benchmark and its limitations, the corrected GPU comparison, the expanded image study, six actual visual fine-tuning runs, the 330-configuration strategy study, the 50-head video pilot, the 17 October ensemble, state-memory and tiled-detection experiments, and the 19 October SmolVLM LoRA training and controlled evaluation.
+
+\textbf{The principal outcome is a better research workflow and several stronger components, rather than a validated five-event deployment model.} Waste-dumping supervision improves clip ranking substantially. Smoking photographs become easy to distinguish within their data domain, while surveillance-camera recall remains poor at conservative operating points. Geometry helps the historical loitering diagnostic, but thermal supplied-track results and a single RGB camera do not establish automatic tracking across cameras. Public-sleep evidence is small and provisionally reviewed. Explicit unattended-item state is more useful than a global image score on two clean AVSS events, but normal exposure is far too short to validate a low false-alert rate.
+
+The 17 October component result is concrete: fixed overlapping image tiles increase recall against 136 CAVIAR item reference boxes from 66/136 (48.5\%) to 116/136 (85.3\%) at intersection-over-union 0.5. A SigLIP ensemble raises AP on 205 retrospectively evaluated HMDB clips from approximately 0.778 to 0.9645. Neither result demonstrates a comparable gain on unseen surveillance-camera events. Additional item-state memory produces no improvement on the two-event AVSS primary subset and increases repeat alarms on the separately censored diagnostic.
+
+The newly completed SmolVLM study trains three language-layer LoRA adapters with 4,341,760 parameters each, using 3,973 training examples, 1,812 development examples and ten held-out source/task cohorts totaling 3,792 unique cases. Primary routed AP improves on IWDD from 0.5922 to 0.7660 and historical unattended endpoints from 0.4762 to 0.6933, but loitering falls from 0.4250 to 0.1822. At the development FPR-budget cutoff, unattended recall is 94.6\% with 70.8\% held-out FPR. CCTV smoking recall is only 1.8\%. The optional rule restoring the original loitering model was introduced retrospectively and is identified as exploratory. These results reinforce the distinction between ranking gains, source transfer and usable event decisions.
+
+\section*{How evidence is described}
+\textbf{Published/source annotation.} Labels or boxes released with a dataset. Their meaning is retained: a primary action, a posture, a box or an abandonment action is not automatically a complete label for the target event.
+
+\textbf{Provisional assistant review.} Visual interpretation performed during preparation. This includes historical unattended intervals and apparent public-sleep photographs. It is not independent human verification.
+
+\textbf{Held out within a collection.} Inputs excluded from fitting under the recorded split. Their collection or domain may still contribute training data.
+
+\textbf{New-source transfer.} A source not used in the study's learning/selection when first scored. Once its results have been inspected, later experiments on it are retrospective.
+
+\textbf{Component diagnostic.} A test of a box detector, crop coverage, posture, supplied trajectory or action classifier. Its units and target differ from end-to-end event discovery.
+
+\section*{Recommended reading order}
+Read Chapters 1--3 for scope, data and evaluation rules; Chapters 4--10 for the initial and CLIP/component experiments; Chapter~\ref{ch:smol} for SmolVLM adaptation; Chapter~\ref{ch:interpretation} for the current five-target assessment; and the final main chapter for reproducibility. Appendices provide all 330 strategy-development entries, all 50 final video-head selections, all 38 latest smoking-policy summaries, seed-specific fine-tuning operating points, the event table, pinned identities and the source registry. These appendices preserve alternatives instead of selecting whichever test column happens to look best.
+
+\textbf{Count discipline.} Images, cropped views, examples, overlapping windows, predictions, clips, events and camera groups are different units. For example, 55,156 predictions are four models answering multiple input protocols; they are not 55,156 anomaly events. Three seeds add optimization replications on the same data, not three new sources. The 936 prepared video-pilot source files are dominated by movie/web action clips, not 936 surveillance cameras.
+
+The document is dated 19 October 2026 and supersedes the preserved 18 October edition. The documentation update runs no new model experiment; it incorporates the completed 19 October training artifacts. Run-directory names often carry their preparation/start date rather than finalization date. All experiment figures and conclusions retain their original stage-specific protocols. The accompanying source manifest records the local files and SHA-256 identities used to build the tables and figures.

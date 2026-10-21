@@ -1,0 +1,279 @@
+{
+  "created_at": "2026-10-11T12:10:05.428235+00:00",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "platform": "Linux-7.0.0-28-generic-x86_64-with-glibc2.39",
+  "cpu_model": "AMD Ryzen Threadripper PRO 7975WX 32-Cores",
+  "physical_cpus": 32,
+  "logical_cpus": 64,
+  "total_ram_mb": 257066.55859375,
+  "available_cpu_cores": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63
+  ],
+  "options": {
+    "manifest": "${DATA_ROOT}/evaluation/unattended_items_frame.csv",
+    "definitions": "${RESULTS_ROOT}/evaluation_20261011T120315_062384Z/unattended_items_frame_definitions.json",
+    "models": [
+      "mobileclip2-s2",
+      "siglip2-b16-224",
+      "smolvlm-500m",
+      "minicpm-v4"
+    ],
+    "list_models": false,
+    "output": "${RESULTS_ROOT}/evaluation_20261011T120315_062384Z/unattended_items_frame/dev",
+    "limit": 8,
+    "image_policy": "letterbox",
+    "split": "dev",
+    "repeats": 1,
+    "warmup": 1,
+    "seed": 42,
+    "max_side": 768,
+    "max_new_tokens": 64,
+    "timeout_seconds": 3600.0,
+    "max_rss_mb": 24576.0,
+    "cache_dir": "${CACHE_ROOT}/hub",
+    "offline": false,
+    "worker_config": null,
+    "threads": 16,
+    "duty_cycle": 1.0,
+    "max_samples_per_second": null,
+    "cpu_cores": null
+  },
+  "workspace": {
+    "data_dir": "/home/g31/projects/test_here/capstone_S25/data",
+    "results_dir": "/home/g31/projects/test_here/capstone_S25/results",
+    "cache_dir": "/home/g31/.cache/huggingface",
+    "bundle_dir": "/home/g31/projects/test_here/capstone_S25/test_data",
+    "config_dir": "/home/g31/projects/test_here/capstone_S25/anomaly_eval/config"
+  },
+  "definitions": {
+    "normal": "An ordinary scene with no evidence of unattended items.",
+    "unattended_items": "A bag, box, or other personal item apparently left behind without its owner nearby. Ownership and duration require evidence across time."
+  },
+  "manifest_sha256": "4996367568bd4669734db3e0352495e674645468892a1832fcec87f3c742ebf0",
+  "definitions_sha256": "34631f1ce812e0676c3ccbe57123373a4452896f6c67f31435e4d64b107fd546",
+  "samples": [
+    {
+      "path": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_1_1_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag"
+    },
+    {
+      "path": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_PickedUp_4_2_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_4_1_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_0_3_3.png",
+      "label": "unattended_items",
+      "split": "test",
+      "group_id": "caviar:LeftBag"
+    },
+    {
+      "path": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_0_3_3.png",
+      "label": "unattended_items",
+      "split": "test",
+      "group_id": "caviar:LeftBag"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_1_0_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk3_8_3_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:Walk3"
+    },
+    {
+      "path": "${DATA_ROOT}/evaluation/derived/frames/caviar_Walk3_8_0_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:Walk3"
+    }
+  ],
+  "selection": {
+    "available_samples": 32,
+    "selected_samples": 8,
+    "available_label_counts": {
+      "normal": 24,
+      "unattended_items": 8
+    },
+    "selected_label_counts": {
+      "normal": 6,
+      "unattended_items": 2
+    },
+    "available_groups": 3,
+    "selected_groups": 3,
+    "policy": "label_proportional_group_round_robin_v1"
+  },
+  "models": [
+    "mobileclip2-s2",
+    "siglip2-b16-224",
+    "smolvlm-500m",
+    "minicpm-v4"
+  ],
+  "evaluation_split": "dev",
+  "sample_identity": [
+    {
+      "path": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_1_1_3.png",
+      "sha256": "70762c1619755712808e1b16663134f3844b1bff15bee08c2024cdad3c04c1b8",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag"
+    },
+    {
+      "path": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_PickedUp_4_2_3.png",
+      "sha256": "521ebfe4a0ddd942930da14d7be964586c6e8bf4147a192407c3bf1efa962e07",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_PickedUp_4_1_3.png",
+      "sha256": "d10ba44440b152867e934dd50395d177d2ce526228706774afb5813b01149dd5",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_PickedUp"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_0_3_3.png",
+      "sha256": "30581f809cc56293cac9a37acf2e0eab56ccf18e5b4eb682499b2924bbdfae02",
+      "label": "unattended_items",
+      "split": "test",
+      "group_id": "caviar:LeftBag"
+    },
+    {
+      "path": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_0_3_3.png",
+      "sha256": "b4be918683db49ec7915cd2d97ac35e12932235c423cea437a9ae996814163fc",
+      "label": "unattended_items",
+      "split": "test",
+      "group_id": "caviar:LeftBag"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_1_0_3.png",
+      "sha256": "cb486a91ba370b823b8f35d53911a6c2a48706034bd77ec92a0f95b8c21a7ea8",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk3_8_3_3.png",
+      "sha256": "ee231736bc787b70fe6e2bfba15575425b9f72eca2d74bfcc4b66efd6cc5d03a",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:Walk3"
+    },
+    {
+      "path": "${DATA_ROOT}/evaluation/derived/frames/caviar_Walk3_8_0_3.png",
+      "sha256": "4e4671b580206027fe317592740ab2587dc3dce97fa4ec50cfc0800b212e32dd",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:Walk3"
+    }
+  ],
+  "code_sha256": {
+    "anomaly_eval/__init__.py": "ebf262f97615be95b2bf3279450d241d22fffa559c07002ee12fce877018e8e9",
+    "anomaly_eval/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "anomaly_eval/analysis.py": "0d34c9588241abfb71c6d8b3a56a7d0ab9dcbcb79b8e458ad25931f40ad01c00",
+    "anomaly_eval/audit.py": "da6434126cacd43c8a69aed816154d89cc8cdc10d75e233da7185abaf55adfe6",
+    "anomaly_eval/benchmark.py": "b9549f46325874e0965100c7585048106809bd1aaf2afb3dafd38f0d7009b53b",
+    "anomaly_eval/cli.py": "462ed3487cfaab2774437ab8ce4f6792a064d71535107ceaf8543ff7e3178674",
+    "anomaly_eval/config/anomalies.json": "589882c0a43d846b9ad6c6d88073129bb666a15014919f585849ab830a95038c",
+    "anomaly_eval/config/caviar_review_intervals.json": "14893df2f779cadf2313279117fc0fc20b6e8c76d5ad0509013fcb3283a54d8d",
+    "anomaly_eval/data.py": "80559db94d2b0bf8e88d7e316cabc1a5602ff26620d4029cbebb19225bc61a87",
+    "anomaly_eval/datasets/__init__.py": "63f341a36e2bbbe47168e1204ee7c0d702969be07a971a1c098d13ff1dd6f98f",
+    "anomaly_eval/datasets/drive.py": "b53907ec66ca147557727af0aa35a22eafbf8d8d6c695c06774f88049ea85853",
+    "anomaly_eval/datasets/fetch.py": "224e6289c89334aa9f4aaa5c7319ac412f6a87b477bf5aefc835a35b38d53a11",
+    "anomaly_eval/datasets/labels.py": "a8042a5c0edeebb189beab519e25e9166476dda66871f2a65f7967238c4a9ca6",
+    "anomaly_eval/datasets/prepare.py": "6742ab2af8de07a449299bbdf05d12bf24d6d4e691083b25da398f97c47562eb",
+    "anomaly_eval/datasets/tools.py": "0dec4c56fcd3b47b97fe36afc15a2a95e8cb0b5fe84142beb378ab18ec711c48",
+    "anomaly_eval/metrics.py": "d33bb68d0cdde2fd3c7f89fde41475dc76e10159905f5ff8e334b94a0e4f2e3e",
+    "anomaly_eval/models.py": "6e13e771adbcb4f524aebe2d3c05611035aba3e0bb62f626e0ed8abf5a393658",
+    "anomaly_eval/paths.py": "90c2ba6ecbefba8da90ae072912c277a73ed05cb3b66d9809f6523ba233fee14",
+    "anomaly_eval/resources.py": "f71f2004bafbbd8d8c99e53a2ea111799efb3450aa5c8380772f35cf54bcb3f9",
+    "anomaly_eval/runner.py": "ee495cf17d6389e2db2999fad7ac2c97a3b51f2a75eee13eb6d76b336017ddba",
+    "anomaly_eval/vadclip/__init__.py": "e49e2f18d1b7db331d7d49553af57222f5bad1b6a81f761e4fb2231b5f73cd7c",
+    "anomaly_eval/vadclip/baselines.py": "1432c6343e15b2f7b0828262e334858ed2e73483b7de388aa87be8708d132d40",
+    "anomaly_eval/vadclip/clip_b16.py": "ecd3b7963b703c3ddf48c93ac4dacdf5051df7c9159657b0174e2c8868bb9c4f",
+    "anomaly_eval/vadclip/data.py": "cae28cda5deb6aac393a8b553f7b578172f3648f765f5488b257f3757e049344",
+    "anomaly_eval/vadclip/evaluate.py": "d8b698b8611b62b5d44d5792cbe018bf4a47bff5b9fe390e71583632d6b4fd5e",
+    "anomaly_eval/vadclip/extract_features.py": "316a6d757984856cea51012c4f1451c239f5d520a07132483596b0775c5e7262",
+    "anomaly_eval/vadclip/model.py": "27c5fac657ceceb0fa5ea9116ef19e0c12c1b6558311dd6d38a6ff0aa03c87ce",
+    "anomaly_eval/vadclip/train.py": "b38e51e2e8cd0f8f81f6d4a640b8cbb3077f34962ff816d9d4fd0426c4c714b9"
+  },
+  "metric_version": 2,
+  "experiment_fingerprint": "d659cb19ab22bd2cee9af3e79f72e0f9f9e6275ad7c82f5bbd314c51fd778642"
+}

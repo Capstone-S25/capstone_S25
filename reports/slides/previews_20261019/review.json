@@ -1,0 +1,9 @@
+{
+  "pdf_sha256": "203d4f0c8a2068e3fa21f116aa7a93fd6ee5aae0555ffde9d1df901b29dddace",
+  "pages_rendered": 45,
+  "contact_sheets_visually_reviewed": 5,
+  "additional_full_page_checks": [
+    15
+  ],
+  "assessment": "All pages rendered and visually reviewed in contact sheets; full-page table check confirms no clipped task names. All text fits measured boxes and agrees with editable slide content; PDF fonts are embedded."
+}

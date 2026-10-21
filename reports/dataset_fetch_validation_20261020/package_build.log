@@ -1,0 +1,9 @@
+Processing /home/g31/projects/test_here/capstone_S25
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: capstone-anomaly-evaluation
+  Building wheel for capstone-anomaly-evaluation (pyproject.toml): started
+  Building wheel for capstone-anomaly-evaluation (pyproject.toml): finished with status 'done'
+  Created wheel for capstone-anomaly-evaluation: filename=capstone_anomaly_evaluation-0.1.0-py3-none-any.whl size=483714 sha256=c4c639fc6b0dfc2ef4c4e6f7222ce71271bcf94cb7a367844ded24d086d4c587
+  Stored in directory: /tmp/pip-ephem-wheel-cache-lts_r0ev/wheels/5b/23/55/3ea72f9e758dac3f179145430f71bc4a446a9197b579b519da
+Successfully built capstone-anomaly-evaluation

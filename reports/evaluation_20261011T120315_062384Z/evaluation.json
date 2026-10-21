@@ -1,0 +1,447 @@
+{
+  "status": "complete_for_available_tasks",
+  "benchmarks": [
+    {
+      "cohort": "smoking_frame",
+      "split": "dev",
+      "output": "smoking_frame/dev",
+      "selection": {
+        "available_samples": 236,
+        "selected_samples": 8,
+        "available_label_counts": {
+          "smoking": 116,
+          "normal": 120
+        },
+        "selected_label_counts": {
+          "normal": 4,
+          "smoking": 4
+        },
+        "available_groups": 16,
+        "selected_groups": 4,
+        "policy": "label_proportional_group_round_robin_v1"
+      }
+    },
+    {
+      "cohort": "unattended_items_frame",
+      "split": "dev",
+      "output": "unattended_items_frame/dev",
+      "selection": {
+        "available_samples": 32,
+        "selected_samples": 8,
+        "available_label_counts": {
+          "normal": 24,
+          "unattended_items": 8
+        },
+        "selected_label_counts": {
+          "normal": 6,
+          "unattended_items": 2
+        },
+        "available_groups": 3,
+        "selected_groups": 3,
+        "policy": "label_proportional_group_round_robin_v1"
+      }
+    },
+    {
+      "cohort": "unattended_items_frame",
+      "split": "test",
+      "output": "unattended_items_frame/test",
+      "selection": {
+        "available_samples": 32,
+        "selected_samples": 8,
+        "available_label_counts": {
+          "normal": 24,
+          "unattended_items": 8
+        },
+        "selected_label_counts": {
+          "normal": 6,
+          "unattended_items": 2
+        },
+        "available_groups": 3,
+        "selected_groups": 3,
+        "policy": "label_proportional_group_round_robin_v1"
+      }
+    }
+  ],
+  "steps": [
+    {
+      "command": [
+        "/home/g31/projects/test_here/capstone_S25/.venv/bin/python3",
+        "-m",
+        "anomaly_eval",
+        "benchmark",
+        "--manifest",
+        "/home/g31/projects/test_here/capstone_S25/data/evaluation/smoking_frame.csv",
+        "--definitions",
+        "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261011T120315_062384Z/smoking_frame_definitions.json",
+        "--models",
+        "mobileclip2-s2",
+        "siglip2-b16-224",
+        "smolvlm-500m",
+        "minicpm-v4",
+        "--split",
+        "dev",
+        "--output",
+        "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261011T120315_062384Z/smoking_frame/dev",
+        "--limit",
+        "8",
+        "--threads",
+        "16",
+        "--duty-cycle",
+        "1.0",
+        "--max-rss-mb",
+        "24576",
+        "--timeout-seconds",
+        "3600",
+        "--repeats",
+        "1",
+        "--seed",
+        "42",
+        "--cache-dir",
+        "/home/g31/.cache/huggingface/hub",
+        "--image-policy",
+        "letterbox",
+        "--max-side",
+        "768",
+        "--max-new-tokens",
+        "64"
+      ],
+      "returncode": 0,
+      "seconds": 109.51477313879877,
+      "peak_process_tree_rss_mb": 17121.84765625,
+      "status": "ok",
+      "error": null,
+      "log": "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261011T120315_062384Z/logs/smoking_frame_dev.log"
+    },
+    {
+      "command": [
+        "/home/g31/projects/test_here/capstone_S25/.venv/bin/python3",
+        "-m",
+        "anomaly_eval",
+        "benchmark",
+        "--manifest",
+        "/home/g31/projects/test_here/capstone_S25/data/evaluation/unattended_items_frame.csv",
+        "--definitions",
+        "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261011T120315_062384Z/unattended_items_frame_definitions.json",
+        "--models",
+        "mobileclip2-s2",
+        "siglip2-b16-224",
+        "smolvlm-500m",
+        "minicpm-v4",
+        "--split",
+        "dev",
+        "--output",
+        "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261011T120315_062384Z/unattended_items_frame/dev",
+        "--limit",
+        "8",
+        "--threads",
+        "16",
+        "--duty-cycle",
+        "1.0",
+        "--max-rss-mb",
+        "24576",
+        "--timeout-seconds",
+        "3600",
+        "--repeats",
+        "1",
+        "--seed",
+        "42",
+        "--cache-dir",
+        "/home/g31/.cache/huggingface/hub",
+        "--image-policy",
+        "letterbox",
+        "--max-side",
+        "768",
+        "--max-new-tokens",
+        "64"
+      ],
+      "returncode": 0,
+      "seconds": 88.23913543485105,
+      "peak_process_tree_rss_mb": 17138.1328125,
+      "status": "ok",
+      "error": null,
+      "log": "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261011T120315_062384Z/logs/unattended_items_frame_dev.log"
+    },
+    {
+      "command": [
+        "/home/g31/projects/test_here/capstone_S25/.venv/bin/python3",
+        "-m",
+        "anomaly_eval",
+        "benchmark",
+        "--manifest",
+        "/home/g31/projects/test_here/capstone_S25/data/evaluation/unattended_items_frame.csv",
+        "--definitions",
+        "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261011T120315_062384Z/unattended_items_frame_definitions.json",
+        "--models",
+        "mobileclip2-s2",
+        "siglip2-b16-224",
+        "smolvlm-500m",
+        "minicpm-v4",
+        "--split",
+        "test",
+        "--output",
+        "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261011T120315_062384Z/unattended_items_frame/test",
+        "--limit",
+        "8",
+        "--threads",
+        "16",
+        "--duty-cycle",
+        "1.0",
+        "--max-rss-mb",
+        "24576",
+        "--timeout-seconds",
+        "3600",
+        "--repeats",
+        "1",
+        "--seed",
+        "42",
+        "--cache-dir",
+        "/home/g31/.cache/huggingface/hub",
+        "--image-policy",
+        "letterbox",
+        "--max-side",
+        "768",
+        "--max-new-tokens",
+        "64"
+      ],
+      "returncode": 0,
+      "seconds": 88.67484143842012,
+      "peak_process_tree_rss_mb": 16833.55078125,
+      "status": "ok",
+      "error": null,
+      "log": "/home/g31/projects/test_here/capstone_S25/results/evaluation_20261011T120315_062384Z/logs/unattended_items_frame_test.log"
+    }
+  ],
+  "options": {
+    "output": null,
+    "data_dir": "/home/g31/projects/test_here/capstone_S25/data",
+    "cache_dir": "/home/g31/.cache/huggingface/hub",
+    "prepared_dir": null,
+    "review_csv": null,
+    "fetch": false,
+    "fetch_drive": false,
+    "use_cookies": false,
+    "drive_workers": 2,
+    "fetch_timeout": 72000,
+    "d2_shards": [],
+    "roboflow_version": [],
+    "prepare_only": false,
+    "skip_prepare": false,
+    "mode": "quick",
+    "limit": 8,
+    "models": [
+      "mobileclip2-s2",
+      "siglip2-b16-224",
+      "smolvlm-500m",
+      "minicpm-v4"
+    ],
+    "tasks": [
+      "littering",
+      "loitering",
+      "rough_sleeping",
+      "smoking",
+      "unattended_items"
+    ],
+    "protocols": [
+      "frame"
+    ],
+    "threads": 16,
+    "cpu_cores": null,
+    "duty_cycle": 1.0,
+    "max_rss_mb": 24576,
+    "camera_fps": 1,
+    "timeout_seconds": 3600,
+    "seed": 42,
+    "repeats": 1,
+    "image_policy": "letterbox",
+    "max_side": 768,
+    "max_new_tokens": 64,
+    "bootstrap": 200,
+    "target_fpr": 0.05,
+    "offline": false,
+    "require_all_tasks": false,
+    "vadclip": false,
+    "vadclip_epochs": 100,
+    "vadclip_timeout": 14400
+  },
+  "code_sha256": {
+    "anomaly_eval/__init__.py": "ebf262f97615be95b2bf3279450d241d22fffa559c07002ee12fce877018e8e9",
+    "anomaly_eval/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "anomaly_eval/analysis.py": "0d34c9588241abfb71c6d8b3a56a7d0ab9dcbcb79b8e458ad25931f40ad01c00",
+    "anomaly_eval/audit.py": "da6434126cacd43c8a69aed816154d89cc8cdc10d75e233da7185abaf55adfe6",
+    "anomaly_eval/benchmark.py": "b9549f46325874e0965100c7585048106809bd1aaf2afb3dafd38f0d7009b53b",
+    "anomaly_eval/cli.py": "462ed3487cfaab2774437ab8ce4f6792a064d71535107ceaf8543ff7e3178674",
+    "anomaly_eval/config/anomalies.json": "589882c0a43d846b9ad6c6d88073129bb666a15014919f585849ab830a95038c",
+    "anomaly_eval/config/caviar_review_intervals.json": "14893df2f779cadf2313279117fc0fc20b6e8c76d5ad0509013fcb3283a54d8d",
+    "anomaly_eval/data.py": "80559db94d2b0bf8e88d7e316cabc1a5602ff26620d4029cbebb19225bc61a87",
+    "anomaly_eval/datasets/__init__.py": "63f341a36e2bbbe47168e1204ee7c0d702969be07a971a1c098d13ff1dd6f98f",
+    "anomaly_eval/datasets/drive.py": "b53907ec66ca147557727af0aa35a22eafbf8d8d6c695c06774f88049ea85853",
+    "anomaly_eval/datasets/fetch.py": "224e6289c89334aa9f4aaa5c7319ac412f6a87b477bf5aefc835a35b38d53a11",
+    "anomaly_eval/datasets/labels.py": "a8042a5c0edeebb189beab519e25e9166476dda66871f2a65f7967238c4a9ca6",
+    "anomaly_eval/datasets/prepare.py": "6742ab2af8de07a449299bbdf05d12bf24d6d4e691083b25da398f97c47562eb",
+    "anomaly_eval/datasets/tools.py": "0dec4c56fcd3b47b97fe36afc15a2a95e8cb0b5fe84142beb378ab18ec711c48",
+    "anomaly_eval/metrics.py": "d33bb68d0cdde2fd3c7f89fde41475dc76e10159905f5ff8e334b94a0e4f2e3e",
+    "anomaly_eval/models.py": "6e13e771adbcb4f524aebe2d3c05611035aba3e0bb62f626e0ed8abf5a393658",
+    "anomaly_eval/paths.py": "90c2ba6ecbefba8da90ae072912c277a73ed05cb3b66d9809f6523ba233fee14",
+    "anomaly_eval/resources.py": "f71f2004bafbbd8d8c99e53a2ea111799efb3450aa5c8380772f35cf54bcb3f9",
+    "anomaly_eval/runner.py": "ee495cf17d6389e2db2999fad7ac2c97a3b51f2a75eee13eb6d76b336017ddba",
+    "anomaly_eval/vadclip/__init__.py": "e49e2f18d1b7db331d7d49553af57222f5bad1b6a81f761e4fb2231b5f73cd7c",
+    "anomaly_eval/vadclip/baselines.py": "1432c6343e15b2f7b0828262e334858ed2e73483b7de388aa87be8708d132d40",
+    "anomaly_eval/vadclip/clip_b16.py": "ecd3b7963b703c3ddf48c93ac4dacdf5051df7c9159657b0174e2c8868bb9c4f",
+    "anomaly_eval/vadclip/data.py": "cae28cda5deb6aac393a8b553f7b578172f3648f765f5488b257f3757e049344",
+    "anomaly_eval/vadclip/evaluate.py": "d8b698b8611b62b5d44d5792cbe018bf4a47bff5b9fe390e71583632d6b4fd5e",
+    "anomaly_eval/vadclip/extract_features.py": "316a6d757984856cea51012c4f1451c239f5d520a07132483596b0775c5e7262",
+    "anomaly_eval/vadclip/model.py": "27c5fac657ceceb0fa5ea9116ef19e0c12c1b6558311dd6d38a6ff0aa03c87ce",
+    "anomaly_eval/vadclip/train.py": "b38e51e2e8cd0f8f81f6d4a640b8cbb3077f34962ff816d9d4fd0426c4c714b9"
+  },
+  "workspace": {
+    "data_dir": "/home/g31/projects/test_here/capstone_S25/data",
+    "results_dir": "/home/g31/projects/test_here/capstone_S25/results",
+    "cache_dir": "/home/g31/.cache/huggingface",
+    "bundle_dir": "/home/g31/projects/test_here/capstone_S25/test_data",
+    "config_dir": "/home/g31/projects/test_here/capstone_S25/anomaly_eval/config"
+  },
+  "dataset": {
+    "schema": 2,
+    "seed": 42,
+    "manifests": {
+      "smoking_frame": "smoking_frame.csv",
+      "unattended_items_frame": "unattended_items_frame.csv",
+      "unattended_items_window": "unattended_items_window.csv"
+    },
+    "coverage": {
+      "littering": {},
+      "loitering": {},
+      "rough_sleeping": {},
+      "smoking": {
+        "frame": {
+          "counts": {
+            "dev": {
+              "smoking": 116,
+              "normal": 120
+            },
+            "test": {}
+          },
+          "groups": {
+            "dev": 16,
+            "test": 0
+          },
+          "eligible_for_calibrated_test": false
+        }
+      },
+      "unattended_items": {
+        "frame": {
+          "counts": {
+            "dev": {
+              "normal": 24,
+              "unattended_items": 8
+            },
+            "test": {
+              "normal": 24,
+              "unattended_items": 8
+            }
+          },
+          "groups": {
+            "dev": 3,
+            "test": 3
+          },
+          "eligible_for_calibrated_test": true
+        },
+        "window": {
+          "counts": {
+            "dev": {
+              "normal": 16,
+              "unattended_items": 4
+            },
+            "test": {
+              "normal": 12,
+              "unattended_items": 4
+            }
+          },
+          "groups": {
+            "dev": 3,
+            "test": 3
+          },
+          "eligible_for_calibrated_test": true
+        }
+      }
+    },
+    "issues": [],
+    "confirmed_rows": 336,
+    "proxy_development_rows": 7200,
+    "fingerprint": "cdfb7f31b026ea57bb73a9f931c5d4a93b4bf75e67fd0558822c748a80179e46",
+    "limitations": [
+      "Historical benchmark groups are development only.",
+      "CAVIAR is a small staged single-camera set; source-sequence holdout is not a new-camera holdout.",
+      "Window contact sheets are a separate past-context protocol, not native video input.",
+      "Proxy pose/person/action labels do not establish rough sleeping, loitering or littering events.",
+      "ABODA, D2-CDNet and Roboflow candidates need event/normal review before task scoring."
+    ]
+  },
+  "dataset_fingerprint": "cdfb7f31b026ea57bb73a9f931c5d4a93b4bf75e67fd0558822c748a80179e46",
+  "requested_task_coverage": {
+    "littering": {
+      "available_protocols": [],
+      "test_eligible_protocols": []
+    },
+    "loitering": {
+      "available_protocols": [],
+      "test_eligible_protocols": []
+    },
+    "rough_sleeping": {
+      "available_protocols": [],
+      "test_eligible_protocols": []
+    },
+    "smoking": {
+      "available_protocols": [
+        "frame"
+      ],
+      "test_eligible_protocols": []
+    },
+    "unattended_items": {
+      "available_protocols": [
+        "frame"
+      ],
+      "test_eligible_protocols": [
+        "frame"
+      ]
+    }
+  },
+  "full_task_coverage": false,
+  "manifest_sha256": {
+    "smoking_frame": "df70492d1bd53322250ebaa4d434c3905c411098a756ac536d01d594409b6b2e",
+    "unattended_items_frame": "4996367568bd4669734db3e0352495e674645468892a1832fcec87f3c742ebf0"
+  },
+  "experiment_fingerprint": "be6e40ec73e556bd184c03c3df80b748469579959d489cebc983568db9a0aae5",
+  "naive_baselines": {
+    "smoking_frame/dev": {
+      "always_normal": {
+        "accuracy": 0.5,
+        "binary_f1": 0.0
+      },
+      "always_anomaly": {
+        "accuracy": 0.5,
+        "binary_f1": 0.6666666666666666
+      }
+    },
+    "unattended_items_frame/dev": {
+      "always_normal": {
+        "accuracy": 0.75,
+        "binary_f1": 0.0
+      },
+      "always_anomaly": {
+        "accuracy": 0.25,
+        "binary_f1": 0.4
+      }
+    },
+    "unattended_items_frame/test": {
+      "always_normal": {
+        "accuracy": 0.75,
+        "binary_f1": 0.0
+      },
+      "always_anomaly": {
+        "accuracy": 0.25,
+        "binary_f1": 0.4
+      }
+    }
+  }
+}

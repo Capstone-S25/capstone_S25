@@ -17,23 +17,35 @@ from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-from scripts import benchmark, fetch_data
-from scripts.data import Sample, read_manifest, select_test_samples
-from scripts.init import main as prepare_main
-from scripts.init import sample_video
-from scripts.metrics import detection_metrics, roc_auc
-from scripts.models import Prediction, parse_vlm_response
-from scripts.throttle import CPUSettings, Throttler
+from anomaly_eval import benchmark
+from anomaly_eval.data import Sample, read_manifest, select_test_samples
+from anomaly_eval.datasets import drive as fetch_data
+from anomaly_eval.datasets.tools import inventory_main as prepare_main
+from anomaly_eval.datasets.tools import sample_video
+from anomaly_eval.metrics import detection_metrics, roc_auc
+from anomaly_eval.models import Prediction, parse_vlm_response
+from anomaly_eval.resources import CPUSettings, Throttler
 
 DEFINITIONS = {"normal": "Ordinary activity", "smoking": "A person smoking"}
 
 
 class ThrottleTests(unittest.TestCase):
+    def test_default_has_no_pacing_sleeps(self):
+        throttle = Throttler(CPUSettings())
+        with (
+            patch("anomaly_eval.resources.time.perf_counter", side_effect=[10.0, 12.0]),
+            patch("anomaly_eval.resources.time.sleep") as sleep,
+            throttle.operation(),
+        ):
+            pass
+        sleep.assert_not_called()
+        self.assertEqual(throttle.total_sleep_seconds, 0)
+
     def test_paces_active_time(self):
         throttle = Throttler(CPUSettings(duty_cycle=0.5))
         with (
-            patch("scripts.throttle.time.perf_counter", side_effect=[10.0, 12.0]),
-            patch("scripts.throttle.time.sleep") as sleep,
+            patch("anomaly_eval.resources.time.perf_counter", side_effect=[10.0, 12.0]),
+            patch("anomaly_eval.resources.time.sleep") as sleep,
             throttle.operation(),
         ):
             pass
@@ -43,8 +55,8 @@ class ThrottleTests(unittest.TestCase):
     def test_rate_cap_and_full_duty(self):
         throttle = Throttler(CPUSettings(duty_cycle=1.0, max_samples_per_second=0.2))
         with (
-            patch("scripts.throttle.time.perf_counter", side_effect=[10.0, 12.0]),
-            patch("scripts.throttle.time.sleep") as sleep,
+            patch("anomaly_eval.resources.time.perf_counter", side_effect=[10.0, 12.0]),
+            patch("anomaly_eval.resources.time.sleep") as sleep,
             throttle.operation(),
         ):
             pass
@@ -52,7 +64,7 @@ class ThrottleTests(unittest.TestCase):
 
     def test_failure_does_not_delay_cancellation(self):
         with (
-            patch("scripts.throttle.time.sleep") as sleep,
+            patch("anomaly_eval.resources.time.sleep") as sleep,
             self.assertRaises(KeyboardInterrupt),
             Throttler(CPUSettings()).operation(),
         ):
@@ -71,11 +83,13 @@ class ThrottleTests(unittest.TestCase):
                 CPUSettings(**options)
 
     def test_environment_overrides_thread_pools(self):
-        with patch.dict(os.environ, {"OMP_NUM_THREADS": "99"}):
+        with patch.dict(
+            os.environ, {"OMP_NUM_THREADS": "99", "CUDA_VISIBLE_DEVICES": "0"}
+        ):
             CPUSettings(threads=2).configure_environment()
             self.assertEqual(os.environ["OMP_NUM_THREADS"], "2")
             self.assertEqual(os.environ["OPENBLAS_NUM_THREADS"], "2")
-            self.assertEqual(os.environ["CUDA_VISIBLE_DEVICES"], "")
+            self.assertEqual(os.environ["CUDA_VISIBLE_DEVICES"], "0")
 
 
 class DataTests(unittest.TestCase):
@@ -83,8 +97,10 @@ class DataTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
-        (self.root / "one.jpg").touch()
-        (self.root / "two.jpg").touch()
+        from PIL import Image
+
+        Image.new("RGB", (8, 8), "red").save(self.root / "one.jpg")
+        Image.new("RGB", (8, 8), "blue").save(self.root / "two.jpg")
 
     def manifest(self, rows):
         path = self.root / "manifest.csv"
@@ -142,6 +158,35 @@ class DataTests(unittest.TestCase):
         self.assertEqual(len(selected), 4)
         self.assertTrue(all(sample.split == "test" for sample in selected))
 
+    def test_cap_retains_a_rare_positive_and_does_not_exhaust_one_recording(self):
+        samples = [
+            Sample(Path(f"normal/{i}.jpg"), "normal", "test", f"g{i % 4}")
+            for i in range(40)
+        ]
+        samples += [Sample(Path("positive.jpg"), "smoking", "test", "event")]
+        selected = select_test_samples(samples, 8, 42)
+        self.assertEqual(len(selected), 8)
+        self.assertEqual({s.label for s in selected}, {"normal", "smoking"})
+        self.assertEqual(len({s.group_id for s in selected if s.label == "normal"}), 4)
+        self.assertEqual(selected, select_test_samples(list(reversed(samples)), 8, 42))
+        with self.assertRaisesRegex(ValueError, "retain all"):
+            select_test_samples(samples, 1, 42)
+
+    def test_cap_keeps_paired_event_and_control_groups_when_supported(self):
+        samples = [
+            Sample(Path(f"{group}/{label}.jpg"), label, "test", group)
+            for group in (f"recording{i}" for i in range(16))
+            for label in ("normal", "smoking")
+        ]
+        selected = select_test_samples(samples, 8, 42)
+        groups = {sample.group_id for sample in selected}
+        self.assertEqual(len(groups), 4)
+        for group in groups:
+            self.assertEqual(
+                {s.label for s in selected if s.group_id == group},
+                {"normal", "smoking"},
+            )
+
     def test_manifest_keeps_folder_hint_separate_and_preserves_labels(self):
         image = self.root / "raw/smoking/image.jpg"
         image.parent.mkdir(parents=True)
@@ -192,6 +237,120 @@ class DataTests(unittest.TestCase):
 
 
 class FetchTests(unittest.TestCase):
+    def test_empty_cookie_listing_retries_anonymously_and_keeps_download_cookies(self):
+        with tempfile.TemporaryDirectory() as temp:
+            cookie_file = Path(temp) / "cookies.txt"
+            cookie_file.write_text("# Netscape HTTP Cookie File\n")
+            entry = types.SimpleNamespace(
+                id="id", path="image.jpg", local_path=str(Path(temp) / "image.jpg")
+            )
+            calls = []
+
+            def download(*, cookies_file=None, **options):
+                calls.append({"cookies_file": cookies_file, **options})
+                return entry.local_path
+
+            fake = types.SimpleNamespace(
+                download_folder=Mock(side_effect=[[], [entry]]),
+                download=download,
+                DownloadError=RuntimeError,
+                FileURLRetrievalError=RuntimeError,
+            )
+            stderr = io.StringIO()
+            with (
+                patch.dict("sys.modules", {"gdown": fake}),
+                redirect_stdout(io.StringIO()),
+                redirect_stderr(stderr),
+            ):
+                self.assertEqual(
+                    fetch_data.main(
+                        ["--output", temp, "--cookies-file", str(cookie_file)]
+                    ),
+                    0,
+                )
+            self.assertIn("Retrying the public folder listing", stderr.getvalue())
+            first, second = fake.download_folder.call_args_list
+            self.assertTrue(first.kwargs["use_cookies"])
+            self.assertFalse(second.kwargs["use_cookies"])
+            self.assertNotIn("cookies_file", second.kwargs)
+            self.assertTrue(calls[0]["use_cookies"])
+            self.assertEqual(calls[0]["cookies_file"], str(cookie_file))
+            receipt = json.loads((Path(temp) / "download_receipt.json").read_text())
+            self.assertFalse(receipt["listing_use_cookies"])
+
+    def test_forced_anonymous_listing_preserves_authenticated_downloads(self):
+        with tempfile.TemporaryDirectory() as temp:
+            entry = types.SimpleNamespace(
+                id="id", path="image.jpg", local_path=str(Path(temp) / "image.jpg")
+            )
+            fake = types.SimpleNamespace(
+                download_folder=Mock(return_value=[entry]),
+                download=Mock(return_value=entry.local_path),
+                DownloadError=RuntimeError,
+                FileURLRetrievalError=RuntimeError,
+            )
+            with (
+                patch.dict("sys.modules", {"gdown": fake}),
+                redirect_stdout(io.StringIO()),
+            ):
+                self.assertEqual(
+                    fetch_data.main(
+                        ["--output", temp, "--use-cookies", "--anonymous-listing"]
+                    ),
+                    0,
+                )
+            fake.download_folder.assert_called_once()
+            self.assertFalse(fake.download_folder.call_args.kwargs["use_cookies"])
+            self.assertTrue(fake.download.call_args.kwargs["use_cookies"])
+
+    def test_empty_listing_reports_discovery_failure_before_filtering(self):
+        for flags, expected_calls in (([], 1), (["--use-cookies"], 2)):
+            with self.subTest(flags=flags), tempfile.TemporaryDirectory() as temp:
+                output = Path(temp) / "absent"
+                fake = types.SimpleNamespace(
+                    download_folder=Mock(return_value=[]),
+                    download=Mock(),
+                    DownloadError=RuntimeError,
+                )
+                stderr = io.StringIO()
+                with (
+                    patch.dict("sys.modules", {"gdown": fake}),
+                    redirect_stdout(io.StringIO()),
+                    redirect_stderr(stderr),
+                ):
+                    self.assertEqual(
+                        fetch_data.main(
+                            ["--output", str(output), "--list-only", *flags]
+                        ),
+                        1,
+                    )
+                self.assertIn("empty folder listing", stderr.getvalue())
+                self.assertNotIn("none match --include", stderr.getvalue())
+                self.assertEqual(fake.download_folder.call_count, expected_calls)
+                fake.download.assert_not_called()
+                self.assertFalse(output.exists())
+
+    def test_unmatched_filter_does_not_retry_a_nonempty_listing(self):
+        fake = types.SimpleNamespace(
+            download_folder=Mock(
+                return_value=[types.SimpleNamespace(path="image.jpg")]
+            ),
+            DownloadError=RuntimeError,
+        )
+        stderr = io.StringIO()
+        with (
+            patch.dict("sys.modules", {"gdown": fake}),
+            redirect_stderr(stderr),
+        ):
+            self.assertEqual(
+                fetch_data.main(["--include", "*.zip", "--use-cookies", "--list-only"]),
+                1,
+            )
+        self.assertIn(
+            "Drive listed 1 files, but none match --include", stderr.getvalue()
+        )
+        fake.download_folder.assert_called_once()
+
     def test_list_only_is_read_only_and_category_is_resolved(self):
         fake = types.SimpleNamespace(
             download_folder=Mock(
@@ -223,20 +382,352 @@ class FetchTests(unittest.TestCase):
                 fetch_data.CATEGORY_FOLDERS["unattended_items"], options["url"]
             )
 
-    def test_retry_reuses_partial_downloads(self):
+    def test_retry_reuses_partial_downloads_per_file(self):
+        class LinkError(RuntimeError):
+            pass
+
         fake = types.SimpleNamespace(
-            download_folder=Mock(side_effect=[RuntimeError("network failed"), []]),
+            download_folder=Mock(),
+            download=Mock(),
             DownloadError=RuntimeError,
+            FileURLRetrievalError=LinkError,
         )
         with (
             tempfile.TemporaryDirectory() as temp,
             patch.dict("sys.modules", {"gdown": fake}),
-            patch("scripts.fetch_data.time.sleep"),
+            patch("anomaly_eval.datasets.drive.time.sleep"),
             redirect_stdout(io.StringIO()),
         ):
+            destination = Path(temp) / "dataset/image.jpg"
+            fake.download_folder.return_value = [
+                types.SimpleNamespace(
+                    id="file-id", path="image.jpg", local_path=str(destination)
+                )
+            ]
+            fake.download.side_effect = [
+                RuntimeError("network failed"),
+                str(destination),
+            ]
             self.assertEqual(fetch_data.main(["--output", temp, "--retries", "1"]), 0)
-            self.assertEqual(fake.download_folder.call_count, 2)
-            self.assertTrue((Path(temp) / "download_receipt.json").is_file())
+            self.assertEqual(fake.download_folder.call_count, 1)
+            self.assertEqual(fake.download.call_count, 2)
+            self.assertTrue(fake.download.call_args.kwargs["resume"])
+            self.assertFalse(fake.download.call_args.kwargs["use_cookies"])
+            receipt = json.loads((Path(temp) / "download_receipt.json").read_text())
+            self.assertEqual(receipt["status"], "complete")
+            self.assertEqual(receipt["files"], [str(destination)])
+
+    def test_public_link_failure_is_not_retried_and_identifies_file(self):
+        class LinkError(RuntimeError):
+            pass
+
+        with tempfile.TemporaryDirectory() as temp:
+            entries = [
+                types.SimpleNamespace(
+                    id="blocked-id",
+                    path="01.avi",
+                    local_path=str(Path(temp) / "01.avi"),
+                ),
+                types.SimpleNamespace(
+                    id="next-id", path="02.avi", local_path=str(Path(temp) / "02.avi")
+                ),
+            ]
+            fake = types.SimpleNamespace(
+                download_folder=Mock(return_value=entries),
+                download=Mock(side_effect=LinkError("Cannot retrieve public link")),
+                DownloadError=RuntimeError,
+                FileURLRetrievalError=LinkError,
+            )
+            error_output = io.StringIO()
+            with (
+                patch.dict("sys.modules", {"gdown": fake}),
+                patch("anomaly_eval.datasets.drive.time.sleep") as sleep,
+                redirect_stdout(io.StringIO()),
+                redirect_stderr(error_output),
+            ):
+                self.assertEqual(fetch_data.main(["--output", temp]), 1)
+            fake.download.assert_called_once()
+            sleep.assert_not_called()
+            self.assertIn("01.avi", error_output.getvalue())
+            self.assertIn(
+                "https://drive.google.com/file/d/blocked-id/view",
+                error_output.getvalue(),
+            )
+            receipt = json.loads((Path(temp) / "download_receipt.json").read_text())
+            self.assertEqual(receipt["status"], "partial")
+            self.assertEqual(receipt["failures"][0]["id"], "blocked-id")
+            self.assertEqual(receipt["listed_files"], 2)
+
+    def test_continue_on_error_downloads_and_extracts_remaining_files(self):
+        class LinkError(RuntimeError):
+            pass
+
+        with tempfile.TemporaryDirectory() as temp:
+            archive = Path(temp) / "dataset.zip"
+            with zipfile.ZipFile(archive, "w") as handle:
+                handle.writestr("train/one.jpg", "image contents")
+            entries = [
+                types.SimpleNamespace(
+                    id="blocked-id",
+                    path="01.avi",
+                    local_path=str(Path(temp) / "01.avi"),
+                ),
+                types.SimpleNamespace(
+                    id="archive-id", path="dataset.zip", local_path=str(archive)
+                ),
+            ]
+            fake = types.SimpleNamespace(
+                download_folder=Mock(return_value=entries),
+                download=Mock(
+                    side_effect=[LinkError("Cannot retrieve public link"), str(archive)]
+                ),
+                DownloadError=RuntimeError,
+                FileURLRetrievalError=LinkError,
+            )
+            with (
+                patch.dict("sys.modules", {"gdown": fake}),
+                redirect_stdout(io.StringIO()),
+                redirect_stderr(io.StringIO()),
+            ):
+                self.assertEqual(
+                    fetch_data.main(
+                        [
+                            "--output",
+                            temp,
+                            "--continue-on-error",
+                            "--extract-zip",
+                            "--use-cookies",
+                        ]
+                    ),
+                    1,
+                )
+            # The ZIP already exists locally; it must be extracted without a
+            # second request to Drive, even after a preceding access failure.
+            self.assertEqual(fake.download.call_count, 1)
+            self.assertTrue(fake.download.call_args.kwargs["use_cookies"])
+            self.assertTrue(fake.download_folder.call_args.kwargs["use_cookies"])
+            self.assertEqual(
+                (Path(temp) / "dataset/train/one.jpg").read_text(), "image contents"
+            )
+            receipt = json.loads((Path(temp) / "download_receipt.json").read_text())
+            self.assertEqual(receipt["files"], [str(archive)])
+            self.assertEqual(len(receipt["failures"]), 1)
+            self.assertEqual(
+                receipt["extracted_directories"], [str(Path(temp) / "dataset")]
+            )
+
+    def test_interruption_preserves_receipt(self):
+        class LinkError(RuntimeError):
+            pass
+
+        with tempfile.TemporaryDirectory() as temp:
+            first = str(Path(temp) / "01.jpg")
+            entries = [
+                types.SimpleNamespace(
+                    id=str(index),
+                    path=f"{index}.jpg",
+                    local_path=str(Path(temp) / f"{index}.jpg"),
+                )
+                for index in range(2)
+            ]
+            fake = types.SimpleNamespace(
+                download_folder=Mock(return_value=entries),
+                download=Mock(side_effect=[first, KeyboardInterrupt]),
+                DownloadError=RuntimeError,
+                FileURLRetrievalError=LinkError,
+            )
+            with (
+                patch.dict("sys.modules", {"gdown": fake}),
+                redirect_stdout(io.StringIO()),
+                redirect_stderr(io.StringIO()),
+            ):
+                self.assertEqual(fetch_data.main(["--output", temp]), 130)
+            receipt = json.loads((Path(temp) / "download_receipt.json").read_text())
+            self.assertEqual(receipt["status"], "interrupted")
+            self.assertEqual(receipt["files"], [first])
+
+    def test_existing_empty_annotation_skips_drive_entirely(self):
+        with tempfile.TemporaryDirectory() as temp:
+            destination = Path(temp) / "label.txt"
+            destination.touch()
+            entry = types.SimpleNamespace(
+                id="id", path="label.txt", local_path=str(destination)
+            )
+            fake = types.SimpleNamespace(
+                download=Mock(side_effect=AssertionError("No network request expected"))
+            )
+            pacer = Mock()
+            result = fetch_data.download_entry(
+                fake, entry, use_cookies=False, speed=None, retries=2, pacer=pacer
+            )
+            self.assertEqual(result, str(destination))
+            fake.download.assert_not_called()
+            pacer.wait.assert_not_called()
+
+    def test_partial_file_does_not_count_as_completed(self):
+        class LinkError(RuntimeError):
+            pass
+
+        with tempfile.TemporaryDirectory() as temp:
+            destination = Path(temp) / "image.jpg"
+            part = Path(temp) / "image.jpgrandom.part"
+            part.write_bytes(b"partial")
+            entry = types.SimpleNamespace(
+                id="id", path="image.jpg", local_path=str(destination)
+            )
+            fake = types.SimpleNamespace(
+                download=Mock(return_value=str(destination)),
+                DownloadError=RuntimeError,
+                FileURLRetrievalError=LinkError,
+            )
+            self.assertEqual(
+                fetch_data.download_entry(
+                    fake, entry, use_cookies=False, speed=None, retries=0
+                ),
+                str(destination),
+            )
+            fake.download.assert_called_once()
+            self.assertTrue(fake.download.call_args.kwargs["resume"])
+            self.assertEqual(part.read_bytes(), b"partial")
+
+    def test_pacer_spaces_network_attempts(self):
+        pacer = fetch_data.DownloadPacer(1)
+        with (
+            patch(
+                "anomaly_eval.datasets.drive.time.monotonic",
+                side_effect=[0.0, 0.25, 1.0],
+            ),
+            patch("anomaly_eval.datasets.drive.time.sleep") as sleep,
+        ):
+            pacer.wait()
+            pacer.wait()
+        sleep.assert_called_once_with(0.75)
+
+    def test_include_filter_handles_windows_paths(self):
+        with tempfile.TemporaryDirectory() as temp:
+            entries = [
+                types.SimpleNamespace(
+                    path="smoking\\images\\image.jpg", local_path="image.jpg"
+                ),
+                types.SimpleNamespace(
+                    path="smoking\\archive.ZIP", local_path="archive.ZIP"
+                ),
+            ]
+            fake = types.SimpleNamespace(
+                download_folder=Mock(return_value=entries), DownloadError=RuntimeError
+            )
+            stdout = io.StringIO()
+            with patch.dict("sys.modules", {"gdown": fake}), redirect_stdout(stdout):
+                self.assertEqual(
+                    fetch_data.main(
+                        ["--output", temp, "--include", "smoking/*.zip", "--list-only"]
+                    ),
+                    0,
+                )
+            self.assertIn("archive.ZIP", stdout.getvalue())
+            self.assertNotIn("image.jpg", stdout.getvalue())
+            self.assertFalse((Path(temp) / "download_receipt.json").exists())
+
+    def test_repeated_failures_stop_even_with_continue_on_error(self):
+        class LinkError(RuntimeError):
+            pass
+
+        with tempfile.TemporaryDirectory() as temp:
+            entries = [
+                types.SimpleNamespace(
+                    id=str(index),
+                    path=f"{index}.txt",
+                    local_path=str(Path(temp) / f"{index}.txt"),
+                )
+                for index in range(4)
+            ]
+            # A local skip between two failed requests must not reset the
+            # consecutive network failure counter.
+            Path(entries[1].local_path).touch()
+            fake = types.SimpleNamespace(
+                download_folder=Mock(return_value=entries),
+                download=Mock(side_effect=LinkError("access blocked")),
+                DownloadError=RuntimeError,
+                FileURLRetrievalError=LinkError,
+            )
+            with (
+                patch.dict("sys.modules", {"gdown": fake}),
+                redirect_stdout(io.StringIO()),
+                redirect_stderr(io.StringIO()),
+            ):
+                self.assertEqual(
+                    fetch_data.main(
+                        [
+                            "--output",
+                            temp,
+                            "--continue-on-error",
+                            "--max-consecutive-errors",
+                            "2",
+                            "--request-interval",
+                            "0",
+                        ]
+                    ),
+                    1,
+                )
+            self.assertEqual(fake.download.call_count, 2)
+            receipt = json.loads((Path(temp) / "download_receipt.json").read_text())
+            self.assertEqual(receipt["skipped_existing"], 1)
+            self.assertEqual(
+                receipt["stopped_reason"], "2 consecutive downloads failed"
+            )
+            self.assertEqual(len(receipt["failures"]), 2)
+
+    def test_explicit_cookie_file_is_forwarded(self):
+        class LinkError(RuntimeError):
+            pass
+
+        with tempfile.TemporaryDirectory() as temp:
+            cookie_file = Path(temp) / "cookies.txt"
+            cookie_file.write_text("# Netscape HTTP Cookie File\n")
+            destination = Path(temp) / "image.jpg"
+            entry = types.SimpleNamespace(
+                id="id", path="image.jpg", local_path=str(destination)
+            )
+            calls = []
+
+            def download(*, cookies_file=None, **options):
+                calls.append({"cookies_file": cookies_file, **options})
+                return str(destination)
+
+            fake = types.SimpleNamespace(
+                download_folder=Mock(return_value=[entry]),
+                download=download,
+                DownloadError=RuntimeError,
+                FileURLRetrievalError=LinkError,
+            )
+            with (
+                patch.dict("sys.modules", {"gdown": fake}),
+                redirect_stdout(io.StringIO()),
+            ):
+                self.assertEqual(
+                    fetch_data.main(
+                        ["--output", temp, "--cookies-file", str(cookie_file)]
+                    ),
+                    0,
+                )
+            self.assertEqual(calls[0]["cookies_file"], str(cookie_file))
+            self.assertTrue(calls[0]["use_cookies"])
+            self.assertEqual(
+                fake.download_folder.call_args.kwargs["cookies_file"], str(cookie_file)
+            )
+
+    def test_invalid_pacing_settings_fail_before_network(self):
+        for arguments in (
+            ["--request-interval", "nan"],
+            ["--request-interval", "-1"],
+            ["--max-consecutive-errors", "-1"],
+        ):
+            with (
+                self.subTest(arguments=arguments),
+                redirect_stderr(io.StringIO()),
+                self.assertRaises(SystemExit),
+            ):
+                fetch_data.main(arguments)
 
     def test_zip_traversal_and_symlinks_rejected(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -263,6 +754,55 @@ class FetchTests(unittest.TestCase):
 
 
 class EvaluationTests(unittest.TestCase):
+    def test_observed_smolvlm_capitalization_is_a_label_not_an_abstention(self):
+        definitions = {"normal": "Ordinary", "unattended_items": "A left bag"}
+        for response, expected in (
+            (" Normal.", "normal"),
+            (" Unattended_items.", "unattended_items"),
+            ('{"label":"UNATTENDED_ITEMS"}', "unattended_items"),
+        ):
+            with self.subTest(response=response):
+                prediction = parse_vlm_response(response, definitions)
+                self.assertEqual(prediction.label, expected)
+                self.assertIsNone(prediction.abstention_reason)
+                self.assertEqual(prediction.raw_response, response)
+        self.assertEqual(
+            parse_vlm_response(" Normal.", definitions).response_format, "plain_label"
+        )
+        self.assertEqual(
+            parse_vlm_response('{"label":"NORMAL"}', definitions).response_format,
+            "json_label",
+        )
+
+    def test_true_unknown_invalid_prose_and_ambiguous_definitions_stay_separate(self):
+        for response in (" Unknown.", '{"label":"UNKNOWN"}'):
+            prediction = parse_vlm_response(response, DEFINITIONS)
+            self.assertIsNone(prediction.label)
+            self.assertEqual(prediction.abstention_reason, "explicit_unknown")
+        for response in (
+            "Normal or Smoking",
+            "I think normal.",
+            "Smoking is not visible",
+            '{"label":[]}',
+        ):
+            prediction = parse_vlm_response(response, DEFINITIONS)
+            self.assertIsNone(prediction.label)
+            self.assertEqual(prediction.abstention_reason, "invalid_response")
+            self.assertEqual(prediction.response_format, "invalid")
+        ambiguous = {"normal": "one class", "NORMAL": "another class"}
+        self.assertEqual(
+            parse_vlm_response("Normal", ambiguous).abstention_reason, "ambiguous_label"
+        )
+
+    def test_vlm_accepts_an_unambiguous_exact_label(self):
+        for response in ("normal", '"normal".', "'normal'.", '"normal"', "smoking."):
+            with self.subTest(response=response):
+                expected = "smoking" if response.startswith("smoking") else "normal"
+                self.assertEqual(
+                    parse_vlm_response(response, DEFINITIONS).label, expected
+                )
+        self.assertIsNone(parse_vlm_response("normal or smoking", DEFINITIONS).label)
+
     def test_vlm_abstains_on_ambiguous_or_invalid_output(self):
         for text in (
             '{"label":"unknown"}',
@@ -350,6 +890,78 @@ class EvaluationTests(unittest.TestCase):
     "ML dependencies not installed",
 )
 class WorkerTests(unittest.TestCase):
+    def test_worker_preserves_response_format_and_abstention_diagnostics(self):
+        from PIL import Image
+
+        predictions = iter(
+            parse_vlm_response(text, DEFINITIONS)
+            for text in (" Normal.", '{"label":"unknown"}', "normal or smoking")
+        )
+        adapter = types.SimpleNamespace(
+            predict=lambda image: next(predictions), prepare=Mock()
+        )
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            image = root / "image.png"
+            Image.new("RGB", (8, 8)).save(image)
+            options = {
+                "threads": 1,
+                "duty_cycle": 1,
+                "max_samples_per_second": None,
+                "cpu_cores": None,
+                "max_rss_mb": None,
+                "offline": True,
+                "seed": 42,
+                "cache_dir": None,
+                "max_new_tokens": 32,
+                "max_side": 512,
+                "warmup": 0,
+                "repeats": 1,
+            }
+            config = root / "config.json"
+            config.write_text(
+                json.dumps(
+                    {
+                        "model": "smolvlm-500m",
+                        "output": temp,
+                        "options": options,
+                        "definitions": DEFINITIONS,
+                        "samples": [
+                            {
+                                "path": str(image),
+                                "label": "normal",
+                                "split": "test",
+                                "group_id": str(i),
+                            }
+                            for i in range(3)
+                        ],
+                    }
+                )
+            )
+            with (
+                patch("anomaly_eval.benchmark.create_adapter", return_value=adapter),
+                patch("anomaly_eval.resources.CPUSettings.configure_worker"),
+                patch.dict(os.environ),
+            ):
+                self.assertEqual(benchmark.worker(config), 0)
+            summary = json.loads((root / "summary.json").read_text())
+            diagnostics = summary["response_diagnostics"]
+            self.assertEqual(
+                diagnostics["formats"],
+                {"plain_label": 1, "json_label": 1, "invalid": 1},
+            )
+            self.assertEqual(
+                diagnostics["abstention_reasons"],
+                {"explicit_unknown": 1, "invalid_response": 1},
+            )
+            self.assertEqual(diagnostics["json_label_fraction"], 1 / 3)
+            self.assertEqual(summary["metrics"]["prediction_coverage"], 1 / 3)
+            benchmark.write_comparison(root, [summary])
+            with (root / "comparison.csv").open(newline="") as f:
+                recorded = next(csv.DictReader(f))
+            self.assertEqual(recorded["explicit_unknowns"], "1")
+            self.assertEqual(recorded["invalid_responses"], "1")
+
     def test_worker_streams_errors_abstentions_and_metrics(self):
         from PIL import Image
 
@@ -408,8 +1020,8 @@ class WorkerTests(unittest.TestCase):
                 )
             )
             with (
-                patch("scripts.benchmark.create_adapter", return_value=adapter),
-                patch("scripts.throttle.CPUSettings.configure_worker"),
+                patch("anomaly_eval.benchmark.create_adapter", return_value=adapter),
+                patch("anomaly_eval.resources.CPUSettings.configure_worker"),
                 patch.dict(os.environ),
             ):
                 self.assertEqual(benchmark.worker(config), 1)
@@ -443,7 +1055,7 @@ class WorkerTests(unittest.TestCase):
             # Start a real sleeper process to test termination, without a model download.
             original = subprocess.Popen
             with patch(
-                "scripts.benchmark.subprocess.Popen",
+                "anomaly_eval.benchmark.subprocess.Popen",
                 side_effect=lambda *args, **kwargs: original(
                     [os.sys.executable, "-c", "import time; time.sleep(30)"], **kwargs
                 ),

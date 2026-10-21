@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "report": {
+    "pages": 8,
+    "words_within_page_bounds": 3733,
+    "fonts_embedded": true
+  },
+  "slides": {
+    "pages": 10,
+    "words_within_page_bounds": 958,
+    "fonts_embedded": true
+  },
+  "pptx_slides_and_notes_checked": 10,
+  "report_source_files_checked": 37,
+  "no_model_inference": true,
+  "artifacts_sha256": {
+    "reports/generalization_pilot_20261020/runthrough.pdf": "1e09ac5ed5f58f8acc0eca76bff9fdaf9b6577c70b967720736cbd0221253220",
+    "reports/generalization_pilot_20261020/runthrough.tex": "b149d64375fcb5266b7c74206689d48d58004ba0506fbd45b0c3e94681b9d539",
+    "reports/generalization_pilot_20261020/report.md": "017351e960c7feb79c0294ccf7269869e2978979e8788f7eab75fffa254ff2c7",
+    "reports/slides/model_generalization_pilot_20261020.pdf": "83c43769e11b0ceab3b0a51c37125b356f269341a3b1d4afe3e2bae2a30fafd2",
+    "reports/slides/model_generalization_pilot_20261020.pptx": "a2ec4aa3fcc13a118f9da7b04e380a343977ee859a00604730bd9aadbf535fd0",
+    "scripts/validate_generalization_pilot_documents.py": "f23506b5a61fb711177146653a449f1592c669819d5a99cda2b1cc9dc1b8d894"
+  }
+}

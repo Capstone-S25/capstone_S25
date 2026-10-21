@@ -1,0 +1,87 @@
+{
+  "model": "smolvlm-500m",
+  "output": "${RESULTS_ROOT}/evaluation_20261011T120315_062384Z/unattended_items_frame/test/smolvlm-500m",
+  "options": {
+    "manifest": "${DATA_ROOT}/evaluation/unattended_items_frame.csv",
+    "definitions": "${RESULTS_ROOT}/evaluation_20261011T120315_062384Z/unattended_items_frame_definitions.json",
+    "models": [
+      "mobileclip2-s2",
+      "siglip2-b16-224",
+      "smolvlm-500m",
+      "minicpm-v4"
+    ],
+    "list_models": false,
+    "output": "${RESULTS_ROOT}/evaluation_20261011T120315_062384Z/unattended_items_frame/test",
+    "limit": 8,
+    "image_policy": "letterbox",
+    "split": "test",
+    "repeats": 1,
+    "warmup": 1,
+    "seed": 42,
+    "max_side": 768,
+    "max_new_tokens": 64,
+    "timeout_seconds": 3600.0,
+    "max_rss_mb": 24576.0,
+    "cache_dir": "${CACHE_ROOT}/hub",
+    "offline": false,
+    "worker_config": null,
+    "threads": 16,
+    "duty_cycle": 1.0,
+    "max_samples_per_second": null,
+    "cpu_cores": null
+  },
+  "definitions": {
+    "normal": "An ordinary scene with no evidence of unattended items.",
+    "unattended_items": "A bag, box, or other personal item apparently left behind without its owner nearby. Ownership and duration require evidence across time."
+  },
+  "samples": [
+    {
+      "path": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_AtChair_3_1_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_AtChair"
+    },
+    {
+      "path": "${DATA_ROOT}/evaluation/derived/frames/caviar_Walk1_6_0_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:Walk1"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk1_6_1_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:Walk1"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_AtChair_2_3_3.png",
+      "label": "unattended_items",
+      "split": "test",
+      "group_id": "caviar:LeftBag_AtChair"
+    },
+    {
+      "path": "${DATA_ROOT}/evaluation/derived/frames/caviar_LeftBag_AtChair_2_3_3.png",
+      "label": "unattended_items",
+      "split": "test",
+      "group_id": "caviar:LeftBag_AtChair"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_LeftBag_AtChair_3_0_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:LeftBag_AtChair"
+    },
+    {
+      "path": "${BUNDLE_ROOT}/caviar/frame/caviar_Walk2_7_3_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:Walk2"
+    },
+    {
+      "path": "${DATA_ROOT}/evaluation/derived/frames/caviar_Walk2_7_0_3.png",
+      "label": "normal",
+      "split": "test",
+      "group_id": "caviar:Walk2"
+    }
+  ]
+}

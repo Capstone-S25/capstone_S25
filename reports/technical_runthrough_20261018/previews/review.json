@@ -1,0 +1,10 @@
+{
+  "pdf_sha256": "c2854bad61227dd591cba35a9db68944d5e3ac55b5a50735d4e7bbc74d666ed0",
+  "pages_rendered": 83,
+  "contact_sheets_visually_reviewed": 7,
+  "additional_full_page_checks": [
+    1,
+    51
+  ],
+  "assessment": "Readable narrative, tables, figures and registry; no table/header clipping seen. Automated text-boundary and overfull/reference checks also pass."
+}
