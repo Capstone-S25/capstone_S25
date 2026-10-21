@@ -35,6 +35,11 @@ COMMANDS = {
         "main",
         "Fetch the original Drive corpus with resume and pacing",
     ),
+    "fetch-all": (
+        "anomaly_eval.datasets.catalog",
+        "main",
+        "Fetch the complete catalog of recorded public research acquisitions",
+    ),
     "prepare": (
         "anomaly_eval.datasets.prepare",
         "main",

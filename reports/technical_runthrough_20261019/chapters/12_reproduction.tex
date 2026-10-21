@@ -52,7 +52,9 @@ bash scripts/smolvlm_gpu.sh predict --original \
 bash scripts/smolvlm_gpu.sh predict --joint \
   --task smoking --images /path/frame.jpg
 bash scripts/smolvlm_gpu.sh predict --repeated-gains \
-  --task loitering --images /path/t0.jpg /path/t20.jpg --timestamps 0 20
+  --task loitering \
+  --images /path/t0.jpg /path/t7.jpg /path/t13.jpg /path/t20.jpg \
+  --timestamps 0 7 13 20
 \end{lstlisting}
 The repeated-gain option is exploratory and retrospective. Missing required temporal evidence returns unknown; valid timestamps alone do not verify ownership or persistent identity. Raw scores, selected cutoffs and route names must be retained when interpreting a decision. The guide also records training, transfer evaluation, export and checkpoint-replay commands; these are separate from the reporting build.
 

@@ -1,0 +1,4 @@
+# Generated publication artifacts use binary diffs.
+*.pdf binary
+*.pptx binary
+*.zip binary

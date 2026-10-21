@@ -1,0 +1,12 @@
+{
+  "planned_files": 4519,
+  "processed_files": 4519,
+  "counts": {
+    "cached": 4519
+  },
+  "bytes_received_http": 0,
+  "seconds": 2.396,
+  "bounded_run": false,
+  "external_sources": [],
+  "complete": true
+}

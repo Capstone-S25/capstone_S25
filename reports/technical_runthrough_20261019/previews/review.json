@@ -1,0 +1,9 @@
+{
+  "pdf_sha256": "f91d2bd1fc67760cd5a8d658949bc9b43b1a8d2697b66ae2389a984703e50b37",
+  "pages_rendered": 102,
+  "contact_sheets_visually_reviewed": 9,
+  "additional_full_page_checks": [
+    61
+  ],
+  "assessment": "All contact sheets reviewed; narrative, long tables, source registry and figures remain inside page margins. Main new AP table and figure additionally inspected at full-page scale. Automated unresolved-reference, overfull-box, font and text-boundary checks pass."
+}

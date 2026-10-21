@@ -118,15 +118,42 @@ matched historical/transfer cohorts against the earlier CLIP strategies. The
 [training and inference guide](docs/smolvlm_finetuning.md) explains partial labels,
 temporal input guards, checkpoints and the limits of the binary query interface.
 
-The latest [32-slide progress PDF](reports/slides/model_evaluation_progress_20261017.pdf)
-and [editable PowerPoint](reports/slides/model_evaluation_progress_20261017.pptx)
-cover all evaluation, data expansion, training and improvement stages. See the
+The dedicated [training and evaluation slides](reports/slides/model_training_evaluation_20261020.pdf)
+compare MobileCLIP, SigLIP2, SmolVLM and VadCLIP across completed training stages:
+original/zero-shot, linear probing, visual updates, LoRA, temporal adapters and
+later source-data experiments. The [editable deck](reports/slides/model_training_evaluation_20261020.pptx)
+and [companion dataset/metric tables](reports/slides/training_evaluation_20261020/README.md)
+preserve the different test protocols and unavailable model stages explicitly.
+
+The [20 October public-source pilot](reports/generalization_pilot_20261020/report.md)
+adds 740 scripted action clips, 36 controlled CLIP classifier fits, a frozen
+SmolVLM transfer comparison and a complete-stream tiling test. Mixed SigLIP
+improves proxy-source AP but regresses CCTV AP and false-positive rate; tiling
+reduces primary unattended-event recall from 2/2 to 1/2. The new clips remain
+weak gesture evidence, and no model is promoted. See the
+[PDF addendum](reports/generalization_pilot_20261020/runthrough.pdf),
+[ten-slide PDF](reports/slides/model_generalization_pilot_20261020.pdf),
+[editable slides](reports/slides/model_generalization_pilot_20261020.pptx), and
+[reproduction guide](docs/generalization_pilot.md).
+
+The [unified dataset downloader](docs/dataset_fetching.md) now includes the later
+research acquisitions through XRF55, with configurable sources, concurrent
+resumable transfers, integrity checks and failure recovery. Run
+`.venv/bin/python scripts/fetch_all_datasets.py --plan` to inspect the plan, then
+remove `--plan` to fetch it. The [consolidated source/license registry](docs/dataset_sources.md)
+includes every recorded download link, version/hash and per-image Commons/Flickr
+attribution. Acquisition counts are kept separate from eligible training samples.
+
+The full-history [45-slide progress PDF](reports/slides/model_evaluation_progress_20261019.pdf)
+and [editable PowerPoint](reports/slides/model_evaluation_progress_20261019.pptx)
+cover all evaluation, data expansion, training and improvement stages, including
+the three SmolVLM LoRA runs and their matched-control results. See the
 [slide index](reports/slides/README.md) for the summary, notes and source hashes.
 
-The [complete technical runthrough](reports/technical_runthrough_20261018/model_evaluation_runthrough_20261018.pdf)
-documents the work through 17 October in detail: data collection and audits,
+The [complete technical runthrough](reports/technical_runthrough_20261019/model_evaluation_runthrough_20261019.pdf)
+documents the work through 19 October in 102 pages: data collection and audits,
 evaluation protocols, actual training, iterative strategies, event metrics,
-results and remaining generalization limits. Its [LaTeX source and build guide](reports/technical_runthrough_20261018/README.md)
+results and remaining generalization limits. Its [LaTeX source and build guide](reports/technical_runthrough_20261019/README.md)
 include the full candidate appendices, numeric exports and source hashes.
 
 See [the evaluation guide](docs/evaluation.md) for data fetching, reviewed-label imports, metric definitions and all commands; [server setup and migration](docs/server.md) covers relocated datasets/caches and old commands. [The original workflow review](reports/workflow_review_20261013.md) records the preceding analysis and measurements. The historical bundle is development only, and confirmed held-out coverage for all five anomalies is still incomplete.

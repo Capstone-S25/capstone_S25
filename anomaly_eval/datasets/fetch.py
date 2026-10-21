@@ -292,7 +292,19 @@ def fetch(
 
 
 def main(argv=None):
+    import sys
+
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if "--all" in argv:
+        from .catalog import main as catalog_main
+
+        return catalog_main([value for value in argv if value != "--all"])
     p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument(
+        "--all",
+        action="store_true",
+        help="Use the expanded catalog downloader; its --output is the DATA ROOT. See fetch-all --help.",
+    )
     p.add_argument(
         "--output", type=Path, default=Workspace.current().data_dir / "additional"
     )

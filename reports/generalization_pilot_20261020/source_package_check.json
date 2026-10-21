@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "zip_crc": "passed",
+  "isolated_compile": "passed",
+  "archive_sha256": "706ac51f7c2887e7ddfa48740ec03772e1a42f03929bb52a167d146e07d96b9a",
+  "files": 14,
+  "numeric_tokens_checked": 6,
+  "uses_original_dataset_or_models": false
+}

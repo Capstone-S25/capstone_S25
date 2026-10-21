@@ -16,7 +16,7 @@ anomaly-eval = "anomaly_eval.cli:main"
 include = ["anomaly_eval*"]
 
 [tool.setuptools.package-data]
-anomaly_eval = ["config/*.json"]
+anomaly_eval = ["config/*.json", "config/dataset_assets/*.jsonl", "config/dataset_evidence/*"]
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}

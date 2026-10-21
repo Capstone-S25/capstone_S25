@@ -1,29 +1,32 @@
-# Complete technical runthrough — 18 October 2026
+# Complete technical runthrough — 19 October 2026
 
 The report covers the project history through the completed experiments of
-17 October. It includes source discovery/acquisition, annotation and duplicate
+19 October. It includes source discovery/acquisition, annotation and duplicate
 audits, data splits, shared GPU evaluation, the historical CPU pilot, supervised
 VadCLIP, expanded four-model testing, actual CLIP visual fine-tuning, the strategy
-screen, causal video/event evaluation, calibration, ensembling and tiled detection.
+screen, causal video/event evaluation, calibration, ensembling, tiled detection, and actual SmolVLM language-layer LoRA
+training with matched original-model controls, two learning rates, two seeds,
+source-level transfer, fixed-threshold failures and portable adapter export.
 Failures, numerical corrections, provisional labels and retrospective test reuse
 are preserved alongside improvements. No new model experiment was run to write it.
 
-- [Compiled report](model_evaluation_runthrough_20261018.pdf).
-- [Main LaTeX source](model_evaluation_runthrough_20261018.tex).
-- [Complete source ZIP](../model_evaluation_runthrough_20261018_source.zip).
+- [Compiled report](model_evaluation_runthrough_20261019.pdf).
+- [Main LaTeX source](model_evaluation_runthrough_20261019.tex).
+- [Complete source ZIP](../model_evaluation_runthrough_20261019_source.zip).
 - `chapters/`: detailed narrative and appendices.
 - `generated/`: source-derived LaTeX tables, including every strategy/head/policy.
-- `figures/`: four standalone scientific PDF figures.
+- `figures/`: six standalone scientific PDF figures.
 - `numeric_exports/`: original detailed CSV exports from completed studies.
 - [Source identities](source_manifest.json): full SHA-256 hashes and table counts.
 - [Validation](validation.json) and [independent source compilation check](source_package_check.json).
 
-The compiled report has **83 pages**, approximately **15,000 words of narrative**,
-**38 tables** and **four scientific figures**, with 146 recorded source identities.
-It has 12 main chapters and seven appendices, with an executive reading
+The compiled report has **102 pages**, approximately **19,500 words of narrative**,
+**50 tables** and **six scientific figures**, with 186 recorded source identities.
+It has 13 main chapters and eight appendices, with an executive reading
 guide, contents, table/figure lists, equations, implementation settings, all 330
 strategy-development configurations, all 50 final video-pilot heads, all 38 latest
-smoking policies and source-qualified event tables. The full-source ZIP includes
+smoking policies and source-qualified event tables, all nine SmolVLM epoch histories and all 60
+SmolVLM source/method/seed summaries. The full-source ZIP includes
 everything needed to compile the document without the model/data directories.
 
 ## Compile the existing source
@@ -61,7 +64,13 @@ requires the original repository's preserved study artifacts, Python environment
 NumPy and Matplotlib:
 
 ```bash
-PYTHONPATH="$PWD" .venv/bin/python scripts/build_technical_runthrough.py --compile
+PYTHONPATH="$PWD" .venv/bin/python scripts/build_technical_runthrough_20261019.py --compile
+```
+
+Validate and package the compiled report with:
+
+```bash
+.venv/bin/python scripts/validate_technical_runthrough.py --date 20261019
 ```
 
 This reads saved JSON/CSV data and code identities and runs no model inference.
@@ -71,5 +80,16 @@ not a new access-availability survey. The CSV field `precision` denotes positive
 predictive value; numeric inference precision is taken from run metadata and the
 authoritative final float32 evaluation directories.
 
-The original 13/14/17 October slide decks and prior experiment outputs remain
-unchanged. The project [slide index](../slides/README.md) links those presentations.
+The original 13/14/17 October slide decks, 18 October technical report and prior
+experiment outputs remain unchanged. The updated 19 October deck has 45 slides. The project [slide index](../slides/README.md) links those presentations.
+
+## Interpretation of the new results
+
+Original, joint and per-task routed SmolVLM are separate configurations. Routing
+improves four historical task rankings but regresses on loitering; the joint
+adapter also regresses on the tiny historical sleep cohort. Unattended AP improves
+to 0.6933 while the development-budget cutoff yields 70.8% held-out FPR. The
+optional repeated-gain routing rule is retrospective and exploratory. Matched
+CLIP comparisons use identical held-out examples with different trained pipelines;
+the later 205-clip video experiment remains a separate protocol. No fresh untouched
+camera benchmark, new data download or latency measurement is implied.

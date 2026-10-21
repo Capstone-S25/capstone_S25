@@ -11,7 +11,7 @@
     "reports/expanded_accuracy_review_20261014.md": "8348dadf614d5c7fdd754f1d9b2d1c6c2efb59b90c2120522927d07724ac9d91",
     "reports/smolvlm_finetuning_findings_20261019.md": "ee68ae711906039353f5564e0455e8f896da80946d58ba269f48e1a2ad1d3f45",
     "reports/strategy_findings_20261016.md": "940ab943c63d4435ce8c33b27c0628bab25eaaba1b6a0ffbbf19b2f6ad0a1e39",
-    "reports/technical_runthrough_20261019/source_manifest.json": "6d8cd8c5775282be7d4f58e3302377dbc085bc51eb829581f0526a52af7933ad",
+    "reports/technical_runthrough_20261019/source_manifest.json": "65cd41f50e79fe42d310d14796ec4a2be2fdb78a46ff34a770d90536e2709af9",
     "reports/video_pilot_findings_20261016.md": "08d109020bcd93c8b28885a22976a65b9d419bc4d6ffcaaa9da99d336c717cb1",
     "reports/workflow_review_20261013.md": "afe2cfb6ad54abf1bde5e93b04506bdb03db07087018e26da073763eead898ee",
     "results/clip_finetuning_20261015/comparison.csv": "27af4c8fb13878e2da1b4db439682ede42f7847b3a0231d6e76b41ad3c23e48c",
@@ -55,7 +55,7 @@
     "results/video_pilot_20261016/verification.json": "85a94ff384de4e759ba3855c9fce6b4c5dca514ba408ed9a108383afe66bd491"
   },
   "builders_sha256": {
-    "build_progress_presentation_20261019.py": "ff9cbd486372d54f399b3d76fc25083c4d9fbed4ad34d88de37e1237d02b1c5a",
+    "build_progress_presentation_20261019.py": "b573a33f30b9045244aadb1160e88a2ccb0f568ff6c758f6db2f7871723bc90f",
     "build_progress_presentation.py": "962c11f6c89f4d753cb382b36cc511bd44a955ff2fe18abeb9142a48e3791d56",
     "build_presentation.py": "d2ad01150e36288c3fd1c1419ba822f8cd7cce128d605606cee645334c8c5014"
   },
@@ -10294,7 +10294,7 @@
     {
       "title": "Use the original model as a matched weight control",
       "category": "19 Oct / controlled SmolVLM experiment",
-      "notes": "Score = logit(Yes) minus logit(No). This is a genuine continuous ranking score and is not calibrated event probability. Yes+No probability mass is already high before training: minimum98.4%, median99.9% on development. The original and all adapted paths share the frozen image encoder and connector. No other task is fabricated as negative. The new interface differs from the earlier free-generated JSON protocol.",
+      "notes": "Score = logit(Yes) minus logit(No). This is a genuine continuous ranking score and is not calibrated event probability. Yes+No probability mass is already high before training: minimum 98.4%, median 99.9% on development. The original and all adapted paths share the frozen image encoder and connector. No other task is fabricated as negative. The new interface differs from the earlier free-generated JSON protocol.",
       "source": "SmolVLM protocol + original / adapter predictions",
       "items": [
         {
@@ -10513,7 +10513,7 @@
     {
       "title": "All five tasks are trained; evidence is uneven",
       "category": "19 Oct / supervised data",
-      "notes": "These are normal/positive counts, unlike the total/positive header in the Markdown summary. Smoking test comprises646 CCTV frames and224 Kaggle photos; Stanford40 adds806 external photos with140 positives. Training uses exactly the existing3973 strategy examples, not additional new downloads. Loitering has one physical camera despite multiple recording groups. Sleep labels are provisional. Unattended endpoints are correlated, with two test source families.",
+      "notes": "These are normal/positive counts, unlike the total/positive header in the Markdown summary. Smoking test comprises 646 CCTV frames and 224 Kaggle photos; Stanford40 adds 806 external photos with 140 positives. Training uses exactly the existing 3,973 strategy examples, not additional new downloads. Loitering has one physical camera despite multiple recording groups. Sleep labels are provisional. Unattended endpoints are correlated, with two test source families.",
       "source": "Frozen SmolVLM protocol / counts",
       "items": [
         {
@@ -11055,7 +11055,7 @@
     {
       "title": "Ten cohorts cover 3,792 unique held-out examples",
       "category": "19 Oct / transfer and source guards",
-      "notes": "HMDB other-primary-action controls are non-exhaustive negatives. Eight-view clip smoking differs from single-image smoking training. Twenty-eight public-sleep cases have25 author groups. MEVA has15 action windows and12 pre-event controls and cannot establish persistent ownership. Existing historical tests have been inspected before. No new dataset is downloaded for this LoRA round.",
+      "notes": "HMDB other-primary-action controls are non-exhaustive negatives. Eight-view clip smoking differs from single-image smoking training. Twenty-eight public-sleep cases have 25 author groups. MEVA has 15 action windows and 12 pre-event controls and cannot establish persistent ownership. Existing historical tests have been inspected before. No new dataset is downloaded for this LoRA round.",
       "source": "Additional-transfer protocol + identity verification",
       "items": [
         {
@@ -11274,7 +11274,7 @@
     {
       "title": "Adapt 4.34 million language parameters",
       "category": "19 Oct / actual LoRA training",
-      "notes": "LoRA also freezes the vocabulary output head. Every epoch visits3973 unique training examples once, then3973 balanced resamples;7946 visits total. The resampled half balances task/class/source/group, while the combined epoch retains original imbalance. AdamW weight decay.01,5%warmup,linear decay,gradient clip1,microbatch8\u00d7accumulation4. CUDA accuracy is unpaced; there is no new latency benchmark.",
+      "notes": "LoRA also freezes the vocabulary output head. Every epoch visits 3,973 unique training examples once, then 3,973 balanced resamples; 7,946 visits total. The resampled half balances task/class/source/group, while the combined epoch retains original imbalance. AdamW weight decay 0.01, 5% warmup, linear decay, gradient clipping 1, microbatch 8 and accumulation 4. CUDA accuracy is unpaced; there is no new latency benchmark.",
       "source": "Training implementation + finite changed-adapter checks",
       "items": [
         {
@@ -11493,7 +11493,7 @@
     {
       "title": "Three trained candidates all select epoch one",
       "category": "19 Oct / checkpoint selection",
-      "notes": "Seed42 compares two rates. Seed43 repeats only the winning high rate; it is not a full repeated grid. Planned maximum6epochs,patience2; each completes3epochs and selects1. Routes and thresholds precede their held-out predictions. Joint means one high-rate adapter for all tasks. Routed means per-task original/adapter choices using development AP. Do not substitute a better test seed.",
+      "notes": "Seed 42 compares two rates. Seed 43 repeats only the winning high rate; it is not a full repeated grid. Planned maximum six epochs, patience two; each completes three epochs and selects epoch one. Routes and thresholds precede their held-out predictions. Joint means one high-rate adapter for all tasks. Routed means per-task original/adapter choices using development AP. Do not substitute a better test seed.",
       "source": "Three state files + primary frozen selection",
       "items": [
         {
@@ -11947,7 +11947,7 @@
     {
       "title": "Training loss falls while development AP declines",
       "category": "19 Oct / optimization behavior",
-      "notes": "All three runs select epoch one. The primary high-rate training loss is .4789,.2895,.2235, while development macro AP is .7026,.6485,.6276. More epochs fit the training corpus but worsen this source-transfer diagnostic. Nine actual epochs total across candidates yield71514visits, not71514newexamples. Frozen visual extraction avoids repeating unchanged computation.",
+      "notes": "All three runs select epoch one. The primary high-rate training loss is 0.4789, 0.2895, 0.2235, while development macro AP is 0.7026, 0.6485, 0.6276. More epochs fit the training corpus but worsen this source-transfer diagnostic. Nine actual epochs total across candidates yield 71,514 visits to the same 3,973 training examples. Frozen visual extraction avoids repeating unchanged computation.",
       "source": "seed_42/lr_0.0001/history.json",
       "items": [
         {
@@ -12362,7 +12362,7 @@
     {
       "title": "LoRA improves selected rankings and regresses on loitering",
       "category": "19 Oct / matched primary ranking",
-      "notes": "Four of five historical target rankings improve under per-task routing, counting CCTV as the smoking target. Loitering falls .4250\u2192.1822. Historical sleep has six positives: joint falls .7437\u2192.6327 while routed lowLR reaches .7885. Unattended ranking rises .4762\u2192.6933 but decisions remain problematic. Photo smoking has different prevalence and domain from CCTV. The constant-score CCTV AP is393/646=.6084.",
+      "notes": "Four of five historical target rankings improve under per-task routing, counting CCTV as the smoking target. Loitering falls from 0.4250 to 0.1822. Historical sleep has six positives: joint falls from 0.7437 to 0.6327 while the routed low-learning-rate adapter reaches 0.7885. Unattended ranking rises from 0.4762 to 0.6933 but decisions remain problematic. Photo smoking has different prevalence and domain from CCTV. The constant-score CCTV AP is 393/646 = 0.6084.",
       "source": "SmolVLM metrics.csv / original, joint and routed",
       "items": [
         {
@@ -13065,7 +13065,7 @@
     {
       "title": "Photo and action-source gains do not validate events",
       "category": "19 Oct / other-source transfer",
-      "notes": "Stanford40 is a historical external photograph holdout. HMDB includes906clips with109smoking positives and797other primary actions; controls are not exhaustive negatives. New-author sleep has28cases and25author groups. MEVA27windows do not prove persistent unattended state. These sources were inspected in earlier experiments, so transfer is retrospective. No continuous event false-alert rate is measured here.",
+      "notes": "Stanford40 is a historical external photograph holdout. HMDB includes 906 clips with 109 smoking positives and 797 other primary actions; controls are not exhaustive negatives. New-author sleep has 28 cases and 25 author groups. The 27 MEVA windows do not prove persistent unattended state. These sources were inspected in earlier experiments, so transfer is retrospective. No continuous event false-alert rate is measured here.",
       "source": "SmolVLM additional-transfer / source summaries",
       "items": [
         {
@@ -13602,7 +13602,7 @@
     {
       "title": "The development FPR cutoff fails on unattended items",
       "category": "19 Oct / fixed decisions",
-      "notes": "At the development-budget point unattended recall94.6%andFPR70.8%; original20.2%and1.9%. This is not a uniformly superior decision tradeoff. Litter recall30%FPR8%;loiter9.1%/6.2%;historical sleep33.3%/8.3%. MEVA elsewhere is66.7%/58.3%. Endpoint FPR is not hourly alert rate. Cutoffs are fitted per target on pooled development normals, not every source separately.",
+      "notes": "At the development-budget point unattended recall is 94.6% and FPR is 70.8%; original values are 20.2% and 1.9%. This is not a uniformly superior decision tradeoff. Littering recall/FPR is 30%/8%; loitering 9.1%/6.2%; historical sleep 33.3%/8.3%. MEVA is 66.7%/58.3%. Endpoint FPR is not hourly alert rate. Cutoffs are fitted per target on pooled development normals, not every source separately.",
       "source": "Primary routed scores / frozen development-budget cutoffs",
       "items": [
         {
@@ -14144,7 +14144,7 @@
     {
       "title": "The second seed repeats the loitering failure",
       "category": "19 Oct / optimization replication",
-      "notes": "Seed43 is a limited stability check and is never selected using test outcomes. Sleep joint AP.6327versus.9167is sensitive on18cases. The primary per-task sleep route is a different low-LR adapter,AP.7885. HMDB joint AP.7837versus.7862andunattended.6933versus.7052repeat broadly. Loitering worsens .1822\u2192.1314. Existing source/annotation limits remain.",
+      "notes": "Seed 43 is a limited stability check and is never selected using test outcomes. Sleep joint AP 0.6327 versus 0.9167 is sensitive on 18 cases. The primary per-task sleep route is a different low-LR adapter, AP 0.7885. HMDB joint AP 0.7837 versus 0.7862 and unattended AP 0.6933 versus 0.7052 broadly repeat. Loitering worsens from 0.1822 to 0.1314. Existing source/annotation limits remain.",
       "source": "Seed 42 / 43 joint-adapter source AP",
       "items": [
         {
@@ -14608,7 +14608,7 @@
     {
       "title": "CLIP strategies lead on most historical cohorts",
       "category": "19 Oct / context on identical cases",
-      "notes": "This compares complete pipelines, not an architecture-only ablation. Same learning/development splits are3973/1812. The matched original SmolVLM is the clean weight-adaptation control. Later SigLIP ensemble AP.9645 uses530HMDBtrainingclips,205testclipsand16views; comparing that directly to Smol906case8viewtransfer would confound supervision and examples. Historical VadCLIP also has a different split.",
+      "notes": "This compares complete pipelines, not an architecture-only ablation. Same learning/development splits are 3,973/1,812. The matched original SmolVLM is the clean weight-adaptation control. Later SigLIP ensemble AP 0.9645 uses 530 HMDB training clips, 205 test clips and 16 views; comparing that directly to SmolVLM transfer on 906 cases with eight views would confound supervision and examples. Historical VadCLIP also has a different split.",
       "source": "16 Oct selected CLIP strategy routes + SmolVLM primary routes",
       "items": [
         {
@@ -15220,7 +15220,7 @@
     {
       "title": "Require a development gain in both optimization seeds",
       "category": "19 Oct / optional retrospective safeguard",
-      "notes": "Exploratory rule specified after primary held-out results were inspected and after the first independent-seed development epoch. Retrospective safeguard, not fresh prospective evidence. Independent optimization seeds do not provide independent cameras or annotation review. The function reads only development scores, but the decision to invent it was made after primary held-out inspection and the first secondary development epoch. Restored targets reuse original development thresholds; others retain primary routes. Seed43 repeats the high LR, so this is not exact replication of the low-LR sleep route. CLI option: --repeated-gains.",
+      "notes": "Exploratory rule specified after primary held-out results were inspected and after the first independent-seed development epoch. Retrospective safeguard, not fresh prospective evidence. Independent optimization seeds do not provide independent cameras or annotation review. The function reads only development scores, but the decision to invent it was made after primary held-out inspection and the first secondary development epoch. Restored targets reuse original development thresholds; others retain primary routes. Seed 43 repeats the high learning rate, so this is not exact replication of the low-LR sleep route. CLI option: --repeated-gains.",
       "source": "repeated_gain_protocol.json + repeated_gain_routes.json",
       "items": [
         {
@@ -15762,7 +15762,7 @@
     {
       "title": "Check actual checkpoints and native image execution",
       "category": "19 Oct / verification and inference artifacts",
-      "notes": "Largest native-versus-saved error7.2479e-5isbelow.002tolerance. Four actual native CLI scoring cases and two missing-timestamp temporal guards pass. Some chosen positive inputs are classified absent under strict cutoffs, consistent with low recall. PEFT export changes machine-local base config to public pinned identity, leaving weight bytes unchanged. Source hashes, response mass and exact cutoffs are preserved. No new latency test is performed.",
+      "notes": "Largest native-versus-saved error 7.2479e-5 is below the 0.002 tolerance. Four actual native CLI scoring cases and two missing-timestamp temporal guards pass. Some chosen positive inputs are classified absent under strict cutoffs, consistent with low recall. PEFT export changes machine-local base config to public pinned identity, leaving weight bytes unchanged. Source hashes, response mass and exact cutoffs are preserved. No new latency test is performed.",
       "source": "SmolVLM verification.json + software_checks.json",
       "items": [
         {
@@ -15981,7 +15981,7 @@
     {
       "title": "No single model reliably covers all five events",
       "category": "Current assessment / all five objectives",
-      "notes": "SmolVLM provides a useful language-adaptation experiment but does not supersede all CLIP strategies. Keep the loiter regression, joint-sleep regression and unattended FPR failure visible. Tiling improves component recall, not verified event performance. AVSS still has only two clean primary events and2.76normalminutes. MiniCPM and VadCLIP are historical baselines, with different scope.",
+      "notes": "SmolVLM provides a useful language-adaptation experiment but does not supersede all CLIP strategies. Keep the loiter regression, joint-sleep regression and unattended FPR failure visible. Tiling improves component recall, not verified event performance. AVSS still has only two clean primary events and 2.76 normal minutes. MiniCPM and VadCLIP are historical baselines, with different scope.",
       "source": "All preserved studies through 19 October",
       "items": [
         {
@@ -16664,7 +16664,7 @@
     {
       "title": "Freeze new camera evidence before selecting another model",
       "category": "Next steps / generalization gates",
-      "notes": "Acquire smoking controls(drinking,eating,coughing);disposal versus placing/pickup;legitimate waiting and complete dwell tracks;persistent sleep versus awake rest;owner-associated items with retrieval/occlusion. Use unseen camera/day blocks and review uncertainty. Evaluate controlled low-LR/regularized adapters or vision adaptation only after adding compatible evidence. Do not claim normal alert safety from a few zero-alert minutes.",
+      "notes": "Acquire smoking controls (drinking, eating, coughing); disposal versus placing/pickup; legitimate waiting and complete dwell tracks; persistent sleep versus awake rest; owner-associated items with retrieval/occlusion. Use unseen camera/day blocks and review uncertainty. Evaluate controlled low-LR/regularized adapters or vision adaptation only after adding compatible evidence. Do not claim normal alert safety from a few zero-alert minutes.",
       "source": "Current observed failure modes",
       "items": [
         {
@@ -17071,7 +17071,7 @@
     {
       "title": "Updated paper, editable slides and source-linked findings",
       "category": "Deliverables / reproducibility",
-      "notes": "Updated paper: reports/technical_runthrough_20261019/model_evaluation_runthrough_20261019.pdf. SmolVLM findings: reports/smolvlm_finetuning_findings_20261019.md; guide:docs/smolvlm_finetuning.md. Rebuild using scripts/build_technical_runthrough_20261019.py and reports/slides/build_progress_presentation_20261019.py. The paper and slides cite stage-specific sources and preserve failed interventions.",
+      "notes": "Updated paper: reports/technical_runthrough_20261019/model_evaluation_runthrough_20261019.pdf. SmolVLM findings: reports/smolvlm_finetuning_findings_20261019.md; guide: docs/smolvlm_finetuning.md. Rebuild using scripts/build_technical_runthrough_20261019.py and reports/slides/build_progress_presentation_20261019.py. The paper and slides cite stage-specific sources and preserve failed interventions.",
       "source": "Technical runthrough + per-stage data / source manifests",
       "items": [
         {

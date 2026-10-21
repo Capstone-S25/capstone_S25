@@ -257,7 +257,7 @@
     "chapters/10_latest_improvements.tex": "c1a93a1f6d53fa0b3fafe3fb032b55667dc7edad4f0db5d96d1b520d3e89ae6c",
     "chapters/11_interpretation.tex": "acf80db980b7828323b10a3311358c28f79accca96490a1c85729f4cefbbf4c8",
     "chapters/11_smolvlm_adaptation.tex": "55e5c2893cb20640689b6da1984b0818f49bcc0d200cb0448699be445fc078db",
-    "chapters/12_reproduction.tex": "fd6dcb838e09e2b3dea069f841206fe6012419043bcd0e8a96f199bc051ce1e0",
+    "chapters/12_reproduction.tex": "60fda5423dc464751febd1dace552a059d8188dfe31644cad549a169dc51d9e6",
     "chapters/13_appendices.tex": "f4bfc4be2df7f338ca3975484cfa460c7445460f8eec6859c4b84d5a6666d7da",
     "generated/avss_sources.tex": "d6acb26fd59db00a8a3b0f13d6cd1aa8e6bcd23b53edbcfb0627fdd6f2ec08b2",
     "generated/baseline_smoking.tex": "65b35b5f542242ad8f27cbefbedc3d7ae5722c7ccbb1b68dfa3305c896f94ce7",
@@ -314,12 +314,12 @@
   "builder_path": "scripts/build_technical_runthrough_20261019.py",
   "builder_sha256": "735e943b450c82912752582116c5273d1d4f362e676b8bf90830c4695cd996cd",
   "figures_sha256": {
-    "finetuning_ap.pdf": "a1ded3646185aadd5ca9d4d31669118771b4ecb1a10693bcb6861303a749251a",
-    "normal_exposure_bound.pdf": "6a5fce718fe6a9b364cdd9630f0e377db92be8902dd42b48af08b1079bb620fa",
+    "finetuning_ap.pdf": "78b99149575ce96331757c1fa11abf8771fb754b8af8b939c2caa0b86e6089b6",
+    "normal_exposure_bound.pdf": "decb5264a0174b7d9baa7c07f8ed5eed600cf07df4989836fc999bc6960314da",
     "smol_learning_curves.pdf": "837fdde5bb093791af3978dd4c2c77d76de18717f8d9543525387a235d117709",
     "smol_matched_ap.pdf": "8a50b3364f508a75387462788117d1669540457eb2a49d7933ee2b0bb4ad0e19",
-    "strategy_transfer.pdf": "104d7c2c95d5abe2c159dcf27335429d466c08ea3c1013243d7dcd5d2f90370d",
-    "tiled_recall.pdf": "0cae214069ae58fab81284aac636484d143b4968d5e94fc1262d52815b6c80d6"
+    "strategy_transfer.pdf": "ef55e6d0090c5d5c2b5c087e9df9159f2200a5c5abd8850471b413ab7076142c",
+    "tiled_recall.pdf": "bdfc727e6af52546026e78baf6e0256773c9c425f604dde477094d7574ec239c"
   },
   "numeric_exports_sha256": {
     "clip_finetuning_20261015_comparison.csv": "27af4c8fb13878e2da1b4db439682ede42f7847b3a0231d6e76b41ad3c23e48c",

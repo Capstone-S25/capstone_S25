@@ -2,6 +2,11 @@
 
 Use Python 3.12, the repository requirements, an editable package installation, and `ffmpeg`/`ffprobe` on PATH. The CLI works from any directory; see [server paths and migration](server.md). Model workers are isolated; the default shortlist is MobileCLIP2-S2, SigLIP2-B/16-224, SmolVLM-500M and MiniCPM-V 4.0. VadCLIP is an optional separately supervised smoking study.
 
+For the complete acquired research corpus, including later training/transfer
+sources, use `anomaly-eval fetch-all`. See the [downloader guide](dataset_fetching.md)
+and [consolidated source links/licenses](dataset_sources.md). The older `fetch`
+command retains its original subset unless invoked with `--all`.
+
 ```bash
 anomaly-eval run --prepare-only
 anomaly-eval run --device auto

@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "iwdd_annotation_files_using_original_preparation_filter": {
+    "train": 400,
+    "test": 100
+  },
+  "historical_iwdd_receipts_retained": {
+    "train": 400,
+    "test": 100
+  },
+  "state_directory": "DATA_ROOT/.fetch_state/",
+  "experimental_adjacent_fetch_metadata_removed": true,
+  "historical_receipts_unchanged": true
+}

@@ -1,6 +1,71 @@
 # Model evaluation presentation
 
-The latest presentation is the **32-slide progress review finalized 17 October
+The dedicated **46-slide training and evaluation review** covers the four requested
+models: MobileCLIP, SigLIP2, SmolVLM and VadCLIP. It includes detailed dataset
+splits, zero-shot/original baselines, linear probes, actual visual adaptation,
+LoRA, temporal adapters, later strategies, and source-specific accuracy metrics.
+
+- [Training/evaluation PDF](model_training_evaluation_20261020.pdf) and
+  [editable PowerPoint](model_training_evaluation_20261020.pptx).
+- [One-slide stage overview](training_stages_summary_20261020.pdf) and
+  [editable overview](training_stages_summary_20261020.pptx).
+- [Dataset counts, 619 metric rows, speaker notes and validation](training_evaluation_20261020/README.md).
+
+VadCLIP's separate smoking split and unavailable stages/targets remain explicit.
+All slide numbers were checked against saved experiment outputs; no models were
+retrained to create this presentation.
+
+A separate **ten-slide public-source pilot, 20 October 2026**, is also available:
+[PDF](model_generalization_pilot_20261020.pdf),
+[editable PowerPoint](model_generalization_pilot_20261020.pptx),
+[speaker notes](model_generalization_pilot_20261020_notes.md), and
+[source/layout manifest](model_generalization_pilot_20261020_manifest.json).
+It covers 740 weak scripted-action clips, 36 CLIP head fits, original/LoRA
+SmolVLM transfer and complete-stream detector/tracker comparisons. Source gains
+and CCTV regressions remain separate. See the
+[report and CSVs](../generalization_pilot_20261020/report.md) and
+[PDF/LaTeX addendum](../generalization_pilot_20261020/runthrough.pdf).
+Rebuild with `reports/slides/build_generalization_pilot_20261020.py` in the
+presentation environment described below.
+
+The complete historical presentation is the **45-slide review updated 19 October 2026**.
+It preserves the full data/evaluation and CLIP improvement history and adds
+SmolVLM language-layer LoRA: three trained adapters, exact training/development
+counts, source-level AP, fixed-threshold failures, seed variability, matched-case
+CLIP comparisons, verification, and the optional retrospective routing rule.
+There is no new latency benchmark.
+
+- [Updated PDF](model_evaluation_progress_20261019.pdf) and
+  [editable PowerPoint](model_evaluation_progress_20261019.pptx).
+- [One-slide summary PDF](summary_slide_progress_20261019.pdf),
+  [editable summary](summary_slide_progress_20261019.pptx) and
+  [summary image](summary_slide_progress_20261019.png).
+- [Speaker notes](progress_speaker_notes_20261019.md),
+  [source identities and measured layout](progress_source_manifest_20261019.json),
+  [validation](progress_validation_20261019.json), and
+  [all rendered previews](previews_20261019/index.md).
+- [102-page technical paper](../technical_runthrough_20261019/model_evaluation_runthrough_20261019.pdf),
+  [LaTeX source/build guide](../technical_runthrough_20261019/README.md), and
+  [SmolVLM findings](../smolvlm_finetuning_findings_20261019.md).
+
+Slides 1–10 cover updated scope, data and methodology; 11–28 retain the historical
+image, CLIP, temporal, component and VadCLIP studies; 29–41 cover the new SmolVLM
+study; 42–45 present the current assessment, generalization gates and deliverables.
+SmolVLM's AP gains coexist with loitering regression and unattended FPR of 70.8%
+at the development-budget cutoff. Primary joint and routed configurations are
+kept separate. The optional repeated-gain rule was introduced after primary
+held-out inspection and remains exploratory.
+
+Rebuild from preserved results:
+
+```bash
+PYTHONPATH="$PWD:/tmp/capstone_slide_deps" .venv/bin/python reports/slides/build_progress_presentation_20261019.py
+PYTHONPATH="$PWD:/tmp/capstone_slide_deps" .venv/bin/python scripts/validate_progress_presentation_20261019.py --render
+```
+
+## Previous progress review
+
+The previous presentation is the **32-slide progress review finalized 17 October
 2026**. It consolidates the original four-image-model comparison and separate
 VadCLIP study, data expansion, six actual CLIP visual fine-tunes, the 330-strategy
 screen, the 50-head causal video pilot and the latest ensemble/state/tiling work.

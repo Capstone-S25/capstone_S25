@@ -1,0 +1,9 @@
+{
+  "status": "pass",
+  "source_manifest_sha256": "65cd41f50e79fe42d310d14796ec4a2be2fdb78a46ff34a770d90536e2709af9",
+  "pdf_text_sha256": "6640c4585521a8087be3ac7bfc4977a80a8cebabd6a3006113f2be8554753fb6",
+  "independent_source_compilation": true,
+  "same_compiler_and_local_font_cache": true,
+  "compiler_output": "note: Running TeX ...\nnote: Rerunning TeX because \"model_evaluation_runthrough_20261019.out\" changed ...\nnote: Rerunning TeX because \"model_evaluation_runthrough_20261019.aux\" changed ...\nnote: Running xdvipdfmx ...\nnote: Writing `model_evaluation_runthrough_20261019.log` (24.345703125 KiB)\nnote: Writing `model_evaluation_runthrough_20261019.pdf` (415.12109375 KiB)\nnote: Skipped writing 5 intermediate files (use --keep-intermediates to keep them)",
+  "model_data_directories_required": false
+}
