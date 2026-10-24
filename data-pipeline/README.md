@@ -4,6 +4,10 @@ A Python project for the YOLO-VLM anomaly detection pipeline.
 
 ## First-time setup
 
+Install [Node.js](https://nodejs.org/) with npm. Run project commands from
+`data-pipeline/`. npm provides shortcuts; uv manages Python packages.
+No `npm install` is needed.
+
 ### 1. Install uv
 
 uv installs the Python version and packages this project needs.
@@ -25,12 +29,12 @@ Close and reopen your terminal, then run `uv --version` to check the installatio
 ### 2. Install Python and dependencies
 
 ```bash
-cd data-pipeline
-uv python install 3.12
-uv sync --locked
+npm run setup
 ```
 
-Use `uv run` before Python commands to use this environment; no manual activation is needed. Run `uv sync --locked` again after pulling changes that update dependencies.
+This installs Python 3.12 and locked dependencies, and creates `.env` from
+`.env.example` if needed. Existing settings are preserved. Run setup again
+after pulling dependency changes; manual environment activation is not needed.
 
 ### 3. Install FFmpeg
 
@@ -79,16 +83,13 @@ See [Setup local development database](#setup-local-development-database) for st
 
 ## Environment configuration
 
-Copy the development environment template once, then edit `.env` if needed:
+`npm run setup` creates `.env` if needed. Review its settings before running
+migrations or the app.
 
-```bash
-cp .env.example .env
-```
-
-| Variable            | Description                                       |
-| ------------------- | ------------------------------------------------- |
-| `DATABASE_URL`      | PostgreSQL connection used by Alembic migrations. |
-| `TEST_DATABASE_URL` | PostgreSQL connection used by database tests.     |
+| Variable            | Description                                           |
+| ------------------- | ----------------------------------------------------- |
+| `DATABASE_URL`      | PostgreSQL connection used by the app and migrations. |
+| `TEST_DATABASE_URL` | PostgreSQL connection used by database tests.         |
 
 ## Setup local development database
 
@@ -96,34 +97,30 @@ Run these commands from the project root (`data-pipeline/`).
 Start the PostgreSQL 18 development container in the background:
 
 ```bash
-docker compose -f infra/compose.yaml up -d postgres
+npm run db:up
 ```
 
-Check the container status and whether PostgreSQL is accepting connections:
-
-```bash
-docker compose -f infra/compose.yaml exec postgres pg_isready -U capstone -d capstone
-```
-
-To inspect startup errors:
-
-```bash
-docker compose -f infra/compose.yaml logs postgres
-```
+This waits until PostgreSQL is healthy before returning.
 
 To open an interactive SQL shell inside the container:
 
 ```bash
-docker compose -f infra/compose.yaml exec postgres psql -U capstone -d capstone
+npm run db:shell
 ```
 
-To stop and remove the container:
+To stop and remove the container while keeping data:
 
 ```bash
-docker compose -f infra/compose.yaml down
-# To delete database volume:
-# docker compose -v -f infra/compose.yaml down
+npm run db:down
 ```
+
+To reset the database and **delete all data in its volume**:
+
+```bash
+npm run db:down:force
+```
+
+After resetting, run `npm run db:up` and `npm run db:migrate` to recreate the schema.
 
 ## Database migrations
 
@@ -132,53 +129,28 @@ Run these commands from the project root with the local PostgreSQL container run
 Apply all migrations after initial setup or pulling or creating new migration files:
 
 ```bash
-uv run --locked alembic upgrade head
+npm run db:migrate
 ```
 
-Check the database revision and available migration history:
+## Run the app
+
+The current test video path is configured in `main.py`.
 
 ```bash
-uv run --locked alembic current
-uv run --locked alembic history
+npm start
 ```
 
-After changing a SQLAlchemy model in `database/models/`, import any new model in `database/models/__init__.py` so Alembic can discover it. Generate a migration:
-
-```bash
-uv run --locked alembic revision --autogenerate -m "describe schema change"
-```
-
-and apply the migration.
-
-Check whether the migrated database matches the models:
-
-```bash
-uv run --locked alembic check
-```
-
-## Add dependencies
-
-To add a production package:
-
-```bash
-uv add <package-name>
-```
-
-To add a development package:
-
-```bash
-uv add --dev <package-name>
-```
-
-Commit both `pyproject.toml` and `uv.lock` after changing dependencies.
+This starts PostgreSQL and waits until healthy before launching the app.
+Migrations must already be applied. Press Ctrl+C to stop recording; PostgreSQL
+stays running until you run `npm run db:down`.
 
 ## Linting and formatting
 
 Linting and formatting are executed when save file is executed. To make changes from the terminal:
 
 ```bash
-uv run ruff check --fix .
-uv run ruff format .
+npm run lint
+npm run format
 ```
 
 ## Testing
@@ -186,7 +158,8 @@ uv run ruff format .
 Start the local database and create `.env` as above to run PostgreSQL tests:
 
 ```bash
-uv run --locked pytest tests/database -q
+npm run db:up
+npm test -- tests/database -q
 ```
 
 Without a test URL, database integration tests skip locally. GitHub Actions
@@ -197,19 +170,19 @@ database tests in CI instead of silently skipping them.
 Run the test suite with:
 
 ```bash
-uv run pytest
+npm test
 ```
 
 To run a single test file:
 
 ```bash
-uv run pytest tests/video_ingestion/recording_worker/test_prepare_session.py
+npm test -- tests/video_ingestion/recording/worker/test_prepare_session.py
 ```
 
 To see which parts of the pipeline were exercised by tests:
 
 ```bash
-uv run pytest --cov=video_ingestion --cov-report=term-missing
+npm test -- --cov=video_ingestion --cov-report=term-missing
 ```
 
 Tests live in `tests/`, with filenames starting with `test_`.

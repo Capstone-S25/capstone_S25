@@ -1,0 +1,19 @@
+{
+  "name": "capstone-data-pipeline",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Development shortcuts for the uv-managed Python data pipeline",
+  "scripts": {
+    "setup": "node -e \"const fs = require('node:fs'); if (!fs.existsSync('.env')) fs.copyFileSync('.env.example', '.env');\" && uv python install 3.12 && uv sync --locked",
+    "prestart": "npm run db:up",
+    "start": "uv run --locked main.py",
+    "test": "uv run --locked pytest",
+    "lint": "uv run --locked ruff check --fix .",
+    "format": "uv run --locked ruff format .",
+    "db:up": "docker compose -f infra/compose.yaml up -d --wait --wait-timeout 60 postgres",
+    "db:down": "docker compose -f infra/compose.yaml down",
+    "db:down:force": "docker compose -f infra/compose.yaml down --volumes --remove-orphans",
+    "db:migrate": "uv run --locked alembic upgrade head",
+    "db:shell": "docker compose -f infra/compose.yaml exec postgres psql -U capstone -d capstone"
+  }
+}
