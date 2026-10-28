@@ -1,9 +1,9 @@
 name: Evaluation pipeline CI
 on:
   push:
-    paths: ["anomaly_eval/**", "scripts/**", "config/**", "tests/**", "pyproject.toml", "requirements.txt", "notebooks/**", ".github/workflows/data-pipeline-ci.yml"]
+    paths: ["anomaly_eval/**", "scripts/**", "config/**", "tests/**", "pyproject.toml", "requirements/**", "notebooks/**", ".github/workflows/data-pipeline-ci.yml"]
   pull_request:
-    paths: ["anomaly_eval/**", "scripts/**", "config/**", "tests/**", "pyproject.toml", "requirements.txt", "notebooks/**", ".github/workflows/data-pipeline-ci.yml"]
+    paths: ["anomaly_eval/**", "scripts/**", "config/**", "tests/**", "pyproject.toml", "requirements/**", "notebooks/**", ".github/workflows/data-pipeline-ci.yml"]
   workflow_dispatch:
 permissions:
   contents: read
@@ -17,8 +17,9 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+          cache-dependency-path: requirements/base.txt
       - run: python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-      - run: python -m pip install -r requirements.txt ruff
+      - run: python -m pip install -r requirements/base.txt ruff
       - run: python -m pip install -e . --no-deps
       - run: ruff check anomaly_eval scripts tests
       - run: ruff format --check anomaly_eval scripts tests

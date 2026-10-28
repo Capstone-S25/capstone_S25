@@ -1,0 +1,53 @@
+{
+  "finalists": {
+    "smoking": [
+      "definition_native_280",
+      "evidence_native_280",
+      "contextual_crops_560"
+    ],
+    "littering": [
+      "definition_native_280",
+      "detail_native_1120"
+    ],
+    "loitering": [
+      "definition_native_280",
+      "contrastive_native_560"
+    ],
+    "rough_sleeping": [
+      "definition_native_280",
+      "contextual_crops_560"
+    ],
+    "unattended_items": [
+      "definition_native_280",
+      "detail_native_1120"
+    ]
+  },
+  "uses_test": false,
+  "new_policy_source_ap": {
+    "smoking": {
+      "detail_native_1120": 0.8842266717864803,
+      "contrastive_native_560": 0.8316264145211513,
+      "contextual_crops_560": 0.8943944201965591
+    },
+    "littering": {
+      "detail_native_1120": 0.9184843633791484,
+      "contrastive_native_560": 0.9110666753225739,
+      "contextual_crops_560": 0.8987408727207948
+    },
+    "loitering": {
+      "detail_native_1120": 0.3271073160846826,
+      "contrastive_native_560": 0.38089023189934273,
+      "contextual_crops_560": 0.28262564986888583
+    },
+    "rough_sleeping": {
+      "detail_native_1120": 0.9325396825396823,
+      "contrastive_native_560": 0.9325396825396823,
+      "contextual_crops_560": 0.947845804988662
+    },
+    "unattended_items": {
+      "detail_native_1120": 0.8980209147178524,
+      "contrastive_native_560": 0.8969951002933395,
+      "contextual_crops_560": 0.8833898407339841
+    }
+  }
+}

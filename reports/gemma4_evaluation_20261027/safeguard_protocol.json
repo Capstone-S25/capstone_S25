@@ -1,0 +1,11 @@
+{
+  "status": "declared_before_first_completed_model_result_review",
+  "declared_utc": "2026-10-27T10:40:19.045604+00:00",
+  "heldout_forwards_already_started": true,
+  "aggregate_gemma_test_metrics_reviewed": false,
+  "candidate": "development_best_baseline_or_optimized_model_per_task",
+  "selection": "For each objective choose the model and baseline/optimized route with highest mean-source AP on the complete primary development set; catalog order, baseline before optimized break ties. No heldout labels or scores choose this route.",
+  "calibration": "Primary full-development raw zero, maximumF1, pooled/every-source 5% FPR; XRF source development only calibrates secondary source thresholds.",
+  "inference": "Reuse the original, unchanged per-model margins; no additional GPU inference or weight training.",
+  "qualification": "An additional retrospective development-only comparison declared after initial heldout forwards began. It is not part of the original pre-forward ensemble protocol and is not a new independent acceptance test."
+}

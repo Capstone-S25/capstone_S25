@@ -1,0 +1,50 @@
+{
+  "status": "passed",
+  "development_only": true,
+  "parity": [
+    {
+      "policy": "definition_native_280",
+      "max_error": 0.0,
+      "ids": [
+        "kaggle_smoking:smoking_0556",
+        "ff376d495f3eb29a0e72273e",
+        "fd6d190ab6f1672ae57b67d7",
+        "fd27e064bf8745dd243aee2a",
+        "ffa99705dc72a83146221296"
+      ]
+    },
+    {
+      "policy": "evidence_native_280",
+      "max_error": 0.0,
+      "ids": [
+        "kaggle_smoking:smoking_0050",
+        "ff376d495f3eb29a0e72273e",
+        "fd6d190ab6f1672ae57b67d7",
+        "fd27e064bf8745dd243aee2a",
+        "ffa99705dc72a83146221296"
+      ]
+    },
+    {
+      "policy": "evidence_native_560",
+      "max_error": 0.0,
+      "ids": [
+        "kaggle_smoking:smoking_0050",
+        "ff376d495f3eb29a0e72273e",
+        "fd6d190ab6f1672ae57b67d7",
+        "fd27e064bf8745dd243aee2a",
+        "fd87d817f793095a05b29d2b"
+      ]
+    },
+    {
+      "policy": "evidence_sheet_1120",
+      "max_error": 0.0,
+      "ids": [
+        "kaggle_smoking:smoking_0556",
+        "ff376d495f3eb29a0e72273e",
+        "fd6d190ab6f1672ae57b67d7",
+        "fd27e064bf8745dd243aee2a",
+        "fd87d817f793095a05b29d2b"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "schema": 1,
+  "checked_on": "2026-10-27",
+  "models": [
+    {
+      "name": "gemma4-e2b",
+      "original_repo": "google/gemma-4-E2B-it",
+      "repo": "google/gemma-4-E2B-it",
+      "revision": "3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+      "backend": "transformers",
+      "precision": "bfloat16",
+      "cache": "workspace",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "model.safetensors",
+          "bytes": 10246621918,
+          "sha256": "2db5482b20d746879bb3ef79b5203e9075a2e2b98f54ec7c2f281c1477ddc550"
+        }
+      ]
+    },
+    {
+      "name": "gemma4-e4b",
+      "original_repo": "google/gemma-4-E4B-it",
+      "repo": "google/gemma-4-E4B-it",
+      "revision": "ee0ef6023621cff504d758262d4e04895a5af4a2",
+      "backend": "transformers",
+      "precision": "bfloat16",
+      "cache": "workspace",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "model.safetensors",
+          "bytes": 15992595884,
+          "sha256": "cfbd3d2f1cd71bd471c37fe2bf8546d5028d41e5736f64e1ca6c6b8893125503"
+        }
+      ]
+    },
+    {
+      "name": "gemma4-12b",
+      "original_repo": "google/gemma-4-12B-it",
+      "repo": "google/gemma-4-12B-it",
+      "revision": "707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7",
+      "backend": "transformers",
+      "precision": "bfloat16",
+      "cache": "ram",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "model.safetensors",
+          "bytes": 23919549408,
+          "sha256": "5a84cb313260ac447237b890387116dfa8682e49a6b44bc585ae8353abbff18d"
+        }
+      ]
+    },
+    {
+      "name": "gemma4-26b-a4b",
+      "original_repo": "google/gemma-4-26B-A4B-it",
+      "repo": "google/gemma-4-26B-A4B-it-qat-q4_0-gguf",
+      "revision": "d1c082be9cf3c8a514acf63b8761f4b41935842e",
+      "backend": "llama.cpp",
+      "precision": "QAT_Q4_0",
+      "cache": "ram",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "gemma-4-26B-it-mmproj.gguf",
+          "bytes": 1194828160,
+          "sha256": "a359953a076b877db30c31dbbb4c6d93b4a6e017ee5db5784247e4d4c0dd4f3b"
+        },
+        {
+          "path": "gemma-4-26B_q4_0-it.gguf",
+          "bytes": 14439363584,
+          "sha256": "3eca3b8f6d7baf218a7dd6bba5fb59a56ee25fe2d567b6f5f589b4f697eca51d"
+        }
+      ]
+    },
+    {
+      "name": "gemma4-31b",
+      "original_repo": "google/gemma-4-31B-it",
+      "repo": "google/gemma-4-31B-it-qat-q4_0-gguf",
+      "revision": "59dde24573e7e61570dba08b18a2e1fe246955ed",
+      "backend": "llama.cpp",
+      "precision": "QAT_Q4_0",
+      "cache": "ram",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "gemma-4-31B-it-mmproj.gguf",
+          "bytes": 1200726368,
+          "sha256": "6bd60bdb958548b4093196d38744b0f2290c12503a3fddd7486bffa9c5eb07a4"
+        },
+        {
+          "path": "gemma-4-31B_q4_0-it.gguf",
+          "bytes": 17651001568,
+          "sha256": "179cfb99212709597eae5929112cfca677e1bbf566178b479ae1da0c4772874b"
+        }
+      ]
+    }
+  ],
+  "llama_cpp_release": "b11925"
+}

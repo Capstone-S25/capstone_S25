@@ -1,0 +1,116 @@
+{
+  "full_dev_selected": {
+    "smoking": {
+      "dev_max_f1": -12.4375,
+      "dev_fpr_budget": -0.125,
+      "raw": 0.0,
+      "dev_every_source_fpr_budget": -0.125
+    },
+    "littering": {
+      "dev_max_f1": -11.1875,
+      "dev_fpr_budget": -4.625,
+      "raw": 0.0,
+      "dev_every_source_fpr_budget": -4.625
+    },
+    "loitering": {
+      "dev_max_f1": -16.5,
+      "dev_fpr_budget": -10.25,
+      "raw": 0.0,
+      "dev_every_source_fpr_budget": -10.25
+    },
+    "rough_sleeping": {
+      "dev_max_f1": 4.625,
+      "dev_fpr_budget": 4.625,
+      "raw": 0.0,
+      "dev_every_source_fpr_budget": 4.625
+    },
+    "unattended_items": {
+      "dev_max_f1": -9.625,
+      "dev_fpr_budget": -9.125,
+      "raw": 0.0,
+      "dev_every_source_fpr_budget": -9.125
+    },
+    "xrf55_source_dev": {
+      "dev_max_f1": -20.59375,
+      "dev_fpr_budget": 0.375,
+      "raw": 0.0,
+      "dev_every_source_fpr_budget": 0.375
+    }
+  },
+  "source_safeguarded": {
+    "smoking": {
+      "dev_max_f1": -12.4375,
+      "dev_fpr_budget": -0.125,
+      "raw": 0.0,
+      "dev_every_source_fpr_budget": -0.125
+    },
+    "littering": {
+      "dev_max_f1": -11.1875,
+      "dev_fpr_budget": -4.625,
+      "raw": 0.0,
+      "dev_every_source_fpr_budget": -4.625
+    },
+    "loitering": {
+      "dev_max_f1": -11.5,
+      "dev_fpr_budget": -4.999999999999999,
+      "raw": 0.0,
+      "dev_every_source_fpr_budget": -4.999999999999999
+    },
+    "rough_sleeping": {
+      "dev_max_f1": 4.625,
+      "dev_fpr_budget": 4.625,
+      "raw": 0.0,
+      "dev_every_source_fpr_budget": 4.625
+    },
+    "unattended_items": {
+      "dev_max_f1": -9.625,
+      "dev_fpr_budget": -9.125,
+      "raw": 0.0,
+      "dev_every_source_fpr_budget": -9.125
+    },
+    "xrf55_source_dev": {
+      "dev_max_f1": -20.59375,
+      "dev_fpr_budget": 0.375,
+      "raw": 0.0,
+      "dev_every_source_fpr_budget": 0.375
+    }
+  },
+  "baseline_blend": {
+    "smoking": {
+      "dev_max_f1": -0.7115877418332943,
+      "dev_fpr_budget": 0.7675884058483726,
+      "raw": 0.0,
+      "dev_every_source_fpr_budget": 1.7089841134318995
+    },
+    "littering": {
+      "dev_max_f1": -0.42280386057377756,
+      "dev_fpr_budget": 0.760991053327654,
+      "raw": 0.0,
+      "dev_every_source_fpr_budget": 0.760991053327654
+    },
+    "loitering": {
+      "dev_max_f1": 0.38038515858356353,
+      "dev_fpr_budget": 1.6083591943428113,
+      "raw": 0.0,
+      "dev_every_source_fpr_budget": 1.6083591943428113
+    },
+    "rough_sleeping": {
+      "dev_max_f1": 1.26542834085288,
+      "dev_fpr_budget": 1.26542834085288,
+      "raw": 0.0,
+      "dev_every_source_fpr_budget": 1.26542834085288
+    },
+    "unattended_items": {
+      "dev_max_f1": 0.11142451636672286,
+      "dev_fpr_budget": 0.39957491677024287,
+      "raw": 0.0,
+      "dev_every_source_fpr_budget": 0.39957491677024287
+    },
+    "xrf55_source_dev": {
+      "dev_max_f1": -0.9175875617268077,
+      "dev_fpr_budget": 1.7936874012841406,
+      "raw": 0.0,
+      "dev_every_source_fpr_budget": 1.7936874012841406
+    }
+  }
+}

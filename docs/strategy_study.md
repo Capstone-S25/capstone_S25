@@ -97,15 +97,15 @@ After freezing inputs, the main stages are:
 export PYTHONPATH="$PWD"
 
 # New output directories are required; completed model selections are immutable.
-.venv-gpu/bin/python scripts/detect_strategy_regions.py
-.venv-gpu/bin/python scripts/extract_strategy_features.py --model siglip2-b16-224
-.venv-gpu/bin/python scripts/extract_strategy_features.py --model siglip2-b16-224 --stage crop
-.venv-gpu/bin/python scripts/run_strategy_screen.py --model siglip2-b16-224
+.venv-gpu/bin/python scripts/strategy/detect_strategy_regions.py
+.venv-gpu/bin/python scripts/strategy/extract_strategy_features.py --model siglip2-b16-224
+.venv-gpu/bin/python scripts/strategy/extract_strategy_features.py --model siglip2-b16-224 --stage crop
+.venv-gpu/bin/python scripts/strategy/run_strategy_screen.py --model siglip2-b16-224
 
 # Once transfer representations are ready:
-.venv/bin/python scripts/evaluate_strategy_transfer.py --model siglip2-b16-224
-MPLCONFIGDIR=/tmp/capstone_strategy_mpl .venv/bin/python scripts/report_strategy_study.py
-.venv-gpu/bin/python scripts/verify_strategy_study.py --live
+.venv/bin/python scripts/strategy/evaluate_strategy_transfer.py --model siglip2-b16-224
+MPLCONFIGDIR=/tmp/capstone_strategy_mpl .venv/bin/python scripts/strategy/report_strategy_study.py
+.venv-gpu/bin/python scripts/strategy/verify_strategy_study.py --live
 ```
 
 Repeat model-specific commands for MobileCLIP2-S2. The transfer preparation,
@@ -126,7 +126,7 @@ threshold selection.
 ## Experimental inference
 
 ```bash
-PYTHONPATH="$PWD" .venv-gpu/bin/python scripts/predict_strategy.py \
+PYTHONPATH="$PWD" .venv-gpu/bin/python scripts/strategy/predict_strategy.py \
   --model siglip2-b16-224 \
   --images frame_0.png frame_7.png frame_13.png frame_20.png \
   --timestamps 0 7 13 20 --operating-point raw \

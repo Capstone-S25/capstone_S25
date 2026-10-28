@@ -9,13 +9,13 @@ provides the inventory, exact links, recorded hashes, terms and limitations.
 
 ```bash
 # List every source and its recorded license, without contacting the network.
-.venv/bin/python scripts/fetch_all_datasets.py --list
+.venv/bin/python -m anomaly_eval fetch-all --list
 
 # Inspect the default public research acquisition plan without writing files.
-.venv/bin/python scripts/fetch_all_datasets.py --plan
+.venv/bin/python -m anomaly_eval fetch-all --plan
 
 # Fetch all recorded public research acquisitions concurrently, reusing the cache.
-.venv/bin/python scripts/fetch_all_datasets.py --workers 8 --per-host 3
+.venv/bin/python -m anomaly_eval fetch-all --workers 8 --per-host 3
 
 # Choose a destination DATA ROOT or individual sources.
 anomaly-eval fetch-all --output /path/to/data --sources xrf55_rgb_public iwdd
@@ -145,8 +145,8 @@ After reviewing the changed acquisition plan, update its manifest hashes and
 regenerate the consolidated tables:
 
 ```bash
-.venv/bin/python scripts/export_dataset_sources.py --update-manifest-hashes
-.venv/bin/python scripts/fetch_all_datasets.py --plan
+.venv/bin/python scripts/datasets/export_dataset_sources.py --update-manifest-hashes
+.venv/bin/python -m anomaly_eval fetch-all --plan
 ```
 
 Without `--update-manifest-hashes`, the export script verifies the existing pins
@@ -163,7 +163,7 @@ The fetcher does not execute downloaded source code, change labels, rebuild
 splits or train models. Stanford40, smoking image, HMDB, AVSS and the small-item
 source therefore still need their established extraction/preparation steps on a
 fresh machine. The historical scripts document their layouts; for example,
-`scripts/extract_hmdb_sources.py` extracts the seven selected HMDB classes and
+`scripts/datasets/extract_hmdb_sources.py` extracts the seven selected HMDB classes and
 verifies the original archive. MEVA's original activity annotation text and source
 links are packaged in `config/dataset_evidence/meva_annotations.json`.
 

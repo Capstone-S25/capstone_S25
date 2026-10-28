@@ -1,0 +1,12 @@
+{
+  "status": "declared_before_first_gemma_heldout_forward",
+  "inputs": "Per-model optimized routes selected on main development only",
+  "candidates": [
+    "development_best_model_per_task",
+    "equal_weight_mean_of_development_z_scores"
+  ],
+  "standardization": "Each task/model uses mean and population standard deviation of its main development margins. A zero standard deviation becomes 1. All five models receive equal weight; no fitted ensemble weights.",
+  "selection": "Report both ensemble candidates. Best-model routing uses mean source AP on complete primary development; catalog order breaks ties. No test selection.",
+  "calibration": "Recompute raw, main development maximum-F1 and pooled/every-source 5% FPR thresholds before evaluating cached heldout margins. XRF development calibrates only secondary source metrics.",
+  "qualifications": "Same retrospective cohorts and weak/provisional labels; no independent evidence from combining model predictions."
+}

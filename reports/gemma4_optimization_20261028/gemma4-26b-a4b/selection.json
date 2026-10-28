@@ -1,0 +1,147 @@
+{
+  "routes": {
+    "full_dev_selected": {
+      "smoking": "contextual_crops_560",
+      "littering": "evidence_sheet_1120",
+      "loitering": "evidence_native_560",
+      "rough_sleeping": "definition_native_280",
+      "unattended_items": "definition_native_280"
+    },
+    "source_safeguarded": {
+      "smoking": "contextual_crops_560",
+      "littering": "evidence_sheet_1120",
+      "loitering": "evidence_native_560",
+      "rough_sleeping": "definition_native_280",
+      "unattended_items": "definition_native_280"
+    },
+    "baseline_blend": {
+      "smoking": {
+        "definition_native_280": {
+          "mean": -11.53292531865559,
+          "std": 6.466122287270138
+        },
+        "contextual_crops_560": {
+          "mean": -9.15418537125643,
+          "std": 5.074276822274958
+        }
+      },
+      "littering": {
+        "definition_native_280": {
+          "mean": -6.334066923258653,
+          "std": 3.634108930934091
+        },
+        "evidence_sheet_1120": {
+          "mean": -7.247438017305233,
+          "std": 4.32924784241833
+        }
+      },
+      "loitering": {
+        "definition_native_280": {
+          "mean": -8.55555429356014,
+          "std": 1.1359150609332065
+        },
+        "evidence_native_560": {
+          "mean": -8.635627521723347,
+          "std": 1.3698040750202922
+        }
+      },
+      "rough_sleeping": {
+        "definition_native_280": {
+          "mean": -2.7720042662197835,
+          "std": 8.213746571870438
+        }
+      },
+      "unattended_items": {
+        "definition_native_280": {
+          "mean": -5.663209254033075,
+          "std": 3.260959574632634
+        }
+      }
+    }
+  },
+  "development": {
+    "smoking": {
+      "mean_source_ap": {
+        "definition_native_280": 0.8012529900106101,
+        "contextual_crops_560": 0.8520490584235686
+      },
+      "source_ap": {
+        "definition_native_280": {
+          "kaggle_sujaykapadnis_smoking": 0.9993614285125705,
+          "smoking_cctv": 0.43771103767795716,
+          "stanford40": 0.9666865038413026
+        },
+        "contextual_crops_560": {
+          "kaggle_sujaykapadnis_smoking": 1.0,
+          "smoking_cctv": 0.5804373693549503,
+          "stanford40": 0.9757098059157555
+        }
+      }
+    },
+    "littering": {
+      "mean_source_ap": {
+        "definition_native_280": 0.8270593890607465,
+        "evidence_sheet_1120": 0.8895149417484773,
+        "contrastive_native_560": 0.8724841332284428
+      },
+      "source_ap": {
+        "definition_native_280": {
+          "mivia_iwdd": 0.8270593890607465
+        },
+        "evidence_sheet_1120": {
+          "mivia_iwdd": 0.8895149417484773
+        },
+        "contrastive_native_560": {
+          "mivia_iwdd": 0.8724841332284428
+        }
+      }
+    },
+    "loitering": {
+      "mean_source_ap": {
+        "definition_native_280": 0.17169025866989177,
+        "evidence_native_560": 0.3246780149126426,
+        "detail_native_1120": 0.3246780149126426
+      },
+      "source_ap": {
+        "definition_native_280": {
+          "street_scene": 0.17169025866989177
+        },
+        "evidence_native_560": {
+          "street_scene": 0.3246780149126426
+        },
+        "detail_native_1120": {
+          "street_scene": 0.3246780149126426
+        }
+      }
+    },
+    "rough_sleeping": {
+      "mean_source_ap": {
+        "definition_native_280": 0.9999999999999998,
+        "contextual_crops_560": 0.9999999999999998
+      },
+      "source_ap": {
+        "definition_native_280": {
+          "commons_visible_sleeping": 0.9999999999999998
+        },
+        "contextual_crops_560": {
+          "commons_visible_sleeping": 0.9999999999999998
+        }
+      }
+    },
+    "unattended_items": {
+      "mean_source_ap": {
+        "definition_native_280": 0.8779066802544746,
+        "detail_native_1120": 0.8565280050628947
+      },
+      "source_ap": {
+        "definition_native_280": {
+          "unattended_reviewed": 0.8779066802544746
+        },
+        "detail_native_1120": {
+          "unattended_reviewed": 0.8565280050628947
+        }
+      }
+    }
+  },
+  "uses_test_for_fit": false
+}

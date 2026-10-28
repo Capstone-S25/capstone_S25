@@ -1,0 +1,65 @@
+{
+  "status": "passed",
+  "policies": {
+    "detail_native_1120": {
+      "examples": 5,
+      "execution": "Canonical single-example forwards, dispatched together versus individually; mixed tensor batching is excluded",
+      "max_margin_error": 0.0,
+      "tolerance": 0.12,
+      "batched_scores": [
+        15.7109375,
+        -21.4375,
+        -24.5625,
+        -27.1875,
+        -30.1875
+      ],
+      "single_scores": [
+        15.7109375,
+        -21.4375,
+        -24.5625,
+        -27.1875,
+        -30.1875
+      ]
+    },
+    "contrastive_native_560": {
+      "examples": 5,
+      "execution": "Canonical single-example forwards, dispatched together versus individually; mixed tensor batching is excluded",
+      "max_margin_error": 0.0,
+      "tolerance": 0.12,
+      "batched_scores": [
+        15.21875,
+        -25.1875,
+        -25.875,
+        -29.9375,
+        -30.0
+      ],
+      "single_scores": [
+        15.21875,
+        -25.1875,
+        -25.875,
+        -29.9375,
+        -30.0
+      ]
+    },
+    "contextual_crops_560": {
+      "examples": 5,
+      "execution": "Canonical single-example forwards, dispatched together versus individually; mixed tensor batching is excluded",
+      "max_margin_error": 0.0,
+      "tolerance": 0.12,
+      "batched_scores": [
+        13.796875,
+        -26.875,
+        -20.75,
+        -22.6875,
+        -27.375
+      ],
+      "single_scores": [
+        13.796875,
+        -26.875,
+        -20.75,
+        -22.6875,
+        -27.375
+      ]
+    }
+  }
+}

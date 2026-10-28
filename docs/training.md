@@ -59,14 +59,14 @@ probe or model; those cached features are keyed by input pixel hashes, model
 revision and the pooling/preprocessing policy. Fine-tuned features never use that
 cache.
 
-The study launcher `scripts/run_clip_training.py` runs both models for seeds
+The study launcher `scripts/clip/run_clip_training.py` runs both models for seeds
 42/43/44, preserving exact commands and logs. It refuses to overwrite model runs.
 `--resume-preparation` only resumes before any model job exists;
 `--allow-recorded-source-gaps` accepts explicitly recorded download failures,
 without waiving missing unrecorded files. Its fixed study output is
 `results/clip_finetuning_20261015/`; use the single-model command for a new study.
 
-`scripts/resume_clip_training.py` can adopt running jobs and schedule independent
+`scripts/clip/resume_clip_training.py` can adopt running jobs and schedule independent
 seed replications, with up to three concurrent GPU jobs. It validates the prior
 controller identity before replacement. Initial seed-42 execution used convolution
 autotuning; later jobs disable it because variable frame-batch shapes otherwise
@@ -119,13 +119,13 @@ development-selected method fixed and recalibrates thresholds using development
 scores only. It lives in each model/seed's `float32_evaluation/` directory.
 `--precision bfloat16` explicitly requests the original AMP policy; float32 is the
 default. The final quality pass can be reproduced with
-`scripts/evaluate_clip_float32.py --model MODEL` in the CUDA environment, into new
+`scripts/clip/evaluate_clip_float32.py --model MODEL` in the CUDA environment, into new
 evaluation directories; completed output is deliberately not overwritten.
 
 ## Reports and checks
 
 ```bash
-PYTHONPATH="$PWD" .venv/bin/python scripts/report_clip_training.py
+PYTHONPATH="$PWD" .venv/bin/python scripts/clip/report_clip_training.py
 ```
 
 Read [the training report](../results/clip_finetuning_20261015/report.md) for all

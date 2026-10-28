@@ -12,8 +12,8 @@ from unittest.mock import patch
 import numpy as np
 
 from anomaly_eval.training.strategies import geometry, overlap, represent, source_ap
-from scripts import fetch_strategy_sources
-from scripts.extract_strategy_features import contextual_box
+from scripts.datasets import fetch_strategy_sources
+from scripts.strategy.extract_strategy_features import contextual_box
 
 
 class TrainingStrategyTests(unittest.TestCase):

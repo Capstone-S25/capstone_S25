@@ -43,13 +43,13 @@ was no new latency experiment. The [full report](../results/expanded_accuracy_20
 and [updated slides](../reports/slides/model_evaluation_expanded_20261014.pdf) include
 the limitations, raw decisions and development-frozen CLIP operating points.
 
-`scripts/expand_accuracy.py` prepares review material and manifests;
-`scripts/run_expanded_accuracy.py` executes this study into an exclusive output
+`scripts/expanded/expand_accuracy.py` prepares review material and manifests;
+`scripts/expanded/run_expanded_accuracy.py` executes this study into an exclusive output
 directory. Preserve the completed output; the inference script deliberately
 refuses to overwrite it. To regenerate the accuracy report from saved predictions:
 
 ```bash
-PYTHONPATH="$PWD" .venv/bin/python scripts/report_expanded_accuracy.py
+PYTHONPATH="$PWD" .venv/bin/python scripts/expanded/report_expanded_accuracy.py
 ```
 
 ## Evaluation speed and deployment pacing

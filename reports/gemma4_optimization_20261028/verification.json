@@ -1,0 +1,77 @@
+{
+  "status": "passed",
+  "completed_models": 5,
+  "planned_models": 5,
+  "models": {
+    "gemma4-e2b": {
+      "status": "passed",
+      "heldout_cases": 4032,
+      "primary_development_cases": 1812,
+      "source_development_cases": 160,
+      "result_sha256": "2923168db89abbd935189827679ecd720d48ee9873795f60743a0922a5dc6529",
+      "replayed": [
+        "new-policy finalists",
+        "full-development routes and blend constants",
+        "all cutoffs",
+        "all held-out margins",
+        "all source metrics"
+      ]
+    },
+    "gemma4-e4b": {
+      "status": "passed",
+      "heldout_cases": 4032,
+      "primary_development_cases": 1812,
+      "source_development_cases": 160,
+      "result_sha256": "f9fa2d13ba3d69c33c896d7b27e6cfeb3837caaa48c274066ff69df783f4e6f8",
+      "replayed": [
+        "new-policy finalists",
+        "full-development routes and blend constants",
+        "all cutoffs",
+        "all held-out margins",
+        "all source metrics"
+      ]
+    },
+    "gemma4-12b": {
+      "status": "passed",
+      "heldout_cases": 4032,
+      "primary_development_cases": 1812,
+      "source_development_cases": 160,
+      "result_sha256": "8a37c709f3622ae9cf754e2e1cdcbe0fe85ace27b42a25044fdbbaabbd3bfda0",
+      "replayed": [
+        "new-policy finalists",
+        "full-development routes and blend constants",
+        "all cutoffs",
+        "all held-out margins",
+        "all source metrics"
+      ]
+    },
+    "gemma4-26b-a4b": {
+      "status": "passed",
+      "heldout_cases": 4032,
+      "primary_development_cases": 1812,
+      "source_development_cases": 160,
+      "result_sha256": "7c70a0ef2998cccc890d6ec4f28206904c628ab2aa122916fb800c8e6580e67d",
+      "replayed": [
+        "new-policy finalists",
+        "full-development routes and blend constants",
+        "all cutoffs",
+        "all held-out margins",
+        "all source metrics"
+      ]
+    },
+    "gemma4-31b": {
+      "status": "passed",
+      "heldout_cases": 4032,
+      "primary_development_cases": 1812,
+      "source_development_cases": 160,
+      "result_sha256": "fe1c8605346d512bea10291efed62f6811e3b1eeaf8beed3ddfa239105cc2b1f",
+      "replayed": [
+        "new-policy finalists",
+        "full-development routes and blend constants",
+        "all cutoffs",
+        "all held-out margins",
+        "all source metrics"
+      ]
+    }
+  }
+}

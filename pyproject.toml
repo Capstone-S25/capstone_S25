@@ -19,4 +19,4 @@ include = ["anomaly_eval*"]
 anomaly_eval = ["config/*.json", "config/dataset_assets/*.jsonl", "config/dataset_evidence/*"]
 
 [tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
+dependencies = {file = ["requirements/base.txt"]}
