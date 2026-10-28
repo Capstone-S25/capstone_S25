@@ -1,0 +1,13 @@
+method,littering_event_%,littering_crop_%,avenue_event_%,avenue_crop_%,avenue_reduction_%,smoking_event_%,smoking_crop_%,smoking_reduction_%,normal_FA_per_min
+act+motion+crop rep=3.0 pad=2.5,87.0,80.0,100.0,100.0,11.1,43.6,24.0,54.4,13.91
+act+motion+crop+dwell rep=3.0 pad=2.5,100.0,98.7,100.0,100.0,10.0,64.1,40.8,36.8,15.48
+act+motion+crop rep=3.0 pad=1.5,87.0,80.0,100.0,100.0,22.6,35.7,24.0,64.5,13.91
+act+motion+crop+dwell rep=3.0 pad=1.5,100.0,98.7,100.0,100.0,20.6,55.9,40.8,48.6,15.48
+act+motion+crop rep=10.0 pad=2.5,87.0,80.0,100.0,88.0,13.0,43.6,24.0,54.4,13.52
+act+motion+crop+dwell rep=10.0 pad=2.5,100.0,98.7,100.0,88.0,11.4,64.1,40.8,36.8,15.09
+act+motion+crop rep=10.0 pad=1.5,87.0,80.0,100.0,88.0,27.7,35.7,24.0,64.5,13.52
+act+motion+crop+dwell rep=10.0 pad=1.5,100.0,98.7,100.0,88.0,24.8,55.9,40.8,48.6,15.09
+act+motion+crop rep=30.0 pad=2.5,87.0,80.0,96.0,84.0,15.5,43.6,24.0,54.4,13.52
+act+motion+crop+dwell rep=30.0 pad=2.5,100.0,98.7,100.0,88.0,13.1,64.1,40.8,36.8,15.09
+act+motion+crop rep=30.0 pad=1.5,87.0,80.0,96.0,84.0,29.8,35.7,24.0,64.5,13.52
+act+motion+crop+dwell rep=30.0 pad=1.5,100.0,98.7,100.0,88.0,26.9,55.9,40.8,48.6,15.09

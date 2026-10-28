@@ -1,0 +1,10 @@
+{
+ "test/09": [
+  [5.4, 7.3, "man with a backpack walks right past the camera"],
+  [19.8, 22.6, "person running across the scene"],
+  [29.6, 30.2, "man walks in close to the camera from the right"],
+  [35.0, 39.2, "man throws his bag high in the air, then picks it up"],
+  [40.5, 41.7, "man picks up his bag and swings it"],
+  [44.2, 46.5, "man throws his bag in the air again and picks it up"]
+ ]
+}

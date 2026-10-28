@@ -1,0 +1,7 @@
+half,model,littering events %,littering right person %,loitering events %,loitering right person %,loitering video skipped %,smoking events %,smoking right person %,littering lift over random,false alarms / min
+held-out,YOLO26m,71.0,57.0,80.0,60.0,57.8,43.4,14.0,20.6,6.5
+held-out,YOLO26n,73.0,55.0,90.0,70.0,45.7,28.0,9.9,14.4,6.8
+held-out,YOLO26s,72.0,56.0,80.0,60.0,58.9,36.8,12.6,15.0,5.9
+tune,YOLO26m,76.5,55.2,60.0,56.0,58.4,52.7,20.3,11.2,4.5
+tune,YOLO26n,73.5,51.3,68.0,48.0,51.9,42.2,17.7,7.5,5.3
+tune,YOLO26s,77.0,55.7,68.0,56.0,51.6,49.9,19.3,10.2,5.1
