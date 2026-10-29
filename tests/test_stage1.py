@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import re
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -13,6 +15,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "notebooks"))
 from stage1_bench import GTSequence, evaluate_run
 from stage1_gate import (
     GateConfig,
+    HandoffWriter,
+    ImageSequence,
     Observation,
     RuleEngine,
     RunResult,
@@ -369,6 +373,110 @@ class MetricTests(unittest.TestCase):
         g = GTSequence("x", FakeSeq(), {i: [[0, 0, 10, 10]] for i in range(10, 20)})
         r = evaluate_run(g, self._result(100, [self._event(1.5, [0, 0, 10, 10])]))
         self.assertEqual((r["tp"], r["fp"], r["fn"], r["tn"]), (10, 1, 0, 89))
+
+
+class FakeVideo:
+    """A video-like sequence: frames are not on disk."""
+
+    seq_id = "v"
+    source = "v.mp4"
+
+
+def frame(i):
+    return np.full((72, 128, 3), i % 256, np.uint8)
+
+
+def handoff_event(i, **extra):
+    t = i / FPS
+    return {
+        "event_id": f"e{i}",
+        "frame_index": i,
+        "timestamp_s": round(t, 2),
+        "clip_window_s": [max(0.0, t - 2.5), t + 2.5],
+        "roi_box": [10, 10, 40, 60],
+        **extra,
+    }
+
+
+def stream(writer, seq, n, events):
+    """Feed n frames like Stage1Gate.run; save the given events at their trigger frames."""
+    writer.start(seq)
+    for i in range(n):
+        writer.observe(frame(i), i / FPS, i)
+        for e in events.get(i, []):
+            writer.save(e, frame(i), seq, t=i / FPS)
+
+
+def frame_indices(paths):
+    return [int(re.search(r"_f(\d+)\.jpg$", p).group(1)) for p in paths]
+
+
+class HandoffTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.out = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_video_window_uses_only_past_frames(self):
+        w = HandoffWriter(self.out, buffer_fps=2.0, pre_s=2.5)
+        e = handoff_event(49)  # t = 4.9 s
+        stream(w, FakeVideo(), 80, {49: [e]})
+        self.assertTrue(e["window_frame_paths"])
+        self.assertTrue(all(Path(p).exists() for p in e["window_frame_paths"]))
+        times = e["window_frame_times_s"]
+        self.assertEqual(times, sorted(times))
+        self.assertTrue(all(4.9 - 2.5 - 1e-6 <= t <= 4.9 for t in times))
+        idx = frame_indices(e["window_frame_paths"])
+        # Ends at the trigger frame and takes nothing from the future.
+        self.assertEqual(idx[-1], 49)
+        self.assertLessEqual(max(idx), 49)
+
+    def test_video_window_is_capped_and_spread(self):
+        w = HandoffWriter(self.out, buffer_fps=10.0, max_window_frames=8)
+        e = handoff_event(100)
+        stream(w, FakeVideo(), 101, {100: [e]})
+        idx = frame_indices(e["window_frame_paths"])
+        self.assertEqual(len(idx), 8)
+        self.assertEqual((idx[0], idx[-1]), (75, 100))
+
+    def test_evidence_window_is_clamped_to_buffer(self):
+        w = HandoffWriter(self.out, buffer_fps=1.0, buffer_s=10.0)
+        # Loitering: 20 s of evidence, but only 10 s are buffered.
+        e = handoff_event(300, evidence_window_s=[10.0, 30.0])
+        stream(w, FakeVideo(), 301, {300: [e]})
+        times = e["window_frame_times_s"]
+        self.assertGreaterEqual(times[0], 20.0 - 1e-6)
+        self.assertEqual(times[-1], 30.0)
+        # Frames cover the span, not just the last few seconds.
+        self.assertGreater(times[-1] - times[0], 5.0)
+
+    def test_buffer_does_not_leak_between_sequences(self):
+        w = HandoffWriter(self.out, buffer_fps=2.0)
+        stream(w, FakeVideo(), 40, {})
+        e = handoff_event(5)
+        stream(w, FakeVideo(), 6, {5: [e]})
+        self.assertLessEqual(max(frame_indices(e["window_frame_paths"])), 5)
+        self.assertEqual(len(w.buffer), 2)  # frames 0 and 5 of the new sequence only
+
+    def test_image_sequence_references_past_files(self):
+        import cv2
+
+        paths = []
+        for i in range(60):
+            p = self.out / f"img_{i:03d}.jpg"
+            cv2.imwrite(str(p), frame(i))
+            paths.append(str(p))
+        seq = ImageSequence(paths, fps=FPS, seq_id="imgs")
+        w = HandoffWriter(self.out / "handoff")
+        e = handoff_event(30)
+        stream(w, seq, 60, {30: [e]})
+        self.assertEqual(len(w.buffer), 0)  # nothing re-encoded for image folders
+        self.assertTrue(set(e["window_frame_paths"]) <= set(paths))
+        self.assertEqual(e["window_frame_paths"][-1], paths[30])
+        self.assertTrue(all(0.5 - 1e-6 <= t <= 3.0 for t in e["window_frame_times_s"]))
+        self.assertLessEqual(len(e["window_frame_paths"]), 8)
 
 
 if __name__ == "__main__":
