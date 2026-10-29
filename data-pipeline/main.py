@@ -1,3 +1,4 @@
+import argparse
 import os
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing
@@ -59,27 +60,55 @@ def _decode_job(
 
 def main() -> None:
     project_dir = Path(__file__).resolve().parent
+    parser = argparse.ArgumentParser(
+        description="Record, schedule, and decode a local video or CCTV RTSP stream."
+    )
+    parser.add_argument(
+        "--source",
+        choices=[SourceType.FILE.value, SourceType.RTSP.value],
+        default=SourceType.FILE.value,
+        help="Input type: file (default) or rtsp for a CCTV stream.",
+    )
+    parser.add_argument(
+        "--video",
+        type=Path,
+        default=project_dir / "samples/videos/loitering.avi",
+        help="Video file path; defaults to samples/videos/loitering.avi.",
+    )
+    parser.add_argument(
+        "--rtsp-url",
+        default="rtsp://localhost:8554/camera_01",
+        help="CCTV stream URL; defaults to the local mock camera.",
+    )
+    args = parser.parse_args()
     load_dotenv(project_dir / ".env", override=False)
 
     database_url = os.environ.get("DATABASE_URL")
     if not database_url:
         raise RuntimeError("Set DATABASE_URL in data-pipeline/.env or your environment")
 
-    video_path = Path(r"C:\Users\ongxu\Videos\test\2023-03-22 09-32-18.mp4")
-    if not video_path.is_file():
-        raise FileNotFoundError(f"Test video not found: {video_path}")
-
-    source = VideoSource(
-        source_id="test_video",
-        name="Local test video",
-        source_type=SourceType.FILE,
-        location=str(video_path),
-    )
+    if args.source == SourceType.FILE:
+        video_path = args.video.resolve()
+        if not video_path.is_file():
+            raise FileNotFoundError(f"Video not found: {video_path}")
+        source = VideoSource(
+            source_id="test_video",
+            name="Local sample video",
+            source_type=SourceType.FILE,
+            location=str(video_path),
+        )
+    else:
+        source = VideoSource(
+            source_id="camera_01",
+            name="CCTV RTSP stream",
+            source_type=SourceType.RTSP,
+            location=args.rtsp_url,
+        )
     storage_root = project_dir / "recordings"
     engine, session_factory = create_engine_and_session_factory(database_url)
 
     try:
-        print(f"Recording: {video_path}")
+        print(f"Recording {source.name}: {source.location}")
         print(f"Output directory: {storage_root / source.source_id}")
         print("Press Ctrl+C to stop recording, scheduling, and decoding.")
         scheduler = SegmentScheduler(

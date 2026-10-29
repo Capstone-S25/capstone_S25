@@ -134,10 +134,29 @@ npm run db:migrate
 
 ## Run the app
 
-The current test video path is configured in `main.py`.
+Run the sample video at `samples/videos/loitering.avi`:
 
 ```bash
 npm start
+```
+
+To use another local video:
+
+```bash
+npm start -- --video "path/to/video.mp4"
+```
+
+To use the mock CCTV stream, first start the server and publisher as described
+in [Mock RTSP camera](#mock-rtsp-camera), then run in another terminal:
+
+```bash
+npm start -- --source rtsp
+```
+
+For a real CCTV camera, provide its stream URL:
+
+```bash
+npm start -- --source rtsp --rtsp-url "rtsp://camera-address/stream"
 ```
 
 This starts PostgreSQL and waits until healthy before launching the app.
