@@ -24,7 +24,8 @@ class DecodedFrame:
         session_id: Recording session UUID.
         frame_index: Zero-based decoded frame index within the segment.
         timestamp_ms: Approximate UTC epoch milliseconds, based on the segment
-            start and elapsed presentation time; not a camera capture timestamp.
+            start and segment-local presentation time, including its initial
+            offset; not a camera capture timestamp.
         image: BGR uint8 pixel array with shape (height, width, 3).
     """
 
@@ -50,8 +51,10 @@ def decode_segment(
     Yields:
         DecodedFrame objects from the first video stream, in presentation order.
         Images are BGR uint8 arrays; frame indices start at zero. Timestamps
-        preserve presentation-time differences, with the first frame anchored
-        to job.start_at_ms, regardless of the file's initial timestamp.
+        add each frame's segment-local presentation time to job.start_at_ms.
+        Initial timestamp offsets are preserved, not subtracted. This expects
+        segments recorded with FFmpeg's reset_timestamps=1 and job.start_at_ms
+        derived from the corresponding segment-list CSV start time.
 
     Raises:
         ValueError: If the path is absolute, escapes storage_root, is not a
@@ -87,7 +90,6 @@ def decode_segment(
         if not container.streams.video:
             raise ValueError(f"Segment has no video stream: {segment_path}")
         stream = container.streams.video[0]
-        first_time: Fraction | None = None
         previous_time: Fraction | None = None
         decoded_any = False
 
@@ -106,10 +108,10 @@ def decode_segment(
                 raise ValueError(
                     f"Decreasing presentation timestamp at frame {frame_index}"
                 )
-            if first_time is None:
-                first_time = presentation_time
             previous_time = presentation_time
-            elapsed_ms = round((presentation_time - first_time) * 1000)
+            # Preserve the initial PTS offset so adjacent segments keep their
+            # positions on the recording timeline.
+            presentation_ms = round(presentation_time * 1000)
 
             decoded_any = True
             yield DecodedFrame(
@@ -117,7 +119,13 @@ def decode_segment(
                 source_id=job.source_id,
                 session_id=job.session_id,
                 frame_index=frame_index,
-                timestamp_ms=job.start_at_ms + elapsed_ms,
+                # Summary for timestamp_ms:
+                # FFmpeg startup reference (UTC)
+                #     + CSV segment start offset
+                #     = job.start_at_ms
+                #         + frame PTS × time_base
+                #         = estimated frame UTC timestamp
+                timestamp_ms=job.start_at_ms + presentation_ms,
                 # bgr24 guarantees uint8; PyAV's general return type also lists
                 # dtypes used by other pixel formats
                 image=cast(NDArray[np.uint8], frame.to_ndarray(format="bgr24")),

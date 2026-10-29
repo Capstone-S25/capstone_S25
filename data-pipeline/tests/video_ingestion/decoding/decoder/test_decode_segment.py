@@ -33,7 +33,7 @@ def test_yields_all_frames_with_metadata_indices_and_bgr_pixels(video, make_fram
     video.container.close.assert_called_once()
 
 
-def test_timestamps_follow_pts_differences_not_frame_rate(video, make_frame):
+def test_timestamps_preserve_initial_pts_and_uneven_intervals(video, make_frame):
     # The first PTS is nonzero, and gaps are 40 ms then 90 ms.
     video.container.decode.return_value = iter(
         [
@@ -46,10 +46,29 @@ def test_timestamps_follow_pts_differences_not_frame_rate(video, make_frame):
     frames = list(decode_segment(video.job, video.root))
 
     assert [frame.timestamp_ms for frame in frames] == [
-        video.job.start_at_ms,
-        video.job.start_at_ms + 40,
-        video.job.start_at_ms + 130,
+        video.job.start_at_ms + 500,
+        video.job.start_at_ms + 540,
+        video.job.start_at_ms + 630,
     ]
+
+
+def test_timestamps_remain_continuous_across_recorded_segments(video, make_frame):
+    # First clip's CSV interval is 0-12 s, but its pictures occupy 2-12 s.
+    video.container.decode.return_value = iter([make_frame(2000), make_frame(11960)])
+    first_clip = list(decode_segment(video.job, video.root))
+
+    # The next CSV interval starts at 12 s and its local PTS restarts at zero.
+    next_job = replace(
+        video.job, segment_id=43, start_at_ms=video.job.start_at_ms + 12000
+    )
+    video.container.decode.return_value = iter([make_frame(0), make_frame(40)])
+    next_clip = list(decode_segment(next_job, video.root))
+
+    assert first_clip[0].timestamp_ms == video.job.start_at_ms + 2000
+    assert first_clip[-1].timestamp_ms == video.job.start_at_ms + 11960
+    assert next_clip[0].timestamp_ms == video.job.start_at_ms + 12000
+    assert next_clip[1].timestamp_ms == video.job.start_at_ms + 12040
+    assert next_clip[0].timestamp_ms - first_clip[-1].timestamp_ms == 40
 
 
 def test_decreasing_pts_raises_and_closes_container(video, make_frame):
