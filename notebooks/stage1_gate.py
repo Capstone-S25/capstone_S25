@@ -931,16 +931,20 @@ class Stage1Gate:
         self.perception.reset(seq.fps)
         engine = RuleEngine(self.cfg, seq.fps)
         events, observations = [], []
+        if writer is not None:
+            writer.start(seq)
         t0 = time.perf_counter()
         for fr in seq:
             obs = self.perception.observe(fr.image, fr.index, fr.t, fr.path)
+            if writer is not None:
+                writer.observe(fr.image, fr.t, fr.index)
             evs = engine.step(obs)
             for e in evs:
                 e["sequence_id"] = seq.seq_id
                 e["source"] = seq.source
                 e["event_id"] = f"{seq.seq_id}_{e['event_id']}".replace("/", "-").replace("#", "-")
                 if writer is not None:
-                    writer.save(e, fr.image, seq)
+                    writer.save(e, fr.image, seq, t=fr.t)
             events += evs
             if keep_observations:
                 observations.append(obs)
@@ -988,17 +992,89 @@ def replay_rules(result: RunResult, cfg: GateConfig) -> tuple[list[dict], int]:
 # --------------------------------------------------------------------------- handoff + summaries
 
 class HandoffWriter:
-    def __init__(self, out_dir, pad_ratio: float = 0.4, max_window_frames: int = 8):
+    """Writes what the VLM sees for each candidate: a padded crop, an annotated context frame and a short
+    window of earlier frames ending at the trigger frame.
+
+    The window only uses frames up to the trigger time, so it works on a live stream. Image sequences
+    reference their existing files. Video frames are not on disk, so the writer keeps a small buffer of
+    recent frames (sampled at `buffer_fps`, JPEG-compressed, at most `buffer_s` old) and saves the
+    selected ones. Events with an `evidence_window_s` (loitering, long presence) use that span, clamped
+    to the buffer; others use the `pre_s` seconds before the trigger.
+    """
+
+    def __init__(self, out_dir, pad_ratio: float = 0.4, max_window_frames: int = 8,
+                 buffer_fps: float = 2.0, buffer_s: float = 30.0, pre_s: float = 2.5, jpeg_quality: int = 90):
         self.out_dir = Path(out_dir)
         self.crops = self.out_dir / "crops"
         self.context = self.out_dir / "annotated_frames"
-        self.crops.mkdir(parents=True, exist_ok=True)
-        self.context.mkdir(parents=True, exist_ok=True)
+        self.windows = self.out_dir / "window_frames"
+        for d in (self.crops, self.context, self.windows):
+            d.mkdir(parents=True, exist_ok=True)
         self.pad_ratio = pad_ratio
-        self.max_window_frames = max_window_frames
+        self.max_window_frames = max(1, max_window_frames)
+        self.buffer_fps = buffer_fps
+        self.buffer_s = buffer_s
+        self.pre_s = pre_s
+        self.jpeg_quality = jpeg_quality
         self.manifest: list[dict] = []
+        self.buffer: deque = deque()
+        self.use_buffer = True
 
-    def save(self, event: dict, frame, seq) -> None:
+    def start(self, seq) -> None:
+        """Call at the start of each sequence so frames never leak between sequences."""
+        self.buffer.clear()
+        self.use_buffer = not getattr(seq, "paths", None)
+
+    def observe(self, frame, t: float, index: int) -> None:
+        """Offer every frame; a sampled subset is kept for later windows (videos only)."""
+        if not self.use_buffer:
+            return
+        if self.buffer and t - self.buffer[-1][0] < 1.0 / self.buffer_fps - 1e-6:
+            return
+        ok, jpg = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, self.jpeg_quality])
+        if ok:
+            self.buffer.append((t, index, jpg))
+        while self.buffer and self.buffer[0][0] < t - self.buffer_s:
+            self.buffer.popleft()
+
+    def _window(self, event: dict, t: float) -> tuple[float, float]:
+        start = event["evidence_window_s"][0] if "evidence_window_s" in event else t - self.pre_s
+        return max(0.0, start, t - self.buffer_s), t
+
+    @staticmethod
+    def _spread(items: list, n: int) -> list:
+        """At most n items, evenly spread, always keeping the last one (the trigger frame)."""
+        if len(items) <= n:
+            return items
+        keep = np.unique(np.round(np.linspace(0, len(items) - 1, n)).astype(int))
+        return [items[i] for i in keep]
+
+    def _window_frames(self, event: dict, frame, seq, t: float) -> tuple[list[str], list[float]]:
+        w0, t = self._window(event, t)
+        eps = 1e-6
+        paths = getattr(seq, "paths", None)
+        if paths:
+            # Image sequences: reference the files that are already on disk.
+            pairs = [(ts, p) for p, ts in zip(seq.paths, seq.timestamps) if w0 - eps <= ts <= t + eps]
+            pairs = self._spread(pairs, self.max_window_frames)
+            return [p for _, p in pairs], [round(ts, 2) for ts, _ in pairs]
+        # Video: buffered earlier frames plus the trigger frame itself.
+        earlier = [(bt, idx, jpg) for bt, idx, jpg in self.buffer if w0 - eps <= bt < t - eps]
+        chosen = self._spread([*earlier, (t, event["frame_index"], None)], self.max_window_frames)
+        out_paths, times = [], []
+        for k, (bt, idx, jpg) in enumerate(chosen):
+            p = self.windows / f"{event['event_id']}_w{k:02d}_f{idx}.jpg"
+            if jpg is None:
+                cv2.imwrite(str(p), frame)
+            else:
+                p.write_bytes(jpg.tobytes())
+            out_paths.append(str(p))
+            times.append(round(bt, 2))
+        return out_paths, times
+
+    def save(self, event: dict, frame, seq, t: float | None = None) -> None:
+        """`t` is the trigger frame's exact time (event timestamps are rounded)."""
+        t = float(event["timestamp_s"]) if t is None else float(t)
         h, w = frame.shape[:2]
         x1, y1, x2, y2 = event["roi_box"]
         px, py = (x2 - x1) * self.pad_ratio, (y2 - y1) * self.pad_ratio
@@ -1013,10 +1089,9 @@ class HandoffWriter:
         event["crop_box"] = [cx1, cy1, cx2, cy2]
         event["crop_path"] = str(crop_path)
         event["context_frame_path"] = str(ctx_path)
-        paths = seq.paths_in_window(*event["clip_window_s"])
-        if paths:
-            step = max(1, math.ceil(len(paths) / self.max_window_frames))
-            event["window_frame_paths"] = paths[::step]
+        paths, times = self._window_frames(event, frame, seq, t)
+        event["window_frame_paths"] = paths
+        event["window_frame_times_s"] = times
         self.manifest.append(event)
 
     def write_manifest(self, name: str = "candidates_manifest.json") -> Path:
