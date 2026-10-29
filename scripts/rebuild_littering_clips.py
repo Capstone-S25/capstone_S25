@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import itertools
 import json
 import os
 import re
@@ -50,11 +51,17 @@ def read_class_names(src: Path) -> list[str]:
 
 
 def read_label(path: Path) -> tuple[int | None, list[list[float]]]:
-    rows = [line.split() for line in path.read_text().splitlines() if line.strip()] if path.exists() else []
+    rows = (
+        [line.split() for line in path.read_text().splitlines() if line.strip()]
+        if path.exists()
+        else []
+    )
     classes = {int(float(r[0])) for r in rows}
     if len(classes) > 1:
         raise ValueError(f"{path} has several classes {classes}")
-    return (classes.pop() if classes else None), [list(map(float, r[1:5])) for r in rows]
+    return (classes.pop() if classes else None), [
+        list(map(float, r[1:5])) for r in rows
+    ]
 
 
 def thumbnail(path: Path) -> np.ndarray:
@@ -73,8 +80,18 @@ def load_frames(src: Path) -> list[dict]:
                 raise ValueError(f"Unexpected filename {img.name}")
             label = src / split / "labels" / (img.stem + ".txt")
             cls, boxes = read_label(label)
-            frames.append({"video": int(m.group(1)), "frame": int(m.group(2)), "split": split, "image": img,
-                           "label": label, "cls": cls, "boxes": boxes, "thumb": thumbnail(img)})
+            frames.append(
+                {
+                    "video": int(m.group(1)),
+                    "frame": int(m.group(2)),
+                    "split": split,
+                    "image": img,
+                    "label": label,
+                    "cls": cls,
+                    "boxes": boxes,
+                    "thumb": thumbnail(img),
+                }
+            )
     return frames
 
 
@@ -125,7 +142,10 @@ def _tail_ref(chain: list[dict]) -> dict:
 
 
 def chain_quality(chain: list[dict]) -> dict:
-    steps = [float(np.mean(np.abs(a["thumb"] - b["thumb"]))) for a, b in zip(chain, chain[1:])]
+    steps = [
+        float(np.mean(np.abs(a["thumb"] - b["thumb"])))
+        for a, b in itertools.pairwise(chain)
+    ]
     classes = [f["cls"] for f in chain if f["cls"] is not None]
     return {
         "max_step_diff": round(max(steps), 2),
@@ -135,7 +155,12 @@ def chain_quality(chain: list[dict]) -> dict:
     }
 
 
-def assign_splits(clips: list[dict], mode: str = "stratified", fractions=(0.7, 0.15, 0.15), seed: int = 0) -> dict[str, str]:
+def assign_splits(
+    clips: list[dict],
+    mode: str = "stratified",
+    fractions=(0.7, 0.15, 0.15),
+    seed: int = 0,
+) -> dict[str, str]:
     """Clip-level split so no clip has frames in two splits.
     original:   each clip goes to the split most of its frames were in (keeps the Roboflow split
                 comparable; only the few clips Roboflow spread over two splits move).
@@ -157,7 +182,9 @@ def assign_splits(clips: list[dict], mode: str = "stratified", fractions=(0.7, 0
         n_train = round(fractions[0] * len(ids))
         n_valid = round(fractions[1] * len(ids))
         for i, cid in enumerate(ids):
-            out[cid] = "train" if i < n_train else "valid" if i < n_train + n_valid else "test"
+            out[cid] = (
+                "train" if i < n_train else "valid" if i < n_train + n_valid else "test"
+            )
     return out
 
 
@@ -170,13 +197,28 @@ def link_or_copy(src: Path, dst: Path) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("--src", type=Path, default=Path("Littering"), help="Roboflow export (with data.yaml)")
+    parser.add_argument(
+        "--src",
+        type=Path,
+        default=Path("Littering"),
+        help="Roboflow export (with data.yaml)",
+    )
     parser.add_argument("--dst", type=Path, default=Path("data/littering"))
-    parser.add_argument("--max-step-diff", type=float, default=20.0,
-                        help="Warn about clips whose largest frame-to-frame thumbnail change exceeds this")
-    parser.add_argument("--split", choices=("stratified", "original"), default="stratified",
-                        help="stratified: new per-class 70/15/15 clip split (default; the Roboflow split puts only dropping+dumping in valid/test); original: majority Roboflow split per clip")
-    parser.add_argument("--force", action="store_true", help="Replace an existing --dst")
+    parser.add_argument(
+        "--max-step-diff",
+        type=float,
+        default=20.0,
+        help="Warn about clips whose largest frame-to-frame thumbnail change exceeds this",
+    )
+    parser.add_argument(
+        "--split",
+        choices=("stratified", "original"),
+        default="stratified",
+        help="stratified: new per-class 70/15/15 clip split (default; the Roboflow split puts only dropping+dumping in valid/test); original: majority Roboflow split per clip",
+    )
+    parser.add_argument(
+        "--force", action="store_true", help="Replace an existing --dst"
+    )
     args = parser.parse_args(argv)
 
     if args.dst.exists():
@@ -194,15 +236,27 @@ def main(argv: list[str] | None = None) -> int:
     clips = []
     for video in sorted(by_video):
         chains = chain_video(by_video[video])
-        chains.sort(key=lambda c: (min(f["cls"] for f in c if f["cls"] is not None), str(c[0]["image"].name)))
+        chains.sort(
+            key=lambda c: (
+                min(f["cls"] for f in c if f["cls"] is not None),
+                str(c[0]["image"].name),
+            )
+        )
         per_class = defaultdict(int)
         for chain in chains:
             known = [f["cls"] for f in chain if f["cls"] is not None]
             cls = max(set(known), key=known.count)
             per_class[cls] += 1
             clip_id = f"{names[cls]}_v{video:02d}_{per_class[cls]}"
-            clips.append({"clip_id": clip_id, "class": names[cls], "video": video, "frames": chain,
-                          **chain_quality(chain)})
+            clips.append(
+                {
+                    "clip_id": clip_id,
+                    "class": names[cls],
+                    "video": video,
+                    "frames": chain,
+                    **chain_quality(chain),
+                }
+            )
 
     splits = assign_splits(clips, args.split)
     manifest = []
@@ -213,16 +267,26 @@ def main(argv: list[str] | None = None) -> int:
             stem = f"frame_{f['frame']:02d}"
             link_or_copy(f["image"], out_dir / f"{stem}.jpg")
             link_or_copy(f["label"], out_dir / f"{stem}.txt")
-            manifest.append({"clip_id": clip["clip_id"], "class": clip["class"], "frame": f["frame"],
-                             "split": splits[clip["clip_id"]], "orig_split": f["split"],
-                             "orig_file": f"{f['split']}/images/{f['image'].name}",
-                             "label_class": "" if f["cls"] is None else names[f["cls"]]})
+            manifest.append(
+                {
+                    "clip_id": clip["clip_id"],
+                    "class": clip["class"],
+                    "frame": f["frame"],
+                    "split": splits[clip["clip_id"]],
+                    "orig_split": f["split"],
+                    "orig_file": f"{f['split']}/images/{f['image'].name}",
+                    "label_class": "" if f["cls"] is None else names[f["cls"]],
+                }
+            )
 
     with open(args.dst / "manifest.csv", "w", newline="") as fh:
         writer = csv.DictWriter(fh, fieldnames=list(manifest[0]))
         writer.writeheader()
         writer.writerows(manifest)
-    clip_rows = [{k: v for k, v in c.items() if k != "frames"} | {"split": splits[c["clip_id"]]} for c in clips]
+    clip_rows = [
+        {k: v for k, v in c.items() if k != "frames"} | {"split": splits[c["clip_id"]]}
+        for c in clips
+    ]
     with open(args.dst / "clips.csv", "w", newline="") as fh:
         writer = csv.DictWriter(fh, fieldnames=list(clip_rows[0]))
         writer.writeheader()
@@ -230,15 +294,32 @@ def main(argv: list[str] | None = None) -> int:
     (args.dst / "data.yaml").write_text(
         "train: train\nval: valid\ntest: test\n\n"
         f"nc: {len(names)}\nnames: {json.dumps(names)}\n\n"
-        "# Each split folder holds one sub-folder per 30-frame clip (frame_NN.jpg + YOLO frame_NN.txt).\n")
+        "# Each split folder holds one sub-folder per 30-frame clip (frame_NN.jpg + YOLO frame_NN.txt).\n"
+    )
 
-    suspicious = [c for c in clip_rows if c["max_step_diff"] > args.max_step_diff or not c["class_consistent"]]
+    suspicious = [
+        c
+        for c in clip_rows
+        if c["max_step_diff"] > args.max_step_diff or not c["class_consistent"]
+    ]
     print(f"{len(frames)} frames -> {len(clips)} clips in {args.dst}")
     print("clips per class:", {n: sum(c["class"] == n for c in clips) for n in names})
-    print("clips per split:", {s: sum(v == s for v in splits.values()) for s in ("train", "valid", "test")})
-    print(f"{len(suspicious)} clips to inspect (step diff > {args.max_step_diff} or mixed classes)")
+    print(
+        "clips per split:",
+        {s: sum(v == s for v in splits.values()) for s in ("train", "valid", "test")},
+    )
+    print(
+        f"{len(suspicious)} clips to inspect (step diff > {args.max_step_diff} or mixed classes)"
+    )
     for c in suspicious:
-        print("  ", c["clip_id"], "max_step_diff", c["max_step_diff"], "class_consistent", c["class_consistent"])
+        print(
+            "  ",
+            c["clip_id"],
+            "max_step_diff",
+            c["max_step_diff"],
+            "class_consistent",
+            c["class_consistent"],
+        )
     return 0
 
 
