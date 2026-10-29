@@ -144,6 +144,33 @@ This starts PostgreSQL and waits until healthy before launching the app.
 Migrations must already be applied. Press Ctrl+C to stop recording; PostgreSQL
 stays running until you run `npm run db:down`.
 
+## Mock RTSP camera
+
+With Docker running, start the MediaMTX server in one terminal:
+
+```bash
+npm run camera:server
+```
+
+Wait for the server to report that its RTSP listener is open, then publish the
+test video from a second terminal:
+
+```bash
+npm run camera:stream
+```
+
+The sample video at `samples/videos/loitering.avi` loops continuously at
+`rtsp://localhost:8554/camera_01` over TCP, encoded as H.264 for streaming.
+Preview the live stream in your browser at
+[http://localhost:8888/camera_01/](http://localhost:8888/camera_01/)
+while the server and publisher are running.
+
+To stop the mock CCTV Docker server:
+
+```bash
+npm run camera:stop
+```
+
 ## Linting and formatting
 
 Linting and formatting are executed when save file is executed. To make changes from the terminal:
