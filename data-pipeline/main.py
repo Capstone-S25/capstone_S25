@@ -1,4 +1,5 @@
 import argparse
+import math
 import os
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing
@@ -12,6 +13,7 @@ from database.models.video_segments import SegmentStatus, VideoSegment
 from database.repositories.video_segments import update_video_segment_status
 from database.session import create_engine_and_session_factory
 from video_ingestion.decoding.decoder import decode_segment
+from video_ingestion.decoding.selection import select_frames
 from video_ingestion.recording.worker import run_recording_worker
 from video_ingestion.scheduling.worker import SegmentJob, SegmentScheduler
 from video_ingestion.sources import SourceType, VideoSource
@@ -23,29 +25,26 @@ def _decode_job(
     job: SegmentJob,
     storage_root: Path,
     session_factory: sessionmaker[Session],
+    *,
+    target_fps: float = 2,
 ) -> int:
-    """Decode a claimed job and persist its demo processing result.
-
-    No database transaction stays open during decoding. Failures, including
-    Ctrl+C, mark the job failed before propagating. Successful decoding counts
-    as processed for this demo; later this should include downstream analysis.
-    """
+    """Decode and select frames for a claimed job, then persist its demo result."""
     status = SegmentStatus.FAILED
     frame_count = 0
     try:
         with closing(decode_segment(job, storage_root)) as frames:
-            for frame in frames:
+            for frame in select_frames(frames, target_fps=target_fps):
                 frame_count += 1
                 if frame_count == 1:
                     print(
-                        f"Decoding segment {job.segment_id}: "
+                        f"Selected first frame of segment {job.segment_id}: "
                         f"shape={frame.image.shape}, timestamp_ms={frame.timestamp_ms}",
                         flush=True,
                     )
-                # Future frame validation and model processing go here.
+                # TODO: Future frame validation and model processing go here.
 
         if frame_count == 0:
-            raise ValueError(f"Segment {job.segment_id} contains no decoded frames")
+            raise ValueError(f"Segment {job.segment_id} contains no selected frames")
         status = SegmentStatus.PROCESSED
     finally:
         # The scheduler already committed the claim; update it in a new transaction.
@@ -80,7 +79,15 @@ def main() -> None:
         default="rtsp://localhost:8554/camera_01",
         help="CCTV stream URL; defaults to the local mock camera.",
     )
+    parser.add_argument(
+        "--target-fps",
+        type=float,
+        default=2,
+        help="Maximum selected frames per second of video time (default: 2).",
+    )
     args = parser.parse_args()
+    if not math.isfinite(args.target_fps) or args.target_fps <= 0:
+        parser.error("--target-fps must be positive and finite")
     load_dotenv(project_dir / ".env", override=False)
 
     database_url = os.environ.get("DATABASE_URL")
@@ -139,9 +146,15 @@ def main() -> None:
                     job = scheduler.get_next_job()
                     if job is not None:
                         print(f"Scheduled segment: {job}", flush=True)
-                        frame_count = _decode_job(job, storage_root, session_factory)
+                        frame_count = _decode_job(
+                            job,
+                            storage_root,
+                            session_factory,
+                            target_fps=args.target_fps,
+                        )
                         print(
-                            f"Decoded segment {job.segment_id}: {frame_count} frames",
+                            f"Selected {frame_count} frames from segment {job.segment_id} "
+                            f"at up to {args.target_fps:g} FPS",
                             flush=True,
                         )
                     elif recording_finished:

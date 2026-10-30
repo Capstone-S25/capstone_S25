@@ -126,8 +126,9 @@ def decode_segment(
                 #         + frame PTS × time_base
                 #         = estimated frame UTC timestamp
                 timestamp_ms=job.start_at_ms + presentation_ms,
-                # bgr24 guarantees uint8; PyAV's general return type also lists
-                # dtypes used by other pixel formats
+                # TODO: currently converting to BGR even though frame is not selected
+                # to pass to YOLO. Maybe can move BGR conversion to after frame selection,
+                # though this may barely change overall latency.
                 image=cast(NDArray[np.uint8], frame.to_ndarray(format="bgr24")),
             )
 
