@@ -205,7 +205,7 @@ Start the local database and create `.env` as above to run PostgreSQL tests:
 
 ```bash
 npm run db:up
-npm test -- tests/database -q
+npm test -- tests/data_pipeline/database -q
 ```
 
 Without a test URL, database integration tests skip locally. GitHub Actions
@@ -222,13 +222,13 @@ npm test
 To run a single test file:
 
 ```bash
-npm test -- tests/video_ingestion/recording/worker/test_prepare_session.py
+npm test -- tests/data_pipeline/video_ingestion/recording/worker/test_prepare_session.py
 ```
 
 To see which parts of the pipeline were exercised by tests:
 
 ```bash
-npm test -- --cov=video_ingestion --cov-report=term-missing
+npm test -- --cov=data_pipeline --cov-report=term-missing
 ```
 
 Tests live in `tests/`, with filenames starting with `test_`.

@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
 
-from database import models  # noqa: F401
-from database.base import Base
+from data_pipeline.database import models  # noqa: F401
+from data_pipeline.database.base import Base
 
 
 @pytest.fixture

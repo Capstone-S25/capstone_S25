@@ -8,5 +8,5 @@ recordings
 htmlcov/
 coverage.xml
 
-!database/models/
-!database/models/**
+!data_pipeline/database/models/
+!data_pipeline/database/models/*.py

@@ -1,64 +1,17 @@
 import argparse
+import logging
 import math
 import os
-from concurrent.futures import ThreadPoolExecutor
-from contextlib import closing
 from pathlib import Path
-from threading import Event
 
 from dotenv import load_dotenv
-from sqlalchemy.orm import Session, sessionmaker
 
-from database.models.video_segments import SegmentStatus, VideoSegment
-from database.repositories.video_segments import update_video_segment_status
-from database.session import create_engine_and_session_factory
-from video_ingestion.decoding.decoder import decode_segment
-from video_ingestion.decoding.selection import select_frames
-from video_ingestion.recording.worker import run_recording_worker
-from video_ingestion.scheduling.worker import SegmentJob, SegmentScheduler
-from video_ingestion.sources import SourceType, VideoSource
-
-# TODO: currently for testing only
+from data_pipeline.database.session import create_engine_and_session_factory
+from data_pipeline.pipeline.runner import run_pipeline
+from data_pipeline.video_ingestion.sources import SourceType, VideoSource
 
 
-def _decode_job(
-    job: SegmentJob,
-    storage_root: Path,
-    session_factory: sessionmaker[Session],
-    *,
-    target_fps: float = 2,
-) -> int:
-    """Decode and select frames for a claimed job, then persist its demo result."""
-    status = SegmentStatus.FAILED
-    frame_count = 0
-    try:
-        with closing(decode_segment(job, storage_root)) as frames:
-            for frame in select_frames(frames, target_fps=target_fps):
-                frame_count += 1
-                if frame_count == 1:
-                    print(
-                        f"Selected first frame of segment {job.segment_id}: "
-                        f"shape={frame.image.shape}, timestamp_ms={frame.timestamp_ms}",
-                        flush=True,
-                    )
-                # TODO: Future frame validation and model processing go here.
-
-        if frame_count == 0:
-            raise ValueError(f"Segment {job.segment_id} contains no selected frames")
-        status = SegmentStatus.PROCESSED
-    finally:
-        # The scheduler already committed the claim; update it in a new transaction.
-        with session_factory.begin() as db:
-            segment = db.get(VideoSegment, job.segment_id)
-            if segment is None:
-                raise RuntimeError(f"Segment {job.segment_id} no longer exists")
-            update_video_segment_status(db, segment, status=status)
-
-    return frame_count
-
-
-def main() -> None:
-    project_dir = Path(__file__).resolve().parent
+def _parse_args(project_dir: Path) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Record, schedule, and decode a local video or CCTV RTSP stream."
     )
@@ -85,15 +38,18 @@ def main() -> None:
         default=2,
         help="Maximum selected frames per second of video time (default: 2).",
     )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Show detailed recording, scheduling, and decoding messages.",
+    )
     args = parser.parse_args()
     if not math.isfinite(args.target_fps) or args.target_fps <= 0:
         parser.error("--target-fps must be positive and finite")
-    load_dotenv(project_dir / ".env", override=False)
+    return args
 
-    database_url = os.environ.get("DATABASE_URL")
-    if not database_url:
-        raise RuntimeError("Set DATABASE_URL in data-pipeline/.env or your environment")
 
+def _build_video_source(args: argparse.Namespace) -> VideoSource:
     if args.source == SourceType.FILE:
         video_path = args.video.resolve()
         if not video_path.is_file():
@@ -111,65 +67,40 @@ def main() -> None:
             source_type=SourceType.RTSP,
             location=args.rtsp_url,
         )
+    return source
+
+
+def _load_database_url(project_dir: Path) -> str:
+    load_dotenv(project_dir / ".env", override=False)
+    database_url = os.environ.get("DATABASE_URL")
+    if not database_url:
+        raise RuntimeError("Set DATABASE_URL in data-pipeline/.env or your environment")
+    return database_url
+
+
+def main() -> None:
+    project_dir = Path(__file__).resolve().parent
+
+    args = _parse_args(project_dir)
+    logging.basicConfig(
+        level=logging.DEBUG if args.verbose else logging.INFO,
+        format="%(asctime)s | %(levelname)-7s | %(message)s",
+        datefmt="%H:%M:%S",
+    )
+    database_url = _load_database_url(project_dir)
+
+    source = _build_video_source(args)
+
     storage_root = project_dir / "recordings"
     engine, session_factory = create_engine_and_session_factory(database_url)
 
     try:
-        print(f"Recording {source.name}: {source.location}")
-        print(f"Output directory: {storage_root / source.source_id}")
-        print("Press Ctrl+C to stop recording, scheduling, and decoding.")
-        scheduler = SegmentScheduler(
-            source_ids=[source.source_id], session_factory=session_factory
+        run_pipeline(
+            source,
+            storage_root,
+            session_factory=session_factory,
+            target_fps=args.target_fps,
         )
-        stop_event = Event()
-
-        # Sessions are created per transaction; the engine pool can serve both threads.
-        with ThreadPoolExecutor(
-            max_workers=1, thread_name_prefix="recorder"
-        ) as executor:
-            recording = executor.submit(
-                run_recording_worker,
-                source,
-                storage_root,
-                segment_seconds=5,
-                session_factory=session_factory,
-                retention_hours=24,
-                stop_event=stop_event,
-            )
-            try:
-                while True:
-                    # Snapshot before querying so completion cannot hide a final insert.
-                    recording_finished = recording.done()
-                    if recording_finished:
-                        recording.result()  # Propagate recording failures to the caller.
-
-                    job = scheduler.get_next_job()
-                    if job is not None:
-                        print(f"Scheduled segment: {job}", flush=True)
-                        frame_count = _decode_job(
-                            job,
-                            storage_root,
-                            session_factory,
-                            target_fps=args.target_fps,
-                        )
-                        print(
-                            f"Selected {frame_count} frames from segment {job.segment_id} "
-                            f"at up to {args.target_fps:g} FPS",
-                            flush=True,
-                        )
-                    elif recording_finished:
-                        # The recorder has flushed its last segments and no work remains.
-                        break
-                    else:
-                        stop_event.wait(0.25)
-            except KeyboardInterrupt:
-                print("Stopping recording, scheduling, and decoding...")
-            finally:
-                stop_event.set()
-                # Join before disposing the engine; the recorder may register final rows.
-                recording.result()
-
-        print("Recording, scheduling, and decoding finished.")
     finally:
         engine.dispose()
 
