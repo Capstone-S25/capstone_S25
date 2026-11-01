@@ -45,7 +45,7 @@ jobs:
           - check: format
             command: ruff format --check .
           - check: tests
-            command: pytest --cov=video_ingestion --cov-report=term-missing
+            command: pytest --cov=data_pipeline --cov-report=term-missing
 
     defaults:
       run:
