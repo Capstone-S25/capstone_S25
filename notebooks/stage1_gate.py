@@ -115,6 +115,17 @@ class GateConfig:
     appear_min_conf: float = 0.35
     appear_classes: tuple[str, ...] = ("backpack", "handbag", "suitcase", "bottle", "cup")  # umbrellas: railings look like them
 
+    # Optional open-vocabulary object pass (e.g. "yoloe-26s-seg.pt") for the bag rules. COCO knows only backpack /
+    # handbag / suitcase, and calls many bags a table or misses them; YOLOE matches the prompt words instead. It runs
+    # once per item_period_s (~200 ms on CPU, so ~0.2 core at 1 s) and its detections are that frame's items; people
+    # stay on det_weights every frame. Prompt words count as appear_classes. Off (None) by default.
+    item_detector: str | None = None
+    item_prompts: tuple[str, ...] = ("bag", "backpack", "handbag", "suitcase", "box", "tote bag", "luggage", "case",
+                                     "package")
+    item_period_s: float = 1.0
+    item_conf: float = 0.2
+    item_detector_min_passes: int = 2   # replaces item_min_frames when item_detector is on (2 passes = 2 s)
+
     # Per-camera prior: a person much taller (closer to the camera) than people usually are in this camera.
     # Off until calibrated with calibrate_near_camera() on that camera's normal footage.
     near_camera_px: float | None = None
@@ -435,6 +446,12 @@ class Perception:
         self.cfg = cfg
         self.det = YOLO(cfg.det_weights)
         self.pose = YOLO(cfg.pose_weights) if cfg.uses_pose else None
+        self.item_model = None
+        if cfg.item_detector:
+            from ultralytics import YOLOE
+
+            self.item_model = YOLOE(cfg.item_detector)
+            self.item_model.set_classes(list(cfg.item_prompts))
 
     def reset(self, fps: float):
         from ultralytics.trackers.track import TRACKER_MAP
@@ -448,13 +465,17 @@ class Perception:
         self.confirmed: set[int] = set()
         self.n = 0
         self.last_t = None
+        self.item_tracks: list[dict] = []
+        self.next_item_id = 0
+        self.next_item_t = -math.inf
 
     def observe(self, frame, index: int, t: float, path: str | None = None) -> Observation:
         cfg = self.cfg
         lat = {}
         t0 = time.perf_counter()
-        res = self.det.predict(frame, imgsz=cfg.imgsz, conf=cfg.det_conf, device=cfg.device,
-                               classes=[PERSON, *cfg.item_classes], verbose=False)[0]
+        classes = [PERSON] if self.item_model is not None else [PERSON, *cfg.item_classes]
+        res = self.det.predict(frame, imgsz=cfg.imgsz, conf=cfg.det_conf, device=cfg.device, classes=classes,
+                               verbose=False)[0]
         lat["det_ms"] = (time.perf_counter() - t0) * 1000
         self.tracker.update(res.boxes.cpu().numpy(), frame)
         # model.track() only returns *confirmed* tracks, and ByteTrack confirms a new track on
@@ -471,6 +492,14 @@ class Perception:
                     persons.append({"raw_id": tid, "box": box, "conf": cf})
             else:
                 items.append({"raw_id": tid, "box": box, "conf": cf, "cls": COCO_ITEMS.get(c, res.names[c])})
+
+        if self.item_model is not None:
+            items = []
+            if t >= self.next_item_t - 1e-6:
+                self.next_item_t = t + cfg.item_period_s
+                t3 = time.perf_counter()
+                items = self._item_pass(frame)
+                lat["item_ms"] = (time.perf_counter() - t3) * 1000
 
         for p in persons:
             crowded = any(iou(p["box"], q["box"]) > 0.15 for q in persons if q is not p)
@@ -503,6 +532,23 @@ class Perception:
         self.n += 1
         self.last_t = t
         return Observation(index, t, frame.shape[:2], persons, items, blobs, lat, path)
+
+    def _item_pass(self, frame) -> list[dict]:
+        """Open-vocabulary objects, with ids from IoU matching to the previous passes."""
+        cfg = self.cfg
+        res = self.item_model.predict(frame, imgsz=cfg.imgsz, conf=cfg.item_conf, device=cfg.device, verbose=False)[0]
+        items = []
+        for b, c, k in zip(res.boxes.xyxy.cpu().numpy(), res.boxes.conf.cpu().numpy(),
+                           res.boxes.cls.cpu().numpy().astype(int)):
+            box = [float(v) for v in b]
+            tr = max(self.item_tracks, key=lambda q: iou(q["box"], box), default=None)
+            if tr is None or iou(tr["box"], box) < 0.3:
+                tr = {"id": 100000 + self.next_item_id, "box": box}
+                self.next_item_id += 1
+                self.item_tracks = (self.item_tracks + [tr])[-500:]
+            tr["box"] = box
+            items.append({"raw_id": tr["id"], "box": box, "conf": float(c), "cls": cfg.item_prompts[k]})
+        return items
 
 
 # --------------------------------------------------------------------------- occlusion: track stitching
@@ -604,6 +650,8 @@ class RuleEngine:
         self.sent: deque = deque()
         self.t0: float | None = None
         self.known_item_spots: list[list[float]] = []
+        self.appear_classes = set(cfg.appear_classes) | (set(cfg.item_prompts) if cfg.item_detector else set())
+        self.item_min_seen = cfg.item_detector_min_passes if cfg.item_detector else cfg.item_min_frames
         self.pose_action = None
         if "pose_action" in cfg.rules:
             from stage1_pose_action import DEFAULT_WEIGHTS, PoseActionModel, TrackWindows
@@ -875,11 +923,11 @@ class RuleEngine:
                 entry["nobody_since"] = entry["nobody_since"] if entry["nobody_since"] is not None else t
             else:
                 entry["nobody_since"] = None
-            if entry["seen"] < cfg.item_min_frames:
+            if entry["seen"] < self.item_min_seen:
                 continue
             # a landed (thrown / dropped) object stays put; carried objects move with their person
             if (entry["appeared_alone"] and not entry["appear_flagged"] and not entry["moved"]
-                    and entry["cls"] in cfg.appear_classes and entry["max_conf"] >= cfg.appear_min_conf):
+                    and entry["cls"] in self.appear_classes and entry["max_conf"] >= cfg.appear_min_conf):
                 entry["appear_flagged"] = True
                 near = self._nearest_person(it["box"], persons, 4.0)
                 roi = union_box(it["box"], visible[near]["box"]) if near is not None else it["box"]

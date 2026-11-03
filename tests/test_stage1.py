@@ -278,6 +278,30 @@ class RuleTests(unittest.TestCase):
             [e["event_type"] for e in events], ["object_appeared", "unattended_object"]
         )
 
+    def test_open_vocabulary_bag_seen_once_a_second(self):
+        # With the item_detector pass, a prompt word ("bag", not a COCO class) appears only on every 10th frame.
+        cfg = GateConfig(
+            rules=("unattended",), unattended_s=5.0, item_detector="yoloe.pt"
+        )
+        bag = {
+            "raw_id": 100000,
+            "box": [600.0, 260.0, 640.0, 300.0],
+            "conf": 0.5,
+            "cls": "bag",
+        }
+        seq = [obs(i, [person(1, (100, 100, 150, 300))]) for i in range(30)]
+        seq += [
+            obs(i, [person(1, (100, 100, 150, 300))], [bag] if i % 10 == 0 else [])
+            for i in range(30, 100)
+        ]
+        events, _ = run(cfg, seq)
+        self.assertEqual(
+            [e["event_type"] for e in events], ["object_appeared", "unattended_object"]
+        )
+        self.assertEqual(
+            events[0]["timestamp_s"], 4.0
+        )  # second pass: item_detector_min_passes = 2
+
     def test_scene_objects_from_the_start_do_not_fire(self):
         cfg = GateConfig(rules=("unattended",), unattended_s=1.0)
         bag = {
