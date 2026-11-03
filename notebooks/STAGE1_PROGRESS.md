@@ -358,3 +358,10 @@ Rule by rule at 12.5 vs 5 fps (rule alone; littering tune clips, Avenue tune nor
 * **Bigger YOLO on ABODA bags** (`exp/newcam/yolo_sizes_aboda.json`, same frames as object_detectors.py, conf 0.2):
   s 18 % / m 30 % / l 31 % of unattended-bag frames, CPU 49 / 104 / 131 ms. The gain is only on bags s already sees
   (videos 1, 8, 10); videos 2–6 and 9 stay at 0 for every size, m loses video 7. Not worth 2x CPU.
+* **CORRECTION (bag scoring)**: the ABODA "bags caught" test above had no end time, so a reach_down when the owner
+  came back to PICK UP the bag counted as a catch (both video6 bags: candidates at 134.3 s / 206.3 s, removed at
+  133 s / 207 s). Now a candidate must fall in [put-down − 2 s, removal − 2 s] (`reach_options.py`, `yoloe_gate.py`).
+  Corrected: current gate **6/11**, with the reach options **8/11** (adds video2, video3; checked by eye: a man
+  bending with the bag in hand), YOLOE pass 6/11. Still missed: video4 (cooldown), both video6 bags (dark night
+  corridor, no rule fires at the put-down). video5 is borderline (owner walking away 3 s later, crop just touches
+  the bag). The 8/11 and 10/11 quoted earlier today were wrong; comparisons between arms are unaffected.

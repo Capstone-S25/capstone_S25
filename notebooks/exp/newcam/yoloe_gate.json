@@ -1,6 +1,6 @@
 {
  "current gate": {
-  "aboda_bags_caught": "8/11",
+  "aboda_bags_caught": "6/11",
   "aboda_bag_ever_detected": "5/11",
   "avenue_heldout_event/crop_%": "80.0/65.0",
   "avenue_normal_FA_per_min": 5.77,
@@ -33,15 +33,11 @@
     "bag_detected": false
    },
    "video6@114": {
-    "caught_by": [
-     "reach_down"
-    ],
+    "caught_by": [],
     "bag_detected": false
    },
    "video6@179": {
-    "caught_by": [
-     "reach_down"
-    ],
+    "caught_by": [],
     "bag_detected": true
    },
    "video7@120.25": {
@@ -74,7 +70,7 @@
   }
  },
  "with YOLOE item pass": {
-  "aboda_bags_caught": "8/11",
+  "aboda_bags_caught": "6/11",
   "aboda_bag_ever_detected": "5/11",
   "avenue_heldout_event/crop_%": "80.0/55.0",
   "avenue_normal_FA_per_min": 4.99,
@@ -107,15 +103,11 @@
     "bag_detected": false
    },
    "video6@114": {
-    "caught_by": [
-     "reach_down"
-    ],
+    "caught_by": [],
     "bag_detected": false
    },
    "video6@179": {
-    "caught_by": [
-     "reach_down"
-    ],
+    "caught_by": [],
     "bag_detected": false
    },
    "video7@120.25": {

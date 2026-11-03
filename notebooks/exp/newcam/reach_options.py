@@ -63,7 +63,8 @@ def aboda(kw):
         for g, r in data:
             v = r.seq_id.split("/")[-1]
             for e in lab[v]["events"]:
-                hit = [x for x in m(r, "aboda") if x["timestamp_s"] >= e["t_put_down"] - 2 and
+                end = e["t_removed"] - 2 if e["t_removed"] is not None else float("inf")  # not the pick-up
+                hit = [x for x in m(r, "aboda") if e["t_put_down"] - 2 <= x["timestamp_s"] <= end and
                        intersection_over(e["box"], x["roi_box"]) >= 0.3]
                 caught += bool(hit)
                 per[f"{v}@{e['t_put_down']}"] = sorted({x["event_type"] for x in hit})
