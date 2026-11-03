@@ -313,3 +313,21 @@ Rule by rule at 12.5 vs 5 fps (rule alone; littering tune clips, Avenue tune nor
 * MEVA annotations in hand box 1 bag and 45 "other" objects over 11 clips: too few to fine-tune on.
 * Remaining route: fine-tune YOLO26s on CCTV bag boxes from other sources (candidates: Roboflow Universe CC BY 4.0
   abandoned-luggage sets, PETS 2006 train-station footage auto-labelled with YOLOE then checked), keeping ABODA test-only.
+
+## 2026-11-04: training round (presentation moved to Friday)
+* **Littering, source-grouped CV** (`exp/actions/pose_grouped_cv.py` → `pose_grouped_cv.json`): every held-out clip's
+  source video also had train clips. Re-training the pose cue with 5 folds grouped by (action, source video) over all
+  330 clips: rules + cue 96.4 / 90.0 % event / crop (frozen cue on the old held-out: 97 / 86; grouped CV on those same
+  100 clips: 97 / 92). The shared sources did not inflate the result.
+* **IWDD dumper labels** (`exp/newcam/iwdd_actor_sheets.py`, `iwdd_actor_labels.py` → `iwdd_actors_train.json`):
+  157 train videos with someone tracked near the onset reviewed by eye; 105 labelled, 32 ambiguous, 20 dumper never
+  tracked. Test videos not reviewed.
+* **Pose cue retrained with dumper labels** (`exp/newcam/iwdd_pose_actor.py`; train OOF in `iwdd_pose_actor_train.json`):
+  dumper-vs-bystander AUC 0.59 → 0.78, first in-window candidate on the dumper 17/18 → 49/57 videos, but IWDD hit@10s
+  vs chance 38.0 vs 33.2 → 46.5 vs 42.7 (lead +4.8 → +3.8) and littering tune crop 83 → 77. **Rejected as default**
+  (no gain over chance, hurts littering); test split untouched. Model kept in exp/actions/cache/iwdd_pose_actor.pkl.
+* **Bag fine-tune data**: Roboflow luggage_and_person v2 and luggage_bag v3 (CC BY 4.0) in `data/roboflow_bags/`.
+  `exp/newcam/bag_data_dedup.py`: 456 images are ABODA frames (all of luggage_bag v3, 295 of the other) → excluded.
+  `exp/newcam/bag_finetune.py build`: 1974 train + 439 val Roboflow images, + coco128 and 300 tune-only CCTV frames
+  as replay, 80 COCO classes kept (luggage → the COCO bag class the original model sees, else suitcase; unlabelled
+  objects pseudo-labelled at conf 0.4).
