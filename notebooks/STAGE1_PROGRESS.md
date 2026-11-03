@@ -346,3 +346,12 @@ Rule by rule at 12.5 vs 5 fps (rule alone; littering tune clips, Avenue tune nor
   `item_detector_min_passes`, off by default; `exp/newcam/yoloe_gate.py` → `yoloe_gate.json`): ABODA 8/11 → 8/11
   (bag rules 4 → 5, adds video9), normal bag alarms 0.59 → 0/min, normal FA 5.77 → 4.99/min, but Avenue held-out crop
   65 → 55 % (thrown objects no longer seen as COCO items). Keep as a per-camera option for bag-heavy scenes, not default.
+* **ABODA misses diagnosed** (the bag-leaver is tracked with pose in all three): video3 reach_down fired on the right
+  person 0.5 s before the put-down but the person-box crop missed the bag; videos 2 and 4 the reach fired 3.4 s / 3 s
+  earlier on the same person and the 5 s cooldown blocked the put-down itself.
+* **reach_down options** (`GateConfig.reach_hand_pad_h`, `reach_refire_move_h`, default off; `exp/newcam/reach_options.py`):
+  on tune data every setting is neutral (littering 97.8/96.5, Avenue 68/60, normal FA 5.09–5.29), so the most
+  conservative {hand pad 0.25 h, re-fire after moving 1.0 h} was fixed a priori and scored once: **ABODA 8/11 → 10/11**
+  (video2, video3 now caught; video4 still missed), held-out littering 97/86 → 97/85, Avenue 80/65 → 80/65, normal FA
+  6.45 → 6.26/min. Caveat: the fix was motivated by looking at these ABODA misses, so ABODA is no longer a clean test
+  for it; the tune data only shows it costs nothing.

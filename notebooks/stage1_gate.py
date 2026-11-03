@@ -92,6 +92,10 @@ class GateConfig:
     reach_skip_border: bool = True      # skip people cut off by the frame edge (their keypoints are unreliable)
     reach_kp_conf: float = 0.5          # keypoint confidence needed for the wrist and knee (0.3 let walkers through)
     reach_bend_ratio: float | None = None  # also require bending: box height <= this x the person's usual height
+    reach_hand_pad_h: float | None = None  # crop = person box + a square of this x body height around the low wrist,
+                                           # so what they put down is in the crop (None = person box only)
+    reach_refire_move_h: float | None = None  # re-fire before reach_cooldown_s if the person moved this many body
+                                              # heights since their last reach (None = cooldown only)
 
     bg_width: int = 480
     bg_long_s: float = 30.0
@@ -818,9 +822,21 @@ class RuleEngine:
         window = max(cfg.reach_window_s, 1.5 / self.fps)
         while hits and hits[0] < t - window:
             hits.popleft()
-        if len(hits) >= cfg.reach_min_hits and t - st["last_reach"] >= cfg.reach_cooldown_s:
+        since = t - st["last_reach"]
+        ready = since >= cfg.reach_cooldown_s
+        if not ready and cfg.reach_refire_move_h is not None and since >= 1.0 and "last_reach_foot" in st:
+            (fx, fy), (lx, ly) = foot(p["box"]), st["last_reach_foot"]
+            ready = math.hypot(fx - lx, fy - ly) >= cfg.reach_refire_move_h * h
+        if len(hits) >= cfg.reach_min_hits and ready:
             st["last_reach"] = t
-            return [self._event("reach_down", f"person{cid}", obs, p["box"])]
+            st["last_reach_foot"] = foot(p["box"])
+            roi = p["box"]
+            if cfg.reach_hand_pad_h is not None:
+                wx, wy = max(wrists, key=lambda w: w[1])
+                r = cfg.reach_hand_pad_h * h
+                fh, fw = obs.frame_hw
+                roi = union_box(roi, [max(0.0, wx - r), max(0.0, wy - r), min(fw, wx + r), min(fh, wy + r)])
+            return [self._event("reach_down", f"person{cid}", obs, roi)]
         return []
 
     def _pose_action(self, obs, cid_of):

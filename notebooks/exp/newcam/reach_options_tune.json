@@ -1,0 +1,65 @@
+[
+ {
+  "setting": {},
+  "littering": "97.8/96.5",
+  "avenue": "68.0/60.0",
+  "normal_FA": 5.09,
+  "ok": true
+ },
+ {
+  "setting": {
+   "reach_hand_pad_h": 0.25
+  },
+  "littering": "97.8/96.5",
+  "avenue": "68.0/60.0",
+  "normal_FA": 5.09,
+  "ok": true
+ },
+ {
+  "setting": {
+   "reach_hand_pad_h": 0.4
+  },
+  "littering": "97.8/96.5",
+  "avenue": "68.0/60.0",
+  "normal_FA": 5.09,
+  "ok": true
+ },
+ {
+  "setting": {
+   "reach_refire_move_h": 0.75
+  },
+  "littering": "97.8/96.5",
+  "avenue": "68.0/60.0",
+  "normal_FA": 5.29,
+  "ok": true
+ },
+ {
+  "setting": {
+   "reach_refire_move_h": 1.0
+  },
+  "littering": "97.8/96.5",
+  "avenue": "68.0/60.0",
+  "normal_FA": 5.09,
+  "ok": true
+ },
+ {
+  "setting": {
+   "reach_hand_pad_h": 0.25,
+   "reach_refire_move_h": 1.0
+  },
+  "littering": "97.8/96.5",
+  "avenue": "68.0/60.0",
+  "normal_FA": 5.09,
+  "ok": true
+ },
+ {
+  "setting": {
+   "reach_hand_pad_h": 0.4,
+   "reach_refire_move_h": 1.0
+  },
+  "littering": "97.8/96.5",
+  "avenue": "68.0/60.0",
+  "normal_FA": 5.09,
+  "ok": true
+ }
+]
