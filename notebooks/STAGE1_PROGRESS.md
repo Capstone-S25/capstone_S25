@@ -296,3 +296,11 @@ Rule by rule at 12.5 vs 5 fps (rule alone; littering tune clips, Avenue tune nor
 * **IWDD train**: hit@10s 37.0 vs chance 32.3 (full) and 33.5 vs 27.4 (5 fps); negatives 15.2 -> 10.1/min.
   The lead over chance holds (+4.7 -> +6.1); 5 fps is a lower candidate rate (fewer fast_motion and reach_down
   frames), not a loss of signal. The held-out drop (56 vs 42 -> 38 vs 29) is the same effect plus n = 50 noise.
+* **pose_action retrained on 10 + 5 fps windows** (`exp/actions/pose_mixed_fps.py`; tune OOF and one held-out
+  run in `pose_mixed_fps_{tune,heldout}.json`). Held-out littering event/crop, cue alone and rules +:
+  at 5 fps current 82/67 and 96/86 vs mixed 79/64 and 93/80; at 10 fps current 81/64 and 97/86 vs mixed
+  85/68 and 98/85. **Rejected**: the current cue already holds at 5 fps on held-out, so the feature shift
+  costs no littering recall; weights not exported, `weights/pose_action_mlp.npz` unchanged.
+* Demo material: `data-pipeline/stage1_offline.py --target-fps 5` on IWDD test vid0075/0332/0359/0395 (all caught
+  within ~1 s of the onset), vid0208 (54 s normal, no candidates) and the pipeline's sample clip;
+  `tools/demo_sheets.py` renders one slide image per candidate (output in gitignored `vlm_handoff_demo/`).
