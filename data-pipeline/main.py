@@ -2,12 +2,15 @@ import argparse
 import logging
 import math
 import os
+import sys
+from collections.abc import Callable
 from pathlib import Path
 
 from dotenv import load_dotenv
 
 from data_pipeline.database.session import create_engine_and_session_factory
 from data_pipeline.pipeline.runner import run_pipeline
+from data_pipeline.video_ingestion.decoding.decoder import DecodedFrame
 from data_pipeline.video_ingestion.sources import SourceType, VideoSource
 
 
@@ -37,6 +40,22 @@ def _parse_args(project_dir: Path) -> argparse.Namespace:
         type=float,
         default=2,
         help="Maximum selected frames per second of video time (default: 2).",
+    )
+    parser.add_argument(
+        "--stage1",
+        action="store_true",
+        help="Run the Stage 1 YOLO pre-filter on selected frames (needs ultralytics).",
+    )
+    parser.add_argument(
+        "--vlm",
+        choices=["none", "predict-clip"],
+        default="none",
+        help="Classify Stage 1 candidates: none (record only) or predict-clip.",
+    )
+    parser.add_argument(
+        "--vlm-python",
+        default=sys.executable,
+        help="Interpreter with anomaly_eval installed, for --vlm predict-clip.",
     )
     parser.add_argument(
         "--verbose",
@@ -70,6 +89,35 @@ def _build_video_source(args: argparse.Namespace) -> VideoSource:
     return source
 
 
+def _build_stage1_hook(
+    args: argparse.Namespace, source: VideoSource, out_dir: Path
+) -> Callable[[DecodedFrame], None]:
+    # Imported here so the pipeline runs without the YOLO dependencies.
+    from data_pipeline.detection.stage1 import Stage1Detector
+    from data_pipeline.detection.vlm import CandidateLog, NoVLM, PredictClipVLM
+
+    detector = Stage1Detector(source.source_id, out_dir, fps=args.target_fps)
+    if args.vlm == "predict-clip":
+        vlm = PredictClipVLM(args.vlm_python, Path(__file__).resolve().parents[1])
+    else:
+        vlm = NoVLM()
+    log = CandidateLog(out_dir, vlm)
+    logger = logging.getLogger("stage1")
+
+    def on_frame(frame: DecodedFrame) -> None:
+        for candidate in detector.process(frame):
+            record = log(candidate)
+            logger.info(
+                "Candidate | %s | t=%.1fs | tasks=%s | vlm=%s",
+                record["event_type"],
+                record["timestamp_s"],
+                ",".join(record["tasks"]),
+                {k: v.get("decision") for k, v in record["vlm"].items()},
+            )
+
+    return on_frame
+
+
 def _load_database_url(project_dir: Path) -> str:
     load_dotenv(project_dir / ".env", override=False)
     database_url = os.environ.get("DATABASE_URL")
@@ -92,6 +140,11 @@ def main() -> None:
     source = _build_video_source(args)
 
     storage_root = project_dir / "recordings"
+    on_frame = (
+        _build_stage1_hook(args, source, project_dir / "candidates")
+        if args.stage1
+        else None
+    )
     engine, session_factory = create_engine_and_session_factory(database_url)
 
     try:
@@ -100,6 +153,7 @@ def main() -> None:
             storage_root,
             session_factory=session_factory,
             target_fps=args.target_fps,
+            on_frame=on_frame,
         )
     finally:
         engine.dispose()

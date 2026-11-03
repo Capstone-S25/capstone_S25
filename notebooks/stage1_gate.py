@@ -1083,20 +1083,27 @@ class HandoffWriter:
         return [items[i] for i in keep]
 
     def _window_frames(self, event: dict, frame, seq, t: float) -> tuple[list[str], list[float]]:
-        w0, t = self._window(event, t)
+        return self.window_frames(event, frame, seq, *self._window(event, t))
+
+    def window_frames(self, event: dict, frame, seq, start: float, t: float, max_frames: int | None = None,
+                      tag: str = "") -> tuple[list[str], list[float]]:
+        """Past frames in [start, t] (clamped to the buffer), at most `max_frames` evenly spread, ending at the
+        trigger frame. `tag` keeps the files of several windows for the same event apart."""
+        w0 = max(0.0, start, t - self.buffer_s)
+        n = self.max_window_frames if max_frames is None else max(1, max_frames)
         eps = 1e-6
         paths = getattr(seq, "paths", None)
         if paths:
             # Image sequences: reference the files that are already on disk.
             pairs = [(ts, p) for p, ts in zip(seq.paths, seq.timestamps) if w0 - eps <= ts <= t + eps]
-            pairs = self._spread(pairs, self.max_window_frames)
+            pairs = self._spread(pairs, n)
             return [p for _, p in pairs], [round(ts, 2) for ts, _ in pairs]
         # Video: buffered earlier frames plus the trigger frame itself.
         earlier = [(bt, idx, jpg) for bt, idx, jpg in self.buffer if w0 - eps <= bt < t - eps]
-        chosen = self._spread([*earlier, (t, event["frame_index"], None)], self.max_window_frames)
+        chosen = self._spread([*earlier, (t, event["frame_index"], None)], n)
         out_paths, times = [], []
         for k, (bt, idx, jpg) in enumerate(chosen):
-            p = self.windows / f"{event['event_id']}_w{k:02d}_f{idx}.jpg"
+            p = self.windows / f"{event['event_id']}{tag}_w{k:02d}_f{idx}.jpg"
             if jpg is None:
                 cv2.imwrite(str(p), frame)
             else:

@@ -10,3 +10,5 @@ coverage.xml
 
 !data_pipeline/database/models/
 !data_pipeline/database/models/*.py
+
+candidates

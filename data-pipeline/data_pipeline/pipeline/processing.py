@@ -1,4 +1,5 @@
 import logging
+from collections.abc import Callable
 from contextlib import closing
 from pathlib import Path
 
@@ -8,7 +9,7 @@ from data_pipeline.database.models.video_segments import SegmentStatus, VideoSeg
 from data_pipeline.database.repositories.video_segments import (
     update_video_segment_status,
 )
-from data_pipeline.video_ingestion.decoding.decoder import decode_segment
+from data_pipeline.video_ingestion.decoding.decoder import DecodedFrame, decode_segment
 from data_pipeline.video_ingestion.decoding.selection import select_frames
 from data_pipeline.video_ingestion.scheduling.worker import SegmentJob
 
@@ -21,8 +22,12 @@ def process_segment(
     session_factory: sessionmaker[Session],
     *,
     target_fps: float = 2,
+    on_frame: Callable[[DecodedFrame], None] | None = None,
 ) -> int:
-    """Decode and select frames for a claimed job, then persist its result."""
+    """Decode and select frames for a claimed job, then persist its result.
+
+    on_frame, if given, receives every selected frame in order (e.g. Stage 1).
+    """
     status = SegmentStatus.FAILED
     frame_count = 0
     try:
@@ -36,7 +41,8 @@ def process_segment(
                         frame.image.shape,
                         frame.timestamp_ms,
                     )
-                # TODO: YOLO processing goes here
+                if on_frame is not None:
+                    on_frame(frame)
 
         if frame_count == 0:
             raise ValueError(f"Segment {job.segment_id} contains no selected frames")

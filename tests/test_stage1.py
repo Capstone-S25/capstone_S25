@@ -293,20 +293,54 @@ class RuleTests(unittest.TestCase):
 
     @staticmethod
     def standing_kpts(x=125.0, top=100.0, h=200.0):
-        ys = [0.06, 0.04, 0.04, 0.05, 0.05, 0.2, 0.2, 0.35, 0.35, 0.48, 0.48, 0.52, 0.52, 0.74, 0.74, 0.96, 0.96]
+        ys = [
+            0.06,
+            0.04,
+            0.04,
+            0.05,
+            0.05,
+            0.2,
+            0.2,
+            0.35,
+            0.35,
+            0.48,
+            0.48,
+            0.52,
+            0.52,
+            0.74,
+            0.74,
+            0.96,
+            0.96,
+        ]
         dx = [0, -3, 3, -6, 6, -12, 12, -14, 14, -15, 15, -8, 8, -8, 8, -8, 8]
         return np.array([(x + d, top + y * h, 0.9) for d, y in zip(dx, ys)], np.float32)
 
     def test_pose_action_scores_once_a_second_with_cooldown(self):
         cfg = GateConfig(rules=("pose_action",), pose_action_thr=0.0)
-        events, _ = run(cfg, [obs(i, [person(1, (100, 100, 150, 300), kpts=self.standing_kpts())]) for i in range(100)])
-        self.assertEqual([e["event_type"] for e in events], ["pose_action", "pose_action"])
-        self.assertGreaterEqual(events[1]["timestamp_s"] - events[0]["timestamp_s"], 4.9)
+        events, _ = run(
+            cfg,
+            [
+                obs(i, [person(1, (100, 100, 150, 300), kpts=self.standing_kpts())])
+                for i in range(100)
+            ],
+        )
+        self.assertEqual(
+            [e["event_type"] for e in events], ["pose_action", "pose_action"]
+        )
+        self.assertGreaterEqual(
+            events[1]["timestamp_s"] - events[0]["timestamp_s"], 4.9
+        )
         self.assertEqual(events[0]["entity_id"], "person1")
 
     def test_pose_action_quiet_for_person_standing_still(self):
         cfg = GateConfig(rules=("pose_action",))
-        events, _ = run(cfg, [obs(i, [person(1, (100, 100, 150, 300), kpts=self.standing_kpts())]) for i in range(100)])
+        events, _ = run(
+            cfg,
+            [
+                obs(i, [person(1, (100, 100, 150, 300), kpts=self.standing_kpts())])
+                for i in range(100)
+            ],
+        )
         self.assertEqual(events, [])
 
 
@@ -469,6 +503,27 @@ class HandoffTests(unittest.TestCase):
         self.assertEqual(times[-1], 30.0)
         # Frames cover the span, not just the last few seconds.
         self.assertGreater(times[-1] - times[0], 5.0)
+
+    def test_extra_windows_keep_their_own_span_and_files(self):
+        # The data pipeline saves a 4 s view for littering and a 20 s view for loitering per candidate.
+        w = HandoffWriter(self.out, buffer_fps=2.0, buffer_s=25.0)
+        e = handoff_event(240)  # t = 24 s
+        stream(w, FakeVideo(), 241, {240: [e]})
+        short = w.window_frames(
+            e, frame(240), FakeVideo(), 24.0 - 4.0, 24.0, tag="_short"
+        )
+        long = w.window_frames(
+            e, frame(240), FakeVideo(), 24.0 - 20.0, 24.0, tag="_long"
+        )
+        self.assertEqual(len(short[0]), 8)
+        self.assertEqual(len(long[0]), 8)
+        self.assertGreaterEqual(short[1][0], 20.0 - 1e-6)
+        self.assertGreaterEqual(long[1][-1] - long[1][0], 19.5)
+        self.assertTrue(
+            all("_short_w" in p for p in short[0])
+            and all("_long_w" in p for p in long[0])
+        )
+        self.assertTrue(all(Path(p).exists() for p in short[0] + long[0]))
 
     def test_buffer_does_not_leak_between_sequences(self):
         w = HandoffWriter(self.out, buffer_fps=2.0)

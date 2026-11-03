@@ -1,4 +1,5 @@
 import logging
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from threading import Event
@@ -7,6 +8,7 @@ from time import perf_counter
 from sqlalchemy.orm import Session, sessionmaker
 
 from data_pipeline.pipeline.processing import process_segment
+from data_pipeline.video_ingestion.decoding.decoder import DecodedFrame
 from data_pipeline.video_ingestion.recording.worker import run_recording_worker
 from data_pipeline.video_ingestion.scheduling.worker import SegmentScheduler
 from data_pipeline.video_ingestion.sources import VideoSource
@@ -22,6 +24,7 @@ def run_pipeline(
     target_fps: float = 2,
     segment_seconds: int = 5,
     retention_hours: float = 24,
+    on_frame: Callable[[DecodedFrame], None] | None = None,
 ) -> None:
     """Record video source in a background thread while processing segments in the main thread.
 
@@ -32,6 +35,7 @@ def run_pipeline(
         target_fps: Maximum frames selected per second of video; defaults to 2.
         segment_seconds: Target recording segment duration; defaults to 5.
         retention_hours: Registration retention deadline in hours; defaults to 24.
+        on_frame: Receives every selected frame in order, e.g. Stage 1; optional.
     """
     logger.info("Pipeline started | %s | source=%s", source.source_id, source.location)
     logger.info(
@@ -77,6 +81,7 @@ def run_pipeline(
                         storage_root,
                         session_factory,
                         target_fps=target_fps,
+                        on_frame=on_frame,
                     )
                     processing_seconds = perf_counter() - started
                     logger.info(
