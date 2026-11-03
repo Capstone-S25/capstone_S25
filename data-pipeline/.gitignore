@@ -1,0 +1,12 @@
+__pycache__ 
+
+recordings
+
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+!data_pipeline/database/models/
+!data_pipeline/database/models/*.py

@@ -1,26 +1,76 @@
-name: Evaluation pipeline CI
+name: Data pipeline CI
+
 on:
   push:
-    paths: ["anomaly_eval/**", "scripts/**", "config/**", "tests/**", "pyproject.toml", "requirements/**", "notebooks/**", ".github/workflows/data-pipeline-ci.yml"]
+    paths:
+      - 'data-pipeline/**'
+      - '.github/workflows/data-pipeline-ci.yml'
   pull_request:
-    paths: ["anomaly_eval/**", "scripts/**", "config/**", "tests/**", "pyproject.toml", "requirements/**", "notebooks/**", ".github/workflows/data-pipeline-ci.yml"]
+    paths:
+      - 'data-pipeline/**'
+      - '.github/workflows/data-pipeline-ci.yml'
   workflow_dispatch:
+
 permissions:
   contents: read
+
 jobs:
-  tests:
+  checks:
+    name: Data pipeline / ${{ matrix.check }}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: capstone_test
+          POSTGRES_USER: capstone
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U capstone -d capstone_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://capstone:password@127.0.0.1:5432/capstone_test
+      TEST_DATABASE_URL: postgresql+psycopg://capstone:password@127.0.0.1:5432/capstone_test
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - check: lint
+            command: ruff check .
+          - check: format
+            command: ruff format --check .
+          - check: tests
+            command: pytest --cov=video_ingestion --cov-report=term-missing
+
+    defaults:
+      run:
+        working-directory: data-pipeline
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
         with:
-          python-version: "3.12"
-          cache: pip
-          cache-dependency-path: requirements/base.txt
-      - run: python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-      - run: python -m pip install -r requirements/base.txt ruff==0.16.10
-      - run: python -m pip install -e . --no-deps
-      - run: ruff check anomaly_eval scripts tests
-      - run: ruff format --check anomaly_eval scripts tests
-      - run: python -m unittest discover -s tests -v
+          version: '0.13.0'
+
+      - name: Install Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync --locked --dev
+
+      - name: Verify database migrations
+        if: matrix.check == 'tests'
+        run: |
+          uv run --locked alembic upgrade head
+          uv run --locked alembic check
+
+      - name: Run ${{ matrix.check }}
+        run: uv run --locked ${{ matrix.command }}
