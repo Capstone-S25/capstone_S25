@@ -1,6 +1,6 @@
 # Local corpora, weights, caches and full per-example experiment outputs.
-/data/
-/results/
+/data
+/results
 /models/
 /cache/
 /.cache/
@@ -11,7 +11,7 @@
 *.onnx
 
 # Environments, credentials and machine-specific configuration.
-/.venv*/
+/.venv*
 /venv/
 .env
 .env.*

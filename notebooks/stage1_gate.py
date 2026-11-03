@@ -1126,21 +1126,29 @@ class HandoffWriter:
         self.manifest: list[dict] = []
         self.buffer: deque = deque()
         self.use_buffer = True
+        self.next_buffer_t = None
 
     def start(self, seq) -> None:
         """Call at the start of each sequence so frames never leak between sequences."""
         self.buffer.clear()
+        self.next_buffer_t = None
         self.use_buffer = not getattr(seq, "paths", None)
 
     def observe(self, frame, t: float, index: int) -> None:
         """Offer every frame; a sampled subset is kept for later windows (videos only)."""
         if not self.use_buffer:
             return
-        if self.buffer and t - self.buffer[-1][0] < 1.0 / self.buffer_fps - 1e-6:
+        if self.next_buffer_t is not None and t < self.next_buffer_t - 1e-6:
             return
         ok, jpg = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, self.jpeg_quality])
         if ok:
             self.buffer.append((t, index, jpg))
+            # Keep the sampling phase instead of resetting it to a rounded source
+            # frame: at 5 fps a strict 0.5 s spacing otherwise degrades to 1.67 fps.
+            if self.next_buffer_t is None:
+                self.next_buffer_t = t
+            while self.next_buffer_t <= t + 1e-6:
+                self.next_buffer_t += 1.0 / self.buffer_fps
         while self.buffer and self.buffer[0][0] < t - self.buffer_s:
             self.buffer.popleft()
 
