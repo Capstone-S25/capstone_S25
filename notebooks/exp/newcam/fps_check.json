@@ -46,5 +46,29 @@
    "iwdd_neg_cand_per_min": 7.43
   },
   "ms_per_frame": 24.9
+ },
+ "5 fps": {
+  "inview_s": 60.0,
+  "rules": {
+   "littering_event_%": 70.0,
+   "littering_crop_%": 55.0,
+   "avenue_event_%": 70.0,
+   "avenue_crop_%": 45.0,
+   "normal_FA_per_min": 6.1,
+   "iwdd_hit@10s_%": 34.0,
+   "iwdd_chance@10s_%": 25.2,
+   "iwdd_neg_cand_per_min": 9.24
+  },
+  "rules + pose": {
+   "littering_event_%": 96.0,
+   "littering_crop_%": 86.0,
+   "avenue_event_%": 75.0,
+   "avenue_crop_%": 45.0,
+   "normal_FA_per_min": 6.6,
+   "iwdd_hit@10s_%": 38.0,
+   "iwdd_chance@10s_%": 28.8,
+   "iwdd_neg_cand_per_min": 10.84
+  },
+  "ms_per_frame": 25.1
  }
 }
