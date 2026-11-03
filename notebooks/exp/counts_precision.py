@@ -2,7 +2,9 @@
 
 Current GateConfig defaults, rules + pose cue, footage not used for tuning:
   littering   held-out clips (every 3 s clip contains littering, so precision is optimistic)
-  loitering   Avenue held-out test videos (with labelled incidents) + held-out normal videos (none)
+  throwing    Avenue held-out test + normal videos, scored on the label review's in-scope THROWING incidents only
+              (running is not one of the project's events; its frames count as normal footage). Avenue has no
+              labelled loitering, so loitering is not measured here.
   smoking     held-out camera-days
   dumping     IWDD test: 50 dumping + 50 normal videos; an alert is "on the incident" if it is in a dumping video in
               [onset - 1 s, onset + 10 s]; caught = any such alert
@@ -28,6 +30,24 @@ from loaders import iwdd_labels  # noqa: E402
 from stage1_bench import evaluate_run, summarize  # noqa: E402
 from stage1_gate import DEFAULT_RULES, GateConfig, intersection_over  # noqa: E402
 
+sys.path.insert(0, str(NB / "exp" / "gt_review"))
+from scoped import scoped  # noqa: E402
+
+
+def throwing_labels():
+    """events.csv with only the in-scope, non-running Avenue incidents kept (as a group decision)."""
+    import csv
+    import tempfile
+    rows = list(csv.DictReader(open(NB / "exp" / "gt_review" / "events.csv")))
+    for r in rows:
+        r["group_decision"] = "in" if (r["agreed_tag"] == "in" and "running" not in r["rule"]) else "out"
+    path = Path(tempfile.mkdtemp()) / "events_throwing.csv"
+    with open(path, "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(rows[0]))
+        w.writeheader()
+        w.writerows(rows)
+    return path
+
 
 def from_bench(rows, minutes):
     s = summarize(rows, "x")
@@ -42,9 +62,11 @@ def main():
     out = {}
     lit = [evaluate_run(g, r, m(r, "littering")) for g, r in H["littering"]]
     out["littering"] = from_bench(lit, sum(r.duration_s for _, r in H["littering"]) / 60)
-    av = [evaluate_run(g, r, m(r, "avenue")) for g, r in H["avenue"]] + \
+    throwing = scoped(H["avenue"], keep=("in",), path=throwing_labels())
+    av = [evaluate_run(g, r, m(r, "avenue")) for g, r in throwing] + \
          [evaluate_run(g, r, m(r, "normal")) for g, r in H["normal"]]
-    out["loitering"] = from_bench(av, sum(r.duration_s for _, r in H["avenue"] + H["normal"]) / 60)
+    out["littering: throwing on a walkway (Avenue)"] = from_bench(
+        av, sum(r.duration_s for _, r in H["avenue"] + H["normal"]) / 60)
     sm = [evaluate_run(g, r, m(r, "smoking")) for g, r in H["smoking"]]
     out["smoking"] = from_bench(sm, sum(r.duration_s for _, r in H["smoking"]) / 60)
 

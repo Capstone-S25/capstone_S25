@@ -387,3 +387,15 @@ Rule by rule at 12.5 vs 5 fps (rule alone; littering tune clips, Avenue tune nor
     +6.8 → +6.0; but it does not remove the reported fire (new track, < 1 s history → fallback) and ABODA bags fall
     8 → 7 (people who arrive carrying a bag already have a low hand). **Rejected**; code not kept.
   Accept these standing-still reach alarms as VLM work; recall matters more.
+* **fast_motion off by default** (`exp/newcam/fast_motion_sweep.py` → `fast_motion_tune.json`, tune / train only):
+  alone it is at chance for IWDD dumping (9.0 vs 8.4 %); off cuts IWDD train normal alerts 14.9 → 8.3/min and the
+  lead over chance goes +6.8 → +7.5; littering tune unchanged. Avenue tune drops 68/60 → 52/40, but the label review
+  shows Avenue's in-scope incidents are only RUNNING (13) and THROWING (15), no loitering; on throwing only, off loses
+  nothing (tune 6/6, held-out 10/10). Running is not one of the four project events. `DEFAULT_RULES` no longer has
+  "speed" (rule kept). IWDD test confirms: 52.0 vs 38.6 → 44.0 vs 31.2 (lead +13.4 → +12.8) with normal-video
+  alerts 16.5 → 9.5/min (videos with any 72 → 58 %).
+* **CORRECTION**: "loitering 80 / 65 %" (Avenue) in earlier reports measured running + throwing, not loitering. No
+  dataset we have labels loitering, so loitering is unmeasured. Avenue throwing is now reported under littering.
+* `exp/counts_precision.py` (raw counts, recall, precision; Avenue throwing-only) and `exp/per_rule_fa.py` re-run with
+  the new defaults: walkway alerts 6.26 → 4.89/min, dump sites 16.5 → 9.45/min. Demo: Avenue test/04 (two runners)
+  replaced by test/12 (throwing).

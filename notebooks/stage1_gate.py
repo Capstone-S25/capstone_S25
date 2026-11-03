@@ -35,7 +35,9 @@ ALL_RULES = ("loiter", "speed", "smoking", "reach_down", "litter", "unattended")
 #            fired ~15-130 times/min on normal footage.
 #   "smoking" (pose hand-to-face): near chance on low-resolution CCTV and the largest source of
 #            false alarms; smoking candidates come from sustained presence ("loiter") instead.
-DEFAULT_RULES = ("loiter", "in_view", "speed", "reach_down", "unattended")
+DEFAULT_RULES = ("loiter", "in_view", "reach_down", "unattended")
+# "speed" (fast_motion) is off by default since 2026-11-04: it catches running, which is not one of the project's
+# events, is at chance for dumping and is the largest alert source at dump sites (exp/newcam/fast_motion_sweep.py).
 # Optional: "pose_action" (learned littering-action cue on 1 s of keypoints, stage1_pose_action.py). Raises
 # littering recall a lot; its threshold was calibrated on Avenue-style normal footage, so recalibrate per camera.
 

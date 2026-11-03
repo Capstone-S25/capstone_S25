@@ -92,10 +92,11 @@ def works():
                     label_prefix="Labelled: ")
 
     avenue = load("avenue")
-    card(w, "Loitering and unusual activity", ["CUHK Avenue held-out video test/04: both labelled incidents are sent",
-                                               "with the right person; a person staying in one area is sent too"])
-    g, r = find(avenue, "test/04")
-    render_sequence(w, g, r, SYSTEM(r, "avenue"), "Loitering / unusual activity", f"Avenue held-out test/04  |  {NOTE}", CFG)
+    card(w, "Littering: throwing on a walkway", ["CUHK Avenue held-out video test/12: a man throws his bag",
+                                                 "into the air three times; the thrown bag and the man are sent"])
+    g, r = find(avenue, "test/12")
+    render_sequence(w, g, r, SYSTEM(r, "avenue"), "Throwing on a walkway", f"Avenue held-out test/12  |  {NOTE}", CFG,
+                    window=(17, 36))
     w.release()
     print("wrote", OUT / "stage1_works.mp4", "| littering clips:", {k: v[0].seq.seq_id for k, v in lit.items()})
 
