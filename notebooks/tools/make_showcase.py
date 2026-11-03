@@ -1,4 +1,5 @@
-"""Presentation videos for Stage 1 (YOLO26s, rules + pose cue), from cached held-out / unseen-camera runs.
+"""Presentation videos for Stage 1 (YOLO26s, rules + pose cue, current GateConfig defaults), from cached runs on footage
+not used for tuning.
 
   demo/stage1_works.mp4   one example per event where Stage 1 sends the right person or bag to the VLM
   demo/stage1_misses.mp4  typical misses, each preceded by a card saying why Stage 1 misses it
@@ -57,7 +58,7 @@ def works():
     w = open_writer(OUT / "stage1_works.mp4", FPS)
     card(w, "Stage 1: what it sends to the VLM", ["Thick orange box and the panel on the right = candidate sent to the VLM",
                                                   "Thin red box / red timeline = the labelled incident",
-                                                  "Held-out or unseen-camera footage, never used for tuning"], 4.5)
+                                                  "Footage not used for tuning"], 4.5)
 
     lit = littering_clips(load("litter_heldout"), want_right_person=True)
     card(w, "Littering", ["Held-out clips, one per action, at half speed",
@@ -69,18 +70,25 @@ def works():
                             repeat_frames=2, labels=[(0.0, 99.0, f"{tag} (thin red box)")])
 
     iwdd = load("iwdd_test")
-    card(w, "Illegal dumping on cameras never seen in tuning", ["MIVIA IWDD test set", "Labels give only the second dumping starts"])
+    card(w, "Illegal dumping, from a separate dataset", ["MIVIA IWDD test set", "Labels give only the second dumping starts"])
     for vid, onset, what in (("vid0359", 17.0, "bin dumped from a van"), ("vid0075", 16.0, "bag dumped from a car boot")):
         g, r = find(iwdd, f"iwdd/test/{vid}")
         render_sequence(w, g, r, SYSTEM(r, "littering"), f"Illegal dumping: {what}", f"IWDD test {vid}  |  {NOTE}", CFG,
                         window=(onset - 9, onset + 5), labels=[(onset, onset + 4, what)], label_prefix="Labelled: ")
 
     aboda = load("aboda")
-    card(w, "Unattended items on cameras never seen in tuning", ["ABODA video 10: the bag is put down, then left alone",
-                                                                  "Pose cue at the put-down, then the unattended-bag rule"])
+    card(w, "Unattended items", ["ABODA video 10: the bag is put down, then left alone",
+                                 "Pose cue at the put-down, then the unattended-bag rule"])
     g, r = find(aboda, "aboda/video10")
     render_sequence(w, g, r, SYSTEM(r, "aboda"), "Unattended item", f"ABODA video10  |  {NOTE}", CFG,
                     window=(35, 61), labels=[(40.75, 48, "bag put down, owner walks away"), (48, 61, "bag left unattended")],
+                    label_prefix="Labelled: ")
+    card(w, "Unattended item the detector cannot see", ["ABODA video 2: YOLO never detects this dark bag on the paving,",
+                                                         "but reach-down fires as the man bends to put it down,",
+                                                         "and the crop includes the area around his hand"], 4.5)
+    g, r = find(aboda, "aboda/video2")
+    render_sequence(w, g, r, SYSTEM(r, "aboda"), "Unattended: via the person", f"ABODA video2  |  {NOTE}",
+                    CFG, window=(63, 76), labels=[(69.5, 76, "bag put down and left (top right)")],
                     label_prefix="Labelled: ")
 
     avenue = load("avenue")
@@ -118,12 +126,12 @@ def misses():
         render_sequence(w, g, r, SYSTEM(r, "littering"), f"Missed: {heading.lower()}", f"IWDD test {vid}  |  {NOTE}", CFG,
                         window=window, labels=[(onset, onset + 4, what)], label_prefix="Labelled: ")
 
-    card(w, "Miss: the detector never sees the bag", ["ABODA video 2: a small, dark bag in 640x480 footage.",
-                                                       "YOLO detects it in 0 of 215 frames, so the bag rules cannot fire.",
-                                                       "Fix: fine-tune YOLO on CCTV bag footage."], 5.0, RED)
-    g, r = find(load("aboda"), "aboda/video2")
-    render_sequence(w, g, r, SYSTEM(r, "aboda"), "Missed: bag never detected", f"ABODA video2  |  {NOTE}", CFG,
-                    window=(64, 88), labels=[(69.5, 88, "bag put down and left (top right)")], label_prefix="Labelled: ")
+    card(w, "Miss: dark bag, night footage", ["ABODA video 6: the bag is never detected in this dark corridor,",
+                                               "so the bag rules cannot fire, and the put-down is not caught",
+                                               "by the person rules either."], 5.0, RED)
+    g, r = find(load("aboda"), "aboda/video6")
+    render_sequence(w, g, r, SYSTEM(r, "aboda"), "Missed: bag never detected", f"ABODA video6  |  {NOTE}", CFG,
+                    window=(108, 132), labels=[(114, 132, "bag put down and left")], label_prefix="Labelled: ")
 
     wrong = littering_clips(load("litter_heldout"), want_right_person=False)
     if wrong:

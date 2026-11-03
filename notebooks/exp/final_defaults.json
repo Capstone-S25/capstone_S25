@@ -1,0 +1,20 @@
+{
+ "old reach_down": {
+  "littering caught / right person %": "97.0 / 86.0",
+  "loitering caught / right person %": "80.0 / 65.0",
+  "smoking caught / right person %": "43.7 / 15.4",
+  "false alarms on normal video / min": 6.45,
+  "IWDD test dumping caught within 10 s vs chance %": "56.0 vs 42.1",
+  "IWDD test normal videos candidates / min": 16.98,
+  "ABODA bags caught": "6/11"
+ },
+ "current defaults": {
+  "littering caught / right person %": "97.0 / 85.0",
+  "loitering caught / right person %": "80.0 / 65.0",
+  "smoking caught / right person %": "43.7 / 15.4",
+  "false alarms on normal video / min": 6.26,
+  "IWDD test dumping caught within 10 s vs chance %": "52.0 vs 38.6",
+  "IWDD test normal videos candidates / min": 16.52,
+  "ABODA bags caught": "8/11"
+ }
+}

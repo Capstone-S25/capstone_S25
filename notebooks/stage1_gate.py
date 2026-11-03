@@ -92,11 +92,11 @@ class GateConfig:
     reach_skip_border: bool = True      # skip people cut off by the frame edge (their keypoints are unreliable)
     reach_kp_conf: float = 0.5          # keypoint confidence needed for the wrist and knee (0.3 let walkers through)
     reach_bend_ratio: float | None = None  # also require bending: box height <= this x the person's usual height
-    reach_hand_pad_h: float | None = None  # crop = person box + a square of this x body height around the low wrist,
+    reach_hand_pad_h: float | None = 0.25  # crop = person box + a square of this x body height around the low wrist,
                                            # so what they put down is in the crop (None = person box only)
-    reach_refire_move_h: float | None = None  # re-fire before reach_cooldown_s if the person moved this many body
+    reach_refire_move_h: float | None = 1.0   # re-fire before reach_cooldown_s if the person moved this many body
                                               # heights since their last reach (None = cooldown only)
-    reach_max_speed_h: float | None = None  # skip people walking faster than this (body heights / s over the last
+    reach_max_speed_h: float | None = 0.45  # skip people walking faster than this (body heights / s over the last
                                             # reach_speed_window_s): a hanging arm with a bag looks low from above
     reach_speed_window_s: float = 1.0
 
