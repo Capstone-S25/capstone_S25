@@ -452,3 +452,14 @@ Rule by rule at 12.5 vs 5 fps (rule alone; littering tune clips, Avenue tune nor
   (`counts_precision.json`). The routed version is kept as `counts_precision_routed.json` (`--routed`).
   Open question for the team: the VLM should answer all five questions per alert plus an open "anything else unusual?"
   (Gemma), so events outside the five reach human review; Stage 1 only flags what its rules and the 10 s scene review catch.
+
+## 2026-11-04: how small can a person be? (scope: close to mid-range cameras first)
+* `exp/person_size.py` → `person_size.json`: reference people = YOLO26l @1280 px (conf >= 0.5), one frame per 2 s on
+  ABODA, Avenue, CAVIAR, MEVA, IWDD test, littering clips (10.3k people). Height measured in the 640 px detector input.
+  Tracked by the gate: < 20 px 24 %, 20–30 46 %, 30–40 55 %, 40–50 82 %, 50–60 86 %, 60–80 93 %, 150+ 98 %.
+  Tracked with confident wrist + knee: 0 % below 30 px, 24 % at 40–50, 50 % at 50–60, 66 % at 60–80, 43–58 % at
+  80–150 (occluded wrists while walking), 87 % at 150+.
+* Scope: tracking-based rules from ~40 px, pose-based rules from ~60 px (reliable ~150 px). Placement guidance: person
+  >= 1/6 of frame height on 16:9 (>= 1/8 on 4:3), ideally >= 1/4. Matches DORI (IEC 62676-4): detect ~40 px,
+  observe ~105 px for a 1.7 m person. Wide crowded halls (ABODA video11, MEVA) are outside this envelope; plan:
+  per-camera higher input size / tiling after the CPU speed-up (YOLO26s @1280 triples confident people in video11).

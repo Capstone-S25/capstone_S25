@@ -1,0 +1,95 @@
+{
+ "reference": "YOLO26l @1280, conf >= 0.5, one frame per 2 s (max 30 per video)",
+ "all scenes": [
+  {
+   "height_px_in_640_image": "0-20",
+   "people": 244,
+   "tracked_%": 23.8,
+   "tracked_with_wrist_and_knee_%": 0.0
+  },
+  {
+   "height_px_in_640_image": "20-30",
+   "people": 379,
+   "tracked_%": 46.2,
+   "tracked_with_wrist_and_knee_%": 0.0
+  },
+  {
+   "height_px_in_640_image": "30-40",
+   "people": 555,
+   "tracked_%": 54.6,
+   "tracked_with_wrist_and_knee_%": 1.8
+  },
+  {
+   "height_px_in_640_image": "40-50",
+   "people": 749,
+   "tracked_%": 82.0,
+   "tracked_with_wrist_and_knee_%": 23.6
+  },
+  {
+   "height_px_in_640_image": "50-60",
+   "people": 557,
+   "tracked_%": 85.8,
+   "tracked_with_wrist_and_knee_%": 50.3
+  },
+  {
+   "height_px_in_640_image": "60-80",
+   "people": 890,
+   "tracked_%": 92.5,
+   "tracked_with_wrist_and_knee_%": 66.1
+  },
+  {
+   "height_px_in_640_image": "80-100",
+   "people": 1455,
+   "tracked_%": 93.1,
+   "tracked_with_wrist_and_knee_%": 43.0
+  },
+  {
+   "height_px_in_640_image": "100-150",
+   "people": 3771,
+   "tracked_%": 96.1,
+   "tracked_with_wrist_and_knee_%": 57.5
+  },
+  {
+   "height_px_in_640_image": "150+",
+   "people": 695,
+   "tracked_%": 98.1,
+   "tracked_with_wrist_and_knee_%": 86.5
+  }
+ ],
+ "ABODA (indoor / station)": {
+  "people": 438,
+  "median_height_px": 66.9,
+  "tracked_%": 83.1,
+  "tracked_with_wrist_and_knee_%": 28.3
+ },
+ "Avenue (walkway)": {
+  "people": 4493,
+  "median_height_px": 110.4,
+  "tracked_%": 94.3,
+  "tracked_with_wrist_and_knee_%": 47.5
+ },
+ "CAVIAR (lobby, low-res)": {
+  "people": 47,
+  "median_height_px": 67.0,
+  "tracked_%": 89.4,
+  "tracked_with_wrist_and_knee_%": 40.4
+ },
+ "MEVA (wide outdoor / crowds)": {
+  "people": 1772,
+  "median_height_px": 53.0,
+  "tracked_%": 76.2,
+  "tracked_with_wrist_and_knee_%": 50.6
+ },
+ "IWDD (streets, dump sites)": {
+  "people": 1912,
+  "median_height_px": 61.1,
+  "tracked_%": 81.6,
+  "tracked_with_wrist_and_knee_%": 43.2
+ },
+ "littering clips": {
+  "people": 633,
+  "median_height_px": 84.1,
+  "tracked_%": 88.2,
+  "tracked_with_wrist_and_knee_%": 70.9
+ }
+}
