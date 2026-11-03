@@ -105,7 +105,7 @@ def test_candidate_has_tasks_views_and_source_scoped_id(tmp_path):
         candidate["event_id"]
         == f"camera_01_{UUID(int=1).hex[:8]}_reach_down_person1_f2"
     )
-    assert candidate["tasks"] == ["littering"]
+    assert candidate["tasks"] == ["littering", "unattended_items"]
     assert candidate["views"] == {
         "short": {"paths": ["_short.jpg"], "times_s": [1.0]},
         "long": {"paths": ["_long.jpg"], "times_s": [1.0]},

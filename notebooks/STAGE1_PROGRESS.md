@@ -439,3 +439,11 @@ Rule by rule at 12.5 vs 5 fps (rule alone; littering tune clips, Avenue tune nor
   smoking 159 → 150 of 364 (from loiter_repeat 30 → 60 s).
 * Pose-cue false alerts at dump sites (167) are mostly real throwing-like motions (catch in a car park, beach clean-up,
   workers loading a truck): only the VLM can tell a thrown ball from thrown litter. Left alone.
+* **Per-event precision now counts only alerts ROUTED to that event** (`exp/counts_precision.py`): littering 49 %,
+  walkway throws 45 % (was 24), dumping 15 % (14), unattended items 15 % (11; item rules alone 62 % but 4/11 caught),
+  smoking 25 % at 10 % recall (13 right person of 364).
+* **CORRECTION (smoking)**: smoking's own rule (stays put) catches only 10 % of episodes; the 41–44 % "caught" before
+  was mostly reach_down firing on smokers at ~1 fps. The smoking set is 169 sequences, median 16 s at 0.9 fps —
+  shorter than the 20 s dwell — so smoking cannot be measured or tuned on it.
+* **Routing fix** (data-pipeline `TASKS_BY_EVENT`): reach_down and pose_action now also ask the VLM about unattended
+  items, since half the caught bags (4/8) come from the person putting them down while the bag itself is never detected.
