@@ -230,7 +230,7 @@
         "notes": "Original Brown download URL retained. No explicit current data license verified; underlying movie/Internet sources may retain rights. Do not infer a license from third-party mirrors."
       },
       "purpose": "Seven extracted confuser/smoking classes, 906 clips; downloaded archive includes all 51 classes. The fetcher retrieves the archive only.",
-      "instructions": "Extract the selected classes with scripts/extract_hmdb_sources.py after acquisition.",
+      "instructions": "Extract the selected classes with scripts/datasets/extract_hmdb_sources.py after acquisition.",
       "manifest": "dataset_assets/hmdb51.jsonl",
       "manifest_sha256": "bec43b93337f29b68d7240f78578c5b522c947fc8aac61dd4816943bfd5130d7",
       "asset_count": 1,

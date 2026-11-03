@@ -91,7 +91,7 @@ Each file has its own original author, source page, license URL, usage terms and
 
 Original Brown download URL retained. No explicit current data license verified; underlying movie/Internet sources may retain rights. Do not infer a license from third-party mirrors.
 
-Instructions: Extract the selected classes with scripts/extract_hmdb_sources.py after acquisition.
+Instructions: Extract the selected classes with scripts/datasets/extract_hmdb_sources.py after acquisition.
 
 ### MEVA abandon-package video subset
 
@@ -162,4 +162,4 @@ SHA-256 recorded from acquired local bytes or historical receipts; not publisher
 
 Historical date-specific fetch scripts and scientific receipts are preserved. The unified downloader writes new receipts under `DATA_ROOT/.fetch_state/` and keeps the previous `.receipt.json` / `.download.json` files. XRF55 release terms, Kaggle API license metadata, D2-CDNet mirror terms and original MEVA activity annotations are retained under `anomaly_eval/config/dataset_evidence/`.
 
-After reviewing edits to the catalog/manifests, regenerate these tables with `python scripts/export_dataset_sources.py`. Use `--update-manifest-hashes` only when intentionally publishing a revised acquisition plan. This does not revise historical experiment splits or results.
+After reviewing edits to the catalog/manifests, regenerate these tables with `python scripts/datasets/export_dataset_sources.py`. Use `--update-manifest-hashes` only when intentionally publishing a revised acquisition plan. This does not revise historical experiment splits or results.

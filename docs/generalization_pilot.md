@@ -22,12 +22,12 @@ GPU commands need device access in the execution environment. Do not replace the
 The default paths are date-specific. Freeze/fit/evaluate stages refuse to replace scored outputs. Use separate roots in a copied configuration/script when intentionally starting a new study; retain the existing outputs.
 
 ```bash
-.venv/bin/python scripts/fetch_xrf55_pilot.py plan
-.venv/bin/python scripts/fetch_xrf55_pilot.py fetch
-PYTHONPATH="/tmp/capstone_eval_deps:$PWD" .venv/bin/python scripts/fetch_xrf55_pilot.py prepare
-.venv/bin/python scripts/train_source_generalization.py freeze
-.venv/bin/python scripts/evaluate_smolvlm_source_pilot.py freeze
-PYTHONPATH="/tmp/capstone_eval_deps:$PWD" .venv/bin/python scripts/run_generalization_pilot.py prepare
+.venv/bin/python scripts/datasets/fetch_xrf55_pilot.py plan
+.venv/bin/python scripts/datasets/fetch_xrf55_pilot.py fetch
+PYTHONPATH="/tmp/capstone_eval_deps:$PWD" .venv/bin/python scripts/datasets/fetch_xrf55_pilot.py prepare
+.venv/bin/python scripts/generalization/train_source_generalization.py freeze
+.venv/bin/python scripts/generalization/evaluate_smolvlm_source_pilot.py freeze
+PYTHONPATH="/tmp/capstone_eval_deps:$PWD" .venv/bin/python scripts/generalization/run_generalization_pilot.py prepare
 ```
 
 The acquisition plan and split were frozen before downloads. The executable workflow subsequently includes the recorded URL-encoding transport amendment and the training-only proxy-label qualification. The original saved protocol drafts remain alongside those amendments. These do not authorize changing splits or labels after test scoring.
@@ -37,33 +37,35 @@ The acquisition plan and split were frozen before downloads. The executable work
 Automatic crop detections cover every new frame; no anomaly labels are supplied to the detector. The wrapper sets a separate output root while reusing the exact existing strategy feature implementation. Alpha zero means the pinned pretrained visual encoder; it does not use the previous fine-tuned visual parameters.
 
 ```bash
-.venv-gpu/bin/python scripts/detect_strategy_regions.py \
+.venv-gpu/bin/python scripts/strategy/detect_strategy_regions.py \
   --manifest data/generalization_pilot_20261020/xrf55/samples.jsonl \
   --cache data/generalization_pilot_20261020/xrf55/detections.jsonl \
   --batch-size 16
 
 for encoder in mobileclip2-s2 siglip2-b16-224; do
-  .venv-gpu/bin/python scripts/extract_source_pilot_features.py \
+  .venv-gpu/bin/python scripts/strategy/extract_strategy_features.py \
+  --data-dir data/generalization_pilot_20261020/xrf55 \
     --manifest data/generalization_pilot_20261020/xrf55/samples.jsonl \
     --tag xrf55 --stage full --alphas 0 --model "$encoder"
-  .venv-gpu/bin/python scripts/extract_source_pilot_features.py \
+  .venv-gpu/bin/python scripts/strategy/extract_strategy_features.py \
+  --data-dir data/generalization_pilot_20261020/xrf55 \
     --manifest data/generalization_pilot_20261020/xrf55/samples.jsonl \
     --detections data/generalization_pilot_20261020/xrf55/detections.jsonl \
     --tag xrf55 --stage crop --model "$encoder"
 done
 
 # Freeze both encoders' development selections before any held-out evaluation.
-.venv/bin/python scripts/train_source_generalization.py fit --model mobileclip2-s2
-.venv/bin/python scripts/train_source_generalization.py fit --model siglip2-b16-224
-.venv/bin/python scripts/train_source_generalization.py evaluate --model mobileclip2-s2
-.venv/bin/python scripts/train_source_generalization.py evaluate --model siglip2-b16-224
+.venv/bin/python scripts/generalization/train_source_generalization.py fit --model mobileclip2-s2
+.venv/bin/python scripts/generalization/train_source_generalization.py fit --model siglip2-b16-224
+.venv/bin/python scripts/generalization/train_source_generalization.py evaluate --model mobileclip2-s2
+.venv/bin/python scripts/generalization/train_source_generalization.py evaluate --model siglip2-b16-224
 ```
 
 Thirty-six head fits vary source family (old/new/mixed), full/full-plus-crop representation and C (0.1/1/10). All families receive the same combined development-source supervision for selection and thresholding. A single global cutoff satisfies empirical FPR at most 5% in every development source. The new source's scene-4 test has three held-out numeric subject aliases, 60 publisher-positive clips and 180 controls. Historical source tests are retrospective.
 
 ```bash
 PYTHONPATH="$PWD/data/tools/smol_training_deps:$PWD" \
-  .venv-gpu/bin/python scripts/evaluate_smolvlm_source_pilot.py run
+  .venv-gpu/bin/python scripts/generalization/evaluate_smolvlm_source_pilot.py run
 ```
 
 SmolVLM uses eight uniformly selected views for both original and prior LoRA routes. Both development calibrations are frozen before any test forward pass. There is no new adapter training or source-test-based route selection. Its eight-view prompt differs from the CLIP sixteen-view recipe; interpret the matched comparison within each family.
@@ -71,8 +73,8 @@ SmolVLM uses eight uniformly selected views for both original and prior LoRA rou
 ## Stream ablation
 
 ```bash
-.venv-gpu/bin/python scripts/run_generalization_pilot.py detect --batch-size 12
-.venv/bin/python scripts/run_generalization_pilot.py evaluate
+.venv-gpu/bin/python scripts/generalization/run_generalization_pilot.py detect --batch-size 12
+.venv/bin/python scripts/generalization/run_generalization_pilot.py evaluate
 ```
 
 The three arms use one immutable set of 12,560 raw detector views across ten complete recordings. Full-frame people/items, full people plus tiled items, and all tiled proposals feed the same causal tracker and alarm rule. There is no event-driven frame selection or state tuning. Published AVSS EASY/MEDIUM, right-censored AVSS HARD and provisional ABODA intervals remain separate in results. Unknown-time alarms are counted separately.
@@ -82,17 +84,17 @@ The primary full-stream normal exposure adds forty seconds relative to the older
 ## Verification and report build
 
 ```bash
-.venv/bin/python scripts/verify_generalization_pilot.py --stage streams
-.venv-gpu/bin/python scripts/validate_source_pilot_gpu.py
-.venv/bin/python scripts/verify_generalization_pilot.py
-.venv/bin/python scripts/build_generalization_pilot_report.py
+.venv/bin/python scripts/generalization/verify_generalization_pilot.py --stage streams
+.venv-gpu/bin/python scripts/generalization/validate_source_pilot_gpu.py
+.venv/bin/python scripts/generalization/verify_generalization_pilot.py
+.venv/bin/python scripts/reporting/build_generalization_pilot_report.py
 XDG_CACHE_HOME="$PWD/data/tools/tectonic/cache" \
   data/tools/tectonic/tectonic --keep-logs \
   reports/generalization_pilot_20261020/runthrough.tex
 PYTHONPATH="/tmp/capstone_slide_deps:$PWD" .venv/bin/python \
   reports/slides/build_generalization_pilot_20261020.py
 PYTHONPATH="/tmp/capstone_slide_deps:$PWD" .venv/bin/python \
-  scripts/validate_generalization_pilot_documents.py --render
+  scripts/reporting/validate_generalization_pilot_documents.py --render
 ```
 
 Replay verifies image identities, disjoint subject aliases/pixels, all candidate dev cutoffs and selections, selected and reference test scores, stream traces/alarms and event metrics. Separate native CUDA forwards validate both new CLIP feature caches and each SmolVLM route. The report builder requires passed replay and native checks. The report's source manifest binds reporting inputs and outputs; raw data, predictions and weights remain local under `data/` and `results/`.

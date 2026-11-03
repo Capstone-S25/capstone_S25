@@ -32,7 +32,7 @@ class VideoPilotTests(unittest.TestCase):
         )
 
     def test_explicit_film_parts_share_a_canonical_source(self):
-        from scripts.guard_video_sources import canonical_title
+        from scripts.video.guard_video_sources import canonical_title
 
         self.assertEqual(
             canonical_title("hmdb_title:The_Departed__Part_1"),

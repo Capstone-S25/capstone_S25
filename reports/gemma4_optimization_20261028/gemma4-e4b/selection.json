@@ -1,0 +1,169 @@
+{
+  "routes": {
+    "full_dev_selected": {
+      "smoking": "contextual_crops_560",
+      "littering": "contextual_crops_560",
+      "loitering": "contrastive_native_560",
+      "rough_sleeping": "evidence_native_560",
+      "unattended_items": "contrastive_native_560"
+    },
+    "source_safeguarded": {
+      "smoking": "contextual_crops_560",
+      "littering": "contextual_crops_560",
+      "loitering": "definition_native_280",
+      "rough_sleeping": "evidence_native_560",
+      "unattended_items": "contrastive_native_560"
+    },
+    "baseline_blend": {
+      "smoking": {
+        "definition_native_280": {
+          "mean": -12.512414383561644,
+          "std": 7.314533038183674
+        },
+        "contextual_crops_560": {
+          "mean": -9.745362442922374,
+          "std": 7.406543513547589
+        }
+      },
+      "littering": {
+        "definition_native_280": {
+          "mean": -6.26844262295082,
+          "std": 5.688950502551271
+        },
+        "contextual_crops_560": {
+          "mean": -8.290983606557377,
+          "std": 4.716242280209202
+        }
+      },
+      "loitering": {
+        "definition_native_280": {
+          "mean": -12.463647959183673,
+          "std": 2.3508256031389028
+        },
+        "contrastive_native_560": {
+          "mean": -15.119579081632653,
+          "std": 2.489515945452431
+        }
+      },
+      "rough_sleeping": {
+        "definition_native_280": {
+          "mean": -6.09375,
+          "std": 8.21564591481516
+        },
+        "evidence_native_560": {
+          "mean": -6.602678571428571,
+          "std": 8.723637704789315
+        }
+      },
+      "unattended_items": {
+        "definition_native_280": {
+          "mean": -8.008844339622641,
+          "std": 5.25378045050928
+        },
+        "contrastive_native_560": {
+          "mean": -10.990418632075471,
+          "std": 5.696968697407602
+        }
+      }
+    }
+  },
+  "development": {
+    "smoking": {
+      "mean_source_ap": {
+        "definition_native_280": 0.7447161358718541,
+        "evidence_native_280": 0.7292205713286144,
+        "contextual_crops_560": 0.7864856914968144
+      },
+      "source_ap": {
+        "definition_native_280": {
+          "kaggle_sujaykapadnis_smoking": 0.9941746436058945,
+          "smoking_cctv": 0.36415918234209166,
+          "stanford40": 0.8758145816675764
+        },
+        "evidence_native_280": {
+          "kaggle_sujaykapadnis_smoking": 0.9955511504694537,
+          "smoking_cctv": 0.390094750463991,
+          "stanford40": 0.8020158130523987
+        },
+        "contextual_crops_560": {
+          "kaggle_sujaykapadnis_smoking": 0.9984928870825139,
+          "smoking_cctv": 0.4740895071365092,
+          "stanford40": 0.8868746802714196
+        }
+      }
+    },
+    "littering": {
+      "mean_source_ap": {
+        "definition_native_280": 0.7624241677339608,
+        "evidence_native_280": 0.797252282684083,
+        "contextual_crops_560": 0.8145399487920022
+      },
+      "source_ap": {
+        "definition_native_280": {
+          "mivia_iwdd": 0.7624241677339608
+        },
+        "evidence_native_280": {
+          "mivia_iwdd": 0.797252282684083
+        },
+        "contextual_crops_560": {
+          "mivia_iwdd": 0.8145399487920022
+        }
+      }
+    },
+    "loitering": {
+      "mean_source_ap": {
+        "definition_native_280": 0.23035458650868781,
+        "evidence_sheet_1120": 0.22047495428050112,
+        "contrastive_native_560": 0.23125332542097665
+      },
+      "source_ap": {
+        "definition_native_280": {
+          "street_scene": 0.23035458650868781
+        },
+        "evidence_sheet_1120": {
+          "street_scene": 0.22047495428050112
+        },
+        "contrastive_native_560": {
+          "street_scene": 0.23125332542097665
+        }
+      }
+    },
+    "rough_sleeping": {
+      "mean_source_ap": {
+        "definition_native_280": 0.9285714285714284,
+        "evidence_native_560": 0.9682539682539681,
+        "detail_native_1120": 0.9682539682539681
+      },
+      "source_ap": {
+        "definition_native_280": {
+          "commons_visible_sleeping": 0.9285714285714284
+        },
+        "evidence_native_560": {
+          "commons_visible_sleeping": 0.9682539682539681
+        },
+        "detail_native_1120": {
+          "commons_visible_sleeping": 0.9682539682539681
+        }
+      }
+    },
+    "unattended_items": {
+      "mean_source_ap": {
+        "definition_native_280": 0.835878825251456,
+        "evidence_native_280": 0.8594580586740934,
+        "contrastive_native_560": 0.8718835638558813
+      },
+      "source_ap": {
+        "definition_native_280": {
+          "unattended_reviewed": 0.835878825251456
+        },
+        "evidence_native_280": {
+          "unattended_reviewed": 0.8594580586740934
+        },
+        "contrastive_native_560": {
+          "unattended_reviewed": 0.8718835638558813
+        }
+      }
+    }
+  },
+  "uses_test_for_fit": false
+}

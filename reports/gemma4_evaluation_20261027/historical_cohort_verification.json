@@ -1,0 +1,65 @@
+{
+  "status": "passed",
+  "matched_cases": 3792,
+  "families": {
+    "mobileclip2-s2": {
+      "status": "passed",
+      "matched_heldout_cases": 3792,
+      "heldout_partition_name_aliases": {
+        "test->external": 961
+      },
+      "files_sha256": {
+        "results/strategy_study_20261016/mobileclip2-s2/transfer_evaluation/historical_predictions.jsonl": "23dfcdefc1f216be79b7dac6dae0741b39e5388ba43662adf95e787206d8df90",
+        "results/strategy_study_20261016/mobileclip2-s2/transfer_evaluation/hmdb_predictions.jsonl": "598aca047f4f20154731420435ba7813dea6e3e42faabf1179da6b885a367fb3",
+        "results/strategy_study_20261016/mobileclip2-s2/transfer_evaluation/meva_predictions.jsonl": "8a07781f54df74a29e27b925ead7033128a12a3723c7a07e6342d9e598857b3e",
+        "results/strategy_study_20261016/mobileclip2-s2/transfer_evaluation/photo_predictions.jsonl": "c9631c175c892bed9a14a5aaef8795455cf8e1c980ae7cf5a2583f26c9d61258",
+        "results/strategy_study_20261016/mobileclip2-s2/transfer_evaluation/rough_predictions.jsonl": "248ad7c18abacb93e7157320c8e865c17f80a4f8b783db2c33dc7420c5eeb549"
+      }
+    },
+    "siglip2-b16-224": {
+      "status": "passed",
+      "matched_heldout_cases": 3792,
+      "heldout_partition_name_aliases": {
+        "test->external": 961
+      },
+      "files_sha256": {
+        "results/strategy_study_20261016/siglip2-b16-224/transfer_evaluation/historical_predictions.jsonl": "58c20443408a71af57a75d2cc44f443cc450bce38521ef2caf1262e85e243e46",
+        "results/strategy_study_20261016/siglip2-b16-224/transfer_evaluation/hmdb_predictions.jsonl": "340f37db98475b6090154ce15fb8220eeabef56441b2a4dac4e0873c1a546ff3",
+        "results/strategy_study_20261016/siglip2-b16-224/transfer_evaluation/meva_predictions.jsonl": "d8cde022c6a415877d6b00010a8e86a66708a6175b5e6433183a2bbec29a7ae1",
+        "results/strategy_study_20261016/siglip2-b16-224/transfer_evaluation/photo_predictions.jsonl": "3fe0be44de63adbe6fc47d59fa251177a2db76504bbecc42742f2a0da819d211",
+        "results/strategy_study_20261016/siglip2-b16-224/transfer_evaluation/rough_predictions.jsonl": "de251638391b209c2bca87c9489ebdb791bf8c61b2c4c304978451ee80023b9d"
+      }
+    },
+    "smolvlm-500m/original": {
+      "status": "passed",
+      "matched_heldout_cases": 3792,
+      "heldout_partition_name_aliases": {},
+      "files_sha256": {
+        "results/smolvlm_finetuning_20261019/evaluation/original/external_predictions.jsonl": "d80518dac57b8cb53c9373c0a106ef97e1286cb3bc03639d60bd8fb5773fac09",
+        "results/smolvlm_finetuning_20261019/evaluation/original/test_predictions.jsonl": "13e362bf0c39638281f9e2ba6481fa9a6dda7b43ec6da10674066dca8bb8fe6b",
+        "results/smolvlm_finetuning_20261019/additional_transfer/evaluation/original/external_predictions.jsonl": "c79b636ceacf1cbb6ef5b2cf4a0b4782d75eb20cc303264e80151456eb0a6acc"
+      }
+    },
+    "smolvlm-500m/seed_42__lr_0.0001": {
+      "status": "passed",
+      "matched_heldout_cases": 3792,
+      "heldout_partition_name_aliases": {},
+      "files_sha256": {
+        "results/smolvlm_finetuning_20261019/evaluation/seed_42__lr_0.0001/external_predictions.jsonl": "cd46885304eb1ea58fb0c2ed34709dbf58aa84275096d544058ecdb10f778e7b",
+        "results/smolvlm_finetuning_20261019/evaluation/seed_42__lr_0.0001/test_predictions.jsonl": "7c0b9660d05a6ae99be27e6d750ebe3a90ea9fbebc38ae51bde333f36d1ea1f4",
+        "results/smolvlm_finetuning_20261019/additional_transfer/evaluation/seed_42__lr_0.0001/external_predictions.jsonl": "bb9c134045dbdb88e1c5dc33ad6a79b874c90412721270fa10631c909fa72063"
+      }
+    },
+    "smolvlm-500m/seed_42__lr_3e-05": {
+      "status": "passed",
+      "matched_heldout_cases": 3792,
+      "heldout_partition_name_aliases": {},
+      "files_sha256": {
+        "results/smolvlm_finetuning_20261019/evaluation/seed_42__lr_3e-05/external_predictions.jsonl": "f006b6dc4cc1266c77084b9d0841ec26a6f31eec2b32e308fc175cb01ac6a6b1",
+        "results/smolvlm_finetuning_20261019/evaluation/seed_42__lr_3e-05/test_predictions.jsonl": "fa1656d5a84eb53f87ff921a460cdcad3f08efc569e8747422eb01b85535146b",
+        "results/smolvlm_finetuning_20261019/additional_transfer/evaluation/seed_42__lr_3e-05/external_predictions.jsonl": "907ad9d6b8a6e313688ff997b850172ec1fe242e5993532a6eeab6948aaad351"
+      }
+    }
+  },
+  "qualification": "Matching IDs and annotations does not make crops, precision, token budgets, supervision or view counts identical. XRF55 comparisons are separate."
+}

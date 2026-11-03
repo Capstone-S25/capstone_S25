@@ -20,7 +20,7 @@ from anomaly_eval.training.smolvlm import (
 
 class SmolVLMTrainingTests(unittest.TestCase):
     def test_prediction_requires_real_temporal_context(self):
-        from scripts.predict_smolvlm import prepare_views
+        from scripts.smolvlm.predict_smolvlm import prepare_views
 
         self.assertEqual(prepare_views("smoking", ["first", "last"]), (["last"], None))
         images = list(range(4))

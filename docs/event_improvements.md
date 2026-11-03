@@ -21,13 +21,13 @@ Report/verification and presentation builds can be repeated from saved outputs.
 
 ```bash
 export PYTHONPATH="$PWD"
-.venv/bin/python scripts/fetch_item_component.py
-PYTHONPATH="/tmp/capstone_eval_deps:$PWD" .venv/bin/python scripts/prepare_item_component.py
-.venv/bin/python scripts/run_event_improvements.py --output results/event_improvements_reproduction
+.venv/bin/python scripts/datasets/fetch_item_component.py
+PYTHONPATH="/tmp/capstone_eval_deps:$PWD" .venv/bin/python scripts/datasets/prepare_item_component.py
+.venv/bin/python scripts/video/run_event_improvements.py --output results/event_improvements_reproduction
 
 export LD_LIBRARY_PATH="$PWD/data/models/nvidia_runtime/extracted${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-.venv-gpu/bin/python scripts/benchmark_item_tiles.py
-.venv/bin/python scripts/report_event_improvements.py
+.venv-gpu/bin/python scripts/video/benchmark_item_tiles.py
+.venv/bin/python scripts/video/report_event_improvements.py
 ```
 
 The fetcher verifies the pinned author archive hash and only extracts data files;

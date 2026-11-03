@@ -1,0 +1,4 @@
+# Install into data/tools/smol_training_deps with --no-deps; uses requirements/base.txt
+# plus the isolated CUDA PyTorch environment documented in docs/smolvlm_finetuning.md.
+peft==0.17.1
+accelerate==1.10.1

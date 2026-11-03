@@ -1,0 +1,163 @@
+{
+  "routes": {
+    "full_dev_selected": {
+      "smoking": "contextual_crops_560",
+      "littering": "detail_native_1120",
+      "loitering": "contextual_crops_560",
+      "rough_sleeping": "evidence_native_560",
+      "unattended_items": "evidence_sheet_1120"
+    },
+    "source_safeguarded": {
+      "smoking": "definition_native_280",
+      "littering": "detail_native_1120",
+      "loitering": "contextual_crops_560",
+      "rough_sleeping": "evidence_native_560",
+      "unattended_items": "evidence_sheet_1120"
+    },
+    "baseline_blend": {
+      "smoking": {
+        "definition_native_280": {
+          "mean": -13.76635040794152,
+          "std": 8.749449567079866
+        },
+        "contextual_crops_560": {
+          "mean": -6.78020933665097,
+          "std": 8.374450583869143
+        }
+      },
+      "littering": {
+        "definition_native_280": {
+          "mean": -3.2280353483606556,
+          "std": 4.173510747624412
+        },
+        "detail_native_1120": {
+          "mean": -7.782786885245901,
+          "std": 4.416124871746811
+        }
+      },
+      "loitering": {
+        "definition_native_280": {
+          "mean": -7.088647959183674,
+          "std": 1.529105471144352
+        },
+        "contextual_crops_560": {
+          "mean": -6.150091677295919,
+          "std": 1.973566051847632
+        }
+      },
+      "rough_sleeping": {
+        "definition_native_280": {
+          "mean": -6.772321428571429,
+          "std": 14.072224241116798
+        },
+        "evidence_native_560": {
+          "mean": -6.818777901785714,
+          "std": 12.776085145494225
+        }
+      },
+      "unattended_items": {
+        "definition_native_280": {
+          "mean": -6.849646226415095,
+          "std": 5.553662629759766
+        },
+        "evidence_sheet_1120": {
+          "mean": -10.01749213836478,
+          "std": 4.631572930068355
+        }
+      }
+    }
+  },
+  "development": {
+    "smoking": {
+      "mean_source_ap": {
+        "definition_native_280": 0.8085667929996353,
+        "contextual_crops_560": 0.8326063482265017
+      },
+      "source_ap": {
+        "definition_native_280": {
+          "kaggle_sujaykapadnis_smoking": 0.9975059234586271,
+          "smoking_cctv": 0.4469444555402792,
+          "stanford40": 0.98125
+        },
+        "contextual_crops_560": {
+          "kaggle_sujaykapadnis_smoking": 0.9993839222710743,
+          "smoking_cctv": 0.5285633275366362,
+          "stanford40": 0.969871794871795
+        }
+      }
+    },
+    "littering": {
+      "mean_source_ap": {
+        "definition_native_280": 0.7691461594756006,
+        "evidence_native_560": 0.8568684959628006,
+        "detail_native_1120": 0.8683382156711035
+      },
+      "source_ap": {
+        "definition_native_280": {
+          "mivia_iwdd": 0.7691461594756006
+        },
+        "evidence_native_560": {
+          "mivia_iwdd": 0.8568684959628006
+        },
+        "detail_native_1120": {
+          "mivia_iwdd": 0.8683382156711035
+        }
+      }
+    },
+    "loitering": {
+      "mean_source_ap": {
+        "definition_native_280": 0.1717647981143628,
+        "evidence_sheet_1120": 0.24899409987458826,
+        "contextual_crops_560": 0.26298246600625935
+      },
+      "source_ap": {
+        "definition_native_280": {
+          "street_scene": 0.1717647981143628
+        },
+        "evidence_sheet_1120": {
+          "street_scene": 0.24899409987458826
+        },
+        "contextual_crops_560": {
+          "street_scene": 0.26298246600625935
+        }
+      }
+    },
+    "rough_sleeping": {
+      "mean_source_ap": {
+        "definition_native_280": 0.9340659340659339,
+        "evidence_native_560": 0.982142857142857,
+        "contrastive_native_560": 0.982142857142857
+      },
+      "source_ap": {
+        "definition_native_280": {
+          "commons_visible_sleeping": 0.9340659340659339
+        },
+        "evidence_native_560": {
+          "commons_visible_sleeping": 0.982142857142857
+        },
+        "contrastive_native_560": {
+          "commons_visible_sleeping": 0.982142857142857
+        }
+      }
+    },
+    "unattended_items": {
+      "mean_source_ap": {
+        "definition_native_280": 0.8655439548171053,
+        "evidence_sheet_1120": 0.8888782513118878,
+        "detail_native_1120": 0.8887034238745481
+      },
+      "source_ap": {
+        "definition_native_280": {
+          "unattended_reviewed": 0.8655439548171053
+        },
+        "evidence_sheet_1120": {
+          "unattended_reviewed": 0.8888782513118878
+        },
+        "detail_native_1120": {
+          "unattended_reviewed": 0.8887034238745481
+        }
+      }
+    }
+  },
+  "uses_test_for_fit": false
+}

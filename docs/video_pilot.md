@@ -90,37 +90,37 @@ inputs referenced by preparation must be present.
 ```bash
 DATA=data/video_pilot_20261016
 RUN=results/video_pilot_20261016
-.venv/bin/python scripts/audit_video_failures.py --output "$RUN/error_audit"
+.venv/bin/python scripts/video/audit_video_failures.py --output "$RUN/error_audit"
 
-.venv/bin/python scripts/fetch_avss_pilot.py --data "$DATA"
-PYTHONPATH="/tmp/capstone_eval_deps:$PWD" .venv/bin/python scripts/prepare_video_pilot.py --output "$DATA"
-PYTHONPATH="/tmp/capstone_eval_deps:$PWD" .venv/bin/python scripts/prepare_avss_pilot.py --data "$DATA"
-.venv/bin/python scripts/verify_video_data.py --data "$DATA"
-.venv/bin/python scripts/guard_video_sources.py --data "$DATA"
-.venv-gpu/bin/python scripts/detect_video_pilot.py --data "$DATA"
+.venv/bin/python scripts/datasets/fetch_avss_pilot.py --data "$DATA"
+PYTHONPATH="/tmp/capstone_eval_deps:$PWD" .venv/bin/python scripts/video/prepare_video_pilot.py --output "$DATA"
+PYTHONPATH="/tmp/capstone_eval_deps:$PWD" .venv/bin/python scripts/datasets/prepare_avss_pilot.py --data "$DATA"
+.venv/bin/python scripts/video/verify_video_data.py --data "$DATA"
+.venv/bin/python scripts/video/guard_video_sources.py --data "$DATA"
+.venv-gpu/bin/python scripts/video/detect_video_pilot.py --data "$DATA"
 
 # Repeat extraction and fitting for each backbone.
-.venv-gpu/bin/python scripts/extract_video_pilot.py --data "$DATA" --model siglip2-b16-224
-.venv-gpu/bin/python scripts/train_video_pilot.py --data "$DATA" --output "$RUN" --model siglip2-b16-224
-.venv-gpu/bin/python scripts/train_person_pilot.py --data "$DATA" --run "$RUN" --model siglip2-b16-224
+.venv-gpu/bin/python scripts/video/extract_video_pilot.py --data "$DATA" --model siglip2-b16-224
+.venv-gpu/bin/python scripts/video/train_video_pilot.py --data "$DATA" --output "$RUN" --model siglip2-b16-224
+.venv-gpu/bin/python scripts/video/train_person_pilot.py --data "$DATA" --run "$RUN" --model siglip2-b16-224
 
-.venv/bin/python scripts/audit_smoking_regions.py --data "$DATA" --output "$RUN/error_audit/pilot_region_coverage.json"
-.venv/bin/python scripts/audit_video_tracks.py --data "$DATA" --output "$RUN/error_audit/track_components.json"
+.venv/bin/python scripts/video/audit_smoking_regions.py --data "$DATA" --output "$RUN/error_audit/pilot_region_coverage.json"
+.venv/bin/python scripts/video/audit_video_tracks.py --data "$DATA" --output "$RUN/error_audit/track_components.json"
 
 # Acquire/verify the pinned public detector, then audit training detections.
-HF_HUB_DISABLE_XET=1 .venv-gpu/bin/python scripts/fetch_grounding_pilot.py
-.venv-gpu/bin/python scripts/detect_grounded_pilot.py --data "$DATA" --scope train
-.venv/bin/python scripts/audit_video_tracks.py --data "$DATA" --tracks "$DATA/grounding_tracks_train.jsonl" --output "$RUN/error_audit/grounded_track_components.json"
-.venv-gpu/bin/python scripts/detect_grounded_pilot.py --data "$DATA" --scope all --batch-size 12
-.venv-gpu/bin/python scripts/train_grounded_pilot.py --data "$DATA" --run "$RUN" --model siglip2-b16-224
+HF_HUB_DISABLE_XET=1 .venv-gpu/bin/python scripts/datasets/fetch_grounding_pilot.py
+.venv-gpu/bin/python scripts/video/detect_grounded_pilot.py --data "$DATA" --scope train
+.venv/bin/python scripts/video/audit_video_tracks.py --data "$DATA" --tracks "$DATA/grounding_tracks_train.jsonl" --output "$RUN/error_audit/grounded_track_components.json"
+.venv-gpu/bin/python scripts/video/detect_grounded_pilot.py --data "$DATA" --scope all --batch-size 12
+.venv-gpu/bin/python scripts/video/train_grounded_pilot.py --data "$DATA" --run "$RUN" --model siglip2-b16-224
 
 # Once all three training commands have completed for BOTH backbones:
-.venv/bin/python scripts/freeze_video_pilot.py --run "$RUN"
-.venv-gpu/bin/python scripts/evaluate_video_pilot.py --data "$DATA" --run "$RUN" --model siglip2-b16-224
+.venv/bin/python scripts/video/freeze_video_pilot.py --run "$RUN"
+.venv-gpu/bin/python scripts/video/evaluate_video_pilot.py --data "$DATA" --run "$RUN" --model siglip2-b16-224
 # Repeat evaluation for MobileCLIP, then export, report and replay checks.
-.venv/bin/python scripts/export_video_pilot.py --data "$DATA" --run "$RUN"
-MPLCONFIGDIR=/tmp/capstone_video_mpl .venv/bin/python scripts/report_video_pilot.py --data "$DATA" --run "$RUN" --summary reports/video_pilot_findings_20261016.md
-.venv-gpu/bin/python scripts/verify_video_pilot.py --data "$DATA" --run "$RUN" --live
+.venv/bin/python scripts/video/export_video_pilot.py --data "$DATA" --run "$RUN"
+MPLCONFIGDIR=/tmp/capstone_video_mpl .venv/bin/python scripts/video/report_video_pilot.py --data "$DATA" --run "$RUN" --summary reports/video_pilot_findings_20261016.md
+.venv-gpu/bin/python scripts/video/verify_video_pilot.py --data "$DATA" --run "$RUN" --live
 ```
 
 The error-export scripts are `audit_video_failures.py`, `audit_smoking_regions.py`
@@ -130,7 +130,7 @@ distinguish provisional assistant notes from independent human review.
 ## Reviewing a saved prediction
 
 ```bash
-PYTHONPATH="$PWD" .venv-gpu/bin/python scripts/predict_video_pilot.py \
+PYTHONPATH="$PWD" .venv-gpu/bin/python scripts/video/predict_video_pilot.py \
   --data data/video_pilot_20261016 --run results/video_pilot_20261016 \
   --model siglip2-b16-224 --recording-id avss:AVSSS07_EASY \
   --output results/video_pilot_replay.json
