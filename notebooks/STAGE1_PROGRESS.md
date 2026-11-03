@@ -256,3 +256,23 @@ already have, and VideoMAE/Kinetics; judged by crop recall vs the random control
 * The report notebook should be report-style and focused, for the professor.
 * Smoking: use "person stays in an area"; the VLM does the reasoning. Don't present the pose hand-to-face rule.
 * Recall comes first; false positives second.
+
+## 2026-11-03: frame rate for the data pipeline (feat/data-pipeline selects 2 fps)
+
+`exp/newcam/fps_check.py` re-runs YOLO26s perception at lower rates (tracking depends on fps, so caches are
+not subsampled) and scores the unchanged rules + pose on held-out data (`exp/newcam/fps_check.json`):
+
+| rules + pose | ~10 fps (benchmark) | 5 fps | 2 fps |
+|---|---|---|---|
+| littering held-out event / crop % | 97 / 86 | 96 / 86 | 87 / 69 |
+| Avenue held-out event / crop % | 80 / 65 | 75 / 45 | 82 / 47 |
+| Avenue normal false alarms / min | 6.5 | 6.6 | 8.8 |
+| IWDD test hit@10s vs chance % | 56 vs 42 | 38 vs 29 | 34 vs 25 |
+
+* 2 fps fragments tracks: wrong-person crops and more false alarms. 5 fps recovers littering and the false-alarm
+  rate. Avenue crop stays lower (small n, 17 held-out events) and IWDD candidates drop (17 -> 11/min) with a
+  smaller lead over chance, so some rules still depend on frame counts; not yet investigated.
+* CPU cost at 5 fps: ~100 ms/frame (YOLO26s + pose, p95 101 ms) on the sample clip, about half a core.
+* Recommendation: run the pipeline with `--target-fps 5` when Stage 1 is on. The VLM views are sampled from the
+  writer's own 2 fps buffer, so the VLM input does not change.
+* Integration lives on `feat/stage1-integration` (data-pipeline/data_pipeline/detection/).
