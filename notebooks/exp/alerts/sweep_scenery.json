@@ -1,0 +1,15 @@
+[
+ {
+  "setting": {
+   "item_scenery": true
+  },
+  "littering": "97.8/96.5",
+  "walkway_throws": "100.0/100.0",
+  "smoking": "54.1/22.4",
+  "walkway_alerts_min": 3.72,
+  "dumping_hit_vs_chance": "33.5 vs 25.7",
+  "dumping_lead": 7.8,
+  "dump_site_alerts_min": 7.93,
+  "dump_site_videos_with_alert_%": 56.0
+ }
+]
