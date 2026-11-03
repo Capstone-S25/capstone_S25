@@ -405,3 +405,24 @@ Rule by rule at 12.5 vs 5 fps (rule alone; littering tune clips, Avenue tune nor
   catches (IWDD lead +7.5 → +4.5, smoking 55 → 43 %, Avenue throw crop 100 → 83 %): the alert that matters often
   comes seconds after an earlier one on the same person (approach, then the act). **Rejected.** Most extra alerts are
   different people doing ordinary things; reducing them needs a learned re-ranker, not spacing.
+
+## 2026-11-04 (evening): why the false alerts happen (tune / train only)
+* `exp/alerts/alert_table.py` → `alerts_tune.pkl`: every alert of the current defaults on littering tune clips, Avenue
+  tune throwing incidents + normals, IWDD train (normal videos; dumping videos with a labelled dumper), labelled real /
+  false with facts about the person. 1,353 alerts; dump-site normal videos alone give 752 false (reach_down 422, pose
+  167, stays-put 80, bag left alone 64). Dump-site false vs real reach_down: 7 vs 1 people in frame, nearest person
+  0.7 vs 1.7 body heights; 10 of 112 videos hold 35 % of the false alerts.
+* Looked at samples by eye: (1) riders on motorbikes / scooters (seated: hands at knee height) — 148 of 752;
+  (2) walkers in dense street crowds, overlapping people (keypoints mixed between people: 36 % of false non-rider
+  reaches vs 3 % of real); (3) people seated / crouched doing ordinary things, bin workers; (4) the bag rules firing on
+  a fixed scene object that adopts a passer-by as "owner"; (5) static non-people detected as people ("stays put").
+* Fixes tried (`exp/alerts/sweep.py`, options default off):
+  - `reach_skip_overlap` 0.5: dump-site alerts 8.27 → 7.66/min (−7 %), lead +7.6 → +7.3, littering same. Candidate.
+  - `item_scenery`: a bag first seen with nobody near never adopts an owner: 8.27 → 7.93/min, lead +7.8, ABODA 8/11
+    unchanged (false bag-left-alone 9 → 6). Candidate.
+  - `reach_skip_riders` (all two-wheelers): 8.27 → 6.71/min (−19 %) but loses 3 real dumping videos (two cyclists
+    stopping to dump bags; one with bin bags mis-detected as motorbikes). Re-running with motorcycle-only
+    (`reach_rider_classes` = (3,)), detection classes now cached (`exp/alerts/two_wheelers.py`).
+  - Rejected: pose_action_thr 0.88–0.95 (littering crop 96.5 → 86.5 at 0.92 for −11 % alerts); a "too still to be a
+    person" filter on stays-put (real smokers sway as little as static fakes, p10 0.006 vs 0.005); crowd suppression
+    (littering does happen in crowds).

@@ -1,0 +1,41 @@
+[
+ {
+  "setting": {
+   "pose_action_thr": 0.88
+  },
+  "littering": "97.4/94.3",
+  "walkway_throws": "100.0/83.3",
+  "smoking": "53.1/22.4",
+  "walkway_alerts_min": 3.72,
+  "dumping_hit_vs_chance": "33.0 vs 25.5",
+  "dumping_lead": 7.5,
+  "dump_site_alerts_min": 7.85,
+  "dump_site_videos_with_alert_%": 54.5
+ },
+ {
+  "setting": {
+   "pose_action_thr": 0.92
+  },
+  "littering": "94.8/86.5",
+  "walkway_throws": "100.0/83.3",
+  "smoking": "52.4/21.2",
+  "walkway_alerts_min": 3.72,
+  "dumping_hit_vs_chance": "32.5 vs 25.1",
+  "dumping_lead": 7.4,
+  "dump_site_alerts_min": 7.38,
+  "dump_site_videos_with_alert_%": 53.5
+ },
+ {
+  "setting": {
+   "pose_action_thr": 0.95
+  },
+  "littering": "87.0/76.5",
+  "walkway_throws": "100.0/83.3",
+  "smoking": "52.2/20.7",
+  "walkway_alerts_min": 3.72,
+  "dumping_hit_vs_chance": "31.5 vs 24.4",
+  "dumping_lead": 7.1,
+  "dump_site_alerts_min": 7.09,
+  "dump_site_videos_with_alert_%": 53.0
+ }
+]

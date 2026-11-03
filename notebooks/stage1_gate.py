@@ -20,6 +20,7 @@ import cv2
 import numpy as np
 
 PERSON = 0
+TWO_WHEELERS = (1, 3)  # COCO bicycle, motorcycle
 COCO_ITEMS = {24: "backpack", 25: "umbrella", 26: "handbag", 28: "suitcase", 39: "bottle", 41: "cup"}
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".bmp"}
 VIDEO_EXTS = {".avi", ".mp4", ".mov", ".mkv"}
@@ -102,6 +103,11 @@ class GateConfig:
     reach_max_speed_h: float | None = 0.45  # skip people walking faster than this (body heights / s over the last
                                             # reach_speed_window_s): a hanging arm with a bag looks low from above
     reach_speed_window_s: float = 1.0
+    reach_skip_riders: bool = False     # skip people riding (a seated rider's hands sit at knee height); the
+                                        # detector also reports the rider classes, at no extra cost
+    reach_rider_classes: tuple[int, ...] = (3,)  # COCO 3 motorcycle; 1 bicycle is left out: cyclists stop to dump
+    reach_skip_overlap: float | None = None  # skip a person when another person's box covers this share of theirs
+                                             # (overlapping people get each other's keypoints)
 
     bg_width: int = 480
     bg_long_s: float = 30.0
@@ -135,6 +141,9 @@ class GateConfig:
     item_period_s: float = 1.0
     item_conf: float = 0.2
     item_detector_min_passes: int = 2   # replaces item_min_frames when item_detector is on (2 passes = 2 s)
+    item_scenery: bool = False          # a bag first seen with nobody carrying it or near it is scenery: it never
+                                        # adopts a passer-by as owner (unless it moves), so "owner left" cannot fire
+                                        # on it; a thrown / dropped bag is still caught by the ownerless path
 
     # Per-camera prior: a person much taller (closer to the camera) than people usually are in this camera.
     # Off until calibrated with calibrate_near_camera() on that camera's normal footage.
@@ -358,6 +367,7 @@ class Observation:
     blobs: list[dict]
     latency_ms: dict[str, float]
     path: str | None = None
+    two_wheelers: list[list[float]] | None = None  # bicycle / motorcycle boxes (only when reach_skip_riders is on)
 
 
 def tracker_args(cfg: GateConfig, fps: float) -> dict:
@@ -484,9 +494,17 @@ class Perception:
         lat = {}
         t0 = time.perf_counter()
         classes = [PERSON] if self.item_model is not None else [PERSON, *cfg.item_classes]
+        if cfg.reach_skip_riders:
+            classes += list(cfg.reach_rider_classes)
         res = self.det.predict(frame, imgsz=cfg.imgsz, conf=cfg.det_conf, device=cfg.device, classes=classes,
                                verbose=False)[0]
         lat["det_ms"] = (time.perf_counter() - t0) * 1000
+        two_wheelers = None
+        if cfg.reach_skip_riders:
+            cls = res.boxes.cls.cpu().numpy().astype(int)
+            two_wheelers = [b.tolist() + [int(c)] for b, c in zip(res.boxes.xyxy.cpu().numpy(), cls)
+                            if c in cfg.reach_rider_classes]
+            res = res[~np.isin(cls, list(cfg.reach_rider_classes))]
         self.tracker.update(res.boxes.cpu().numpy(), frame)
         # model.track() only returns *confirmed* tracks, and ByteTrack confirms a new track on
         # its second match. At low fps or on short clips most people never get confirmed, so
@@ -541,7 +559,7 @@ class Perception:
         lat["total_ms"] = (time.perf_counter() - t0) * 1000
         self.n += 1
         self.last_t = t
-        return Observation(index, t, frame.shape[:2], persons, items, blobs, lat, path)
+        return Observation(index, t, frame.shape[:2], persons, items, blobs, lat, path, two_wheelers)
 
     def _item_pass(self, frame) -> list[dict]:
         """Open-vocabulary objects, with ids from IoU matching to the previous passes."""
@@ -821,6 +839,15 @@ class RuleEngine:
                 return []
         if h < cfg.pose_min_h_px or (cfg.reach_skip_border and touches_border(p["box"], obs.frame_hw)):
             return []
+        if cfg.reach_skip_riders:
+            b = p["box"]
+            lower = [b[0], (b[1] + b[3]) / 2, b[2], b[3]]
+            if any(intersection_over(lower, w[:4]) >= 0.3 for w in (getattr(obs, "two_wheelers", None) or [])
+                   if len(w) < 5 or int(w[4]) in cfg.reach_rider_classes):
+                return []
+        if cfg.reach_skip_overlap is not None and any(
+                intersection_over(p["box"], q["box"]) >= cfg.reach_skip_overlap for q in obs.persons if q is not p):
+            return []
         if cfg.reach_max_speed_h is not None:
             pts = [q for q in st["hist"] if q[0] >= t - cfg.reach_speed_window_s and q[5] == p["raw_id"]]
             if len(pts) >= 2 and pts[-1][0] - pts[0][0] >= 0.5 * cfg.reach_speed_window_s:
@@ -922,10 +949,13 @@ class RuleEngine:
             if entry is None:
                 known = any(iou(k, it["box"]) >= 0.3 for k in self.known_item_spots)
                 late = t - self.t0 >= cfg.item_warmup_s and not known
+                alone = self._carrier(it["box"], persons) is None
                 entry = {"raw_id": it["raw_id"], "cls": it["cls"], "origin": it["box"], "first_t": t, "seen": 0,
                          "owner": None, "owner_near_t": None, "flagged": False, "nobody_since": None,
-                         "late": late, "appeared_alone": late and self._carrier(it["box"], persons) is None,
-                         "appear_flagged": False, "moved": False, "max_conf": 0.0}
+                         "late": late, "appeared_alone": late and alone,
+                         "appear_flagged": False, "moved": False, "max_conf": 0.0,
+                         "scenery": cfg.item_scenery and alone and
+                         self._nearest_person(it["box"], persons, cfg.owner_leave_h) is None}
                 self.items.append(entry)
             entry.update(box=it["box"], last_t=t, raw_id=it["raw_id"])
             entry["seen"] += 1
@@ -933,6 +963,8 @@ class RuleEngine:
             if not any(iou(k, it["box"]) >= 0.3 for k in self.known_item_spots):
                 self.known_item_spots = (self.known_item_spots + [it["box"]])[-200:]
             carrier = self._carrier(it["box"], persons)
+            if entry["scenery"] and not entry["moved"]:
+                carrier = None  # scenery: nobody brought it, so nobody can leave it
             if carrier is not None:
                 # someone is holding or wearing it: attended, and it is theirs
                 entry.update(origin=it["box"], owner=carrier, owner_near_t=t, flagged=False, nobody_since=None,
@@ -942,7 +974,7 @@ class RuleEngine:
             oc, nc = center(entry["origin"]), center(it["box"])
             if math.hypot(nc[0] - oc[0], nc[1] - oc[1]) > max(10.0, 0.5 * diag):
                 entry.update(origin=it["box"], flagged=False, nobody_since=None, moved=True)
-            if entry["owner"] is None:
+            if entry["owner"] is None and not (entry["scenery"] and not entry["moved"]):
                 entry["owner"] = self._nearest_person(it["box"], persons, cfg.owner_leave_h)
                 if entry["owner"] is not None:
                     entry["owner_near_t"] = t
