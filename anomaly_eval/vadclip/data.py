@@ -109,7 +109,7 @@ def _frame_identity(fname: str):
     timestamp = None
     if clock:
         # The filenames carry a camera-local clock, with no timezone annotation.
-        timestamp = datetime.strptime(  # noqa: DTZ007
+        timestamp = datetime.strptime(
             clock.group(1).upper(), "%Y-%m-%d_%I-%M-%S-%f_%p"
         ).isoformat(timespec="milliseconds")
     elif dm and re.match(r"_\d{2}-", fname[dm.end() :]):

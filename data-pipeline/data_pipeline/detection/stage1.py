@@ -5,6 +5,7 @@ notebooks/stage1_gate.py. Set STAGE1_GATE_DIR to load another copy. It needs
 ultralytics and opencv in the environment.
 """
 
+import math
 import os
 import sys
 from pathlib import Path
@@ -29,6 +30,13 @@ TASKS_BY_EVENT = {
     "long_presence": ("loitering", "rough_sleeping"),
     "near_camera": ("loitering",),
     "hand_to_face": ("smoking",),
+    "periodic_review": (
+        "smoking",
+        "littering",
+        "loitering",
+        "rough_sleeping",
+        "unattended_items",
+    ),
 }
 
 # Past-frame windows saved per candidate, in seconds before the trigger frame.
@@ -49,8 +57,22 @@ def load_gate() -> ModuleType:
 def default_config(gate: ModuleType, device: str = "cpu"):
     """The Stage 1 settings chosen in notebooks/STAGE1_PROGRESS.md."""
     return gate.GateConfig(
-        det_weights=str(GATE_DIR / "yolo26s.pt"),
-        pose_weights=str(GATE_DIR / "yolo26s-pose.pt"),
+        det_weights=str(
+            Path(
+                os.environ.get(
+                    "STAGE1_MODEL_DIR", GATE_DIR.parent / "data/models/stage1"
+                )
+            )
+            / "yolo26s.pt"
+        ),
+        pose_weights=str(
+            Path(
+                os.environ.get(
+                    "STAGE1_MODEL_DIR", GATE_DIR.parent / "data/models/stage1"
+                )
+            )
+            / "yolo26s-pose.pt"
+        ),
         rules=gate.DEFAULT_RULES + ("pose_action",),
         inview_s=60.0,
         device=device,
@@ -80,7 +102,14 @@ class Stage1Detector:
         fps: float,
         cfg=None,
         gate: ModuleType | None = None,
+        safety_scan_seconds: float = 0,
     ) -> None:
+        if fps <= 0 or not math.isfinite(fps):
+            raise ValueError("Stage 1 fps must be positive and finite")
+        if not math.isfinite(safety_scan_seconds) or safety_scan_seconds < 0:
+            raise ValueError("Safety scan interval must be finite and nonnegative")
+        self.safety_scan_seconds = safety_scan_seconds
+        self.next_review_s = None
         self.gate = gate or load_gate()
         self.cfg = cfg or default_config(self.gate)
         self.source_id = source_id
@@ -88,18 +117,26 @@ class Stage1Detector:
         self.perception = self.gate.Perception(self.cfg)
         self.writer = self.gate.HandoffWriter(
             Path(out_dir) / source_id,
-            buffer_s=max(VIEW_WINDOWS_S.values()) + 5.0,
+            buffer_s=max(*VIEW_WINDOWS_S.values(), safety_scan_seconds) + 5.0,
         )
         self.stream = SimpleNamespace(seq_id=source_id, source=source_id, paths=None)
         self.session_id: UUID | None = None
+        self.last_timestamp_ms: int | None = None
+        self.continuity_epoch = 0
 
     def _reset(self, session_id: UUID) -> None:
+        same_session = session_id == self.session_id
+        previous_start = getattr(self, "start_ms", None)
+        previous_index = getattr(self, "index", 0)
+        self.continuity_epoch += 1
         self.perception.reset(self.fps)
         self.engine = self.gate.RuleEngine(self.cfg, self.fps)
         self.writer.start(self.stream)
         self.session_id = session_id
-        self.start_ms: int | None = None
-        self.index = 0
+        self.start_ms = previous_start if same_session else None
+        self.index = previous_index if same_session else 0
+        self.last_timestamp_ms = None
+        self.next_review_s = None
 
     def process(self, frame: DecodedFrame) -> list[dict]:
         """Observe one selected frame and return the candidates it triggers.
@@ -108,25 +145,64 @@ class Stage1Detector:
         context_frame_path, vlm_prompt_hint, ...) plus timestamp_ms, the tasks to
         ask the VLM about and views: {"short"|"long": {"paths", "times_s"}}.
         """
+        if frame.source_id != self.source_id:
+            raise ValueError("A detector cannot mix sources")
         if frame.session_id != self.session_id:
             self._reset(frame.session_id)
+        elif self.last_timestamp_ms is not None:
+            gap = frame.timestamp_ms - self.last_timestamp_ms
+            if gap < 0:
+                raise ValueError("Stage 1 timestamps decreased")
+            if gap == 0:
+                return []
+            if gap > max(2000, 3000 / self.fps):
+                self._reset(frame.session_id)
+        self.last_timestamp_ms = frame.timestamp_ms
         if self.start_ms is None:
             self.start_ms = frame.timestamp_ms
         t = (frame.timestamp_ms - self.start_ms) / 1000
         obs = self.perception.observe(frame.image, self.index, t)
         self.writer.observe(frame.image, t, self.index)
         candidates = []
-        for event in self.engine.step(obs):
+        events = list(self.engine.step(obs))
+        if self.safety_scan_seconds:
+            if self.next_review_s is None:
+                self.next_review_s = t + self.safety_scan_seconds
+            if t + 1e-6 >= self.next_review_s:
+                h, w = frame.image.shape[:2]
+                events.append(
+                    {
+                        "event_id": f"periodic_review_scene_f{self.index}",
+                        "event_type": "periodic_review",
+                        "candidate_origin": "scheduled_scene_review",
+                        "frame_index": self.index,
+                        "timestamp_s": round(t, 2),
+                        "roi_box": [0, 0, w, h],
+                        "evidence_window_s": [max(0, t - 20), t],
+                        "clip_window_s": [max(0, t - 20), t],
+                        "vlm_prompt_hint": "Check the observed scene; no tracked target or ownership is established.",
+                    }
+                )
+                while self.next_review_s <= t + 1e-6:
+                    self.next_review_s += self.safety_scan_seconds
+        for event in events:
             event["event_id"] = (
                 f"{self.source_id}_{frame.session_id.hex[:8]}_{event['event_id']}"
             )
             event["source_id"] = self.source_id
+            event["observed_until_s"] = t
+            event["continuity_epoch"] = self.continuity_epoch
+            event["timestamp_origin"] = (
+                "decoder-estimated media timeline; not camera capture latency"
+            )
             event["session_id"] = str(frame.session_id)
             event["segment_id"] = frame.segment_id
             event["timestamp_ms"] = frame.timestamp_ms
             self.writer.save(event, frame.image, self.stream, t=t)
             event["views"] = {}
             for name, span in VIEW_WINDOWS_S.items():
+                if event["event_type"] == "periodic_review" and name == "short":
+                    span = max(span, self.safety_scan_seconds)
                 paths, times = self.writer.window_frames(
                     event, frame.image, self.stream, t - span, t, tag=f"_{name}"
                 )
