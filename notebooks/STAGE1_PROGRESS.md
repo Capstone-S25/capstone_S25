@@ -447,3 +447,8 @@ Rule by rule at 12.5 vs 5 fps (rule alone; littering tune clips, Avenue tune nor
   shorter than the 20 s dwell — so smoking cannot be measured or tuned on it.
 * **Routing fix** (data-pipeline `TASKS_BY_EVENT`): reach_down and pose_action now also ask the VLM about unattended
   items, since half the caught bags (4/8) come from the person putting them down while the bag itself is never detected.
+* **Counting decision (user)**: precision / recall counted BY PERSON — an alert is a catch if it puts the incident person
+  or bag in front of the VLM at the right time, whichever rule fired; every alert counts towards precision
+  (`counts_precision.json`). The routed version is kept as `counts_precision_routed.json` (`--routed`).
+  Open question for the team: the VLM should answer all five questions per alert plus an open "anything else unusual?"
+  (Gemma), so events outside the five reach human review; Stage 1 only flags what its rules and the 10 s scene review catch.
