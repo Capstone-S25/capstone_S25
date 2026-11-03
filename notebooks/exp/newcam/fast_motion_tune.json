@@ -1,0 +1,57 @@
+[
+ {
+  "fast_motion": "current 1.2",
+  "littering_tune": "97.8/96.5",
+  "avenue_tune": "68.0/60.0",
+  "avenue_tune_fast_alone": "60.0/32.0",
+  "avenue_normal_alerts_per_min": 5.09,
+  "iwdd_train_hit_vs_chance": "37.0 vs 30.2",
+  "iwdd_train_lead": 6.8,
+  "iwdd_train_normal_alerts_per_min": 14.9,
+  "iwdd_train_fast_alone_vs_chance": "9.0 vs 8.4"
+ },
+ {
+  "fast_motion": "1.5",
+  "littering_tune": "97.8/96.5",
+  "avenue_tune": "68.0/56.0",
+  "avenue_tune_fast_alone": "40.0/24.0",
+  "avenue_normal_alerts_per_min": 4.51,
+  "iwdd_train_hit_vs_chance": "34.5 vs 28.1",
+  "iwdd_train_lead": 6.4,
+  "iwdd_train_normal_alerts_per_min": 13.03,
+  "iwdd_train_fast_alone_vs_chance": "4.5 vs 4.3"
+ },
+ {
+  "fast_motion": "2.0",
+  "littering_tune": "97.8/96.5",
+  "avenue_tune": "56.0/48.0",
+  "avenue_tune_fast_alone": "16.0/12.0",
+  "avenue_normal_alerts_per_min": 4.51,
+  "iwdd_train_hit_vs_chance": "33.5 vs 26.5",
+  "iwdd_train_lead": 7.0,
+  "iwdd_train_normal_alerts_per_min": 11.06,
+  "iwdd_train_fast_alone_vs_chance": "2.0 vs 0.9"
+ },
+ {
+  "fast_motion": "2.5",
+  "littering_tune": "97.8/96.5",
+  "avenue_tune": "52.0/44.0",
+  "avenue_tune_fast_alone": "4.0/4.0",
+  "avenue_normal_alerts_per_min": 4.11,
+  "iwdd_train_hit_vs_chance": "33.5 vs 26.0",
+  "iwdd_train_lead": 7.5,
+  "iwdd_train_normal_alerts_per_min": 9.83,
+  "iwdd_train_fast_alone_vs_chance": "0.0 vs 0.1"
+ },
+ {
+  "fast_motion": "off",
+  "littering_tune": "97.8/96.5",
+  "avenue_tune": "52.0/40.0",
+  "avenue_tune_fast_alone": "0.0/0.0",
+  "avenue_normal_alerts_per_min": 4.11,
+  "iwdd_train_hit_vs_chance": "33.5 vs 26.0",
+  "iwdd_train_lead": 7.5,
+  "iwdd_train_normal_alerts_per_min": 8.28,
+  "iwdd_train_fast_alone_vs_chance": "0.0 vs 0.0"
+ }
+]

@@ -3,21 +3,21 @@
   "incidents": 100,
   "caught": 97,
   "right_person": 85,
-  "alerts": 190,
+  "alerts": 186,
   "alerts_on_incident": 92,
   "minutes": 5.0,
   "recall_%": 97,
-  "precision_%": 48
+  "precision_%": 49
  },
- "loitering": {
-  "incidents": 20,
-  "caught": 16,
-  "right_person": 13,
-  "alerts": 67,
-  "alerts_on_incident": 14,
+ "littering: throwing on a walkway (Avenue)": {
+  "incidents": 10,
+  "caught": 10,
+  "right_person": 8,
+  "alerts": 43,
+  "alerts_on_incident": 10,
   "minutes": 10.1,
-  "recall_%": 80,
-  "precision_%": 21
+  "recall_%": 100,
+  "precision_%": 23
  },
  "smoking": {
   "incidents": 364,
@@ -31,20 +31,20 @@
  },
  "illegal dumping": {
   "incidents": 50,
-  "caught": 26,
+  "caught": 22,
   "right_person": null,
-  "alerts": 385,
-  "alerts_on_incident": 33,
+  "alerts": 230,
+  "alerts_on_incident": 24,
   "minutes": 37.3,
-  "recall_%": 52,
-  "precision_%": 9
+  "recall_%": 44,
+  "precision_%": 10
  },
  "unattended items": {
   "incidents": 11,
   "caught": 8,
   "right_person": null,
-  "alerts": 141,
-  "alerts_on_incident": 15,
+  "alerts": 122,
+  "alerts_on_incident": 13,
   "minutes": 20.9,
   "recall_%": 73,
   "precision_%": 11
