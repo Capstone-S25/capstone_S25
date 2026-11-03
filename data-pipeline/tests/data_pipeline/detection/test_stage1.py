@@ -125,3 +125,70 @@ def test_new_session_resets_tracking_and_clock(tmp_path):
     assert FakeEngine.created == 2
     assert detector.perception.resets == 2
     assert detector.engine.times == [0.0]
+
+
+def test_duplicate_and_decreasing_timestamps(tmp_path):
+    import pytest
+
+    detector = make_detector(tmp_path)
+    detector.process(frame(0))
+    detector.process(frame(500))
+    assert detector.process(frame(500)) == []
+    assert detector.engine.times == [0.0, 0.5]
+    with pytest.raises(ValueError, match="decreased"):
+        detector.process(frame(400))
+
+
+def test_gap_resets_tracker_and_history_without_rewinding_session_time(tmp_path):
+    detector = make_detector(tmp_path)
+    detector.process(frame(0))
+    detector.process(frame(500))
+    detector.process(frame(10_000))
+    assert detector.engine.times == [10.0]
+    assert detector.perception.resets == 2
+    assert detector.continuity_epoch == 2
+
+
+def test_periodic_scene_review_reaches_all_tasks_without_a_rule_trigger(tmp_path):
+    detector = Stage1Detector(
+        "camera_01",
+        tmp_path,
+        fps=2,
+        cfg=object(),
+        gate=fake_gate(),
+        safety_scan_seconds=5,
+    )
+    events = [
+        c
+        for ms in range(0, 6500, 500)
+        for c in detector.process(frame(ms, segment=ms // 2000 + 1))
+    ]
+    periodic = [e for e in events if e["event_type"] == "periodic_review"]
+    assert len(periodic) == 1
+    assert periodic[0]["timestamp_s"] == 5
+    assert set(periodic[0]["tasks"]) == {
+        "smoking",
+        "littering",
+        "loitering",
+        "rough_sleeping",
+        "unattended_items",
+    }
+    assert periodic[0]["roi_box"] == [0, 0, 6, 4]
+    assert periodic[0]["candidate_origin"] == "scheduled_scene_review"
+    # A discontinuity starts a fresh review period and cannot invent intervening history.
+    assert detector.process(frame(20000)) == []
+
+
+def test_periodic_action_window_covers_the_scan_interval(tmp_path):
+    detector = Stage1Detector(
+        "camera_01",
+        tmp_path,
+        fps=2,
+        cfg=object(),
+        gate=fake_gate(),
+        safety_scan_seconds=10,
+    )
+    events = [c for ms in range(0, 10500, 500) for c in detector.process(frame(ms))]
+    periodic = next(e for e in events if e["event_type"] == "periodic_review")
+    assert periodic["timestamp_s"] == 10
+    assert detector.writer.windows[-2:] == [("_short", 0, 10), ("_long", -10, 10)]
