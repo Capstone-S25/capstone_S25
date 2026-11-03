@@ -1,0 +1,26 @@
+{
+ "10fps current cue": {
+  "alone littering event/crop %": "81.0/64.0",
+  "alone normal per min": 0.59,
+  "rules + littering event/crop %": "97.0/86.0",
+  "rules + normal per min": 6.45
+ },
+ "10fps mixed-rate cue": {
+  "alone littering event/crop %": "85.0/68.0",
+  "alone normal per min": 0.39,
+  "rules + littering event/crop %": "98.0/85.0",
+  "rules + normal per min": 6.26
+ },
+ "5fps current cue": {
+  "alone littering event/crop %": "82.0/67.0",
+  "alone normal per min": 0.59,
+  "rules + littering event/crop %": "96.0/86.0",
+  "rules + normal per min": 6.65
+ },
+ "5fps mixed-rate cue": {
+  "alone littering event/crop %": "79.0/64.0",
+  "alone normal per min": 0.39,
+  "rules + littering event/crop %": "93.0/80.0",
+  "rules + normal per min": 6.45
+ }
+}

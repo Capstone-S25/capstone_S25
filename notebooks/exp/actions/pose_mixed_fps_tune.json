@@ -1,0 +1,13 @@
+{
+ "threshold": 0.8186856865882873,
+ "10fps": {
+  "littering_tune_cue_alone_event_%": 83.0,
+  "littering_tune_cue_alone_crop_%": 63.0,
+  "avenue_tune_normal_cue_per_min": 0.98
+ },
+ "5fps": {
+  "littering_tune_cue_alone_event_%": 84.3,
+  "littering_tune_cue_alone_crop_%": 64.3,
+  "avenue_tune_normal_cue_per_min": 0.98
+ }
+}
