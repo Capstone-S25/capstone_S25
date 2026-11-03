@@ -27,6 +27,7 @@ VIDEO_EXTS = {".avi", ".mp4", ".mov", ".mkv"}
 
 NOSE, L_EYE, R_EYE, L_EAR, R_EAR = 0, 1, 2, 3, 4
 L_WRIST, R_WRIST = 9, 10
+L_HIP, R_HIP = 11, 12
 L_KNEE, R_KNEE = 13, 14
 KP_CONF = 0.3
 
@@ -108,6 +109,8 @@ class GateConfig:
     reach_rider_classes: tuple[int, ...] = (3,)  # COCO 3 motorcycle; 1 bicycle is left out: cyclists stop to dump
     reach_skip_overlap: float | None = None  # skip a person when another person's box covers this share of theirs
                                              # (overlapping people get each other's keypoints)
+    reach_skip_seated_s: float | None = None  # skip a person who has been seated (thigh near horizontal: knee within
+                                              # 0.12 body heights of the hip) for this long; a dumper crouches briefly
 
     bg_width: int = 480
     bg_long_s: float = 30.0
@@ -855,6 +858,15 @@ class RuleEngine:
                 v = math.hypot(b[1] - a[1], b[2] - a[2]) / (b[0] - a[0]) / float(np.median([q[3] for q in pts]))
                 if v > cfg.reach_max_speed_h:
                     return []
+        if cfg.reach_skip_seated_s is not None:
+            hips = [float(k[i, 1]) for i in (L_HIP, R_HIP) if k[i, 2] >= kc]
+            seated = bool(hips) and float(np.mean([q[1] for q in knees])) - float(np.mean(hips)) < 0.12 * h
+            if not seated:
+                st["seated_since"] = None
+            elif st.get("seated_since") is None:
+                st["seated_since"] = t
+            if seated and t - st["seated_since"] >= cfg.reach_skip_seated_s:
+                return []
         knee_y = float(np.mean([q[1] for q in knees]))
         hits = st.setdefault("reach_hits", deque())
         if max(w[1] for w in wrists) >= knee_y + cfg.reach_margin_h * h:
