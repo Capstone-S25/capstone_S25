@@ -355,3 +355,6 @@ Rule by rule at 12.5 vs 5 fps (rule alone; littering tune clips, Avenue tune nor
   (video2, video3 now caught; video4 still missed), held-out littering 97/86 → 97/85, Avenue 80/65 → 80/65, normal FA
   6.45 → 6.26/min. Caveat: the fix was motivated by looking at these ABODA misses, so ABODA is no longer a clean test
   for it; the tune data only shows it costs nothing.
+* **Bigger YOLO on ABODA bags** (`exp/newcam/yolo_sizes_aboda.json`, same frames as object_detectors.py, conf 0.2):
+  s 18 % / m 30 % / l 31 % of unattended-bag frames, CPU 49 / 104 / 131 ms. The gain is only on bags s already sees
+  (videos 1, 8, 10); videos 2–6 and 9 stay at 0 for every size, m loses video 7. Not worth 2x CPU.
