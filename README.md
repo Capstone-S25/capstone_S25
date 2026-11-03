@@ -19,6 +19,11 @@ Gemma uses a separate runtime because its Transformers version differs. Follow [
 
 ## Main workflows
 
+The feature branch also has a resident **YOLO/ByteTrack → trained SigLIP → Gemma
+evidence confirmation** workflow. See [Stage 1 integration](docs/stage1_reasoning.md)
+for direct-video/database commands, periodic scene review, model choices and
+the distinction between historical ranking quality and continuous event quality.
+
 ```bash
 # Inspect sources/licenses and the complete acquisition plan.
 python -m anomaly_eval fetch-all --list

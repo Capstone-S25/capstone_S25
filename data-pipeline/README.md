@@ -2,6 +2,13 @@
 
 A Python project for the YOLO-VLM anomaly detection pipeline.
 
+The integrated resident model workflow is documented in
+[Stage 1 reasoning](../docs/stage1_reasoning.md). It supports direct offline video,
+database-backed recording, classifier-only inference, Gemma evidence confirmation
+and a classifier/confirmation cascade. Both entry points default to five FPS
+and a ten-second periodic scene review; use `--safety-scan-seconds 0` to measure
+the original rule-only gate.
+
 ## First-time setup
 
 Install [Node.js](https://nodejs.org/) with npm. Run project commands from
