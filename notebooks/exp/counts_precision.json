@@ -1,0 +1,52 @@
+{
+ "littering": {
+  "incidents": 100,
+  "caught": 97,
+  "right_person": 85,
+  "alerts": 190,
+  "alerts_on_incident": 92,
+  "minutes": 5.0,
+  "recall_%": 97,
+  "precision_%": 48
+ },
+ "loitering": {
+  "incidents": 20,
+  "caught": 16,
+  "right_person": 13,
+  "alerts": 67,
+  "alerts_on_incident": 14,
+  "minutes": 10.1,
+  "recall_%": 80,
+  "precision_%": 21
+ },
+ "smoking": {
+  "incidents": 364,
+  "caught": 159,
+  "right_person": 56,
+  "alerts": 349,
+  "alerts_on_incident": 62,
+  "minutes": 63.5,
+  "recall_%": 44,
+  "precision_%": 18
+ },
+ "illegal dumping": {
+  "incidents": 50,
+  "caught": 26,
+  "right_person": null,
+  "alerts": 385,
+  "alerts_on_incident": 33,
+  "minutes": 37.3,
+  "recall_%": 52,
+  "precision_%": 9
+ },
+ "unattended items": {
+  "incidents": 11,
+  "caught": 8,
+  "right_person": null,
+  "alerts": 141,
+  "alerts_on_incident": 15,
+  "minutes": 20.9,
+  "recall_%": 73,
+  "precision_%": 11
+ }
+}
