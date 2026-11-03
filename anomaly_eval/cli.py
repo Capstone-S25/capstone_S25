@@ -10,6 +10,16 @@ from pathlib import Path
 from .paths import ROOT_FIELDS, configure
 
 COMMANDS = {
+    "gemma4": (
+        "anomaly_eval.gemma4.__main__",
+        "main",
+        "Fetch, evaluate, optimize and report Gemma 4 models",
+    ),
+    "evaluate-gemma4": (
+        "anomaly_eval.gemma4.study",
+        "main",
+        "Evaluate pinned Gemma 4 sizes with development-only prompt selection",
+    ),
     "predict-clip": (
         "anomaly_eval.training.predict",
         "main",

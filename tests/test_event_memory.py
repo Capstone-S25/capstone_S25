@@ -9,7 +9,7 @@ from anomaly_eval.training.event_memory import (
     RobustStationarityTracker,
     poisson_upper_rate,
 )
-from scripts.run_event_improvements import source_budget_threshold
+from scripts.video.run_event_improvements import source_budget_threshold
 
 
 def item(key=1, x=0.2, **kwargs):

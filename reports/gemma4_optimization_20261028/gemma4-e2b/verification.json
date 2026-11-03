@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "heldout_cases": 4032,
+  "primary_development_cases": 1812,
+  "source_development_cases": 160,
+  "result_sha256": "2923168db89abbd935189827679ecd720d48ee9873795f60743a0922a5dc6529",
+  "replayed": [
+    "new-policy finalists",
+    "full-development routes and blend constants",
+    "all cutoffs",
+    "all held-out margins",
+    "all source metrics"
+  ]
+}

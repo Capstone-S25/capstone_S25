@@ -1,0 +1,10 @@
+{
+  "release": "b11925",
+  "source_commit": "fae9ac561",
+  "url": "https://github.com/ggml-org/llama.cpp/releases/download/b11925/llama-b11925-bin-ubuntu-cuda-12.8-x64.tar.gz",
+  "archive": "llama-b11925-bin-ubuntu-cuda-12.8-x64.tar.gz",
+  "bytes": 182195857,
+  "sha256": "3d2f3ee4461d191e387639ac95cab27f76b87f00511156f009acbd89017f1c02",
+  "directory": "data/tools/llama_gemma4/b11925",
+  "binary": "llama-b11925/llama-server"
+}

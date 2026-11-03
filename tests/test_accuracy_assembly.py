@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.combine_accuracy_runs import combine
+from scripts.expanded.combine_accuracy_runs import combine
 
 
 class AssemblyTests(unittest.TestCase):

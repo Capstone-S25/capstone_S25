@@ -1,0 +1,443 @@
+{
+  "primary": {
+    "routes": {
+      "smoking": "gemma4-12b",
+      "littering": "gemma4-31b",
+      "loitering": "gemma4-e2b",
+      "rough_sleeping": "gemma4-26b-a4b",
+      "unattended_items": "gemma4-31b"
+    },
+    "normalization": {
+      "smoking": {
+        "gemma4-e2b": {
+          "mean": -23.434935408640126,
+          "std": 11.864024707528404
+        },
+        "gemma4-e4b": {
+          "mean": -14.161339421613395,
+          "std": 7.295319389828942
+        },
+        "gemma4-12b": {
+          "mean": -13.76635040794152,
+          "std": 8.749449567079866
+        },
+        "gemma4-26b-a4b": {
+          "mean": -11.53292531865559,
+          "std": 6.466122287270138
+        },
+        "gemma4-31b": {
+          "mean": -14.478015137835722,
+          "std": 9.838750461124679
+        }
+      },
+      "littering": {
+        "gemma4-e2b": {
+          "mean": -15.371349897540984,
+          "std": 10.588757107329602
+        },
+        "gemma4-e4b": {
+          "mean": -8.131659836065573,
+          "std": 5.229636770767693
+        },
+        "gemma4-12b": {
+          "mean": -7.625256147540983,
+          "std": 4.699275247378919
+        },
+        "gemma4-26b-a4b": {
+          "mean": -7.247438017305233,
+          "std": 4.32924784241833
+        },
+        "gemma4-31b": {
+          "mean": -5.703139257716767,
+          "std": 11.828415128678344
+        }
+      },
+      "loitering": {
+        "gemma4-e2b": {
+          "mean": -26.480229591836736,
+          "std": 2.9714320180855416
+        },
+        "gemma4-e4b": {
+          "mean": -14.712691326530612,
+          "std": 2.0140888989462318
+        },
+        "gemma4-12b": {
+          "mean": -0.4760044642857143,
+          "std": 0.35166744819601253
+        },
+        "gemma4-26b-a4b": {
+          "mean": -8.635627521723347,
+          "std": 1.3698040750202922
+        },
+        "gemma4-31b": {
+          "mean": -9.709042066285212,
+          "std": 3.8189854963266
+        }
+      },
+      "rough_sleeping": {
+        "gemma4-e2b": {
+          "mean": -8.998046875,
+          "std": 16.562372774387814
+        },
+        "gemma4-e4b": {
+          "mean": -6.602678571428571,
+          "std": 8.723637704789315
+        },
+        "gemma4-12b": {
+          "mean": -6.818777901785714,
+          "std": 12.776085145494225
+        },
+        "gemma4-26b-a4b": {
+          "mean": -2.7720042662197835,
+          "std": 8.213746571870438
+        },
+        "gemma4-31b": {
+          "mean": -7.8681847777391996,
+          "std": 16.6531723918435
+        }
+      },
+      "unattended_items": {
+        "gemma4-e2b": {
+          "mean": -18.505380306603772,
+          "std": 7.607601735901263
+        },
+        "gemma4-e4b": {
+          "mean": -8.610947327044025,
+          "std": 5.408438401896396
+        },
+        "gemma4-12b": {
+          "mean": -10.01749213836478,
+          "std": 4.631572930068355
+        },
+        "gemma4-26b-a4b": {
+          "mean": -5.663209254033075,
+          "std": 3.260959574632634
+        },
+        "gemma4-31b": {
+          "mean": -2.7315687961608734,
+          "std": 8.008579398409587
+        }
+      }
+    },
+    "development_ap": {
+      "smoking": {
+        "gemma4-e2b": 0.7583187201897958,
+        "gemma4-e4b": 0.7292205713286144,
+        "gemma4-12b": 0.8085667929996353,
+        "gemma4-26b-a4b": 0.8012529900106101,
+        "gemma4-31b": 0.8058477293800891
+      },
+      "littering": {
+        "gemma4-e2b": 0.7183392508874319,
+        "gemma4-e4b": 0.797252282684083,
+        "gemma4-12b": 0.8568684959628006,
+        "gemma4-26b-a4b": 0.8895149417484773,
+        "gemma4-31b": 0.9257000963150013
+      },
+      "loitering": {
+        "gemma4-e2b": 0.34683373111466764,
+        "gemma4-e4b": 0.22047495428050112,
+        "gemma4-12b": 0.24899409987458826,
+        "gemma4-26b-a4b": 0.3246780149126426,
+        "gemma4-31b": 0.24552416561003693
+      },
+      "rough_sleeping": {
+        "gemma4-e2b": 0.9571428571428571,
+        "gemma4-e4b": 0.9682539682539681,
+        "gemma4-12b": 0.982142857142857,
+        "gemma4-26b-a4b": 0.9999999999999998,
+        "gemma4-31b": 0.9325396825396823
+      },
+      "unattended_items": {
+        "gemma4-e2b": 0.750356887100093,
+        "gemma4-e4b": 0.8594580586740934,
+        "gemma4-12b": 0.8888782513118878,
+        "gemma4-26b-a4b": 0.8779066802544746,
+        "gemma4-31b": 0.9275837609019966
+      }
+    }
+  },
+  "baseline_safeguard": {
+    "routes": {
+      "smoking": "gemma4-12b/baseline",
+      "littering": "gemma4-31b/baseline",
+      "loitering": "gemma4-e2b/optimized",
+      "rough_sleeping": "gemma4-26b-a4b/baseline",
+      "unattended_items": "gemma4-31b/baseline"
+    },
+    "normalization": {
+      "smoking": {
+        "gemma4-e2b/baseline": {
+          "mean": -24.430023773983006,
+          "std": 11.674385708072931
+        },
+        "gemma4-e2b/optimized": {
+          "mean": -23.434935408640126,
+          "std": 11.864024707528404
+        },
+        "gemma4-e4b/baseline": {
+          "mean": -12.512414383561644,
+          "std": 7.314533038183674
+        },
+        "gemma4-e4b/optimized": {
+          "mean": -14.161339421613395,
+          "std": 7.295319389828942
+        },
+        "gemma4-12b/baseline": {
+          "mean": -13.76635040794152,
+          "std": 8.749449567079866
+        },
+        "gemma4-12b/optimized": {
+          "mean": -13.76635040794152,
+          "std": 8.749449567079866
+        },
+        "gemma4-26b-a4b/baseline": {
+          "mean": -11.53292531865559,
+          "std": 6.466122287270138
+        },
+        "gemma4-26b-a4b/optimized": {
+          "mean": -11.53292531865559,
+          "std": 6.466122287270138
+        },
+        "gemma4-31b/baseline": {
+          "mean": -14.675633011980697,
+          "std": 10.076881051139495
+        },
+        "gemma4-31b/optimized": {
+          "mean": -14.478015137835722,
+          "std": 9.838750461124679
+        }
+      },
+      "littering": {
+        "gemma4-e2b/baseline": {
+          "mean": -15.067142674180328,
+          "std": 11.25651100152663
+        },
+        "gemma4-e2b/optimized": {
+          "mean": -15.371349897540984,
+          "std": 10.588757107329602
+        },
+        "gemma4-e4b/baseline": {
+          "mean": -6.26844262295082,
+          "std": 5.688950502551271
+        },
+        "gemma4-e4b/optimized": {
+          "mean": -8.131659836065573,
+          "std": 5.229636770767693
+        },
+        "gemma4-12b/baseline": {
+          "mean": -3.2280353483606556,
+          "std": 4.173510747624412
+        },
+        "gemma4-12b/optimized": {
+          "mean": -7.625256147540983,
+          "std": 4.699275247378919
+        },
+        "gemma4-26b-a4b/baseline": {
+          "mean": -6.334066923258653,
+          "std": 3.634108930934091
+        },
+        "gemma4-26b-a4b/optimized": {
+          "mean": -7.247438017305233,
+          "std": 4.32924784241833
+        },
+        "gemma4-31b/baseline": {
+          "mean": -5.703139257716767,
+          "std": 11.828415128678344
+        },
+        "gemma4-31b/optimized": {
+          "mean": -5.703139257716767,
+          "std": 11.828415128678344
+        }
+      },
+      "loitering": {
+        "gemma4-e2b/baseline": {
+          "mean": -26.192123724489797,
+          "std": 2.566632557353903
+        },
+        "gemma4-e2b/optimized": {
+          "mean": -26.480229591836736,
+          "std": 2.9714320180855416
+        },
+        "gemma4-e4b/baseline": {
+          "mean": -12.463647959183673,
+          "std": 2.3508256031389028
+        },
+        "gemma4-e4b/optimized": {
+          "mean": -14.712691326530612,
+          "std": 2.0140888989462318
+        },
+        "gemma4-12b/baseline": {
+          "mean": -7.088647959183674,
+          "std": 1.529105471144352
+        },
+        "gemma4-12b/optimized": {
+          "mean": -0.4760044642857143,
+          "std": 0.35166744819601253
+        },
+        "gemma4-26b-a4b/baseline": {
+          "mean": -8.55555429356014,
+          "std": 1.1359150609332065
+        },
+        "gemma4-26b-a4b/optimized": {
+          "mean": -8.635627521723347,
+          "std": 1.3698040750202922
+        },
+        "gemma4-31b/baseline": {
+          "mean": -9.709042066285212,
+          "std": 3.8189854963266
+        },
+        "gemma4-31b/optimized": {
+          "mean": -9.709042066285212,
+          "std": 3.8189854963266
+        }
+      },
+      "rough_sleeping": {
+        "gemma4-e2b/baseline": {
+          "mean": -8.90327380952381,
+          "std": 16.628468956993387
+        },
+        "gemma4-e2b/optimized": {
+          "mean": -8.998046875,
+          "std": 16.562372774387814
+        },
+        "gemma4-e4b/baseline": {
+          "mean": -6.09375,
+          "std": 8.21564591481516
+        },
+        "gemma4-e4b/optimized": {
+          "mean": -6.602678571428571,
+          "std": 8.723637704789315
+        },
+        "gemma4-12b/baseline": {
+          "mean": -6.772321428571429,
+          "std": 14.072224241116798
+        },
+        "gemma4-12b/optimized": {
+          "mean": -6.818777901785714,
+          "std": 12.776085145494225
+        },
+        "gemma4-26b-a4b/baseline": {
+          "mean": -2.7720042662197835,
+          "std": 8.213746571870438
+        },
+        "gemma4-26b-a4b/optimized": {
+          "mean": -2.7720042662197835,
+          "std": 8.213746571870438
+        },
+        "gemma4-31b/baseline": {
+          "mean": -7.8681847777391996,
+          "std": 16.6531723918435
+        },
+        "gemma4-31b/optimized": {
+          "mean": -7.8681847777391996,
+          "std": 16.6531723918435
+        }
+      },
+      "unattended_items": {
+        "gemma4-e2b/baseline": {
+          "mean": -17.345349965605347,
+          "std": 9.233502160271232
+        },
+        "gemma4-e2b/optimized": {
+          "mean": -18.505380306603772,
+          "std": 7.607601735901263
+        },
+        "gemma4-e4b/baseline": {
+          "mean": -8.008844339622641,
+          "std": 5.25378045050928
+        },
+        "gemma4-e4b/optimized": {
+          "mean": -8.610947327044025,
+          "std": 5.408438401896396
+        },
+        "gemma4-12b/baseline": {
+          "mean": -6.849646226415095,
+          "std": 5.553662629759766
+        },
+        "gemma4-12b/optimized": {
+          "mean": -10.01749213836478,
+          "std": 4.631572930068355
+        },
+        "gemma4-26b-a4b/baseline": {
+          "mean": -5.663209254033075,
+          "std": 3.260959574632634
+        },
+        "gemma4-26b-a4b/optimized": {
+          "mean": -5.663209254033075,
+          "std": 3.260959574632634
+        },
+        "gemma4-31b/baseline": {
+          "mean": -2.7315687961608734,
+          "std": 8.008579398409587
+        },
+        "gemma4-31b/optimized": {
+          "mean": -2.7315687961608734,
+          "std": 8.008579398409587
+        }
+      }
+    },
+    "development_ap": {
+      "smoking": {
+        "gemma4-e2b/baseline": 0.7521834585569946,
+        "gemma4-e2b/optimized": 0.7583187201897958,
+        "gemma4-e4b/baseline": 0.7447161358718541,
+        "gemma4-e4b/optimized": 0.7292205713286144,
+        "gemma4-12b/baseline": 0.8085667929996353,
+        "gemma4-12b/optimized": 0.8085667929996353,
+        "gemma4-26b-a4b/baseline": 0.8012529900106101,
+        "gemma4-26b-a4b/optimized": 0.8012529900106101,
+        "gemma4-31b/baseline": 0.8004380557195061,
+        "gemma4-31b/optimized": 0.8058477293800891
+      },
+      "littering": {
+        "gemma4-e2b/baseline": 0.6999915381536039,
+        "gemma4-e2b/optimized": 0.7183392508874319,
+        "gemma4-e4b/baseline": 0.7624241677339608,
+        "gemma4-e4b/optimized": 0.797252282684083,
+        "gemma4-12b/baseline": 0.7691461594756006,
+        "gemma4-12b/optimized": 0.8568684959628006,
+        "gemma4-26b-a4b/baseline": 0.8270593890607465,
+        "gemma4-26b-a4b/optimized": 0.8895149417484773,
+        "gemma4-31b/baseline": 0.9257000963150013,
+        "gemma4-31b/optimized": 0.9257000963150013
+      },
+      "loitering": {
+        "gemma4-e2b/baseline": 0.21572905006569748,
+        "gemma4-e2b/optimized": 0.34683373111466764,
+        "gemma4-e4b/baseline": 0.23035458650868781,
+        "gemma4-e4b/optimized": 0.22047495428050112,
+        "gemma4-12b/baseline": 0.1717647981143628,
+        "gemma4-12b/optimized": 0.24899409987458826,
+        "gemma4-26b-a4b/baseline": 0.17169025866989177,
+        "gemma4-26b-a4b/optimized": 0.3246780149126426,
+        "gemma4-31b/baseline": 0.24552416561003693,
+        "gemma4-31b/optimized": 0.24552416561003693
+      },
+      "rough_sleeping": {
+        "gemma4-e2b/baseline": 0.9480519480519478,
+        "gemma4-e2b/optimized": 0.9571428571428571,
+        "gemma4-e4b/baseline": 0.9285714285714284,
+        "gemma4-e4b/optimized": 0.9682539682539681,
+        "gemma4-12b/baseline": 0.9340659340659339,
+        "gemma4-12b/optimized": 0.982142857142857,
+        "gemma4-26b-a4b/baseline": 0.9999999999999998,
+        "gemma4-26b-a4b/optimized": 0.9999999999999998,
+        "gemma4-31b/baseline": 0.9325396825396823,
+        "gemma4-31b/optimized": 0.9325396825396823
+      },
+      "unattended_items": {
+        "gemma4-e2b/baseline": 0.7472357489991217,
+        "gemma4-e2b/optimized": 0.750356887100093,
+        "gemma4-e4b/baseline": 0.835878825251456,
+        "gemma4-e4b/optimized": 0.8594580586740934,
+        "gemma4-12b/baseline": 0.8655439548171053,
+        "gemma4-12b/optimized": 0.8888782513118878,
+        "gemma4-26b-a4b/baseline": 0.8779066802544746,
+        "gemma4-26b-a4b/optimized": 0.8779066802544746,
+        "gemma4-31b/baseline": 0.9275837609019966,
+        "gemma4-31b/optimized": 0.9275837609019966
+      }
+    }
+  }
+}

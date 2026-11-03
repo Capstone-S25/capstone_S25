@@ -25,4 +25,4 @@ case "${1:-train}" in
     *) echo "Usage: $0 {train|predict|verify|transfer|report|export|repeated-gains} [arguments]" >&2; exit 2 ;;
 esac
 if [[ $# -gt 0 ]]; then shift; fi
-exec "$task_python" "$task_root/scripts/$task_script" "$@"
+exec "$task_python" -m "scripts.smolvlm.${task_script%.py}" "$@"

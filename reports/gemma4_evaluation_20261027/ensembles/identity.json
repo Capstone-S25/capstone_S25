@@ -1,0 +1,14 @@
+{
+  "protocol_sha256": "b877aa8d8119598f4f5670670e1147705ac0ccd19b7476335d3c4e9cdaeb197e",
+  "code_sha256": "483df096b1eeb7dea629ddce1b72a5905cbade67b2a6089ec918ba3225af3e7b",
+  "study_protocol_sha256": "b1ccb6e092291ca947e63f127c34e6844cd44840dd02903b58959d3df43a2ac0",
+  "base_results_sha256": {
+    "gemma4-e2b": "860ba5380d941ee51d3b3f9893cd7495102359bbb674d7f37134fc285abf9f36",
+    "gemma4-e4b": "08808374bd1a542d4264051f98dd2ea85a9d06f3c5144c3985cfb42290447833",
+    "gemma4-12b": "8f019869cda7e79b08728829fea7e0963ceb260011cb9dcb190aa8d8288abfed",
+    "gemma4-26b-a4b": "034a9dde8b3d70fcdcc3d0c79a599550a2980adf04b46b1ff234f7326526519f",
+    "gemma4-31b": "86d0ebaf1b5f8cc279fc249a4c0ca00b4cfac9abe21ed1a54ddd861c1c99afbe"
+  },
+  "uses_test_for_fit": false,
+  "safeguard_protocol_sha256": "29242430d659f0ac5d9ce20f2b39079305872db3d1f0c49bdf5a017edda6e691"
+}

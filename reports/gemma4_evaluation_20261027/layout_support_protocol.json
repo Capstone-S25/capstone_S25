@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "declared_utc": "2026-10-27T10:49:16.688753+00:00",
+  "status": "post_result_methodology_correction",
+  "completed_model_results_reviewed": [
+    "gemma4-e2b"
+  ],
+  "reason": "A sheet policy evaluated on single-image primary development is only a high-resolution native-image policy; it switches to an unvalidated contact sheet for multi-image transfer. Preserve original results and test a fixed support gate separately.",
+  "rule": "Use the predeclared baseline for a multi-image input when the selected policy uses a sheet layout but that objective has no multi-image example in primary development. Otherwise use the original optimized route.",
+  "selection_inputs": "Primary development view counts and already-frozen selected policy only; inference branch uses number of input views, never source identity, target or test performance.",
+  "calibration": "Use the original baseline or optimized primary-development cutoff for the selected branch; source-development cutoffs remain secondary. Report branch-specific cutoffs explicitly.",
+  "inference": "No new model forwards; reuse unchanged baseline/optimized predictions.",
+  "qualification": "Retrospective E2B correction designed after its transfer regression was seen; other models retain their original primary runs. It is a diagnostic method improvement, not a new untouched acceptance test."
+}

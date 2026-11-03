@@ -1,0 +1,54 @@
+{
+  "finalists": {
+    "smoking": [
+      "definition_native_280",
+      "contextual_crops_560"
+    ],
+    "littering": [
+      "definition_native_280",
+      "evidence_sheet_1120",
+      "contrastive_native_560"
+    ],
+    "loitering": [
+      "definition_native_280",
+      "evidence_native_560",
+      "detail_native_1120"
+    ],
+    "rough_sleeping": [
+      "definition_native_280",
+      "contextual_crops_560"
+    ],
+    "unattended_items": [
+      "definition_native_280",
+      "detail_native_1120"
+    ]
+  },
+  "uses_test": false,
+  "new_policy_source_ap": {
+    "smoking": {
+      "detail_native_1120": 0.830179111420316,
+      "contrastive_native_560": 0.8658585895814997,
+      "contextual_crops_560": 0.907067427521973
+    },
+    "littering": {
+      "detail_native_1120": 0.8520162770070007,
+      "contrastive_native_560": 0.8724841332284428,
+      "contextual_crops_560": 0.8187960884184232
+    },
+    "loitering": {
+      "detail_native_1120": 0.4405069695862534,
+      "contrastive_native_560": 0.4342245366383297,
+      "contextual_crops_560": 0.3507731003913378
+    },
+    "rough_sleeping": {
+      "detail_native_1120": 0.982142857142857,
+      "contrastive_native_560": 0.9480519480519478,
+      "contextual_crops_560": 0.9999999999999998
+    },
+    "unattended_items": {
+      "detail_native_1120": 0.8433127631996613,
+      "contrastive_native_560": 0.7923961402419755,
+      "contextual_crops_560": 0.778505855768695
+    }
+  }
+}

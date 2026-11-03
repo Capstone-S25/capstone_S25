@@ -1,0 +1,3526 @@
+{
+  "identity": {
+    "code_sha256": "36ef0644be9c4fc81659b763304835ca78d22854ae468f74dc5869b685a6a867",
+    "repetitions": 500,
+    "inputs": {
+      "/home/g31/projects/test_here/capstone_S25/results/gemma4_evaluation_20261027/gemma4-e2b/baseline_heldout_predictions.jsonl": "df4241e836ce98c996dc8ca04c94fe32471d0b7615d3f973050478bbffc89f92",
+      "/home/g31/projects/test_here/capstone_S25/results/gemma4_optimization_20261028/gemma4-e2b/full_dev_selected_predictions.jsonl": "6263f00ee8201c399ea4f52c44fa34d57714afacaa07b04e6ed1a447bf773937",
+      "/home/g31/projects/test_here/capstone_S25/results/gemma4_optimization_20261028/gemma4-e2b/source_safeguarded_predictions.jsonl": "fc5351ef6c6675c6a783a4f572329ac555d1cc3b4dd88fcd42bdcf3d24e6cc79",
+      "/home/g31/projects/test_here/capstone_S25/results/gemma4_optimization_20261028/gemma4-e2b/baseline_blend_predictions.jsonl": "8fca362392ef132a04b8b03ea80f6f7f951c390a47451e813e07cc5e379e8c3e",
+      "/home/g31/projects/test_here/capstone_S25/results/gemma4_evaluation_20261027/gemma4-e4b/baseline_heldout_predictions.jsonl": "ce688e3557de4d924675f13fe3ee27a3a53a6854c33117b9c94b0035bccf51b1",
+      "/home/g31/projects/test_here/capstone_S25/results/gemma4_optimization_20261028/gemma4-e4b/full_dev_selected_predictions.jsonl": "0281fd2c22f500f34d0a34a041f4dbcdc91938d8be7ef3ca528dfa029a94899b",
+      "/home/g31/projects/test_here/capstone_S25/results/gemma4_optimization_20261028/gemma4-e4b/source_safeguarded_predictions.jsonl": "d213cfc965ac86a2c51e18cbb46c3a460bd701ebe647acf77d5f590511121f5c",
+      "/home/g31/projects/test_here/capstone_S25/results/gemma4_optimization_20261028/gemma4-e4b/baseline_blend_predictions.jsonl": "a9d65b3062d047eb7e6a55fb4a3cdcf2a272ca7051d19aa52e21099efd173109",
+      "/home/g31/projects/test_here/capstone_S25/results/gemma4_evaluation_20261027/gemma4-12b/baseline_heldout_predictions.jsonl": "1f8550802094c36a30c7bd2484e1439207e3fac7422296471176d9e55d1fa296",
+      "/home/g31/projects/test_here/capstone_S25/results/gemma4_optimization_20261028/gemma4-12b/full_dev_selected_predictions.jsonl": "3920f3aea0acaed9b99345f9c802397ec796c29ef61be9a53bdc4bf286d5ea76",
+      "/home/g31/projects/test_here/capstone_S25/results/gemma4_optimization_20261028/gemma4-12b/source_safeguarded_predictions.jsonl": "c58108877396acefb1a2d0eaed7443b33fa13d62b3b75bd6505b90bdd8c3d692",
+      "/home/g31/projects/test_here/capstone_S25/results/gemma4_optimization_20261028/gemma4-12b/baseline_blend_predictions.jsonl": "7bced2c634c67619cdf82aad7845eed84fff10ced8d07bf66f5038dcfba47489",
+      "/home/g31/projects/test_here/capstone_S25/results/gemma4_evaluation_20261027/gemma4-26b-a4b/baseline_heldout_predictions.jsonl": "1051795b227e63fb218e718e8ed2432b33c14b4bd2d707fc9e9b53f33a0b6704",
+      "/home/g31/projects/test_here/capstone_S25/results/gemma4_optimization_20261028/gemma4-26b-a4b/full_dev_selected_predictions.jsonl": "2d220bd3c6fa51d15dbbbf35355565e54fac9b647cd0f37193b648848c5bae11",
+      "/home/g31/projects/test_here/capstone_S25/results/gemma4_optimization_20261028/gemma4-26b-a4b/source_safeguarded_predictions.jsonl": "2d220bd3c6fa51d15dbbbf35355565e54fac9b647cd0f37193b648848c5bae11",
+      "/home/g31/projects/test_here/capstone_S25/results/gemma4_optimization_20261028/gemma4-26b-a4b/baseline_blend_predictions.jsonl": "c67d39bb2a2ff02155a75f175f77ef10c86f1332761c5d5a57f17e7f5177c03b",
+      "/home/g31/projects/test_here/capstone_S25/results/gemma4_evaluation_20261027/gemma4-31b/baseline_heldout_predictions.jsonl": "cb0ae058d47f09a8fae76041f24d42f9a2edf41cea47eb3d17865fdb317e08c4",
+      "/home/g31/projects/test_here/capstone_S25/results/gemma4_optimization_20261028/gemma4-31b/full_dev_selected_predictions.jsonl": "c32d515905355a33af67a7653b8fc29958ced7ff1a3a2d535b008a95b912a954",
+      "/home/g31/projects/test_here/capstone_S25/results/gemma4_optimization_20261028/gemma4-31b/source_safeguarded_predictions.jsonl": "c32d515905355a33af67a7653b8fc29958ced7ff1a3a2d535b008a95b912a954",
+      "/home/g31/projects/test_here/capstone_S25/results/gemma4_optimization_20261028/gemma4-31b/baseline_blend_predictions.jsonl": "14e06e939831fd58b340c1d951151df822c62bca9ef6fd36b4049c5210d343f7"
+    }
+  },
+  "qualification": "Paired group resampling conditional on observed source groups and labels, not new-camera or prospective validation. Sources with fewer than three groups have no interval.",
+  "sources": [
+    {
+      "model": "gemma4-e2b",
+      "method": "full_dev_selected",
+      "task": "littering",
+      "source": "mivia_iwdd",
+      "cases": 100,
+      "groups": 95,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.44801471135709314,
+        0.7214359245865828
+      ],
+      "optimized_ci95": [
+        0.45566422392912564,
+        0.7355312446124689
+      ],
+      "paired_delta_ci95": [
+        -0.054623808707471744,
+        0.0808265289590923
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "full_dev_selected",
+      "task": "loitering",
+      "source": "street_scene",
+      "cases": 75,
+      "groups": 6,
+      "repetitions": 500,
+      "valid_repetitions": 493,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.1111111111111111,
+        0.6344747402027919
+      ],
+      "optimized_ci95": [
+        0.14285714285714285,
+        0.6583330226531217
+      ],
+      "paired_delta_ci95": [
+        -0.06193563586395523,
+        0.11882783882783882
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "full_dev_selected",
+      "task": "rough_sleeping",
+      "source": "commons_new_author_transfer",
+      "cases": 28,
+      "groups": 25,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.773867597378467,
+        0.9999999999999999
+      ],
+      "optimized_ci95": [
+        0.7765297719709484,
+        0.9982789855072463
+      ],
+      "paired_delta_ci95": [
+        -0.04461924448337492,
+        0.05032176713660651
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "full_dev_selected",
+      "task": "rough_sleeping",
+      "source": "commons_visible_sleeping",
+      "cases": 18,
+      "groups": 16,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9999999999999998,
+        1.0
+      ],
+      "optimized_ci95": [
+        0.9999999999999998,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "hmdb51_action_transfer",
+      "cases": 906,
+      "groups": 226,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7411823525224143,
+        0.8955625142760517
+      ],
+      "optimized_ci95": [
+        0.6085785504006399,
+        0.8267098145048063
+      ],
+      "paired_delta_ci95": [
+        -0.16572720749503128,
+        -0.03417117780903298
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "kaggle_sujaykapadnis_smoking",
+      "cases": 224,
+      "groups": 224,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9501876161442141,
+        0.9969424996308386
+      ],
+      "optimized_ci95": [
+        0.9852379404301352,
+        0.9992696475940581
+      ],
+      "paired_delta_ci95": [
+        0.0010662157633053587,
+        0.03887811392378236
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "smoking_cctv",
+      "cases": 646,
+      "groups": 1,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "stanford40",
+      "cases": 806,
+      "groups": 806,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7025319508908643,
+        0.8283911795006218
+      ],
+      "optimized_ci95": [
+        0.7199739144649006,
+        0.8678635706403258
+      ],
+      "paired_delta_ci95": [
+        -0.02118303005684853,
+        0.09132223278331357
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "xrf55_rgb_public",
+      "cases": 240,
+      "groups": 3,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.1777990831265196,
+        0.47584758243177916
+      ],
+      "optimized_ci95": [
+        0.18362416081967245,
+        0.39673904662300535
+      ],
+      "paired_delta_ci95": [
+        -0.07910853580877553,
+        0.021049248636765744
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "full_dev_selected",
+      "task": "unattended_items",
+      "source": "meva_abandon_action_transfer",
+      "cases": 27,
+      "groups": 10,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.5333782026796733,
+        0.6820102524666362
+      ],
+      "optimized_ci95": [
+        0.5690106427376362,
+        0.7068316781476179
+      ],
+      "paired_delta_ci95": [
+        -0.01828686171438273,
+        0.10279239877769292
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "full_dev_selected",
+      "task": "unattended_items",
+      "source": "unattended_reviewed",
+      "cases": 962,
+      "groups": 2,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "source_safeguarded",
+      "task": "littering",
+      "source": "mivia_iwdd",
+      "cases": 100,
+      "groups": 95,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.44801471135709314,
+        0.7214359245865828
+      ],
+      "optimized_ci95": [
+        0.45566422392912564,
+        0.7355312446124689
+      ],
+      "paired_delta_ci95": [
+        -0.054623808707471744,
+        0.0808265289590923
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "source_safeguarded",
+      "task": "loitering",
+      "source": "street_scene",
+      "cases": 75,
+      "groups": 6,
+      "repetitions": 500,
+      "valid_repetitions": 493,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.1111111111111111,
+        0.6344747402027919
+      ],
+      "optimized_ci95": [
+        0.14285714285714285,
+        0.6583330226531217
+      ],
+      "paired_delta_ci95": [
+        -0.06193563586395523,
+        0.11882783882783882
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "source_safeguarded",
+      "task": "rough_sleeping",
+      "source": "commons_new_author_transfer",
+      "cases": 28,
+      "groups": 25,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.773867597378467,
+        0.9999999999999999
+      ],
+      "optimized_ci95": [
+        0.7765297719709484,
+        0.9982789855072463
+      ],
+      "paired_delta_ci95": [
+        -0.04461924448337492,
+        0.05032176713660651
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "source_safeguarded",
+      "task": "rough_sleeping",
+      "source": "commons_visible_sleeping",
+      "cases": 18,
+      "groups": 16,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9999999999999998,
+        1.0
+      ],
+      "optimized_ci95": [
+        0.9999999999999998,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "hmdb51_action_transfer",
+      "cases": 906,
+      "groups": 226,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7411823525224143,
+        0.8955625142760517
+      ],
+      "optimized_ci95": [
+        0.6085785504006399,
+        0.8267098145048063
+      ],
+      "paired_delta_ci95": [
+        -0.16572720749503128,
+        -0.03417117780903298
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "kaggle_sujaykapadnis_smoking",
+      "cases": 224,
+      "groups": 224,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9501876161442141,
+        0.9969424996308386
+      ],
+      "optimized_ci95": [
+        0.9852379404301352,
+        0.9992696475940581
+      ],
+      "paired_delta_ci95": [
+        0.0010662157633053587,
+        0.03887811392378236
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "smoking_cctv",
+      "cases": 646,
+      "groups": 1,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "stanford40",
+      "cases": 806,
+      "groups": 806,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7025319508908643,
+        0.8283911795006218
+      ],
+      "optimized_ci95": [
+        0.7199739144649006,
+        0.8678635706403258
+      ],
+      "paired_delta_ci95": [
+        -0.02118303005684853,
+        0.09132223278331357
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "xrf55_rgb_public",
+      "cases": 240,
+      "groups": 3,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.1777990831265196,
+        0.47584758243177916
+      ],
+      "optimized_ci95": [
+        0.18362416081967245,
+        0.39673904662300535
+      ],
+      "paired_delta_ci95": [
+        -0.07910853580877553,
+        0.021049248636765744
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "source_safeguarded",
+      "task": "unattended_items",
+      "source": "meva_abandon_action_transfer",
+      "cases": 27,
+      "groups": 10,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.5333782026796733,
+        0.6820102524666362
+      ],
+      "optimized_ci95": [
+        0.5333782026796733,
+        0.6820102524666362
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "source_safeguarded",
+      "task": "unattended_items",
+      "source": "unattended_reviewed",
+      "cases": 962,
+      "groups": 2,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "baseline_blend",
+      "task": "littering",
+      "source": "mivia_iwdd",
+      "cases": 100,
+      "groups": 95,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.44801471135709314,
+        0.7214359245865828
+      ],
+      "optimized_ci95": [
+        0.4471484388013162,
+        0.726321142128089
+      ],
+      "paired_delta_ci95": [
+        -0.0334730801407232,
+        0.04330827698581451
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "baseline_blend",
+      "task": "loitering",
+      "source": "street_scene",
+      "cases": 75,
+      "groups": 6,
+      "repetitions": 500,
+      "valid_repetitions": 493,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.1111111111111111,
+        0.6344747402027919
+      ],
+      "optimized_ci95": [
+        0.12724358974358974,
+        0.6564676625490863
+      ],
+      "paired_delta_ci95": [
+        -0.04845183704694306,
+        0.09499999999999979
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "baseline_blend",
+      "task": "rough_sleeping",
+      "source": "commons_new_author_transfer",
+      "cases": 28,
+      "groups": 25,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.773867597378467,
+        0.9999999999999999
+      ],
+      "optimized_ci95": [
+        0.7824468435147783,
+        0.9999999999999999
+      ],
+      "paired_delta_ci95": [
+        -0.024725884384975163,
+        0.04922329354147528
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "baseline_blend",
+      "task": "rough_sleeping",
+      "source": "commons_visible_sleeping",
+      "cases": 18,
+      "groups": 16,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9999999999999998,
+        1.0
+      ],
+      "optimized_ci95": [
+        0.9999999999999998,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "hmdb51_action_transfer",
+      "cases": 906,
+      "groups": 226,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7411823525224143,
+        0.8955625142760517
+      ],
+      "optimized_ci95": [
+        0.7409676632838439,
+        0.9016248338652458
+      ],
+      "paired_delta_ci95": [
+        -0.01648361720338172,
+        0.029408062530516484
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "kaggle_sujaykapadnis_smoking",
+      "cases": 224,
+      "groups": 224,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9501876161442141,
+        0.9969424996308386
+      ],
+      "optimized_ci95": [
+        0.9783448261110032,
+        0.9987452263226513
+      ],
+      "paired_delta_ci95": [
+        0.0009505986693558484,
+        0.030160696417112966
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "smoking_cctv",
+      "cases": 646,
+      "groups": 1,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "stanford40",
+      "cases": 806,
+      "groups": 806,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7025319508908643,
+        0.8283911795006218
+      ],
+      "optimized_ci95": [
+        0.736127010847672,
+        0.8587793847718305
+      ],
+      "paired_delta_ci95": [
+        0.004227212739046208,
+        0.05949101576855522
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "xrf55_rgb_public",
+      "cases": 240,
+      "groups": 3,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.1777990831265196,
+        0.47584758243177916
+      ],
+      "optimized_ci95": [
+        0.17814650081811859,
+        0.4150124295622405
+      ],
+      "paired_delta_ci95": [
+        -0.060835152869539735,
+        0.005482760579724355
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "baseline_blend",
+      "task": "unattended_items",
+      "source": "meva_abandon_action_transfer",
+      "cases": 27,
+      "groups": 10,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.5333782026796733,
+        0.6820102524666362
+      ],
+      "optimized_ci95": [
+        0.5355095345830639,
+        0.7022983077528532
+      ],
+      "paired_delta_ci95": [
+        -0.003018504802987587,
+        0.041054587923686145
+      ]
+    },
+    {
+      "model": "gemma4-e2b",
+      "method": "baseline_blend",
+      "task": "unattended_items",
+      "source": "unattended_reviewed",
+      "cases": 962,
+      "groups": 2,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "full_dev_selected",
+      "task": "littering",
+      "source": "mivia_iwdd",
+      "cases": 100,
+      "groups": 95,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.6006874619852823,
+        0.8567375009672253
+      ],
+      "optimized_ci95": [
+        0.6296188492381524,
+        0.890733414794636
+      ],
+      "paired_delta_ci95": [
+        -0.06593925813315288,
+        0.14300304349449988
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "full_dev_selected",
+      "task": "loitering",
+      "source": "street_scene",
+      "cases": 75,
+      "groups": 6,
+      "repetitions": 500,
+      "valid_repetitions": 493,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.09090909090909091,
+        0.5708674879284465
+      ],
+      "optimized_ci95": [
+        0.11764705882352941,
+        0.463959197300064
+      ],
+      "paired_delta_ci95": [
+        -0.13730386719698104,
+        0.10277777777777745
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "full_dev_selected",
+      "task": "rough_sleeping",
+      "source": "commons_new_author_transfer",
+      "cases": 28,
+      "groups": 25,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.8131746031746031,
+        0.9927096237096237
+      ],
+      "optimized_ci95": [
+        0.8280951891246008,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        -0.028268626389949838,
+        0.07118112174479667
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "full_dev_selected",
+      "task": "rough_sleeping",
+      "source": "commons_visible_sleeping",
+      "cases": 18,
+      "groups": 16,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9999999999999999,
+        1.0
+      ],
+      "optimized_ci95": [
+        0.9999999999999999,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        -1.1102230246251565e-16,
+        5.82867087928182e-17
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "hmdb51_action_transfer",
+      "cases": 906,
+      "groups": 226,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7347722836933686,
+        0.8963437081237745
+      ],
+      "optimized_ci95": [
+        0.49309675532017566,
+        0.7311248495496991
+      ],
+      "paired_delta_ci95": [
+        -0.2758186142343711,
+        -0.1286327093433039
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "kaggle_sujaykapadnis_smoking",
+      "cases": 224,
+      "groups": 224,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9829998142748244,
+        0.9997828017458403
+      ],
+      "optimized_ci95": [
+        0.9981449434304436,
+        1.0000000000000002
+      ],
+      "paired_delta_ci95": [
+        0.00020114826515920672,
+        0.016118794331954067
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "smoking_cctv",
+      "cases": 646,
+      "groups": 1,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "stanford40",
+      "cases": 806,
+      "groups": 806,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7478348921823118,
+        0.8582040456743082
+      ],
+      "optimized_ci95": [
+        0.8638618441203729,
+        0.9352002645794505
+      ],
+      "paired_delta_ci95": [
+        0.05443520756066234,
+        0.14184674152056423
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "xrf55_rgb_public",
+      "cases": 240,
+      "groups": 3,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.1638381796298382,
+        0.5189191790061294
+      ],
+      "optimized_ci95": [
+        0.2049191086067219,
+        0.2809648240009221
+      ],
+      "paired_delta_ci95": [
+        -0.24067248239520303,
+        0.0410809289768837
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "full_dev_selected",
+      "task": "unattended_items",
+      "source": "meva_abandon_action_transfer",
+      "cases": 27,
+      "groups": 10,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.5798768298021809,
+        0.8138132798573975
+      ],
+      "optimized_ci95": [
+        0.552584355811258,
+        0.768297881652661
+      ],
+      "paired_delta_ci95": [
+        -0.14863693848681883,
+        0.058060575493179084
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "full_dev_selected",
+      "task": "unattended_items",
+      "source": "unattended_reviewed",
+      "cases": 962,
+      "groups": 2,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "source_safeguarded",
+      "task": "littering",
+      "source": "mivia_iwdd",
+      "cases": 100,
+      "groups": 95,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.6006874619852823,
+        0.8567375009672253
+      ],
+      "optimized_ci95": [
+        0.6296188492381524,
+        0.890733414794636
+      ],
+      "paired_delta_ci95": [
+        -0.06593925813315288,
+        0.14300304349449988
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "source_safeguarded",
+      "task": "loitering",
+      "source": "street_scene",
+      "cases": 75,
+      "groups": 6,
+      "repetitions": 500,
+      "valid_repetitions": 493,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.09090909090909091,
+        0.5708674879284465
+      ],
+      "optimized_ci95": [
+        0.09090909090909091,
+        0.5708674879284465
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "source_safeguarded",
+      "task": "rough_sleeping",
+      "source": "commons_new_author_transfer",
+      "cases": 28,
+      "groups": 25,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.8131746031746031,
+        0.9927096237096237
+      ],
+      "optimized_ci95": [
+        0.8280951891246008,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        -0.028268626389949838,
+        0.07118112174479667
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "source_safeguarded",
+      "task": "rough_sleeping",
+      "source": "commons_visible_sleeping",
+      "cases": 18,
+      "groups": 16,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9999999999999999,
+        1.0
+      ],
+      "optimized_ci95": [
+        0.9999999999999999,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        -1.1102230246251565e-16,
+        5.82867087928182e-17
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "hmdb51_action_transfer",
+      "cases": 906,
+      "groups": 226,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7347722836933686,
+        0.8963437081237745
+      ],
+      "optimized_ci95": [
+        0.49309675532017566,
+        0.7311248495496991
+      ],
+      "paired_delta_ci95": [
+        -0.2758186142343711,
+        -0.1286327093433039
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "kaggle_sujaykapadnis_smoking",
+      "cases": 224,
+      "groups": 224,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9829998142748244,
+        0.9997828017458403
+      ],
+      "optimized_ci95": [
+        0.9981449434304436,
+        1.0000000000000002
+      ],
+      "paired_delta_ci95": [
+        0.00020114826515920672,
+        0.016118794331954067
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "smoking_cctv",
+      "cases": 646,
+      "groups": 1,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "stanford40",
+      "cases": 806,
+      "groups": 806,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7478348921823118,
+        0.8582040456743082
+      ],
+      "optimized_ci95": [
+        0.8638618441203729,
+        0.9352002645794505
+      ],
+      "paired_delta_ci95": [
+        0.05443520756066234,
+        0.14184674152056423
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "xrf55_rgb_public",
+      "cases": 240,
+      "groups": 3,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.1638381796298382,
+        0.5189191790061294
+      ],
+      "optimized_ci95": [
+        0.2049191086067219,
+        0.2809648240009221
+      ],
+      "paired_delta_ci95": [
+        -0.24067248239520303,
+        0.0410809289768837
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "source_safeguarded",
+      "task": "unattended_items",
+      "source": "meva_abandon_action_transfer",
+      "cases": 27,
+      "groups": 10,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.5798768298021809,
+        0.8138132798573975
+      ],
+      "optimized_ci95": [
+        0.552584355811258,
+        0.768297881652661
+      ],
+      "paired_delta_ci95": [
+        -0.14863693848681883,
+        0.058060575493179084
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "source_safeguarded",
+      "task": "unattended_items",
+      "source": "unattended_reviewed",
+      "cases": 962,
+      "groups": 2,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "baseline_blend",
+      "task": "littering",
+      "source": "mivia_iwdd",
+      "cases": 100,
+      "groups": 95,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.6006874619852823,
+        0.8567375009672253
+      ],
+      "optimized_ci95": [
+        0.6328197194251982,
+        0.8898255634493281
+      ],
+      "paired_delta_ci95": [
+        -0.047728942158155596,
+        0.1205237286510822
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "baseline_blend",
+      "task": "loitering",
+      "source": "street_scene",
+      "cases": 75,
+      "groups": 6,
+      "repetitions": 500,
+      "valid_repetitions": 493,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.09090909090909091,
+        0.5708674879284465
+      ],
+      "optimized_ci95": [
+        0.10526315789473684,
+        0.5475059329858092
+      ],
+      "paired_delta_ci95": [
+        -0.081453441956346,
+        0.04741198652575017
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "baseline_blend",
+      "task": "rough_sleeping",
+      "source": "commons_new_author_transfer",
+      "cases": 28,
+      "groups": 25,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.8131746031746031,
+        0.9927096237096237
+      ],
+      "optimized_ci95": [
+        0.8334532828282828,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        -0.024217032967033043,
+        0.04718495893376918
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "baseline_blend",
+      "task": "rough_sleeping",
+      "source": "commons_visible_sleeping",
+      "cases": 18,
+      "groups": 16,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9999999999999999,
+        1.0
+      ],
+      "optimized_ci95": [
+        0.9999999999999999,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        -1.1102230246251565e-16,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "hmdb51_action_transfer",
+      "cases": 906,
+      "groups": 226,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7347722836933686,
+        0.8963437081237745
+      ],
+      "optimized_ci95": [
+        0.6717053462899584,
+        0.863875378911121
+      ],
+      "paired_delta_ci95": [
+        -0.0756302033856625,
+        -0.012136594539588584
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "kaggle_sujaykapadnis_smoking",
+      "cases": 224,
+      "groups": 224,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9829998142748244,
+        0.9997828017458403
+      ],
+      "optimized_ci95": [
+        0.9960738961333627,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        0.00017895511269435397,
+        0.014019829244011402
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "smoking_cctv",
+      "cases": 646,
+      "groups": 1,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "stanford40",
+      "cases": 806,
+      "groups": 806,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7478348921823118,
+        0.8582040456743082
+      ],
+      "optimized_ci95": [
+        0.851378607238881,
+        0.9291445360444278
+      ],
+      "paired_delta_ci95": [
+        0.05534968543851867,
+        0.11689627331796515
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "xrf55_rgb_public",
+      "cases": 240,
+      "groups": 3,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.1638381796298382,
+        0.5189191790061294
+      ],
+      "optimized_ci95": [
+        0.17442866270857732,
+        0.41565360579273186
+      ],
+      "paired_delta_ci95": [
+        -0.1032655732133988,
+        0.023743234219199494
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "baseline_blend",
+      "task": "unattended_items",
+      "source": "meva_abandon_action_transfer",
+      "cases": 27,
+      "groups": 10,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.5798768298021809,
+        0.8138132798573975
+      ],
+      "optimized_ci95": [
+        0.5241075185851664,
+        0.7530439583564583
+      ],
+      "paired_delta_ci95": [
+        -0.1490678905932389,
+        0.006812279457237359
+      ]
+    },
+    {
+      "model": "gemma4-e4b",
+      "method": "baseline_blend",
+      "task": "unattended_items",
+      "source": "unattended_reviewed",
+      "cases": 962,
+      "groups": 2,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "full_dev_selected",
+      "task": "littering",
+      "source": "mivia_iwdd",
+      "cases": 100,
+      "groups": 95,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.6040198158100026,
+        0.8614268244118641
+      ],
+      "optimized_ci95": [
+        0.6641133584449783,
+        0.8914475526447899
+      ],
+      "paired_delta_ci95": [
+        -0.052870889386932074,
+        0.157015935935864
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "full_dev_selected",
+      "task": "loitering",
+      "source": "street_scene",
+      "cases": 75,
+      "groups": 6,
+      "repetitions": 500,
+      "valid_repetitions": 493,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.1111111111111111,
+        0.4075947359229219
+      ],
+      "optimized_ci95": [
+        0.08333333333333333,
+        0.7272643097643089
+      ],
+      "paired_delta_ci95": [
+        -0.30833333333333335,
+        0.5349999999999995
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "full_dev_selected",
+      "task": "rough_sleeping",
+      "source": "commons_new_author_transfer",
+      "cases": 28,
+      "groups": 25,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.8141109715359075,
+        0.9958333333333333
+      ],
+      "optimized_ci95": [
+        0.8486060074917541,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        -0.05034649378399377,
+        0.09509987030154335
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "full_dev_selected",
+      "task": "rough_sleeping",
+      "source": "commons_visible_sleeping",
+      "cases": 18,
+      "groups": 16,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7406250000000001,
+        1.0
+      ],
+      "optimized_ci95": [
+        0.9999999999999998,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.2593749999999996
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "hmdb51_action_transfer",
+      "cases": 906,
+      "groups": 226,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.8859763391707897,
+        0.9742313362253113
+      ],
+      "optimized_ci95": [
+        0.8052417448222708,
+        0.9404225358381562
+      ],
+      "paired_delta_ci95": [
+        -0.11373585476302411,
+        -0.014903385602835256
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "kaggle_sujaykapadnis_smoking",
+      "cases": 224,
+      "groups": 224,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9957006878274202,
+        0.999840249319128
+      ],
+      "optimized_ci95": [
+        0.993879338124282,
+        0.9996012874376107
+      ],
+      "paired_delta_ci95": [
+        -0.004405095051029073,
+        0.0018436054653208653
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "smoking_cctv",
+      "cases": 646,
+      "groups": 1,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "stanford40",
+      "cases": 806,
+      "groups": 806,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9132000378956048,
+        0.9679101212883362
+      ],
+      "optimized_ci95": [
+        0.954871493993786,
+        0.9860028047443757
+      ],
+      "paired_delta_ci95": [
+        0.011120950422289139,
+        0.05025633697345479
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "xrf55_rgb_public",
+      "cases": 240,
+      "groups": 3,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.2971376203257784,
+        0.4457925726887189
+      ],
+      "optimized_ci95": [
+        0.25102029978190643,
+        0.2922855289526072
+      ],
+      "paired_delta_ci95": [
+        -0.15776350906643216,
+        -0.03812474921203102
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "full_dev_selected",
+      "task": "unattended_items",
+      "source": "meva_abandon_action_transfer",
+      "cases": 27,
+      "groups": 10,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.5667253655435474,
+        0.7036440513021176
+      ],
+      "optimized_ci95": [
+        0.49866960561368456,
+        0.6276801283162102
+      ],
+      "paired_delta_ci95": [
+        -0.18070979020979025,
+        -0.0015467159315176373
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "full_dev_selected",
+      "task": "unattended_items",
+      "source": "unattended_reviewed",
+      "cases": 962,
+      "groups": 2,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "source_safeguarded",
+      "task": "littering",
+      "source": "mivia_iwdd",
+      "cases": 100,
+      "groups": 95,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.6040198158100026,
+        0.8614268244118641
+      ],
+      "optimized_ci95": [
+        0.6641133584449783,
+        0.8914475526447899
+      ],
+      "paired_delta_ci95": [
+        -0.052870889386932074,
+        0.157015935935864
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "source_safeguarded",
+      "task": "loitering",
+      "source": "street_scene",
+      "cases": 75,
+      "groups": 6,
+      "repetitions": 500,
+      "valid_repetitions": 493,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.1111111111111111,
+        0.4075947359229219
+      ],
+      "optimized_ci95": [
+        0.08333333333333333,
+        0.7272643097643089
+      ],
+      "paired_delta_ci95": [
+        -0.30833333333333335,
+        0.5349999999999995
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "source_safeguarded",
+      "task": "rough_sleeping",
+      "source": "commons_new_author_transfer",
+      "cases": 28,
+      "groups": 25,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.8141109715359075,
+        0.9958333333333333
+      ],
+      "optimized_ci95": [
+        0.8486060074917541,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        -0.05034649378399377,
+        0.09509987030154335
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "source_safeguarded",
+      "task": "rough_sleeping",
+      "source": "commons_visible_sleeping",
+      "cases": 18,
+      "groups": 16,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7406250000000001,
+        1.0
+      ],
+      "optimized_ci95": [
+        0.9999999999999998,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.2593749999999996
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "hmdb51_action_transfer",
+      "cases": 906,
+      "groups": 226,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.8859763391707897,
+        0.9742313362253113
+      ],
+      "optimized_ci95": [
+        0.8859763391707897,
+        0.9742313362253113
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "kaggle_sujaykapadnis_smoking",
+      "cases": 224,
+      "groups": 224,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9957006878274202,
+        0.999840249319128
+      ],
+      "optimized_ci95": [
+        0.9957006878274202,
+        0.999840249319128
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "smoking_cctv",
+      "cases": 646,
+      "groups": 1,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "stanford40",
+      "cases": 806,
+      "groups": 806,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9132000378956048,
+        0.9679101212883362
+      ],
+      "optimized_ci95": [
+        0.9132000378956048,
+        0.9679101212883362
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "xrf55_rgb_public",
+      "cases": 240,
+      "groups": 3,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.2971376203257784,
+        0.4457925726887189
+      ],
+      "optimized_ci95": [
+        0.2971376203257784,
+        0.4457925726887189
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "source_safeguarded",
+      "task": "unattended_items",
+      "source": "meva_abandon_action_transfer",
+      "cases": 27,
+      "groups": 10,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.5667253655435474,
+        0.7036440513021176
+      ],
+      "optimized_ci95": [
+        0.49866960561368456,
+        0.6276801283162102
+      ],
+      "paired_delta_ci95": [
+        -0.18070979020979025,
+        -0.0015467159315176373
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "source_safeguarded",
+      "task": "unattended_items",
+      "source": "unattended_reviewed",
+      "cases": 962,
+      "groups": 2,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "baseline_blend",
+      "task": "littering",
+      "source": "mivia_iwdd",
+      "cases": 100,
+      "groups": 95,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.6040198158100026,
+        0.8614268244118641
+      ],
+      "optimized_ci95": [
+        0.681119020323222,
+        0.9091200167807936
+      ],
+      "paired_delta_ci95": [
+        -0.03105290441432761,
+        0.15386880340021947
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "baseline_blend",
+      "task": "loitering",
+      "source": "street_scene",
+      "cases": 75,
+      "groups": 6,
+      "repetitions": 500,
+      "valid_repetitions": 493,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.1111111111111111,
+        0.4075947359229219
+      ],
+      "optimized_ci95": [
+        0.2,
+        0.75
+      ],
+      "paired_delta_ci95": [
+        -0.1777777777777778,
+        0.55
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "baseline_blend",
+      "task": "rough_sleeping",
+      "source": "commons_new_author_transfer",
+      "cases": 28,
+      "groups": 25,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.8141109715359075,
+        0.9958333333333333
+      ],
+      "optimized_ci95": [
+        0.8406837781408859,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        -0.026808080808080836,
+        0.06612093905831215
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "baseline_blend",
+      "task": "rough_sleeping",
+      "source": "commons_visible_sleeping",
+      "cases": 18,
+      "groups": 16,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7406250000000001,
+        1.0
+      ],
+      "optimized_ci95": [
+        0.75,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0857142857142858
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "hmdb51_action_transfer",
+      "cases": 906,
+      "groups": 226,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.8859763391707897,
+        0.9742313362253113
+      ],
+      "optimized_ci95": [
+        0.877486944804096,
+        0.973725023068006
+      ],
+      "paired_delta_ci95": [
+        -0.02676093909714867,
+        0.016828701697682816
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "kaggle_sujaykapadnis_smoking",
+      "cases": 224,
+      "groups": 224,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9957006878274202,
+        0.999840249319128
+      ],
+      "optimized_ci95": [
+        0.9971831777942296,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        -0.0006592818066665396,
+        0.002617857964490188
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "smoking_cctv",
+      "cases": 646,
+      "groups": 1,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "stanford40",
+      "cases": 806,
+      "groups": 806,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9132000378956048,
+        0.9679101212883362
+      ],
+      "optimized_ci95": [
+        0.949063649644559,
+        0.9839132192996929
+      ],
+      "paired_delta_ci95": [
+        0.013559063225275461,
+        0.04106862930274948
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "xrf55_rgb_public",
+      "cases": 240,
+      "groups": 3,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.2971376203257784,
+        0.4457925726887189
+      ],
+      "optimized_ci95": [
+        0.2796863939686207,
+        0.3485662878852741
+      ],
+      "paired_delta_ci95": [
+        -0.09722628480344633,
+        -0.016353957140856912
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "baseline_blend",
+      "task": "unattended_items",
+      "source": "meva_abandon_action_transfer",
+      "cases": 27,
+      "groups": 10,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.5667253655435474,
+        0.7036440513021176
+      ],
+      "optimized_ci95": [
+        0.5009484265734266,
+        0.6727963329063953
+      ],
+      "paired_delta_ci95": [
+        -0.11806352232975516,
+        0.011383333969658758
+      ]
+    },
+    {
+      "model": "gemma4-12b",
+      "method": "baseline_blend",
+      "task": "unattended_items",
+      "source": "unattended_reviewed",
+      "cases": 962,
+      "groups": 2,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "full_dev_selected",
+      "task": "littering",
+      "source": "mivia_iwdd",
+      "cases": 100,
+      "groups": 95,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7089707748655022,
+        0.9219514923241917
+      ],
+      "optimized_ci95": [
+        0.7127704147633017,
+        0.9273116397646826
+      ],
+      "paired_delta_ci95": [
+        -0.09763382394641004,
+        0.09149493549069268
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "full_dev_selected",
+      "task": "loitering",
+      "source": "street_scene",
+      "cases": 75,
+      "groups": 6,
+      "repetitions": 500,
+      "valid_repetitions": 493,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.08333333333333333,
+        0.6298816439814012
+      ],
+      "optimized_ci95": [
+        0.07142857142857142,
+        0.7236695206549176
+      ],
+      "paired_delta_ci95": [
+        -0.020202020202020193,
+        0.28705579242600576
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "full_dev_selected",
+      "task": "rough_sleeping",
+      "source": "commons_new_author_transfer",
+      "cases": 28,
+      "groups": 25,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7388959839256234,
+        0.9947585309427415
+      ],
+      "optimized_ci95": [
+        0.7388959839256234,
+        0.9947585309427415
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "full_dev_selected",
+      "task": "rough_sleeping",
+      "source": "commons_visible_sleeping",
+      "cases": 18,
+      "groups": 16,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9999999999999998,
+        1.0
+      ],
+      "optimized_ci95": [
+        0.9999999999999998,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "hmdb51_action_transfer",
+      "cases": 906,
+      "groups": 226,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9341381009383956,
+        0.9875563908740322
+      ],
+      "optimized_ci95": [
+        0.886624999868,
+        0.9615137821925259
+      ],
+      "paired_delta_ci95": [
+        -0.06336865784301106,
+        -0.013415940446339395
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "kaggle_sujaykapadnis_smoking",
+      "cases": 224,
+      "groups": 224,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.999516747251839,
+        1.0000000000000002
+      ],
+      "optimized_ci95": [
+        0.9999999999999998,
+        1.0000000000000002
+      ],
+      "paired_delta_ci95": [
+        -2.220446049250313e-16,
+        0.00048325274816097234
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "smoking_cctv",
+      "cases": 646,
+      "groups": 1,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "stanford40",
+      "cases": 806,
+      "groups": 806,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9135846162576777,
+        0.9658571243944624
+      ],
+      "optimized_ci95": [
+        0.9479781999311025,
+        0.9842465012581705
+      ],
+      "paired_delta_ci95": [
+        0.01354357302220802,
+        0.0426501740463166
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "xrf55_rgb_public",
+      "cases": 240,
+      "groups": 3,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.15960627835387953,
+        0.2212477401419426
+      ],
+      "optimized_ci95": [
+        0.1826124373895615,
+        0.3384722827736666
+      ],
+      "paired_delta_ci95": [
+        -0.01269705324680213,
+        0.1711001839449532
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "full_dev_selected",
+      "task": "unattended_items",
+      "source": "meva_abandon_action_transfer",
+      "cases": 27,
+      "groups": 10,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.46034916851967445,
+        0.6563991009154116
+      ],
+      "optimized_ci95": [
+        0.46034916851967445,
+        0.6563991009154116
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "full_dev_selected",
+      "task": "unattended_items",
+      "source": "unattended_reviewed",
+      "cases": 962,
+      "groups": 2,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "source_safeguarded",
+      "task": "littering",
+      "source": "mivia_iwdd",
+      "cases": 100,
+      "groups": 95,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7089707748655022,
+        0.9219514923241917
+      ],
+      "optimized_ci95": [
+        0.7127704147633017,
+        0.9273116397646826
+      ],
+      "paired_delta_ci95": [
+        -0.09763382394641004,
+        0.09149493549069268
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "source_safeguarded",
+      "task": "loitering",
+      "source": "street_scene",
+      "cases": 75,
+      "groups": 6,
+      "repetitions": 500,
+      "valid_repetitions": 493,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.08333333333333333,
+        0.6298816439814012
+      ],
+      "optimized_ci95": [
+        0.07142857142857142,
+        0.7236695206549176
+      ],
+      "paired_delta_ci95": [
+        -0.020202020202020193,
+        0.28705579242600576
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "source_safeguarded",
+      "task": "rough_sleeping",
+      "source": "commons_new_author_transfer",
+      "cases": 28,
+      "groups": 25,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7388959839256234,
+        0.9947585309427415
+      ],
+      "optimized_ci95": [
+        0.7388959839256234,
+        0.9947585309427415
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "source_safeguarded",
+      "task": "rough_sleeping",
+      "source": "commons_visible_sleeping",
+      "cases": 18,
+      "groups": 16,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9999999999999998,
+        1.0
+      ],
+      "optimized_ci95": [
+        0.9999999999999998,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "hmdb51_action_transfer",
+      "cases": 906,
+      "groups": 226,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9341381009383956,
+        0.9875563908740322
+      ],
+      "optimized_ci95": [
+        0.886624999868,
+        0.9615137821925259
+      ],
+      "paired_delta_ci95": [
+        -0.06336865784301106,
+        -0.013415940446339395
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "kaggle_sujaykapadnis_smoking",
+      "cases": 224,
+      "groups": 224,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.999516747251839,
+        1.0000000000000002
+      ],
+      "optimized_ci95": [
+        0.9999999999999998,
+        1.0000000000000002
+      ],
+      "paired_delta_ci95": [
+        -2.220446049250313e-16,
+        0.00048325274816097234
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "smoking_cctv",
+      "cases": 646,
+      "groups": 1,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "stanford40",
+      "cases": 806,
+      "groups": 806,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9135846162576777,
+        0.9658571243944624
+      ],
+      "optimized_ci95": [
+        0.9479781999311025,
+        0.9842465012581705
+      ],
+      "paired_delta_ci95": [
+        0.01354357302220802,
+        0.0426501740463166
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "xrf55_rgb_public",
+      "cases": 240,
+      "groups": 3,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.15960627835387953,
+        0.2212477401419426
+      ],
+      "optimized_ci95": [
+        0.1826124373895615,
+        0.3384722827736666
+      ],
+      "paired_delta_ci95": [
+        -0.01269705324680213,
+        0.1711001839449532
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "source_safeguarded",
+      "task": "unattended_items",
+      "source": "meva_abandon_action_transfer",
+      "cases": 27,
+      "groups": 10,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.46034916851967445,
+        0.6563991009154116
+      ],
+      "optimized_ci95": [
+        0.46034916851967445,
+        0.6563991009154116
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "source_safeguarded",
+      "task": "unattended_items",
+      "source": "unattended_reviewed",
+      "cases": 962,
+      "groups": 2,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "baseline_blend",
+      "task": "littering",
+      "source": "mivia_iwdd",
+      "cases": 100,
+      "groups": 95,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7089707748655022,
+        0.9219514923241917
+      ],
+      "optimized_ci95": [
+        0.7474629767021458,
+        0.9336728777653891
+      ],
+      "paired_delta_ci95": [
+        -0.028154102112518627,
+        0.07482091537629251
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "baseline_blend",
+      "task": "loitering",
+      "source": "street_scene",
+      "cases": 75,
+      "groups": 6,
+      "repetitions": 500,
+      "valid_repetitions": 493,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.08333333333333333,
+        0.6298816439814012
+      ],
+      "optimized_ci95": [
+        0.09090909090909091,
+        0.7392717905875801
+      ],
+      "paired_delta_ci95": [
+        -0.010627442523384672,
+        0.22587282616888424
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "baseline_blend",
+      "task": "rough_sleeping",
+      "source": "commons_new_author_transfer",
+      "cases": 28,
+      "groups": 25,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7388959839256234,
+        0.9947585309427415
+      ],
+      "optimized_ci95": [
+        0.7388959839256234,
+        0.9947585309427415
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "baseline_blend",
+      "task": "rough_sleeping",
+      "source": "commons_visible_sleeping",
+      "cases": 18,
+      "groups": 16,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9999999999999998,
+        1.0
+      ],
+      "optimized_ci95": [
+        0.9999999999999998,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "hmdb51_action_transfer",
+      "cases": 906,
+      "groups": 226,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9341381009383956,
+        0.9875563908740322
+      ],
+      "optimized_ci95": [
+        0.9222686816310833,
+        0.977495438985386
+      ],
+      "paired_delta_ci95": [
+        -0.02543490371029827,
+        -0.0005084053010560312
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "kaggle_sujaykapadnis_smoking",
+      "cases": 224,
+      "groups": 224,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.999516747251839,
+        1.0000000000000002
+      ],
+      "optimized_ci95": [
+        0.9999999999999998,
+        1.0000000000000002
+      ],
+      "paired_delta_ci95": [
+        -2.220446049250313e-16,
+        0.00048325274816097234
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "smoking_cctv",
+      "cases": 646,
+      "groups": 1,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "stanford40",
+      "cases": 806,
+      "groups": 806,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9135846162576777,
+        0.9658571243944624
+      ],
+      "optimized_ci95": [
+        0.9376239068440482,
+        0.9789008813111169
+      ],
+      "paired_delta_ci95": [
+        0.010587957902607428,
+        0.02976176785694023
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "xrf55_rgb_public",
+      "cases": 240,
+      "groups": 3,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.15960627835387953,
+        0.2212477401419426
+      ],
+      "optimized_ci95": [
+        0.162962269302674,
+        0.20669113438505599
+      ],
+      "paired_delta_ci95": [
+        -0.021076826615618046,
+        0.02396201176955315
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "baseline_blend",
+      "task": "unattended_items",
+      "source": "meva_abandon_action_transfer",
+      "cases": 27,
+      "groups": 10,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.46034916851967445,
+        0.6563991009154116
+      ],
+      "optimized_ci95": [
+        0.46034916851967445,
+        0.6563991009154116
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-26b-a4b",
+      "method": "baseline_blend",
+      "task": "unattended_items",
+      "source": "unattended_reviewed",
+      "cases": 962,
+      "groups": 2,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "full_dev_selected",
+      "task": "littering",
+      "source": "mivia_iwdd",
+      "cases": 100,
+      "groups": 95,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.8309165124107336,
+        0.9742561448964994
+      ],
+      "optimized_ci95": [
+        0.8309165124107336,
+        0.9742561448964994
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "full_dev_selected",
+      "task": "loitering",
+      "source": "street_scene",
+      "cases": 75,
+      "groups": 6,
+      "repetitions": 500,
+      "valid_repetitions": 493,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.04878048780487805,
+        0.5872117094367995
+      ],
+      "optimized_ci95": [
+        0.047619047619047616,
+        0.5945894091969991
+      ],
+      "paired_delta_ci95": [
+        -0.04381417881981774,
+        0.0940766550522648
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "full_dev_selected",
+      "task": "rough_sleeping",
+      "source": "commons_new_author_transfer",
+      "cases": 28,
+      "groups": 25,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7910783946445711,
+        0.9941024436090226
+      ],
+      "optimized_ci95": [
+        0.7846915249782896,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        -0.05078105513767278,
+        0.0501769326591307
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "full_dev_selected",
+      "task": "rough_sleeping",
+      "source": "commons_visible_sleeping",
+      "cases": 18,
+      "groups": 16,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9999999999999998,
+        1.0
+      ],
+      "optimized_ci95": [
+        0.9999999999999998,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        5.82867087928182e-17
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "hmdb51_action_transfer",
+      "cases": 906,
+      "groups": 226,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9230616271831872,
+        0.983157309610926
+      ],
+      "optimized_ci95": [
+        0.8864369052781149,
+        0.9629217714087038
+      ],
+      "paired_delta_ci95": [
+        -0.056295145289414136,
+        -0.006191940984966034
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "kaggle_sujaykapadnis_smoking",
+      "cases": 224,
+      "groups": 224,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9996308326108292,
+        1.0000000000000002
+      ],
+      "optimized_ci95": [
+        0.9999999999999998,
+        1.0000000000000002
+      ],
+      "paired_delta_ci95": [
+        -1.1102230246251565e-16,
+        0.0003691673891708019
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "smoking_cctv",
+      "cases": 646,
+      "groups": 1,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "stanford40",
+      "cases": 806,
+      "groups": 806,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9231420003908685,
+        0.9718268942116002
+      ],
+      "optimized_ci95": [
+        0.9362946488723476,
+        0.9789568595176611
+      ],
+      "paired_delta_ci95": [
+        0.0008401720697577388,
+        0.02118752636245468
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "full_dev_selected",
+      "task": "smoking",
+      "source": "xrf55_rgb_public",
+      "cases": 240,
+      "groups": 3,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.14484511656573984,
+        0.19294374671172743
+      ],
+      "optimized_ci95": [
+        0.21912762422472307,
+        0.2621824294995978
+      ],
+      "paired_delta_ci95": [
+        0.05490630044681272,
+        0.0745395731032395
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "full_dev_selected",
+      "task": "unattended_items",
+      "source": "meva_abandon_action_transfer",
+      "cases": 27,
+      "groups": 10,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.5799724852951854,
+        0.8329503374328034
+      ],
+      "optimized_ci95": [
+        0.5799724852951854,
+        0.8329503374328034
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "full_dev_selected",
+      "task": "unattended_items",
+      "source": "unattended_reviewed",
+      "cases": 962,
+      "groups": 2,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "source_safeguarded",
+      "task": "littering",
+      "source": "mivia_iwdd",
+      "cases": 100,
+      "groups": 95,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.8309165124107336,
+        0.9742561448964994
+      ],
+      "optimized_ci95": [
+        0.8309165124107336,
+        0.9742561448964994
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "source_safeguarded",
+      "task": "loitering",
+      "source": "street_scene",
+      "cases": 75,
+      "groups": 6,
+      "repetitions": 500,
+      "valid_repetitions": 493,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.04878048780487805,
+        0.5872117094367995
+      ],
+      "optimized_ci95": [
+        0.047619047619047616,
+        0.5945894091969991
+      ],
+      "paired_delta_ci95": [
+        -0.04381417881981774,
+        0.0940766550522648
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "source_safeguarded",
+      "task": "rough_sleeping",
+      "source": "commons_new_author_transfer",
+      "cases": 28,
+      "groups": 25,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7910783946445711,
+        0.9941024436090226
+      ],
+      "optimized_ci95": [
+        0.7846915249782896,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        -0.05078105513767278,
+        0.0501769326591307
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "source_safeguarded",
+      "task": "rough_sleeping",
+      "source": "commons_visible_sleeping",
+      "cases": 18,
+      "groups": 16,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9999999999999998,
+        1.0
+      ],
+      "optimized_ci95": [
+        0.9999999999999998,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        5.82867087928182e-17
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "hmdb51_action_transfer",
+      "cases": 906,
+      "groups": 226,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9230616271831872,
+        0.983157309610926
+      ],
+      "optimized_ci95": [
+        0.8864369052781149,
+        0.9629217714087038
+      ],
+      "paired_delta_ci95": [
+        -0.056295145289414136,
+        -0.006191940984966034
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "kaggle_sujaykapadnis_smoking",
+      "cases": 224,
+      "groups": 224,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9996308326108292,
+        1.0000000000000002
+      ],
+      "optimized_ci95": [
+        0.9999999999999998,
+        1.0000000000000002
+      ],
+      "paired_delta_ci95": [
+        -1.1102230246251565e-16,
+        0.0003691673891708019
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "smoking_cctv",
+      "cases": 646,
+      "groups": 1,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "stanford40",
+      "cases": 806,
+      "groups": 806,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9231420003908685,
+        0.9718268942116002
+      ],
+      "optimized_ci95": [
+        0.9362946488723476,
+        0.9789568595176611
+      ],
+      "paired_delta_ci95": [
+        0.0008401720697577388,
+        0.02118752636245468
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "source_safeguarded",
+      "task": "smoking",
+      "source": "xrf55_rgb_public",
+      "cases": 240,
+      "groups": 3,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.14484511656573984,
+        0.19294374671172743
+      ],
+      "optimized_ci95": [
+        0.21912762422472307,
+        0.2621824294995978
+      ],
+      "paired_delta_ci95": [
+        0.05490630044681272,
+        0.0745395731032395
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "source_safeguarded",
+      "task": "unattended_items",
+      "source": "meva_abandon_action_transfer",
+      "cases": 27,
+      "groups": 10,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.5799724852951854,
+        0.8329503374328034
+      ],
+      "optimized_ci95": [
+        0.5799724852951854,
+        0.8329503374328034
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "source_safeguarded",
+      "task": "unattended_items",
+      "source": "unattended_reviewed",
+      "cases": 962,
+      "groups": 2,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "baseline_blend",
+      "task": "littering",
+      "source": "mivia_iwdd",
+      "cases": 100,
+      "groups": 95,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.8309165124107336,
+        0.9742561448964994
+      ],
+      "optimized_ci95": [
+        0.8309165124107336,
+        0.9742561448964994
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "baseline_blend",
+      "task": "loitering",
+      "source": "street_scene",
+      "cases": 75,
+      "groups": 6,
+      "repetitions": 500,
+      "valid_repetitions": 493,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.04878048780487805,
+        0.5872117094367995
+      ],
+      "optimized_ci95": [
+        0.05555555555555555,
+        0.5982441126050629
+      ],
+      "paired_delta_ci95": [
+        -0.017737807123799108,
+        0.05235019384455175
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "baseline_blend",
+      "task": "rough_sleeping",
+      "source": "commons_new_author_transfer",
+      "cases": 28,
+      "groups": 25,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.7910783946445711,
+        0.9941024436090226
+      ],
+      "optimized_ci95": [
+        0.7698103872623103,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        -0.05751123876123873,
+        0.03700090404793893
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "baseline_blend",
+      "task": "rough_sleeping",
+      "source": "commons_visible_sleeping",
+      "cases": 18,
+      "groups": 16,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9999999999999998,
+        1.0
+      ],
+      "optimized_ci95": [
+        0.9999999999999998,
+        1.0
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "hmdb51_action_transfer",
+      "cases": 906,
+      "groups": 226,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9230616271831872,
+        0.983157309610926
+      ],
+      "optimized_ci95": [
+        0.9158693570094466,
+        0.9782938717456816
+      ],
+      "paired_delta_ci95": [
+        -0.018805022902205447,
+        0.004380605182406565
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "kaggle_sujaykapadnis_smoking",
+      "cases": 224,
+      "groups": 224,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9996308326108292,
+        1.0000000000000002
+      ],
+      "optimized_ci95": [
+        0.9999999999999998,
+        1.0000000000000002
+      ],
+      "paired_delta_ci95": [
+        -1.1102230246251565e-16,
+        0.0003691673891708019
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "smoking_cctv",
+      "cases": 646,
+      "groups": 1,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "stanford40",
+      "cases": 806,
+      "groups": 806,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.9231420003908685,
+        0.9718268942116002
+      ],
+      "optimized_ci95": [
+        0.9349725269299913,
+        0.9773391252774186
+      ],
+      "paired_delta_ci95": [
+        0.003191267822713906,
+        0.015808896580438617
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "baseline_blend",
+      "task": "smoking",
+      "source": "xrf55_rgb_public",
+      "cases": 240,
+      "groups": 3,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.14484511656573984,
+        0.19294374671172743
+      ],
+      "optimized_ci95": [
+        0.1767234987923894,
+        0.2179514406794773
+      ],
+      "paired_delta_ci95": [
+        0.022933191015325816,
+        0.03187838222664957
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "baseline_blend",
+      "task": "unattended_items",
+      "source": "meva_abandon_action_transfer",
+      "cases": 27,
+      "groups": 10,
+      "repetitions": 500,
+      "valid_repetitions": 500,
+      "status": "conditional_on_observed_groups",
+      "baseline_ci95": [
+        0.5799724852951854,
+        0.8329503374328034
+      ],
+      "optimized_ci95": [
+        0.5799724852951854,
+        0.8329503374328034
+      ],
+      "paired_delta_ci95": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "model": "gemma4-31b",
+      "method": "baseline_blend",
+      "task": "unattended_items",
+      "source": "unattended_reviewed",
+      "cases": 962,
+      "groups": 2,
+      "repetitions": 500,
+      "status": "too_few_groups",
+      "baseline_ci95": null,
+      "optimized_ci95": null,
+      "paired_delta_ci95": null
+    }
+  ]
+}

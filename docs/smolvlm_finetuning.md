@@ -66,7 +66,7 @@ and installed separately, without upgrading its PyTorch or Transformers:
 
 ```bash
 .venv/bin/python -m pip install --target data/tools/smol_training_deps \
-  --no-deps -r requirements-smol-training.txt
+  --no-deps -r requirements/smol-training.txt
 bash scripts/smolvlm_gpu.sh train --stage all
 ```
 

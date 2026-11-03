@@ -1,0 +1,88 @@
+{
+  "models": {
+    "gemma4-e2b": {
+      "status": "passed",
+      "heldout_cases": 4032,
+      "development_cases": 1812,
+      "source_development_cases": 160,
+      "cached_forwards": 12556,
+      "result_sha256": "860ba5380d941ee51d3b3f9893cd7495102359bbb674d7f37134fc285abf9f36",
+      "replayed": [
+        "prompt routes",
+        "both method calibrations",
+        "all heldout scores",
+        "every source/operating metric",
+        "secondary source calibration",
+        "implementation and checkpoint receipts"
+      ]
+    },
+    "gemma4-e4b": {
+      "status": "passed",
+      "heldout_cases": 4032,
+      "development_cases": 1812,
+      "source_development_cases": 160,
+      "cached_forwards": 12556,
+      "result_sha256": "08808374bd1a542d4264051f98dd2ea85a9d06f3c5144c3985cfb42290447833",
+      "replayed": [
+        "prompt routes",
+        "both method calibrations",
+        "all heldout scores",
+        "every source/operating metric",
+        "secondary source calibration",
+        "implementation and checkpoint receipts"
+      ]
+    },
+    "gemma4-12b": {
+      "status": "passed",
+      "heldout_cases": 4032,
+      "development_cases": 1812,
+      "source_development_cases": 160,
+      "cached_forwards": 8324,
+      "result_sha256": "8f019869cda7e79b08728829fea7e0963ceb260011cb9dcb190aa8d8288abfed",
+      "replayed": [
+        "prompt routes",
+        "both method calibrations",
+        "all heldout scores",
+        "every source/operating metric",
+        "secondary source calibration",
+        "implementation and checkpoint receipts"
+      ]
+    },
+    "gemma4-26b-a4b": {
+      "status": "passed",
+      "heldout_cases": 4032,
+      "development_cases": 1812,
+      "source_development_cases": 160,
+      "cached_forwards": 7035,
+      "result_sha256": "034a9dde8b3d70fcdcc3d0c79a599550a2980adf04b46b1ff234f7326526519f",
+      "replayed": [
+        "prompt routes",
+        "both method calibrations",
+        "all heldout scores",
+        "every source/operating metric",
+        "secondary source calibration",
+        "implementation and checkpoint receipts"
+      ]
+    },
+    "gemma4-31b": {
+      "status": "passed",
+      "heldout_cases": 4032,
+      "development_cases": 1812,
+      "source_development_cases": 160,
+      "cached_forwards": 11058,
+      "result_sha256": "86d0ebaf1b5f8cc279fc249a4c0ca00b4cfac9abe21ed1a54ddd861c1c99afbe",
+      "replayed": [
+        "prompt routes",
+        "both method calibrations",
+        "all heldout scores",
+        "every source/operating metric",
+        "secondary source calibration",
+        "implementation and checkpoint receipts"
+      ]
+    }
+  },
+  "status": "passed",
+  "models_complete": 5,
+  "planned_models": 5,
+  "does_not_validate": "Weak labels, independent cameras, continuous event performance or deployment suitability"
+}
