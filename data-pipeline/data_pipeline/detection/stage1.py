@@ -20,8 +20,10 @@ GATE_DIR = Path(
 
 # Which VLM objectives to ask about for each Stage 1 rule.
 TASKS_BY_EVENT = {
-    "reach_down": ("littering",),
-    "pose_action": ("littering",),
+    # Putting something down is littering or leaving an item: often the bag itself is never detected (dark bags,
+    # odd shapes), so the person's alert is the only chance to ask about an unattended item.
+    "reach_down": ("littering", "unattended_items"),
+    "pose_action": ("littering", "unattended_items"),
     "fast_motion": ("littering",),
     "static_object_left": ("littering", "unattended_items"),
     "object_appeared": ("littering", "unattended_items"),

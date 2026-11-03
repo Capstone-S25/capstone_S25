@@ -10,6 +10,8 @@ Current GateConfig defaults, rules + pose cue, footage not used for tuning:
               [onset - 1 s, onset + 10 s]; caught = any such alert
   bags        ABODA: an alert is "on the incident" if its crop covers a labelled bag between put-down - 2 s and
               removal - 2 s; caught = any such alert
+Only alerts ROUTED to the event's VLM question count (data-pipeline TASKS_BY_EVENT): an alert raised for another
+event (e.g. "stays put" on ABODA) is not a false alarm for that event.
 "Right person" counts an incident only when an alert's crop is on the labelled person (littering / loitering /
 smoking); dumping and bags have no person boxes.
 Usage (from notebooks/): ../.venv/bin/python exp/counts_precision.py   -> exp/counts_precision.json
@@ -51,6 +53,15 @@ def throwing_labels():
     return path
 
 
+ROUTE = {"littering": {"reach_down", "pose_action", "object_appeared", "unattended_object"},
+         "unattended items": {"unattended_object", "object_appeared", "reach_down", "pose_action"},
+         "smoking": {"sustained_presence"}}
+
+
+def routed(m, event):
+    return lambda r, ds: [e for e in m(r, ds) if e["event_type"] in ROUTE[event]]
+
+
 def from_bench(rows, minutes):
     s = summarize(rows, "x")
     return {"incidents": s["gt_events"], "caught": round(s["event_recall_%"] * s["gt_events"] / 100),
@@ -59,7 +70,8 @@ def from_bench(rows, minutes):
 
 
 def main():
-    m = partial(baseline, cfg=GateConfig(inview_s=60.0, rules=DEFAULT_RULES + ("pose_action",)))
+    m_all = partial(baseline, cfg=GateConfig(inview_s=60.0, rules=DEFAULT_RULES + ("pose_action",)))
+    m = routed(m_all, "littering")
     H = splits(heldout=True)
     out = {}
     lit = [evaluate_run(g, r, m(r, "littering")) for g, r in H["littering"]]
@@ -69,7 +81,7 @@ def main():
          [evaluate_run(g, r, m(r, "normal")) for g, r in H["normal"]]
     out["littering: throwing on a walkway (Avenue)"] = from_bench(
         av, sum(r.duration_s for _, r in H["avenue"] + H["normal"]) / 60)
-    sm = [evaluate_run(g, r, m(r, "smoking")) for g, r in H["smoking"]]
+    sm = [evaluate_run(g, r, routed(m_all, "smoking")(r, "smoking")) for g, r in H["smoking"]]
     out["smoking"] = from_bench(sm, sum(r.duration_s for _, r in H["smoking"]) / 60)
 
     lab = iwdd_labels("test")
@@ -91,7 +103,7 @@ def main():
     inc = caught = alerts = on = 0
     mins = 0.0
     for _, r in load_cached("aboda"):
-        evs = m(r, "aboda")
+        evs = routed(m_all, "unattended items")(r, "aboda")
         alerts += len(evs)
         mins += r.duration_s / 60
         bags = blab[r.seq_id.split("/")[-1]]["events"]
