@@ -3,10 +3,10 @@
 For each labelled event: frames every 1 s while the object is unattended (positives), plus frames every 2 s from the
 start of the video until 3 s before anything is put down (clutter check: any "object" detection there is something
 that is not an abandoned object, i.e. a source of false alarms).
-Detectors: COCO yolo26s (bag classes: backpack, handbag, suitcase) and open-vocabulary YOLOE-26s prompted with
-object words, each at 640 and 1280 input. Reports hit rate on the labelled object box at several confidence
+Detectors: COCO yolo26s (bag classes: backpack, handbag, suitcase), open-vocabulary YOLOE-26s prompted with
+object words, and YOLOv8s trained on Open Images V7 (bag classes below), each at 640 and 1280 input. Reports hit rate on the labelled object box at several confidence
 thresholds, clutter detections per frame and CPU ms per frame.
-Usage (from notebooks/): ../.venv/bin/python exp/newcam/object_detectors.py
+Usage (from notebooks/): ../.venv/bin/python exp/newcam/object_detectors.py [detector ...]   (default: all)
 """
 import json
 import sys
@@ -24,6 +24,8 @@ from stage1_gate import intersection_over  # noqa: E402
 
 PROMPTS = ["bag", "backpack", "handbag", "suitcase", "box", "tote bag", "luggage", "case", "package"]
 COCO_BAGS = {24, 26, 28}
+# Open Images V7: Backpack, Box, Briefcase, Handbag, Luggage and bags, Plastic bag, Suitcase
+OIV7_BAGS = {15, 62, 66, 237, 318, 394, 503}
 CONFS = (0.05, 0.1, 0.2, 0.3)
 
 
@@ -72,14 +74,24 @@ def detectors():
         r = ye.predict(img, imgsz=sz, conf=min(CONFS), verbose=False, device="cpu")[0]
         return r.boxes.xyxy.numpy(), r.boxes.conf.numpy()
 
-    return {"coco_yolo26s": run_coco, "yoloe_26s_prompts": run_ye}
+    oiv7 = YOLO("yolov8s-oiv7.pt")  # downloaded by Ultralytics on first use
+
+    def run_oiv7(img, sz):
+        r = oiv7.predict(img, imgsz=sz, conf=min(CONFS), verbose=False, device="cpu")[0]
+        keep = [i for i, c in enumerate(r.boxes.cls.numpy().astype(int)) if c in OIV7_BAGS]
+        return r.boxes.xyxy.numpy()[keep], r.boxes.conf.numpy()[keep]
+
+    return {"coco_yolo26s": run_coco, "yoloe_26s_prompts": run_ye, "oiv7_yolov8s": run_oiv7}
 
 
 def main():
     pos, neg = frames()
     print(f"{len(pos)} unattended-object frames, {len(neg)} clutter frames", flush=True)
-    out = {}
+    path = HERE / "object_detectors_aboda.json"
+    out = json.loads(path.read_text()) if path.exists() else {}
     for name, det in detectors().items():
+        if sys.argv[1:] and name not in sys.argv[1:]:
+            continue
         for sz in (640, 1280):
             det(pos[0][2], sz)  # warm-up
             hits = {c: [] for c in CONFS}
@@ -105,7 +117,7 @@ def main():
                         "clutter_dets_per_frame": {str(c): round(clutter[c] / len(neg), 2) for c in CONFS},
                         "median_best_conf_per_video": {v: round(float(np.median(b)), 2) for v, b in per_video.items()}}
             print(key, json.dumps(out[key]), flush=True)
-    (HERE / "object_detectors_aboda.json").write_text(json.dumps(out, indent=1))
+    path.write_text(json.dumps(out, indent=1))
 
 
 if __name__ == "__main__":

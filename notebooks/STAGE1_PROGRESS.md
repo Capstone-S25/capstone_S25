@@ -304,3 +304,12 @@ Rule by rule at 12.5 vs 5 fps (rule alone; littering tune clips, Avenue tune nor
 * Demo material: `data-pipeline/stage1_offline.py --target-fps 5` on IWDD test vid0075/0332/0359/0395 (all caught
   within ~1 s of the onset), vid0208 (54 s normal, no candidates) and the pipeline's sample clip;
   `tools/demo_sheets.py` renders one slide image per candidate (output in gitignored `vlm_handoff_demo/`).
+
+## 2026-11-03: abandoned bags (ABODA 6/11 caught) — can a different detector see the missed bags?
+* Bottleneck is detection, not rules: once a detector sees the bag the rules catch it (YOLOE 5/5).
+* YOLOv8s trained on Open Images V7 (601 classes; bag-like: Backpack, Box, Briefcase, Handbag, Luggage and bags,
+  Plastic bag, Suitcase) added to `exp/newcam/object_detectors.py`: **0% of unattended-bag frames at 640, 0.7% at
+  1280** (COCO yolo26s 29%, YOLOE 50%). It does not even find the people in these 640x480 frames. Rejected.
+* MEVA annotations in hand box 1 bag and 45 "other" objects over 11 clips: too few to fine-tune on.
+* Remaining route: fine-tune YOLO26s on CCTV bag boxes from other sources (candidates: Roboflow Universe CC BY 4.0
+  abandoned-luggage sets, PETS 2006 train-station footage auto-labelled with YOLOE then checked), keeping ABODA test-only.
