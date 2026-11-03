@@ -1,0 +1,44 @@
+{
+ "avenue held-out normal": {
+  "minutes": 5.1,
+  "videos": 8,
+  "total_per_min": 6.26,
+  "per_min": {
+   "sustained_presence": 3.13,
+   "fast_motion": 1.37,
+   "pose_action": 0.59,
+   "object_appeared": 0.59,
+   "reach_down": 0.39,
+   "long_presence": 0.2
+  },
+  "videos_with_any_%": {
+   "sustained_presence": 75,
+   "fast_motion": 62,
+   "pose_action": 38,
+   "object_appeared": 38,
+   "long_presence": 12,
+   "reach_down": 12
+  }
+ },
+ "IWDD test normal": {
+  "minutes": 19.4,
+  "videos": 50,
+  "total_per_min": 16.52,
+  "per_min": {
+   "fast_motion": 7.43,
+   "reach_down": 5.83,
+   "pose_action": 2.01,
+   "sustained_presence": 0.77,
+   "unattended_object": 0.31,
+   "object_appeared": 0.15
+  },
+  "videos_with_any_%": {
+   "fast_motion": 48,
+   "reach_down": 42,
+   "pose_action": 32,
+   "sustained_presence": 14,
+   "unattended_object": 10,
+   "object_appeared": 6
+  }
+ }
+}
