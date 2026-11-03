@@ -545,6 +545,21 @@ class HandoffTests(unittest.TestCase):
         )
         self.assertTrue(all(Path(p).exists() for p in short[0] + long[0]))
 
+    def test_five_fps_source_retains_eight_distinct_short_window_views(self):
+        w = HandoffWriter(self.out, buffer_fps=2.0, max_window_frames=8)
+        seq = type("Seq", (), {"paths": None, "seq_id": "five_fps"})()
+        w.start(seq)
+        frame = np.zeros((20, 30, 3), np.uint8)
+        for index in range(31):
+            w.observe(frame, index / 5, index)
+        paths, times = w.window_frames(
+            {"event_id": "sampling", "frame_index": 30}, frame, seq, 2.0, 6.0
+        )
+        self.assertEqual(len(paths), 8)
+        self.assertEqual(len(set(times)), 8)
+        self.assertLessEqual(max(times), 6.0)
+        self.assertGreaterEqual(min(times), 2.0)
+
     def test_buffer_does_not_leak_between_sequences(self):
         w = HandoffWriter(self.out, buffer_fps=2.0)
         stream(w, FakeVideo(), 40, {})

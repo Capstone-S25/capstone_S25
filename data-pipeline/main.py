@@ -2,7 +2,6 @@ import argparse
 import logging
 import math
 import os
-import sys
 from collections.abc import Callable
 from pathlib import Path
 
@@ -38,31 +37,36 @@ def _parse_args(project_dir: Path) -> argparse.Namespace:
     parser.add_argument(
         "--target-fps",
         type=float,
-        default=2,
-        help="Maximum selected frames per second of video time (default: 2).",
+        default=None,
+        help="Maximum selected media FPS (default: 5 with Stage 1; otherwise 2).",
     )
     parser.add_argument(
         "--stage1",
         action="store_true",
         help="Run the Stage 1 YOLO pre-filter on selected frames (needs ultralytics).",
     )
-    parser.add_argument(
-        "--vlm",
-        choices=["none", "predict-clip"],
-        default="none",
-        help="Classify Stage 1 candidates: none (record only) or predict-clip.",
-    )
-    parser.add_argument(
-        "--vlm-python",
-        default=sys.executable,
-        help="Interpreter with anomaly_eval installed, for --vlm predict-clip.",
-    )
+    from data_pipeline.detection.reasoning import add_arguments
+
+    add_arguments(parser, project_dir.parent)
     parser.add_argument(
         "--verbose",
         action="store_true",
         help="Show detailed recording, scheduling, and decoding messages.",
     )
+    parser.add_argument(
+        "--candidate-dir", type=Path, default=project_dir / "candidates"
+    )
+    parser.add_argument(
+        "--recordings-dir", type=Path, default=project_dir / "recordings"
+    )
+    parser.add_argument("--segment-seconds", type=int, default=5)
     args = parser.parse_args()
+    if args.segment_seconds < 1:
+        parser.error("segment-seconds must be positive")
+    if args.target_fps is None:
+        args.target_fps = 5.0 if args.stage1 else 2.0
+    if args.vlm != "none" and not args.stage1:
+        parser.error("--vlm requires --stage1")
     if not math.isfinite(args.target_fps) or args.target_fps <= 0:
         parser.error("--target-fps must be positive and finite")
     return args
@@ -93,28 +97,26 @@ def _build_stage1_hook(
     args: argparse.Namespace, source: VideoSource, out_dir: Path
 ) -> Callable[[DecodedFrame], None]:
     # Imported here so the pipeline runs without the YOLO dependencies.
-    from data_pipeline.detection.stage1 import Stage1Detector
-    from data_pipeline.detection.vlm import CandidateLog, NoVLM, PredictClipVLM
+    from data_pipeline.detection.reasoning import build_service
+    from data_pipeline.detection.stage1 import Stage1Detector, default_config, load_gate
 
-    detector = Stage1Detector(source.source_id, out_dir, fps=args.target_fps)
-    if args.vlm == "predict-clip":
-        vlm = PredictClipVLM(args.vlm_python, Path(__file__).resolve().parents[1])
-    else:
-        vlm = NoVLM()
-    log = CandidateLog(out_dir, vlm)
-    logger = logging.getLogger("stage1")
+    gate = load_gate()
+    detector = Stage1Detector(
+        source.source_id,
+        out_dir,
+        fps=args.target_fps,
+        cfg=default_config(gate, args.stage1_device),
+        gate=gate,
+        safety_scan_seconds=args.safety_scan_seconds,
+    )
+    service = build_service(args, Path(__file__).resolve().parents[1], out_dir)
+    service.start()
 
     def on_frame(frame: DecodedFrame) -> None:
         for candidate in detector.process(frame):
-            record = log(candidate)
-            logger.info(
-                "Candidate | %s | t=%.1fs | tasks=%s | vlm=%s",
-                record["event_type"],
-                record["timestamp_s"],
-                ",".join(record["tasks"]),
-                {k: v.get("decision") for k, v in record["vlm"].items()},
-            )
+            service.submit(candidate)
 
+    on_frame.close = service.close
     return on_frame
 
 
@@ -139,24 +141,29 @@ def main() -> None:
 
     source = _build_video_source(args)
 
-    storage_root = project_dir / "recordings"
-    on_frame = (
-        _build_stage1_hook(args, source, project_dir / "candidates")
-        if args.stage1
-        else None
-    )
+    storage_root = args.recordings_dir
+    on_frame = None
     engine, session_factory = create_engine_and_session_factory(database_url)
-
     try:
+        on_frame = (
+            _build_stage1_hook(args, source, args.candidate_dir)
+            if args.stage1
+            else None
+        )
         run_pipeline(
             source,
             storage_root,
             session_factory=session_factory,
             target_fps=args.target_fps,
+            segment_seconds=args.segment_seconds,
             on_frame=on_frame,
         )
     finally:
-        engine.dispose()
+        try:
+            if on_frame is not None:
+                on_frame.close()
+        finally:
+            engine.dispose()
 
 
 if __name__ == "__main__":
