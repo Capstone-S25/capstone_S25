@@ -96,6 +96,9 @@ class GateConfig:
                                            # so what they put down is in the crop (None = person box only)
     reach_refire_move_h: float | None = None  # re-fire before reach_cooldown_s if the person moved this many body
                                               # heights since their last reach (None = cooldown only)
+    reach_max_speed_h: float | None = None  # skip people walking faster than this (body heights / s over the last
+                                            # reach_speed_window_s): a hanging arm with a bag looks low from above
+    reach_speed_window_s: float = 1.0
 
     bg_width: int = 480
     bg_long_s: float = 30.0
@@ -815,6 +818,13 @@ class RuleEngine:
                 return []
         if h < cfg.pose_min_h_px or (cfg.reach_skip_border and touches_border(p["box"], obs.frame_hw)):
             return []
+        if cfg.reach_max_speed_h is not None:
+            pts = [q for q in st["hist"] if q[0] >= t - cfg.reach_speed_window_s and q[5] == p["raw_id"]]
+            if len(pts) >= 2 and pts[-1][0] - pts[0][0] >= 0.5 * cfg.reach_speed_window_s:
+                a, b = pts[0], pts[-1]
+                v = math.hypot(b[1] - a[1], b[2] - a[2]) / (b[0] - a[0]) / float(np.median([q[3] for q in pts]))
+                if v > cfg.reach_max_speed_h:
+                    return []
         knee_y = float(np.mean([q[1] for q in knees]))
         hits = st.setdefault("reach_hits", deque())
         if max(w[1] for w in wrists) >= knee_y + cfg.reach_margin_h * h:

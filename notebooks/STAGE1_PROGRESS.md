@@ -365,3 +365,10 @@ Rule by rule at 12.5 vs 5 fps (rule alone; littering tune clips, Avenue tune nor
   bending with the bag in hand), YOLOE pass 6/11. Still missed: video4 (cooldown), both video6 bags (dark night
   corridor, no rule fires at the put-down). video5 is borderline (owner walking away 3 s later, crop just touches
   the bag). The 8/11 and 10/11 quoted earlier today were wrong; comparisons between arms are unaffected.
+* **reach_down on walkers** (user spotted ABODA video2: a man walking with a heavy bag hanging from his hand fires
+  "reached to the ground" — from a steep camera a hanging arm reaches knee height in the image). New
+  `GateConfig.reach_max_speed_h` (skip people faster than this many body heights/s over `reach_speed_window_s`=1 s).
+  Chosen on tune / train only: 0.45 keeps littering tune 97.8/96.5 and Avenue tune 68/60 (0.3 drops Avenue crop to 56),
+  cuts reach_down false alarms on IWDD train normal videos 5.26 → 4.34/min (videos with any: 43 → 36.5 %) and raises
+  the IWDD train lead over chance +5.0 → +6.8. ABODA unchanged at 8/11; the walking fire at 65.6 s in video2 is gone,
+  the real put-down bend at 69.0 s stays. Off by default like the other reach options.
