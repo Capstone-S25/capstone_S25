@@ -104,6 +104,26 @@ class RuleTests(unittest.TestCase):
         )
         self.assertEqual([e["event_type"] for e in events], ["fast_motion"])
 
+    def test_fast_motion_at_5_fps(self):
+        # At 5 fps the 0.6 s window holds exactly 4 points, the minimum the rule needs.
+        cfg = GateConfig(rules=("speed",), speed_h_per_s=1.8)
+        eng = RuleEngine(cfg, 5.0)
+        frames = [
+            Observation(
+                i,
+                i * 0.2,
+                (720, 1280),
+                [person(1, (100 * i, 100, 100 * i + 60, 300))],
+                [],
+                [],
+                {},
+                None,
+            )
+            for i in range(8)
+        ]
+        events = [e for o in frames for e in eng.step(o)]
+        self.assertEqual([e["event_type"] for e in events], ["fast_motion"])
+
     def test_hand_to_face_needs_repeated_hits(self):
         k = np.zeros((17, 3), np.float32)
         k[0] = (125, 120, 0.9)  # nose

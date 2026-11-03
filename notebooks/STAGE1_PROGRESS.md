@@ -276,3 +276,23 @@ not subsampled) and scores the unchanged rules + pose on held-out data (`exp/new
 * Recommendation: run the pipeline with `--target-fps 5` when Stage 1 is on. The VLM views are sampled from the
   writer's own 2 fps buffer, so the VLM input does not change.
 * Integration lives on `feat/stage1-integration` (data-pipeline/data_pipeline/detection/).
+
+### Why 5 fps differs (diagnosed on tune / train data only; no gate change)
+
+Rule by rule at 12.5 vs 5 fps (rule alone; littering tune clips, Avenue tune normals, IWDD train):
+
+* **No frame-count bugs in the rules.** Rules use seconds; a half-frame slack on the speed window changed
+  nothing at 5 fps (12 vs 12 Avenue events) and was dropped. `test_fast_motion_at_5_fps` checks the rule fires.
+* **Fast motion** loses most (Avenue tune 56/40 -> 12/4 event/crop %): at 0.2 s spacing a runner's boxes stop
+  overlapping, ByteTrack starts a new id and the speed history resets. A net-displacement speed did not help
+  (still 0.2 s jumps break the track); rejected. This is a tracker limit at low fps.
+* **Loitering false alarms double** on Avenue tune normals (2.9 -> 5.9/min): fewer frames give the tracker fewer
+  chances to drop a standing person, so more people really reach 20 s. Thinning points to a fixed rate did
+  not change it (rejected). Treat as a per-camera dwell setting at the deployment fps. Held-out overall false
+  alarms were unchanged (6.5 vs 6.6/min).
+* **pose_action** keeps littering recall (tune alone 95 -> 94 %) but its features shift: the 1 s window is
+  resampled to 8 points by sample-and-hold, so at 5 fps every other velocity is 0 and the next doubled.
+  Avenue tune normal 0 -> 1.2/min (0 is in-sample). Fix if needed: retrain on 10 + 5 fps windows.
+* **IWDD train**: hit@10s 37.0 vs chance 32.3 (full) and 33.5 vs 27.4 (5 fps); negatives 15.2 -> 10.1/min.
+  The lead over chance holds (+4.7 -> +6.1); 5 fps is a lower candidate rate (fewer fast_motion and reach_down
+  frames), not a loss of signal. The held-out drop (56 vs 42 -> 38 vs 29) is the same effect plus n = 50 noise.
