@@ -1,0 +1,58 @@
+[
+ {
+  "setting": "current",
+  "littering": "97.8/96.5",
+  "walkway_throws": "100.0/100.0",
+  "smoking": "54.1/22.4",
+  "walkway_alerts_min": 3.72,
+  "dumping_hit_vs_chance": "33.5 vs 25.9",
+  "dumping_lead": 7.6,
+  "dump_site_alerts_min": 8.27,
+  "dump_site_videos_with_alert_%": 56.0
+ },
+ {
+  "setting": {
+   "reach_skip_riders": true
+  },
+  "littering": "97.8/96.5",
+  "walkway_throws": "100.0/100.0",
+  "smoking": "54.1/22.4",
+  "walkway_alerts_min": 3.72,
+  "dumping_hit_vs_chance": "33.5 vs 25.9",
+  "dumping_lead": 7.6,
+  "dump_site_alerts_min": 8.27,
+  "dump_site_videos_with_alert_%": 56.0
+ },
+ {
+  "setting": {
+   "reach_skip_riders": true,
+   "reach_rider_classes": [
+    1,
+    3
+   ]
+  },
+  "littering": "97.8/96.5",
+  "walkway_throws": "100.0/100.0",
+  "smoking": "54.1/22.4",
+  "walkway_alerts_min": 3.72,
+  "dumping_hit_vs_chance": "33.5 vs 25.9",
+  "dumping_lead": 7.6,
+  "dump_site_alerts_min": 8.27,
+  "dump_site_videos_with_alert_%": 56.0
+ },
+ {
+  "setting": {
+   "reach_skip_riders": true,
+   "reach_skip_overlap": 0.5,
+   "item_scenery": true
+  },
+  "littering": "97.8/96.5",
+  "walkway_throws": "100.0/100.0",
+  "smoking": "54.1/22.6",
+  "walkway_alerts_min": 3.72,
+  "dumping_hit_vs_chance": "33.0 vs 25.5",
+  "dumping_lead": 7.5,
+  "dump_site_alerts_min": 7.32,
+  "dump_site_videos_with_alert_%": 55.0
+ }
+]
