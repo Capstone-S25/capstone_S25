@@ -399,3 +399,9 @@ Rule by rule at 12.5 vs 5 fps (rule alone; littering tune clips, Avenue tune nor
 * `exp/counts_precision.py` (raw counts, recall, precision; Avenue throwing-only) and `exp/per_rule_fa.py` re-run with
   the new defaults: walkway alerts 6.26 → 4.89/min, dump sites 16.5 → 9.45/min. Demo: Avenue test/04 (two runners)
   replaced by test/12 (throwing).
+* **Alert budget** (`exp/newcam/alert_budget.py` → `alert_budget_tune.json`, tune / train only): `loiter_repeat_s`
+  30 → 60 s cuts walkway alerts 4.11 → 3.72/min with no loss anywhere (120 s same) → **new default 60 s**. A longer
+  one-alert-per-person window (`person_dedup_s` 5–30 s) cuts dump-site alerts up to 8.3 → 5.4/min but loses real
+  catches (IWDD lead +7.5 → +4.5, smoking 55 → 43 %, Avenue throw crop 100 → 83 %): the alert that matters often
+  comes seconds after an earlier one on the same person (approach, then the act). **Rejected.** Most extra alerts are
+  different people doing ordinary things; reducing them needs a learned re-ranker, not spacing.
