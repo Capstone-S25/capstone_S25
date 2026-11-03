@@ -331,3 +331,18 @@ Rule by rule at 12.5 vs 5 fps (rule alone; littering tune clips, Avenue tune nor
   `exp/newcam/bag_finetune.py build`: 1974 train + 439 val Roboflow images, + coco128 and 300 tune-only CCTV frames
   as replay, 80 COCO classes kept (luggage → the COCO bag class the original model sees, else suitcase; unlabelled
   objects pseudo-labelled at conf 0.4).
+* **Bag fine-tune** (`exp/newcam/bag_finetune.py`, weights `weights/yolo26s_bags.pt`, gitignored *.pt): early-stopped at
+  11 epochs, val mAP50 0.83. ABODA bag-found 18 → 27 % of frames (conf 0.2), clutter 0.21 → 0.07 per frame
+  (`bag_finetune_aboda.json`). Stage 1 end to end (`bag_finetune_gate.json`): ABODA 8/11 → 8/11, littering held-out
+  97/86 → 99/86, Avenue 80/65 → 80/65, normal FA 6.45 → 5.67/min. **Not adopted**: the Roboflow data turned out to be
+  mostly phone photos (1,221 of 2,413 images have no bag; only 97 have a CCTV-sized one), so the gain is not a bag gain.
+* **ABODA misses checked by eye**: labels are right. Videos 2–4 (one outdoor camera, dark bag on patterned paving,
+  23–52 px) are found by no detector (COCO, YOLOE, Open Images, fine-tuned). Videos 7–9 are seen by COCO only as
+  "dining table" / low-confidence suitcase (0.16–0.26, under our 0.25 track / 0.35 appear thresholds).
+* **Bag metric**: "bags caught" = a candidate whose crop covers the bag from 2 s before put-down on (8/11 for the
+  current gate; 4 via bag rules, 4 via reach_down / pose / fast_motion on the person leaving it). The 6/11 in
+  chance_results.json is the stricter "crop covers the bag while it is unattended" test. Quote 8/11 with the split.
+* **YOLOE item pass in the gate** (new `GateConfig.item_detector` / `item_prompts` / `item_period_s` / `item_conf` /
+  `item_detector_min_passes`, off by default; `exp/newcam/yoloe_gate.py` → `yoloe_gate.json`): ABODA 8/11 → 8/11
+  (bag rules 4 → 5, adds video9), normal bag alarms 0.59 → 0/min, normal FA 5.77 → 4.99/min, but Avenue held-out crop
+  65 → 55 % (thrown objects no longer seen as COCO items). Keep as a per-camera option for bag-heavy scenes, not default.

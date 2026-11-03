@@ -1,0 +1,18 @@
+{
+ "original": {
+  "aboda_bags_caught": "8/11",
+  "aboda_bag_ever_detected": "5/11",
+  "littering_heldout_event/crop_%": "97.0/86.0",
+  "avenue_heldout_event/crop_%": "80.0/65.0",
+  "normal_FA_per_min": 6.45,
+  "normal_bag_alarms_per_min": 0.59
+ },
+ "fine-tuned": {
+  "aboda_bags_caught": "8/11",
+  "aboda_bag_ever_detected": "4/11",
+  "littering_heldout_event/crop_%": "99.0/86.0",
+  "avenue_heldout_event/crop_%": "80.0/65.0",
+  "normal_FA_per_min": 5.67,
+  "normal_bag_alarms_per_min": 0.39
+ }
+}
