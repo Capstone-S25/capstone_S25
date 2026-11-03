@@ -19,7 +19,6 @@ HERE = Path(__file__).resolve().parent
 NB = HERE.parents[1]
 sys.path[:0] = [str(NB), str(NB / "tools"), str(NB / "exp"), str(NB / "exp" / "newcam"), str(NB / "exp" / "gt_review")]
 
-from compare_models import model_splits  # noqa: E402
 from counts_precision import throwing_labels  # noqa: E402
 from exp_harness import baseline  # noqa: E402
 from iwdd_eval import evaluate  # noqa: E402
@@ -28,27 +27,12 @@ from scoped import scoped  # noqa: E402
 from stage1_bench import evaluate_run, summarize  # noqa: E402
 from stage1_gate import DEFAULT_RULES, GateConfig  # noqa: E402
 
-CACHE = NB / "bench_cache" / "models" / "s"
-
-
-def attach_two_wheelers(results, name):
-    path = CACHE / f"twowheel_{name}.pkl"
-    if not path.exists():
-        return False
-    boxes = pickle.loads(path.read_bytes())
-    for g, r in results:
-        b = boxes.get(g.seq.seq_id, {})
-        for o in r.observations:
-            o.two_wheelers = b.get(o.index, [])
-    return True
-
+from cached import CACHE, load_cached, splits  # noqa: E402
 
 def data():
-    S = model_splits("s", heldout=False)
-    iw = pickle.loads((CACHE / "iwdd_train.pkl").read_bytes())
-    have = {"litter_train": attach_two_wheelers(S["littering"], "litter_train"),
-            "avenue": attach_two_wheelers(S["avenue"] + S["normal"], "avenue"),
-            "iwdd_train": attach_two_wheelers(iw, "iwdd_train")}
+    S = splits(heldout=False)
+    iw = load_cached("iwdd_train")
+    have = {k: (CACHE / f"twowheel_{k}.pkl").exists() for k in ("litter_train", "avenue", "iwdd_train")}
     return S, scoped(S["avenue"], keep=("in",), path=throwing_labels()), iw, iwdd_labels("train"), have
 
 

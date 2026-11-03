@@ -426,3 +426,16 @@ Rule by rule at 12.5 vs 5 fps (rule alone; littering tune clips, Avenue tune nor
   - Rejected: pose_action_thr 0.88–0.95 (littering crop 96.5 → 86.5 at 0.92 for −11 % alerts); a "too still to be a
     person" filter on stays-put (real smokers sway as little as static fakes, p10 0.006 vs 0.005); crowd suppression
     (littering does happen in crowds).
+* `reach_skip_seated_s` 5 s (skip people seated — knee within 0.12 h of the hip — for 5 s; a dumper crouches briefly):
+  dump-site alerts 8.27 → 7.87/min, lead unchanged; 1–3 s lose dumping videos.
+* Motorcycle-only riders (`reach_rider_classes` = (3,), detection classes re-cached): 8.27 → 6.86/min, loses 1 dumping
+  video (all two-wheelers lost 3: two cyclists stopping to dump, one bin-bag mis-detection). Live gate checked: the
+  detector also returns motorcycles, kept out of the bag items.
+* **New defaults**: reach_skip_riders (motorcycles), reach_skip_overlap 0.5, reach_skip_seated_s 5, item_scenery. Tune /
+  train: dump-site alerts 8.27 → 5.87/min (−29 %), lead +7.6 → +7.3, littering / throws / smoking unchanged.
+  Held-out once (`counts_precision.json`, `per_rule_fa.json`; two-wheeler boxes attached via `exp/alerts/cached.py`):
+  IWDD test 44.0 vs 31.2 → 44.0 vs 31.2 (no loss) with normal-video alerts 9.39 → 6.30/min (−33 %); dumping alerts
+  230 → 168, precision 10 → 14 %; walkway 4.89 → 4.50/min; littering 97/85, throws 10/10, bags 8/11 unchanged;
+  smoking 159 → 150 of 364 (from loiter_repeat 30 → 60 s).
+* Pose-cue false alerts at dump sites (167) are mostly real throwing-like motions (catch in a car park, beach clean-up,
+  workers loading a truck): only the VLM can tell a thrown ball from thrown litter. Left alone.

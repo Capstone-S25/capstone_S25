@@ -12,9 +12,11 @@ from functools import partial
 from pathlib import Path
 
 NB = Path(__file__).resolve().parents[1]
-sys.path[:0] = [str(NB), str(NB / "tools"), str(NB / "exp"), str(NB / "exp" / "newcam")]
+sys.path[:0] = [str(NB), str(NB / "tools"), str(NB / "exp"), str(NB / "exp" / "newcam"), str(NB / "exp" / "alerts"),
+                str(NB / "exp" / "gt_review")]
 
 from compare_models import model_splits  # noqa: E402
+from cached import load_cached, splits  # noqa: E402
 from exp_harness import baseline  # noqa: E402
 from loaders import iwdd_labels  # noqa: E402
 from stage1_gate import DEFAULT_RULES, GateConfig  # noqa: E402
@@ -34,9 +36,9 @@ def per_rule(videos, m, ds):
 
 def main():
     m = partial(baseline, cfg=GateConfig(inview_s=60.0, rules=DEFAULT_RULES + ("pose_action",)))
-    avenue = [r for _, r in model_splits("s", heldout=True)["normal"]]
+    avenue = [r for _, r in splits(heldout=True)["normal"]]
     lab = iwdd_labels("test")
-    iwdd = [r for _, r in pickle.loads((NB / "bench_cache/models/s/iwdd_test.pkl").read_bytes())
+    iwdd = [r for _, r in load_cached("iwdd_test")
             if not lab[r.seq_id]["positive"]]
     out = {"avenue held-out normal": per_rule(avenue, m, "normal"), "IWDD test normal": per_rule(iwdd, m, "littering")}
     print(json.dumps(out, indent=1))

@@ -21,9 +21,11 @@ from functools import partial
 from pathlib import Path
 
 NB = Path(__file__).resolve().parents[1]
-sys.path[:0] = [str(NB), str(NB / "tools"), str(NB / "exp"), str(NB / "exp" / "newcam")]
+sys.path[:0] = [str(NB), str(NB / "tools"), str(NB / "exp"), str(NB / "exp" / "newcam"), str(NB / "exp" / "alerts"),
+                str(NB / "exp" / "gt_review")]
 
 from compare_models import model_splits  # noqa: E402
+from cached import load_cached, splits  # noqa: E402
 from exp_harness import baseline  # noqa: E402
 from iwdd_eval import in_window  # noqa: E402
 from loaders import iwdd_labels  # noqa: E402
@@ -58,7 +60,7 @@ def from_bench(rows, minutes):
 
 def main():
     m = partial(baseline, cfg=GateConfig(inview_s=60.0, rules=DEFAULT_RULES + ("pose_action",)))
-    H = model_splits("s", heldout=True)
+    H = splits(heldout=True)
     out = {}
     lit = [evaluate_run(g, r, m(r, "littering")) for g, r in H["littering"]]
     out["littering"] = from_bench(lit, sum(r.duration_s for _, r in H["littering"]) / 60)
@@ -73,7 +75,7 @@ def main():
     lab = iwdd_labels("test")
     inc = caught = alerts = on = 0
     mins = 0.0
-    for _, r in pickle.loads((NB / "bench_cache/models/s/iwdd_test.pkl").read_bytes()):
+    for _, r in load_cached("iwdd_test"):
         evs, L = m(r, "littering"), lab[r.seq_id]
         alerts += len(evs)
         mins += r.duration_s / 60
@@ -88,7 +90,7 @@ def main():
     blab = json.loads((NB / "exp/newcam/aboda_labels.json").read_text())
     inc = caught = alerts = on = 0
     mins = 0.0
-    for _, r in pickle.loads((NB / "bench_cache/models/s/aboda.pkl").read_bytes()):
+    for _, r in load_cached("aboda"):
         evs = m(r, "aboda")
         alerts += len(evs)
         mins += r.duration_s / 60
