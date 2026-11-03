@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import os
 import shutil
 import subprocess
@@ -336,12 +337,17 @@ def smoke(root=ROOT):
             "rough_sleeping",
             "unattended_items",
         ]
-        view = {"paths": paths, "times_s": [3 * i for i in range(8)]}
+        view = {"paths": paths, "times_s": [20 * i / 7 for i in range(8)]}
         result = classifier.classify(
-            {"tasks": tasks, "timestamp_s": 21, "views": {"short": view, "long": view}}
+            {"tasks": tasks, "timestamp_s": 20, "views": {"short": view, "long": view}}
         )
-        if set(result["predictions"]) != set(tasks):
-            raise RuntimeError("Smoke test omitted a task")
+        if set(result["predictions"]) != set(tasks) or any(
+            not value.get("input_history_supported")
+            or value.get("decision") not in {"normal", "anomaly"}
+            or not math.isfinite(value.get("score", float("nan")))
+            for value in result["predictions"].values()
+        ):
+            raise RuntimeError("Smoke test did not score all five tasks")
         return {
             "status": "passed",
             "device": "cpu",
