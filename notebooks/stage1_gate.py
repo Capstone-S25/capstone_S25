@@ -104,12 +104,12 @@ class GateConfig:
     reach_max_speed_h: float | None = 0.45  # skip people walking faster than this (body heights / s over the last
                                             # reach_speed_window_s): a hanging arm with a bag looks low from above
     reach_speed_window_s: float = 1.0
-    reach_skip_riders: bool = False     # skip people riding (a seated rider's hands sit at knee height); the
+    reach_skip_riders: bool = True      # skip people riding (a seated rider's hands sit at knee height); the
                                         # detector also reports the rider classes, at no extra cost
     reach_rider_classes: tuple[int, ...] = (3,)  # COCO 3 motorcycle; 1 bicycle is left out: cyclists stop to dump
-    reach_skip_overlap: float | None = None  # skip a person when another person's box covers this share of theirs
+    reach_skip_overlap: float | None = 0.5   # skip a person when another person's box covers this share of theirs
                                              # (overlapping people get each other's keypoints)
-    reach_skip_seated_s: float | None = None  # skip a person who has been seated (thigh near horizontal: knee within
+    reach_skip_seated_s: float | None = 5.0   # skip a person who has been seated (thigh near horizontal: knee within
                                               # 0.12 body heights of the hip) for this long; a dumper crouches briefly
 
     bg_width: int = 480
@@ -144,7 +144,7 @@ class GateConfig:
     item_period_s: float = 1.0
     item_conf: float = 0.2
     item_detector_min_passes: int = 2   # replaces item_min_frames when item_detector is on (2 passes = 2 s)
-    item_scenery: bool = False          # a bag first seen with nobody carrying it or near it is scenery: it never
+    item_scenery: bool = True           # a bag first seen with nobody carrying it or near it is scenery: it never
                                         # adopts a passer-by as owner (unless it moves), so "owner left" cannot fire
                                         # on it; a thrown / dropped bag is still caught by the ownerless path
 

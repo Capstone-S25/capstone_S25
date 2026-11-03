@@ -3,8 +3,8 @@
   "incidents": 100,
   "caught": 97,
   "right_person": 85,
-  "alerts": 186,
-  "alerts_on_incident": 92,
+  "alerts": 184,
+  "alerts_on_incident": 91,
   "minutes": 5.0,
   "recall_%": 97,
   "precision_%": 49
@@ -13,38 +13,38 @@
   "incidents": 10,
   "caught": 10,
   "right_person": 8,
-  "alerts": 43,
+  "alerts": 41,
   "alerts_on_incident": 10,
   "minutes": 10.1,
   "recall_%": 100,
-  "precision_%": 23
+  "precision_%": 24
  },
  "smoking": {
   "incidents": 364,
-  "caught": 159,
-  "right_person": 56,
-  "alerts": 349,
-  "alerts_on_incident": 62,
+  "caught": 150,
+  "right_person": 54,
+  "alerts": 332,
+  "alerts_on_incident": 58,
   "minutes": 63.5,
-  "recall_%": 44,
-  "precision_%": 18
+  "recall_%": 41,
+  "precision_%": 17
  },
  "illegal dumping": {
   "incidents": 50,
   "caught": 22,
   "right_person": null,
-  "alerts": 230,
-  "alerts_on_incident": 24,
+  "alerts": 168,
+  "alerts_on_incident": 23,
   "minutes": 37.3,
   "recall_%": 44,
-  "precision_%": 10
+  "precision_%": 14
  },
  "unattended items": {
   "incidents": 11,
   "caught": 8,
   "right_person": null,
-  "alerts": 122,
-  "alerts_on_incident": 13,
+  "alerts": 114,
+  "alerts_on_incident": 12,
   "minutes": 20.9,
   "recall_%": 73,
   "precision_%": 11
