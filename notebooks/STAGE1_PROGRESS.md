@@ -378,3 +378,12 @@ Rule by rule at 12.5 vs 5 fps (rule alone; littering tune clips, Avenue tune nor
   52.0 vs 38.6 (same +13 lead, fewer candidates), ABODA bags 6/11 → 8/11. Demo videos re-rendered with the defaults
   (`tools/make_showcase.py`): ABODA video2 moved from the misses reel to the works reel ("caught through the person"),
   video6 (night corridor) is now the bag miss; title cards say "footage not used for tuning".
+* **reach_down on people standing with arms down** (user: ABODA video6, ID 20 at 102.8 s). Keypoints are right; the
+  rule's absolute test (lowest wrist within 0.15 h above the knee) is met by hanging arms from a steep camera
+  (wrists ~0.60–0.65 h, knees ~0.72–0.80 h). Tune / train sweeps (`exp/newcam/reach_margin.py`):
+  - tighter absolute margin (`reach_margin_tune.json`): −0.10 halves IWDD train reach alarms (4.3 → 2.2/min) but the
+    IWDD train lead over chance falls +6.8 → +2.5 and littering reach-alone 65/35 → 54/22. **Rejected** (recall first).
+  - relative drop vs the person's own 5 s median (`reach_relative_tune.json`): 0.05 → reach alarms 4.3 → 3.9/min, lead
+    +6.8 → +6.0; but it does not remove the reported fire (new track, < 1 s history → fallback) and ABODA bags fall
+    8 → 7 (people who arrive carrying a bag already have a low hand). **Rejected**; code not kept.
+  Accept these standing-still reach alarms as VLM work; recall matters more.

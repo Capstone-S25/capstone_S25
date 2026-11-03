@@ -1,0 +1,46 @@
+[
+ {
+  "reach_margin_h": -0.15,
+  "littering_tune": "97.8/96.5",
+  "littering_tune_reach_alone": "64.8/35.2",
+  "avenue_tune": "68.0/60.0",
+  "avenue_normal_FA": 5.09,
+  "avenue_normal_reach_FA": 0.59,
+  "iwdd_train_hit_vs_chance": "37.0 vs 30.2",
+  "iwdd_train_reach_alone_vs_chance": "24.0 vs 18.4",
+  "iwdd_train_normal_reach_per_min": 4.34
+ },
+ {
+  "reach_margin_h": -0.1,
+  "littering_tune": "97.8/95.7",
+  "littering_tune_reach_alone": "53.5/21.7",
+  "avenue_tune": "68.0/56.0",
+  "avenue_normal_FA": 4.51,
+  "avenue_normal_reach_FA": 0.0,
+  "iwdd_train_hit_vs_chance": "29.5 vs 27.0",
+  "iwdd_train_reach_alone_vs_chance": "15.0 vs 12.4",
+  "iwdd_train_normal_reach_per_min": 2.17
+ },
+ {
+  "reach_margin_h": -0.05,
+  "littering_tune": "97.8/95.7",
+  "littering_tune_reach_alone": "47.4/16.1",
+  "avenue_tune": "68.0/56.0",
+  "avenue_normal_FA": 4.51,
+  "avenue_normal_reach_FA": 0.0,
+  "iwdd_train_hit_vs_chance": "29.0 vs 25.4",
+  "iwdd_train_reach_alone_vs_chance": "12.5 vs 9.2",
+  "iwdd_train_normal_reach_per_min": 1.56
+ },
+ {
+  "reach_margin_h": 0.0,
+  "littering_tune": "97.4/94.8",
+  "littering_tune_reach_alone": "38.7/11.7",
+  "avenue_tune": "64.0/56.0",
+  "avenue_normal_FA": 4.51,
+  "avenue_normal_reach_FA": 0.0,
+  "iwdd_train_hit_vs_chance": "27.0 vs 24.3",
+  "iwdd_train_reach_alone_vs_chance": "10.0 vs 7.7",
+  "iwdd_train_normal_reach_per_min": 1.26
+ }
+]
