@@ -1,0 +1,110 @@
+[
+ {
+  "setting": "current",
+  "littering_tune": "97.8/96.5 (443 alerts)",
+  "avenue_throwing_tune": "100.0/100.0",
+  "walkway_alerts_per_min": 4.11,
+  "smoking_tune": "54.8/22.4 (690 alerts)",
+  "iwdd_train_hit_vs_chance": "33.5 vs 26.0",
+  "iwdd_train_lead": 7.5,
+  "dump_site_alerts_per_min": 8.28
+ },
+ {
+  "setting": {
+   "person_dedup_s": 5.0
+  },
+  "littering_tune": "97.8/96.5 (434 alerts)",
+  "avenue_throwing_tune": "100.0/83.3",
+  "walkway_alerts_per_min": 4.11,
+  "smoking_tune": "54.1/20.5 (646 alerts)",
+  "iwdd_train_hit_vs_chance": "32.0 vs 25.1",
+  "iwdd_train_lead": 6.9,
+  "dump_site_alerts_per_min": 7.51
+ },
+ {
+  "setting": {
+   "person_dedup_s": 10.0
+  },
+  "littering_tune": "97.8/96.5 (434 alerts)",
+  "avenue_throwing_tune": "100.0/83.3",
+  "walkway_alerts_per_min": 4.11,
+  "smoking_tune": "49.7/17.5 (525 alerts)",
+  "iwdd_train_hit_vs_chance": "30.0 vs 23.7",
+  "iwdd_train_lead": 6.3,
+  "dump_site_alerts_per_min": 6.38
+ },
+ {
+  "setting": {
+   "person_dedup_s": 20.0
+  },
+  "littering_tune": "97.8/96.5 (434 alerts)",
+  "avenue_throwing_tune": "100.0/83.3",
+  "walkway_alerts_per_min": 3.92,
+  "smoking_tune": "46.2/14.9 (448 alerts)",
+  "iwdd_train_hit_vs_chance": "27.0 vs 23.0",
+  "iwdd_train_lead": 4.0,
+  "dump_site_alerts_per_min": 5.66
+ },
+ {
+  "setting": {
+   "person_dedup_s": 30.0
+  },
+  "littering_tune": "97.8/96.5 (434 alerts)",
+  "avenue_throwing_tune": "100.0/83.3",
+  "walkway_alerts_per_min": 3.33,
+  "smoking_tune": "43.1/14.2 (422 alerts)",
+  "iwdd_train_hit_vs_chance": "27.0 vs 22.5",
+  "iwdd_train_lead": 4.5,
+  "dump_site_alerts_per_min": 5.4
+ },
+ {
+  "setting": {
+   "loiter_repeat_s": 60.0
+  },
+  "littering_tune": "97.8/96.5 (443 alerts)",
+  "avenue_throwing_tune": "100.0/100.0",
+  "walkway_alerts_per_min": 3.72,
+  "smoking_tune": "54.1/22.4 (685 alerts)",
+  "iwdd_train_hit_vs_chance": "33.5 vs 25.9",
+  "iwdd_train_lead": 7.6,
+  "dump_site_alerts_per_min": 8.27
+ },
+ {
+  "setting": {
+   "loiter_repeat_s": 120.0
+  },
+  "littering_tune": "97.8/96.5 (443 alerts)",
+  "avenue_throwing_tune": "100.0/100.0",
+  "walkway_alerts_per_min": 3.72,
+  "smoking_tune": "53.8/22.4 (682 alerts)",
+  "iwdd_train_hit_vs_chance": "33.5 vs 25.9",
+  "iwdd_train_lead": 7.6,
+  "dump_site_alerts_per_min": 8.27
+ },
+ {
+  "setting": {
+   "person_dedup_s": 10.0,
+   "loiter_repeat_s": 60.0
+  },
+  "littering_tune": "97.8/96.5 (434 alerts)",
+  "avenue_throwing_tune": "100.0/83.3",
+  "walkway_alerts_per_min": 3.72,
+  "smoking_tune": "49.2/17.5 (522 alerts)",
+  "iwdd_train_hit_vs_chance": "30.0 vs 23.6",
+  "iwdd_train_lead": 6.4,
+  "dump_site_alerts_per_min": 6.37
+ },
+ {
+  "setting": {
+   "person_dedup_s": 20.0,
+   "loiter_repeat_s": 120.0
+  },
+  "littering_tune": "97.8/96.5 (434 alerts)",
+  "avenue_throwing_tune": "100.0/83.3",
+  "walkway_alerts_per_min": 3.53,
+  "smoking_tune": "45.5/14.9 (444 alerts)",
+  "iwdd_train_hit_vs_chance": "27.0 vs 22.9",
+  "iwdd_train_lead": 4.1,
+  "dump_site_alerts_per_min": 5.65
+ }
+]

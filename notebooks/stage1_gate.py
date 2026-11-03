@@ -69,7 +69,8 @@ class GateConfig:
     loiter_s: float = 20.0
     loiter_radius_h: float = 0.6
     loiter_release_h: float = 0.9
-    loiter_repeat_s: float = 30.0       # re-send while the person stays (e.g. starts smoking later)
+    loiter_repeat_s: float = 60.0       # re-send while the person stays (e.g. starts smoking later); 30 s cost
+                                        # 10% more walkway alerts for no gain (exp/newcam/alert_budget.py)
 
     # In view for a long time (wandering / pacing), moving or not. Should exceed how long people normally take
     # to pass through this camera: calibrate_inview() on its normal footage. Gaps up to the re-link window
