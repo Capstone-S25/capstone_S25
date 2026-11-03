@@ -1,0 +1,866 @@
+{
+ "littering/tune/rules": {
+  "events": 230,
+  "candidates_per_min": 28.61,
+  "method_lenient_%": 55.7,
+  "same_times_lenient_%": 42.4,
+  "uniform_lenient_%": 43.8,
+  "method_strict_%": 55.7,
+  "same_times_strict_%": 42.1,
+  "uniform_strict_%": 43.2,
+  "above_same_times_lenient": 13.3,
+  "above_uniform_lenient": 11.9,
+  "above_same_times_strict": 13.6,
+  "above_uniform_strict": 12.5,
+  "per_rule": {
+   "reach_down": {
+    "uniform_lenient": 42.0,
+    "same_times_lenient": 41.0,
+    "uniform_strict": 41.5,
+    "same_times_strict": 40.7,
+    "method_lenient": 54.8,
+    "method_strict": 54.8
+   },
+   "fast_motion": {
+    "method_lenient": 0.4,
+    "same_times_lenient": 1.7,
+    "uniform_lenient": 2.0,
+    "method_strict": 0.4,
+    "same_times_strict": 1.7,
+    "uniform_strict": 1.9
+   },
+   "object_appeared": {
+    "method_lenient": 0.9,
+    "same_times_lenient": 0.3,
+    "uniform_lenient": 0.2,
+    "method_strict": 0.9,
+    "same_times_strict": 0.3,
+    "uniform_strict": 0.2
+   }
+  }
+ },
+ "littering/tune/rules+pose": {
+  "events": 230,
+  "candidates_per_min": 52.78,
+  "method_lenient_%": 83.0,
+  "same_times_lenient_%": 69.0,
+  "uniform_lenient_%": 70.1,
+  "method_strict_%": 83.0,
+  "same_times_strict_%": 68.3,
+  "uniform_strict_%": 69.4,
+  "above_same_times_lenient": 14.0,
+  "above_uniform_lenient": 12.9,
+  "above_same_times_strict": 14.7,
+  "above_uniform_strict": 13.6,
+  "per_rule": {
+   "pose_action": {
+    "method_lenient": 66.5,
+    "same_times_lenient": 47.0,
+    "uniform_lenient": 48.6,
+    "method_strict": 66.5,
+    "same_times_strict": 46.3,
+    "uniform_strict": 47.7
+   },
+   "reach_down": {
+    "uniform_lenient": 42.0,
+    "same_times_lenient": 41.0,
+    "uniform_strict": 41.5,
+    "same_times_strict": 40.7,
+    "method_lenient": 54.8,
+    "method_strict": 54.8
+   },
+   "fast_motion": {
+    "method_lenient": 0.4,
+    "same_times_lenient": 1.7,
+    "uniform_lenient": 2.0,
+    "method_strict": 0.4,
+    "same_times_strict": 1.7,
+    "uniform_strict": 1.9
+   },
+   "object_appeared": {
+    "method_lenient": 0.9,
+    "same_times_lenient": 0.3,
+    "uniform_lenient": 0.2,
+    "method_strict": 0.9,
+    "same_times_strict": 0.3,
+    "uniform_strict": 0.2
+   }
+  }
+ },
+ "littering/held-out/rules": {
+  "events": 100,
+  "candidates_per_min": 26.2,
+  "method_lenient_%": 56.0,
+  "same_times_lenient_%": 42.3,
+  "uniform_lenient_%": 39.4,
+  "method_strict_%": 56.0,
+  "same_times_strict_%": 41.8,
+  "uniform_strict_%": 38.6,
+  "above_same_times_lenient": 13.7,
+  "above_uniform_lenient": 16.6,
+  "above_same_times_strict": 14.2,
+  "above_uniform_strict": 17.4,
+  "per_rule": {
+   "reach_down": {
+    "method_lenient": 56.0,
+    "same_times_lenient": 41.3,
+    "uniform_lenient": 37.8,
+    "method_strict": 56.0,
+    "same_times_strict": 40.8,
+    "uniform_strict": 36.8
+   },
+   "fast_motion": {
+    "uniform_lenient": 1.4,
+    "same_times_lenient": 0.9,
+    "uniform_strict": 1.3,
+    "same_times_strict": 0.9
+   },
+   "object_appeared": {
+    "uniform_lenient": 0.5,
+    "same_times_lenient": 0.3,
+    "uniform_strict": 0.5,
+    "same_times_strict": 0.3
+   }
+  }
+ },
+ "littering/held-out/rules+pose": {
+  "events": 100,
+  "candidates_per_min": 38.2,
+  "method_lenient_%": 86.0,
+  "same_times_lenient_%": 64.6,
+  "uniform_lenient_%": 60.5,
+  "method_strict_%": 86.0,
+  "same_times_strict_%": 63.2,
+  "uniform_strict_%": 59.6,
+  "above_same_times_lenient": 21.4,
+  "above_uniform_lenient": 25.5,
+  "above_same_times_strict": 22.8,
+  "above_uniform_strict": 26.4,
+  "per_rule": {
+   "pose_action": {
+    "method_lenient": 44.0,
+    "uniform_lenient": 32.7,
+    "same_times_lenient": 35.2,
+    "method_strict": 44.0,
+    "uniform_strict": 32.4,
+    "same_times_strict": 33.5
+   },
+   "reach_down": {
+    "method_lenient": 44.0,
+    "same_times_lenient": 35.7,
+    "uniform_lenient": 32.6,
+    "method_strict": 44.0,
+    "same_times_strict": 35.2,
+    "uniform_strict": 31.4
+   },
+   "fast_motion": {
+    "uniform_lenient": 1.4,
+    "same_times_lenient": 0.9,
+    "uniform_strict": 1.3,
+    "same_times_strict": 0.9
+   }
+  }
+ },
+ "loitering/tune/rules": {
+  "events": 25,
+  "candidates_per_min": 8.9,
+  "method_lenient_%": 56.0,
+  "same_times_lenient_%": 44.0,
+  "uniform_lenient_%": 22.4,
+  "method_strict_%": 56.0,
+  "same_times_strict_%": 36.8,
+  "uniform_strict_%": 17.2,
+  "above_same_times_lenient": 12.0,
+  "above_uniform_lenient": 33.6,
+  "above_same_times_strict": 19.2,
+  "above_uniform_strict": 38.8,
+  "per_rule": {
+   "fast_motion": {
+    "method_lenient": 36.0,
+    "same_times_lenient": 31.2,
+    "uniform_lenient": 14.0,
+    "method_strict": 36.0,
+    "same_times_strict": 26.0,
+    "uniform_strict": 10.8
+   },
+   "sustained_presence": {
+    "same_times_lenient": 5.2,
+    "uniform_lenient": 2.4,
+    "same_times_strict": 4.8,
+    "uniform_strict": 2.4
+   },
+   "object_appeared": {
+    "method_lenient": 12.0,
+    "same_times_lenient": 4.8,
+    "uniform_lenient": 4.0,
+    "method_strict": 12.0,
+    "same_times_strict": 3.2,
+    "uniform_strict": 2.4
+   },
+   "reach_down": {
+    "method_lenient": 20.0,
+    "same_times_lenient": 9.2,
+    "uniform_lenient": 3.6,
+    "method_strict": 20.0,
+    "uniform_strict": 2.8,
+    "same_times_strict": 6.4
+   }
+  }
+ },
+ "loitering/tune/rules+pose": {
+  "events": 25,
+  "candidates_per_min": 9.85,
+  "method_lenient_%": 60.0,
+  "same_times_lenient_%": 44.4,
+  "uniform_lenient_%": 24.8,
+  "method_strict_%": 60.0,
+  "same_times_strict_%": 36.8,
+  "uniform_strict_%": 19.2,
+  "above_same_times_lenient": 15.6,
+  "above_uniform_lenient": 35.2,
+  "above_same_times_strict": 23.2,
+  "above_uniform_strict": 40.8,
+  "per_rule": {
+   "fast_motion": {
+    "method_lenient": 36.0,
+    "same_times_lenient": 32.0,
+    "uniform_lenient": 14.4,
+    "method_strict": 36.0,
+    "same_times_strict": 26.8,
+    "uniform_strict": 11.6
+   },
+   "sustained_presence": {
+    "same_times_lenient": 4.0,
+    "uniform_lenient": 1.6,
+    "same_times_strict": 3.6,
+    "uniform_strict": 1.6
+   },
+   "pose_action": {
+    "method_lenient": 12.0,
+    "same_times_lenient": 5.2,
+    "method_strict": 12.0,
+    "same_times_strict": 2.4,
+    "uniform_lenient": 1.2,
+    "uniform_strict": 1.2
+   },
+   "object_appeared": {
+    "method_lenient": 12.0,
+    "uniform_lenient": 5.2,
+    "same_times_lenient": 4.8,
+    "method_strict": 12.0,
+    "uniform_strict": 3.2,
+    "same_times_strict": 3.2
+   },
+   "reach_down": {
+    "method_lenient": 20.0,
+    "uniform_lenient": 4.4,
+    "same_times_lenient": 7.2,
+    "method_strict": 20.0,
+    "uniform_strict": 3.2,
+    "same_times_strict": 4.8
+   }
+  }
+ },
+ "loitering/held-out/rules": {
+  "events": 20,
+  "candidates_per_min": 7.09,
+  "method_lenient_%": 60.0,
+  "same_times_lenient_%": 34.5,
+  "uniform_lenient_%": 16.5,
+  "method_strict_%": 45.0,
+  "same_times_strict_%": 22.0,
+  "uniform_strict_%": 12.0,
+  "above_same_times_lenient": 25.5,
+  "above_uniform_lenient": 43.5,
+  "above_same_times_strict": 23.0,
+  "above_uniform_strict": 33.0,
+  "per_rule": {
+   "fast_motion": {
+    "uniform_lenient": 8.0,
+    "uniform_strict": 6.0,
+    "method_lenient": 15.0,
+    "same_times_lenient": 21.5,
+    "method_strict": 15.0,
+    "same_times_strict": 15.0
+   },
+   "sustained_presence": {
+    "uniform_lenient": 2.5,
+    "uniform_strict": 1.5
+   },
+   "reach_down": {
+    "uniform_lenient": 6.5,
+    "uniform_strict": 4.5,
+    "method_lenient": 35.0,
+    "same_times_lenient": 11.5,
+    "method_strict": 25.0,
+    "same_times_strict": 7.5
+   },
+   "object_appeared": {
+    "method_lenient": 20.0,
+    "same_times_lenient": 5.5,
+    "uniform_lenient": 1.0,
+    "method_strict": 10.0,
+    "uniform_strict": 1.0,
+    "same_times_strict": 1.0
+   }
+  }
+ },
+ "loitering/held-out/rules+pose": {
+  "events": 20,
+  "candidates_per_min": 7.29,
+  "method_lenient_%": 65.0,
+  "same_times_lenient_%": 36.0,
+  "uniform_lenient_%": 18.0,
+  "method_strict_%": 50.0,
+  "same_times_strict_%": 22.5,
+  "uniform_strict_%": 13.5,
+  "above_same_times_lenient": 29.0,
+  "above_uniform_lenient": 47.0,
+  "above_same_times_strict": 27.5,
+  "above_uniform_strict": 36.5,
+  "per_rule": {
+   "fast_motion": {
+    "uniform_lenient": 7.5,
+    "uniform_strict": 6.0,
+    "method_lenient": 15.0,
+    "same_times_lenient": 21.5,
+    "method_strict": 15.0,
+    "same_times_strict": 15.0
+   },
+   "sustained_presence": {
+    "uniform_lenient": 2.5,
+    "uniform_strict": 1.5
+   },
+   "reach_down": {
+    "uniform_lenient": 6.5,
+    "uniform_strict": 5.0,
+    "method_lenient": 30.0,
+    "same_times_lenient": 11.5,
+    "method_strict": 25.0,
+    "same_times_strict": 6.5
+   },
+   "pose_action": {
+    "method_lenient": 10.0,
+    "uniform_lenient": 2.5,
+    "same_times_lenient": 2.5,
+    "method_strict": 10.0,
+    "uniform_strict": 1.0,
+    "same_times_strict": 2.0
+   },
+   "object_appeared": {
+    "method_lenient": 20.0,
+    "same_times_lenient": 6.0,
+    "uniform_lenient": 1.0,
+    "method_strict": 10.0,
+    "uniform_strict": 1.0,
+    "same_times_strict": 1.0
+   }
+  }
+ },
+ "smoking/tune/rules": {
+  "events": 131,
+  "candidates_per_min": 5.92,
+  "method_lenient_%": 35.9,
+  "same_times_lenient_%": 31.3,
+  "uniform_lenient_%": 33.3,
+  "method_strict_%": 32.8,
+  "same_times_strict_%": 28.9,
+  "uniform_strict_%": 30.9,
+  "above_same_times_lenient": 4.6,
+  "above_uniform_lenient": 2.6,
+  "above_same_times_strict": 3.9,
+  "above_uniform_strict": 1.9,
+  "per_rule": {
+   "reach_down": {
+    "uniform_lenient": 29.9,
+    "uniform_strict": 28.0,
+    "same_times_lenient": 29.2,
+    "same_times_strict": 26.3,
+    "method_lenient": 32.8,
+    "method_strict": 27.5
+   },
+   "sustained_presence": {
+    "method_lenient": 8.4,
+    "uniform_lenient": 6.6,
+    "same_times_lenient": 6.1,
+    "method_strict": 8.4,
+    "uniform_strict": 5.9,
+    "same_times_strict": 5.5
+   },
+   "long_presence": {
+    "method_lenient": 2.3,
+    "same_times_lenient": 2.4,
+    "uniform_lenient": 1.7,
+    "method_strict": 2.3,
+    "same_times_strict": 2.4,
+    "uniform_strict": 1.5
+   }
+  }
+ },
+ "smoking/tune/rules+pose": {
+  "events": 131,
+  "candidates_per_min": 7.06,
+  "method_lenient_%": 37.4,
+  "same_times_lenient_%": 32.2,
+  "uniform_lenient_%": 35.3,
+  "method_strict_%": 33.6,
+  "same_times_strict_%": 30.2,
+  "uniform_strict_%": 33.1,
+  "above_same_times_lenient": 5.2,
+  "above_uniform_lenient": 2.1,
+  "above_same_times_strict": 3.4,
+  "above_uniform_strict": 0.5,
+  "per_rule": {
+   "reach_down": {
+    "uniform_lenient": 29.8,
+    "uniform_strict": 28.1,
+    "same_times_lenient": 29.0,
+    "same_times_strict": 26.7,
+    "method_lenient": 32.8,
+    "method_strict": 27.5
+   },
+   "sustained_presence": {
+    "method_lenient": 7.6,
+    "uniform_lenient": 6.6,
+    "same_times_lenient": 6.3,
+    "method_strict": 7.6,
+    "uniform_strict": 6.0,
+    "same_times_strict": 5.7
+   },
+   "pose_action": {
+    "same_times_lenient": 6.6,
+    "uniform_lenient": 8.9,
+    "same_times_strict": 5.8,
+    "uniform_strict": 7.7,
+    "method_lenient": 6.9,
+    "method_strict": 6.1
+   },
+   "long_presence": {
+    "method_lenient": 2.3,
+    "same_times_lenient": 2.2,
+    "uniform_lenient": 2.2,
+    "method_strict": 2.3,
+    "same_times_strict": 2.2,
+    "uniform_strict": 2.0
+   }
+  }
+ },
+ "smoking/held-out/rules": {
+  "events": 143,
+  "candidates_per_min": 4.03,
+  "method_lenient_%": 18.9,
+  "same_times_lenient_%": 19.0,
+  "uniform_lenient_%": 17.6,
+  "method_strict_%": 17.5,
+  "same_times_strict_%": 17.8,
+  "uniform_strict_%": 15.7,
+  "above_same_times_lenient": -0.1,
+  "above_uniform_lenient": 1.3,
+  "above_same_times_strict": -0.3,
+  "above_uniform_strict": 1.8,
+  "per_rule": {
+   "reach_down": {
+    "method_lenient": 14.0,
+    "uniform_lenient": 13.2,
+    "same_times_lenient": 15.5,
+    "method_strict": 11.9,
+    "uniform_strict": 11.3,
+    "same_times_strict": 14.5
+   },
+   "sustained_presence": {
+    "uniform_lenient": 6.0,
+    "uniform_strict": 5.5,
+    "method_lenient": 7.0,
+    "same_times_lenient": 5.8,
+    "method_strict": 7.0,
+    "same_times_strict": 5.3
+   },
+   "long_presence": {
+    "uniform_lenient": 1.0,
+    "uniform_strict": 1.0,
+    "method_lenient": 0.7,
+    "same_times_lenient": 0.8,
+    "method_strict": 0.7,
+    "same_times_strict": 0.8
+   }
+  }
+ },
+ "smoking/held-out/rules+pose": {
+  "events": 143,
+  "candidates_per_min": 4.99,
+  "method_lenient_%": 23.1,
+  "same_times_lenient_%": 23.8,
+  "uniform_lenient_%": 22.4,
+  "method_strict_%": 21.7,
+  "same_times_strict_%": 22.6,
+  "uniform_strict_%": 20.7,
+  "above_same_times_lenient": -0.7,
+  "above_uniform_lenient": 0.7,
+  "above_same_times_strict": -0.9,
+  "above_uniform_strict": 1.0,
+  "per_rule": {
+   "pose_action": {
+    "uniform_lenient": 8.2,
+    "uniform_strict": 8.0,
+    "same_times_lenient": 7.3,
+    "same_times_strict": 7.2,
+    "method_lenient": 5.6,
+    "method_strict": 5.6
+   },
+   "reach_down": {
+    "method_lenient": 14.0,
+    "uniform_lenient": 13.6,
+    "same_times_lenient": 15.4,
+    "method_strict": 11.9,
+    "uniform_strict": 11.6,
+    "same_times_strict": 14.3
+   },
+   "sustained_presence": {
+    "uniform_lenient": 5.8,
+    "uniform_strict": 5.4,
+    "method_lenient": 7.0,
+    "same_times_lenient": 6.2,
+    "method_strict": 7.0,
+    "same_times_strict": 5.7
+   },
+   "long_presence": {
+    "uniform_lenient": 0.8,
+    "uniform_strict": 0.8,
+    "method_lenient": 0.7,
+    "same_times_lenient": 0.8,
+    "method_strict": 0.7,
+    "same_times_strict": 0.8
+   }
+  }
+ },
+ "meva_puts_down/unseen/rules": {
+  "events": 52,
+  "candidates_per_min": 19.14,
+  "method_lenient_%": 23.1,
+  "same_times_lenient_%": 16.2,
+  "uniform_lenient_%": 15.2,
+  "method_strict_%": 19.2,
+  "same_times_strict_%": 12.9,
+  "uniform_strict_%": 11.9,
+  "above_same_times_lenient": 6.9,
+  "above_uniform_lenient": 7.9,
+  "above_same_times_strict": 6.3,
+  "above_uniform_strict": 7.3,
+  "per_rule": {
+   "fast_motion": {
+    "same_times_lenient": 0.6,
+    "uniform_lenient": 1.5,
+    "same_times_strict": 0.4,
+    "uniform_strict": 1.2
+   },
+   "sustained_presence": {
+    "same_times_lenient": 6.0,
+    "same_times_strict": 5.2,
+    "uniform_lenient": 6.9,
+    "uniform_strict": 5.2,
+    "method_lenient": 3.8,
+    "method_strict": 3.8
+   },
+   "reach_down": {
+    "same_times_lenient": 9.4,
+    "uniform_lenient": 6.3,
+    "same_times_strict": 6.7,
+    "uniform_strict": 4.8,
+    "method_lenient": 15.4,
+    "method_strict": 11.5
+   },
+   "long_presence": {
+    "uniform_lenient": 2.1,
+    "uniform_strict": 1.9,
+    "method_lenient": 3.8,
+    "same_times_lenient": 1.3,
+    "method_strict": 3.8,
+    "same_times_strict": 1.3
+   }
+  }
+ },
+ "meva_puts_down/unseen/rules+pose": {
+  "events": 52,
+  "candidates_per_min": 21.04,
+  "method_lenient_%": 21.2,
+  "same_times_lenient_%": 14.2,
+  "uniform_lenient_%": 15.2,
+  "method_strict_%": 19.2,
+  "same_times_strict_%": 11.3,
+  "uniform_strict_%": 12.3,
+  "above_same_times_lenient": 7.0,
+  "above_uniform_lenient": 6.0,
+  "above_same_times_strict": 7.9,
+  "above_uniform_strict": 6.9,
+  "per_rule": {
+   "pose_action": {
+    "method_lenient": 1.9,
+    "same_times_lenient": 1.7,
+    "uniform_lenient": 1.2,
+    "method_strict": 1.9,
+    "same_times_strict": 1.3,
+    "uniform_strict": 0.8
+   },
+   "fast_motion": {
+    "same_times_lenient": 0.8,
+    "same_times_strict": 0.8,
+    "uniform_lenient": 1.0,
+    "uniform_strict": 0.8
+   },
+   "reach_down": {
+    "same_times_lenient": 6.3,
+    "same_times_strict": 4.0,
+    "method_lenient": 11.5,
+    "uniform_lenient": 5.8,
+    "method_strict": 9.6,
+    "uniform_strict": 4.4
+   },
+   "sustained_presence": {
+    "uniform_lenient": 7.1,
+    "same_times_lenient": 5.8,
+    "uniform_strict": 5.6,
+    "same_times_strict": 5.2,
+    "method_lenient": 3.8,
+    "method_strict": 3.8
+   },
+   "long_presence": {
+    "uniform_lenient": 2.1,
+    "uniform_strict": 1.9,
+    "method_lenient": 3.8,
+    "same_times_lenient": 1.3,
+    "method_strict": 3.8,
+    "same_times_strict": 1.3
+   }
+  }
+ },
+ "meva_picks_up/unseen/rules": {
+  "events": 43,
+  "candidates_per_min": 19.14,
+  "method_lenient_%": 16.3,
+  "same_times_lenient_%": 12.6,
+  "uniform_lenient_%": 15.3,
+  "method_strict_%": 4.7,
+  "same_times_strict_%": 7.9,
+  "uniform_strict_%": 11.4,
+  "above_same_times_lenient": 3.7,
+  "above_uniform_lenient": 1.0,
+  "above_same_times_strict": -3.2,
+  "above_uniform_strict": -6.7,
+  "per_rule": {
+   "sustained_presence": {
+    "same_times_lenient": 4.9,
+    "same_times_strict": 3.3,
+    "uniform_lenient": 6.0,
+    "uniform_strict": 4.0,
+    "method_lenient": 2.3
+   },
+   "fast_motion": {
+    "uniform_lenient": 1.6,
+    "uniform_strict": 1.4,
+    "method_lenient": 2.3,
+    "same_times_lenient": 0.2,
+    "method_strict": 2.3
+   },
+   "long_presence": {
+    "same_times_lenient": 0.5,
+    "same_times_strict": 0.5,
+    "uniform_lenient": 1.4,
+    "uniform_strict": 0.9
+   },
+   "reach_down": {
+    "uniform_lenient": 8.6,
+    "uniform_strict": 6.3,
+    "method_lenient": 11.6,
+    "same_times_lenient": 7.2,
+    "same_times_strict": 4.2,
+    "method_strict": 2.3
+   },
+   "unattended_object": {
+    "uniform_lenient": 0.2,
+    "uniform_strict": 0.2
+   }
+  }
+ },
+ "meva_picks_up/unseen/rules+pose": {
+  "events": 43,
+  "candidates_per_min": 21.04,
+  "method_lenient_%": 18.6,
+  "same_times_lenient_%": 17.4,
+  "uniform_lenient_%": 17.4,
+  "method_strict_%": 7.0,
+  "same_times_strict_%": 12.3,
+  "uniform_strict_%": 12.1,
+  "above_same_times_lenient": 1.2,
+  "above_uniform_lenient": 1.2,
+  "above_same_times_strict": -5.3,
+  "above_uniform_strict": -5.1,
+  "per_rule": {
+   "long_presence": {
+    "same_times_lenient": 0.5,
+    "same_times_strict": 0.5,
+    "uniform_lenient": 2.1,
+    "uniform_strict": 1.4
+   },
+   "fast_motion": {
+    "uniform_lenient": 0.9,
+    "uniform_strict": 0.9,
+    "method_lenient": 2.3,
+    "same_times_lenient": 0.7,
+    "method_strict": 2.3,
+    "same_times_strict": 0.7
+   },
+   "pose_action": {
+    "same_times_lenient": 4.9,
+    "uniform_lenient": 3.5,
+    "same_times_strict": 3.7,
+    "uniform_strict": 2.3,
+    "method_lenient": 2.3,
+    "method_strict": 2.3
+   },
+   "sustained_presence": {
+    "same_times_lenient": 5.1,
+    "uniform_lenient": 6.7,
+    "same_times_strict": 3.0,
+    "uniform_strict": 4.2,
+    "method_lenient": 2.3
+   },
+   "reach_down": {
+    "uniform_lenient": 7.7,
+    "uniform_strict": 4.9,
+    "method_lenient": 11.6,
+    "same_times_lenient": 8.1,
+    "same_times_strict": 4.9,
+    "method_strict": 2.3
+   }
+  }
+ },
+ "caviar_left_bag/unseen/rules": {
+  "events": 4,
+  "candidates_per_min": 10.0,
+  "method_lenient_%": 50.0,
+  "same_times_lenient_%": 50.0,
+  "uniform_lenient_%": 55.0,
+  "method_strict_%": 0.0,
+  "same_times_strict_%": 0.0,
+  "uniform_strict_%": 10.0,
+  "above_same_times_lenient": 0.0,
+  "above_uniform_lenient": -5.0,
+  "above_same_times_strict": 0.0,
+  "above_uniform_strict": -10.0,
+  "per_rule": {
+   "reach_down": {
+    "uniform_lenient": 42.5,
+    "uniform_strict": 5.0,
+    "method_lenient": 25.0,
+    "same_times_lenient": 25.0
+   },
+   "fast_motion": {
+    "uniform_lenient": 15.0,
+    "uniform_strict": 7.5
+   },
+   "sustained_presence": {
+    "method_lenient": 50.0,
+    "same_times_lenient": 42.5,
+    "uniform_lenient": 15.0
+   }
+  }
+ },
+ "caviar_left_bag/unseen/rules+pose": {
+  "events": 4,
+  "candidates_per_min": 10.0,
+  "method_lenient_%": 50.0,
+  "same_times_lenient_%": 50.0,
+  "uniform_lenient_%": 55.0,
+  "method_strict_%": 0.0,
+  "same_times_strict_%": 0.0,
+  "uniform_strict_%": 10.0,
+  "above_same_times_lenient": 0.0,
+  "above_uniform_lenient": -5.0,
+  "above_same_times_strict": 0.0,
+  "above_uniform_strict": -10.0,
+  "per_rule": {
+   "reach_down": {
+    "uniform_lenient": 42.5,
+    "uniform_strict": 5.0,
+    "method_lenient": 25.0,
+    "same_times_lenient": 25.0
+   },
+   "fast_motion": {
+    "uniform_lenient": 15.0,
+    "uniform_strict": 7.5
+   },
+   "sustained_presence": {
+    "method_lenient": 50.0,
+    "same_times_lenient": 42.5,
+    "uniform_lenient": 15.0
+   }
+  }
+ },
+ "aboda_left_bag/unseen/rules": {
+  "events": 11,
+  "candidates_per_min": 4.5,
+  "method_lenient_%": 54.5,
+  "same_times_lenient_%": 18.2,
+  "uniform_lenient_%": 5.5,
+  "method_strict_%": 45.5,
+  "same_times_strict_%": 9.1,
+  "uniform_strict_%": 2.7,
+  "above_same_times_lenient": 36.3,
+  "above_uniform_lenient": 49.0,
+  "above_same_times_strict": 36.4,
+  "above_uniform_strict": 42.8,
+  "per_rule": {
+   "unattended_object": {
+    "method_lenient": 36.4,
+    "method_strict": 36.4
+   },
+   "fast_motion": {
+    "uniform_lenient": 3.6,
+    "uniform_strict": 2.7
+   },
+   "reach_down": {
+    "uniform_lenient": 2.7,
+    "uniform_strict": 0.9,
+    "method_lenient": 18.2,
+    "same_times_lenient": 18.2,
+    "method_strict": 9.1,
+    "same_times_strict": 9.1
+   }
+  }
+ },
+ "aboda_left_bag/unseen/rules+pose": {
+  "events": 11,
+  "candidates_per_min": 5.04,
+  "method_lenient_%": 54.5,
+  "same_times_lenient_%": 18.2,
+  "uniform_lenient_%": 5.5,
+  "method_strict_%": 45.5,
+  "same_times_strict_%": 9.1,
+  "uniform_strict_%": 2.7,
+  "above_same_times_lenient": 36.3,
+  "above_uniform_lenient": 49.0,
+  "above_same_times_strict": 36.4,
+  "above_uniform_strict": 42.8,
+  "per_rule": {
+   "unattended_object": {
+    "method_lenient": 36.4,
+    "method_strict": 36.4
+   },
+   "fast_motion": {
+    "uniform_lenient": 3.6,
+    "uniform_strict": 2.7
+   },
+   "reach_down": {
+    "uniform_lenient": 1.8,
+    "uniform_strict": 0.9,
+    "method_lenient": 18.2,
+    "same_times_lenient": 18.2,
+    "method_strict": 9.1,
+    "same_times_strict": 9.1
+   },
+   "sustained_presence": {
+    "uniform_lenient": 0.9
+   }
+  }
+ }
+}

@@ -1,0 +1,133 @@
+{
+ "minutes": 55.1,
+ "current rules": {
+  "candidates_per_min": 17.45,
+  "candidate_types_per_min": {
+   "sustained_presence": 6.01,
+   "reach_down": 8.35,
+   "fast_motion": 1.09,
+   "long_presence": 1.92,
+   "unattended_object": 0.05,
+   "object_appeared": 0.02
+  },
+  "puts_down": {
+   "events": 52,
+   "event_%": 80.8,
+   "crop_%": 23.1,
+   "caught_by": {
+    "reach_down": 8,
+    "sustained_presence": 2,
+    "long_presence": 2
+   }
+  },
+  "picks_up": {
+   "events": 43,
+   "event_%": 83.7,
+   "crop_%": 16.3,
+   "caught_by": {
+    "reach_down": 5,
+    "fast_motion": 1,
+    "sustained_presence": 1
+   }
+  },
+  "transfers": {
+   "events": 21,
+   "event_%": 95.2,
+   "crop_%": 23.8,
+   "caught_by": {
+    "reach_down": 3,
+    "sustained_presence": 2,
+    "long_presence": 1
+   }
+  },
+  "sits_down": {
+   "events": 61,
+   "event_%": 83.6,
+   "crop_%": 24.6,
+   "caught_by": {
+    "reach_down": 12,
+    "long_presence": 1,
+    "sustained_presence": 2
+   }
+  },
+  "talks_to_person": {
+   "events": 18,
+   "event_%": 88.9,
+   "crop_%": 72.2,
+   "caught_by": {
+    "fast_motion": 5,
+    "sustained_presence": 10,
+    "long_presence": 8,
+    "reach_down": 8
+   }
+  }
+ },
+ "rules + pose_action": {
+  "candidates_per_min": 19.17,
+  "candidate_types_per_min": {
+   "pose_action": 2.22,
+   "sustained_presence": 5.83,
+   "reach_down": 8.13,
+   "fast_motion": 1.03,
+   "long_presence": 1.89,
+   "unattended_object": 0.05,
+   "object_appeared": 0.02
+  },
+  "puts_down": {
+   "events": 52,
+   "event_%": 80.8,
+   "crop_%": 21.2,
+   "caught_by": {
+    "pose_action": 1,
+    "reach_down": 6,
+    "sustained_presence": 2,
+    "long_presence": 2
+   }
+  },
+  "picks_up": {
+   "events": 43,
+   "event_%": 83.7,
+   "crop_%": 18.6,
+   "caught_by": {
+    "reach_down": 5,
+    "fast_motion": 1,
+    "sustained_presence": 1,
+    "pose_action": 1
+   }
+  },
+  "transfers": {
+   "events": 21,
+   "event_%": 95.2,
+   "crop_%": 23.8,
+   "caught_by": {
+    "pose_action": 1,
+    "reach_down": 3,
+    "sustained_presence": 2,
+    "long_presence": 1
+   }
+  },
+  "sits_down": {
+   "events": 61,
+   "event_%": 83.6,
+   "crop_%": 24.6,
+   "caught_by": {
+    "pose_action": 4,
+    "reach_down": 8,
+    "long_presence": 1,
+    "sustained_presence": 2
+   }
+  },
+  "talks_to_person": {
+   "events": 18,
+   "event_%": 88.9,
+   "crop_%": 72.2,
+   "caught_by": {
+    "fast_motion": 4,
+    "pose_action": 7,
+    "sustained_presence": 10,
+    "long_presence": 8,
+    "reach_down": 8
+   }
+  }
+ }
+}

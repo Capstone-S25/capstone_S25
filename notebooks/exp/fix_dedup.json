@@ -1,0 +1,82 @@
+{
+ "littering/held-out/per_rule=False": {
+  "events": 100,
+  "candidates_per_min": 38.2,
+  "method_strict_%": 86.0,
+  "same_times_strict_%": 61.4,
+  "above_same_times_strict": 24.6,
+  "method_lenient_%": 86.0,
+  "above_same_times_lenient": 23.0
+ },
+ "loitering/held-out/per_rule=False": {
+  "events": 20,
+  "candidates_per_min": 7.29,
+  "method_strict_%": 50.0,
+  "same_times_strict_%": 23.5,
+  "above_same_times_strict": 26.5,
+  "method_lenient_%": 65.0,
+  "above_same_times_lenient": 32.5
+ },
+ "smoking/held-out/per_rule=False": {
+  "events": 143,
+  "candidates_per_min": 4.99,
+  "method_strict_%": 21.7,
+  "same_times_strict_%": 22.9,
+  "above_same_times_strict": -1.2,
+  "method_lenient_%": 23.1,
+  "above_same_times_lenient": -0.7
+ },
+ "meva_puts_down/per_rule=False": {
+  "events": 52,
+  "candidates_per_min": 21.04,
+  "method_strict_%": 19.2,
+  "same_times_strict_%": 14.8,
+  "above_same_times_strict": 4.4,
+  "method_lenient_%": 21.2,
+  "above_same_times_lenient": 4.1
+ },
+ "normal_FA/per_rule=False": {
+  "tune": 5.1,
+  "held-out": 6.5
+ },
+ "littering/held-out/per_rule=True": {
+  "events": 100,
+  "candidates_per_min": 50.2,
+  "method_strict_%": 86.0,
+  "same_times_strict_%": 67.9,
+  "above_same_times_strict": 18.1,
+  "method_lenient_%": 86.0,
+  "above_same_times_lenient": 16.7
+ },
+ "loitering/held-out/per_rule=True": {
+  "events": 20,
+  "candidates_per_min": 8.92,
+  "method_strict_%": 50.0,
+  "same_times_strict_%": 30.0,
+  "above_same_times_strict": 20.0,
+  "method_lenient_%": 65.0,
+  "above_same_times_lenient": 23.0
+ },
+ "smoking/held-out/per_rule=True": {
+  "events": 143,
+  "candidates_per_min": 5.29,
+  "method_strict_%": 22.4,
+  "same_times_strict_%": 23.1,
+  "above_same_times_strict": -0.7,
+  "method_lenient_%": 23.8,
+  "above_same_times_lenient": -0.2
+ },
+ "meva_puts_down/per_rule=True": {
+  "events": 52,
+  "candidates_per_min": 24.26,
+  "method_strict_%": 21.2,
+  "same_times_strict_%": 17.7,
+  "above_same_times_strict": 3.5,
+  "method_lenient_%": 25.0,
+  "above_same_times_lenient": 5.2
+ },
+ "normal_FA/per_rule=True": {
+  "tune": 5.1,
+  "held-out": 6.5
+ }
+}

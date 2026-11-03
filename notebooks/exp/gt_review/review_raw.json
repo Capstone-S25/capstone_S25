@@ -1,0 +1,1037 @@
+{
+  "summary": "Blind re-scoping of Avenue labels + three action-model experiments for Stage 1",
+  "agentCount": 15,
+  "logs": [
+    "45 labelled events to review",
+    "[action:videomae] failed: API Error: Can't reach the API server — check your internet or DNS (ENOTFOUND)",
+    "[action:xclip] failed: API Error: Can't reach the API server — check your internet or DNS (ENOTFOUND)",
+    "[action:pose_seq] failed: API Error: Can't reach the API server — check your internet or DNS (ENOTFOUND)"
+  ],
+  "result": {
+    "labels": [
+      {
+        "reviewer": 0,
+        "events": [
+          {
+            "event_id": "test_01_e1",
+            "what_happens": "A heavily motion-blurred person crosses from the stairs on the left toward the centre in about 1.6 s, covering much more ground than nearby walkers.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_01_e2",
+            "what_happens": "A motion-blurred person comes down from the stairs and moves quickly past the walkers around them, covering about a third of the frame in under a second.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_01_e3",
+            "what_happens": "A child in red stands close to the camera beside the pink bag, looks at something in their hands and finally bends or crouches down at the bag; no throwing or running is visible.",
+            "tag": "unsure",
+            "rule": "unsure (standing near camera, interacting with an existing bag; no clear in-scope action)",
+            "confidence": "low"
+          },
+          {
+            "event_id": "test_01_e4",
+            "what_happens": "A person with a backpack walks toward the camera, passes very close to it and then walks away at a normal pace.",
+            "tag": "out",
+            "rule": "out walking (close to camera)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_03_e1",
+            "what_happens": "A person in blue trousers runs with long strides from right to left across the whole frame in under 2 s.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_03_e2",
+            "what_happens": "A person in blue trousers runs/leaps with long strides from left to right across the frame in about 1.5 s.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_05_e1",
+            "what_happens": "A man in grey with blue trousers swings his black bag around, with the bag flung out away from his body at 28.2 s and moving in the air at the frame edge at 31.4 s.",
+            "tag": "in",
+            "rule": "in-2 throwing (bag)",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_07_e1",
+            "what_happens": "A person in a light jacket only partly visible at the right edge of the frame stands or steps in place for about a quarter second, with no clear action.",
+            "tag": "out",
+            "rule": "out standing/walking",
+            "confidence": "low"
+          }
+        ]
+      },
+      {
+        "reviewer": 1,
+        "events": [
+          {
+            "event_id": "test_01_e1",
+            "what_happens": "A heavily motion-blurred dark figure comes off the stairs on the left and crosses quickly toward the centre of the hall, while nearby people are shown sharp.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_01_e2",
+            "what_happens": "A motion-blurred person comes down the stairs on the left and moves quickly right, passing other pedestrians who are walking normally.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_01_e3",
+            "what_happens": "A boy in a red jacket stands right next to the camera beside the pink bag, looking down at something in his hands.",
+            "tag": "out",
+            "rule": "out standing",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_01_e4",
+            "what_happens": "A girl with a backpack walks past very close to the camera and then away from it across the plaza at normal pace.",
+            "tag": "out",
+            "rule": "out walking",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_03_e1",
+            "what_happens": "A man in blue trousers runs fast from right to left across the hall with long, blurred strides.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_03_e2",
+            "what_happens": "The same man in blue trousers runs fast from left to right across the hall, clearly faster than the walkers around him.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_05_e1",
+            "what_happens": "A man in grey with blue trousers walks toward the camera swinging a dark bag around and tossing it about, a much bigger motion than anyone else makes.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_07_e1",
+            "what_happens": "A person in a light jacket is only partly visible at the far right edge of the frame for about a quarter of a second, and no clear action can be seen.",
+            "tag": "unsure",
+            "rule": "unsure (not enough visible)",
+            "confidence": "low"
+          }
+        ]
+      },
+      {
+        "reviewer": 0,
+        "events": [
+          {
+            "event_id": "test_07_e2",
+            "what_happens": "A small person in a light blue jacket crosses the plaza from right to left with a blurred, wide-stride running posture, covering much more ground per frame than the walkers nearby.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_07_e3",
+            "what_happens": "A person in a light blue jacket moves quickly from left to right across the plaza with long, blurred strides, faster than the people walking in the background.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_09_e1",
+            "what_happens": "A man with a backpack walks slowly away from the camera close to the left edge of the frame.",
+            "tag": "out",
+            "rule": "out walking",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_09_e2",
+            "what_happens": "A person in a light blue jacket runs across the plaza from right to left, appearing motion-blurred with long strides.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_09_e3",
+            "what_happens": "A man with a backpack walks normally into view at the right edge, close to the camera.",
+            "tag": "out",
+            "rule": "out walking",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_09_e4",
+            "what_happens": "A man throws a black bag high into the air; it lands on the ground, he bends to pick it up, and he throws it into the air again before it lands once more.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_09_e5",
+            "what_happens": "A man bends over a bag lying on the ground, grabs it, and swings it upward as if to throw it.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_09_e6",
+            "what_happens": "A man throws a black bag up into the air; it falls to the ground and he bends down to pick it up.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          }
+        ]
+      },
+      {
+        "reviewer": 1,
+        "events": [
+          {
+            "event_id": "test_07_e2",
+            "what_happens": "A child in a light blue jacket runs quickly across the plaza from right to left, blurred by motion with a running stride, while the other people stand or walk.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_07_e3",
+            "what_happens": "The same child in the light blue jacket crosses back from left to right in about 1.7 s with long, blurred strides, clearly faster than the people walking behind.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_09_e1",
+            "what_happens": "A person with a backpack walks close to the camera on the left, moving away from it and toward the centre, at a normal pace.",
+            "tag": "out",
+            "rule": "out walking",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_09_e2",
+            "what_happens": "A child in a light blue jacket runs quickly across the plaza from right to left with motion blur and running strides.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_09_e3",
+            "what_happens": "A person with a backpack walks into the frame at the right edge close to the camera and heads toward the back at a normal walking pace.",
+            "tag": "out",
+            "rule": "out walking",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_09_e4",
+            "what_happens": "A man in light blue trousers throws his bag high into the air, it lands on the ground, he picks it up and throws it up again, and it lands near him.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_09_e5",
+            "what_happens": "The same man bends to pick up the bag from the ground (it was mid-air just before) and swings it up to throw it again.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_09_e6",
+            "what_happens": "The man throws his bag high into the air, it falls to the ground, and he bends over to pick it up again.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          }
+        ]
+      },
+      {
+        "reviewer": 0,
+        "events": [
+          {
+            "event_id": "test_11_e1",
+            "what_happens": "A man in blue trousers picks his bag up off the ground and throws it high into the air (the bag is airborne at 4.7s), then bends to pick it up again; the box also briefly follows a woman in a pink coat walking past quickly.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_11_e2",
+            "what_happens": "A woman holding a coat and a shopping bag walks toward the camera at a normal pace and leaves the frame at the right.",
+            "tag": "out",
+            "rule": "out walking",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_13_e1",
+            "what_happens": "A person comes in from the left edge pulling or pushing a red wheeled bag or trolley near the stairs. Nothing is visibly dropped or left behind.",
+            "tag": "out",
+            "rule": "out carrying bags",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_13_e2",
+            "what_happens": "A man in blue trousers throws a bundle of papers high into the air, and they scatter and land on the pavement, where they are left.",
+            "tag": "in",
+            "rule": "in-2 throwing (also in-3 littering)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_15_e1",
+            "what_happens": "A man in a denim jacket with a backpack walks toward the camera at a normal pace and passes close to it.",
+            "tag": "out",
+            "rule": "out walking",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_17_e1",
+            "what_happens": "A man in a white hoodie stands in one spot, raises an arm as if waving or gesturing, then stands with his hands behind his back.",
+            "tag": "unsure",
+            "rule": "unsure waving/odd harmless movement",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_17_e2",
+            "what_happens": "The same man in the white hoodie stays in one spot for about 13 s, moving his arms and swinging or kicking his legs in a dance-like or stretching way.",
+            "tag": "unsure",
+            "rule": "unsure dancing/stretching (possible in-5 loitering)",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_19_e1",
+            "what_happens": "A man in a navy and white jacket walks toward the camera at a normal pace until he fills the right side of the frame.",
+            "tag": "out",
+            "rule": "out walking close to camera",
+            "confidence": "high"
+          }
+        ]
+      },
+      {
+        "reviewer": 1,
+        "events": [
+          {
+            "event_id": "test_11_e1",
+            "what_happens": "A man in blue trousers picks up a bag from the ground and throws it into the air (the box follows the bag in flight at 2.0-4.7s), then picks it up again.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_11_e2",
+            "what_happens": "A woman holding papers, a coat and a bag walks toward the camera and leaves the frame on the right, at a normal pace like the people around her.",
+            "tag": "out",
+            "rule": "out walking (toward camera)",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_13_e1",
+            "what_happens": "The red box is on a red object (a bag or case) at the foot of the left stairs, with a dim figure behind it who seems to handle or drag it; the action is too small and dark to make out.",
+            "tag": "unsure",
+            "rule": "possible in-3 dropping/leaving object; not clearly visible",
+            "confidence": "low"
+          },
+          {
+            "event_id": "test_13_e2",
+            "what_happens": "A man in blue trousers throws a bundle of papers high into the air and they scatter onto the ground, where they stay.",
+            "tag": "in",
+            "rule": "in-2 throwing (also in-3 littering)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_15_e1",
+            "what_happens": "A man with a backpack walks normally toward the camera and leaves the frame on the right.",
+            "tag": "out",
+            "rule": "out walking (toward camera)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_17_e1",
+            "what_happens": "A man in a white hoodie stands at the left edge, raising and waving his arm, then stands with his hands behind his back.",
+            "tag": "unsure",
+            "rule": "unsure odd harmless movement (waving)",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_17_e2",
+            "what_happens": "The same man in the white hoodie stays in one spot at the left edge for about 13 s, stretching his arms, twisting and kicking his legs as if dancing or exercising, while others walk past.",
+            "tag": "unsure",
+            "rule": "unsure dancing/stretching (could be in-5 loitering, since he stays in one spot)",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_19_e1",
+            "what_happens": "A man in a dark jacket and khaki trousers walks normally toward the camera with his hand at his chest until he fills the right side of the frame.",
+            "tag": "out",
+            "rule": "out walking (toward camera)",
+            "confidence": "high"
+          }
+        ]
+      },
+      {
+        "reviewer": 0,
+        "events": [
+          {
+            "event_id": "test_21_e1",
+            "what_happens": "A child in a light-blue jacket runs from right to left across the plaza, with long strides and motion blur in every frame.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_02_e1",
+            "what_happens": "A person in blue trousers runs quickly from right to left across the plaza, much faster than the walkers around them and blurred in every frame.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_02_e2",
+            "what_happens": "A person in a grey top and blue trousers runs from left to right across the plaza with long, blurred strides.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_04_e1",
+            "what_happens": "A person in a grey top and blue trousers runs from right to left across the plaza, clearly faster than the walking man beside them.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_04_e2",
+            "what_happens": "A person in a grey top and blue trousers runs from left to right across the plaza with long, blurred strides.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_06_e1",
+            "what_happens": "An older man carrying a red plastic bag walks normally toward the camera and ends up very close to it, glancing at something in his hand.",
+            "tag": "out",
+            "rule": "out walking (toward/close to camera, carrying bag normally)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_06_e2",
+            "what_happens": "A dark bag flies through the air from the top of the frame and lands on the ground beside the right pillar, so it has been thrown.",
+            "tag": "in",
+            "rule": "in-2 throwing an object",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_06_e3",
+            "what_happens": "A person in a grey top and blue trousers walks up to the dark bag lying on the ground, swings it by the strap, leaves it on the ground again, and then bends down to pick it up.",
+            "tag": "in",
+            "rule": "in-2 throwing / in-3 dropping an object",
+            "confidence": "medium"
+          }
+        ]
+      },
+      {
+        "reviewer": 1,
+        "events": [
+          {
+            "event_id": "test_21_e1",
+            "what_happens": "A person in a light blue jacket runs from the right side across the plaza to the left, much faster than the people walking around him.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_02_e1",
+            "what_happens": "A person in a grey top and blue trousers runs from right to left across the back of the plaza, past the walking crowd, and leaves the frame on the left.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_02_e2",
+            "what_happens": "The same grey-top, blue-trousers person runs at full stride from left to right across the plaza, far faster than the standing and walking people nearby.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_04_e1",
+            "what_happens": "A person in a grey top and blue trousers runs from right to left across the plaza, passing a man who is walking normally, and leaves on the left.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_04_e2",
+            "what_happens": "The grey-top, blue-trousers person runs from left to right across the plaza with long strides and leaves on the right, while the others stand or walk.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_06_e1",
+            "what_happens": "An older man in a grey hoodie, carrying a red plastic bag, walks normally from the back of the plaza toward the camera and passes close to the lens.",
+            "tag": "out",
+            "rule": "out walking",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_06_e2",
+            "what_happens": "A black bag flies through the air from the top right of the frame and lands on the pavement, so it was thrown.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_06_e3",
+            "what_happens": "The thrown black bag lies on the pavement; a person in a grey top and blue trousers enters, swings the bag around, it ends up on the ground again, and he comes back to bend down and pick it up before leaving right.",
+            "tag": "in",
+            "rule": "in-2 throwing (also in-3 leaving an object on the ground)",
+            "confidence": "medium"
+          }
+        ]
+      },
+      {
+        "reviewer": 0,
+        "events": [
+          {
+            "event_id": "test_08_e1",
+            "what_happens": "A girl in a light blue jacket crosses the plaza with long, blurred strides, moving clearly faster than the people walking nearby.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_10_e1",
+            "what_happens": "A man in light blue trousers throws his black bag high into the air, and it falls back down onto the pavement.",
+            "tag": "in",
+            "rule": "in-2 throwing (bag into the air)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_10_e2",
+            "what_happens": "The same man bends down to pick up the bag, throws it into the air again (it is airborne at 28.2s), and then bends to pick it up once more.",
+            "tag": "in",
+            "rule": "in-2 throwing (bag into the air)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_10_e3",
+            "what_happens": "After picking the bag up, the man throws it high into the air again, and it lands on the pavement near him.",
+            "tag": "in",
+            "rule": "in-2 throwing (bag into the air)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_12_e1",
+            "what_happens": "While walking, the man throws his bag up into the air, it lands on the ground, and he bends over and picks it up.",
+            "tag": "in",
+            "rule": "in-2 throwing (bag into the air)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_12_e2",
+            "what_happens": "The man throws the bag into the air again (it is airborne at 27.0s), it lands on the ground, and he walks over, bends down and picks it up.",
+            "tag": "in",
+            "rule": "in-2 throwing (bag into the air)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_12_e3",
+            "what_happens": "The man swings the bag up and throws it high into the air, and it lands on the pavement a few metres away from him.",
+            "tag": "in",
+            "rule": "in-2 throwing (bag into the air)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_12_e4",
+            "what_happens": "The man bends over with his legs spread wide and picks up the bag he had just thrown (it is airborne in the before tile); no throw happens inside the labelled window itself.",
+            "tag": "unsure",
+            "rule": "unsure: only the pickup after an in-2 throw is visible; picking up a bag is not itself listed",
+            "confidence": "medium"
+          }
+        ]
+      },
+      {
+        "reviewer": 1,
+        "events": [
+          {
+            "event_id": "test_08_e1",
+            "what_happens": "A girl in a light blue jacket runs across the plaza from left to right with a long, blurred stride, clearly faster than the people walking nearby.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_10_e1",
+            "what_happens": "A man in light blue trousers throws a dark bag high into the air, and it falls back onto the pavement.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_10_e2",
+            "what_happens": "The same man bends to pick up the bag from the ground, throws it into the air again, then picks it up again.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_10_e3",
+            "what_happens": "After picking up the bag, the man throws it high into the air again, and it falls to the ground beside him.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_12_e1",
+            "what_happens": "A man in light blue trousers throws his bag high into the air while walking, then bends to pick it up off the ground and walks on.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_12_e2",
+            "what_happens": "The man carries the bag, throws it high into the air, lets it land on the ground, then bends to pick it up again.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_12_e3",
+            "what_happens": "The man throws the bag high into the air again, and it lands on the pavement in front of him.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_12_e4",
+            "what_happens": "Right after a throw (the bag is in the air in the before tile), the man bends over to pick the thrown bag up off the ground and starts walking with it.",
+            "tag": "in",
+            "rule": "in-2 throwing (end of the same throw sequence)",
+            "confidence": "medium"
+          }
+        ]
+      },
+      {
+        "reviewer": 0,
+        "events": [
+          {
+            "event_id": "test_14_e1",
+            "what_happens": "A man walking by tosses a stack of papers up into the air, and they scatter and fall to the ground beside him.",
+            "tag": "in",
+            "rule": "in-2 throwing (also in-3 dropping/littering)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_14_e2",
+            "what_happens": "The same man crouches and bends down to pick up the scattered papers from the ground.",
+            "tag": "unsure",
+            "rule": "unsure: picking up objects is not covered by the in-scope or out-of-scope lists",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_16_e1",
+            "what_happens": "A man walks slowly toward the camera, pushing a bicycle beside him.",
+            "tag": "out",
+            "rule": "out walking (pushing a bike at walking pace, no running, throwing or dropping)",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_18_e1",
+            "what_happens": "A person in a white hoodie stays at the far left edge of the frame for the whole clip, shifting stance, stepping in place and raising an arm toward the head at times.",
+            "tag": "unsure",
+            "rule": "unsure: odd movements in one spot; too short (~12 s) to clearly count as in-5 loitering",
+            "confidence": "low"
+          },
+          {
+            "event_id": "test_20_e1",
+            "what_happens": "A man throws a handful of papers into the air, the papers scatter across the walkway, and he then bends down to pick them up.",
+            "tag": "in",
+            "rule": "in-2 throwing (also in-3 dropping/littering)",
+            "confidence": "high"
+          }
+        ]
+      },
+      {
+        "reviewer": 1,
+        "events": [
+          {
+            "event_id": "test_14_e1",
+            "what_happens": "The man in blue trousers throws a stack of papers up into the air and the sheets scatter and fall onto the pavement.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_14_e2",
+            "what_happens": "The same man bends down and crouches to pick up the papers lying on the ground where they fell.",
+            "tag": "unsure",
+            "rule": "unsure odd but harmless (picking up the papers after the throw; no rule covers it)",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_16_e1",
+            "what_happens": "A man walks toward the camera at a normal pace, pushing a bicycle beside him.",
+            "tag": "out",
+            "rule": "out walking",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_18_e1",
+            "what_happens": "A person in a white hoodie stays near the left edge of the frame for about 12 s, shifting position and stepping in place, with a hand raised to the head in some frames.",
+            "tag": "unsure",
+            "rule": "unsure odd but harmless (stepping or moving in one spot; too short to count as loitering under in-5)",
+            "confidence": "low"
+          },
+          {
+            "event_id": "test_20_e1",
+            "what_happens": "The man in blue trousers throws a handful of papers into the air, they scatter across the ground, and he then bends to pick them up.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          }
+        ]
+      }
+    ],
+    "actions": []
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Label review"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 2,
+      "title": "Action experiments"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "labels 1/6 reviewer 1",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "ae25889802ba09577",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793088087398,
+      "queuedAt": 1793088087376,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…",
+      "promptFramed": true,
+      "lastProgressAt": 1793088115011,
+      "tokens": 34827,
+      "toolCalls": 10,
+      "durationMs": 27611,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_01_e1\",\"what_happens\":\"A heavily motion-blurred person crosses from the stairs on the left toward the centre in about 1.6 s, covering much more ground than nearby walkers.\",\"tag\":\"in\",\"rule\":\"in-1 running\",\"confidence\":\"medium\"},{\"event_id\":\"test_01_e2\",\"what_happens\":\"A motion-blurred person comes down from the stairs and moves quickly past the walkers around them, co…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "labels 1/6 reviewer 2",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "ad7120f11eaa9a07e",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793088087398,
+      "queuedAt": 1793088087376,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…",
+      "promptFramed": true,
+      "lastProgressAt": 1793088123131,
+      "tokens": 35180,
+      "toolCalls": 10,
+      "durationMs": 32551,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_01_e1\",\"what_happens\":\"A heavily motion-blurred dark figure comes off the stairs on the left and crosses quickly toward the centre of the hall, while nearby people are shown sharp.\",\"tag\":\"in\",\"rule\":\"in-1 running\",\"confidence\":\"medium\"},{\"event_id\":\"test_01_e2\",\"what_happens\":\"A motion-blurred person comes down the stairs on the left and moves quickly right, passing o…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 3,
+      "label": "labels 2/6 reviewer 1",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "a76591d3c44610991",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793088087398,
+      "queuedAt": 1793088087376,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…",
+      "promptFramed": true,
+      "lastProgressAt": 1793088119814,
+      "tokens": 35625,
+      "toolCalls": 10,
+      "durationMs": 29232,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_07_e2\",\"what_happens\":\"A small person in a light blue jacket crosses the plaza from right to left with a blurred, wide-stride running posture, covering much more ground per frame than the walkers nearby.\",\"tag\":\"in\",\"rule\":\"in-1 running\",\"confidence\":\"high\"},{\"event_id\":\"test_07_e3\",\"what_happens\":\"A person in a light blue jacket moves quickly from left to right across…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 4,
+      "label": "labels 2/6 reviewer 2",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "a61f772729d6b213b",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793088087398,
+      "queuedAt": 1793088087376,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…",
+      "promptFramed": true,
+      "lastProgressAt": 1793088114750,
+      "tokens": 35193,
+      "toolCalls": 10,
+      "durationMs": 24168,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_07_e2\",\"what_happens\":\"A child in a light blue jacket runs quickly across the plaza from right to left, blurred by motion with a running stride, while the other people stand or walk.\",\"tag\":\"in\",\"rule\":\"in-1 running\",\"confidence\":\"high\"},{\"event_id\":\"test_07_e3\",\"what_happens\":\"The same child in the light blue jacket crosses back from left to right in about 1.7 s with …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 5,
+      "label": "labels 3/6 reviewer 1",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "a01540761b3312fa0",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793088087398,
+      "queuedAt": 1793088087376,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…",
+      "promptFramed": true,
+      "lastProgressAt": 1793088134718,
+      "tokens": 37481,
+      "toolCalls": 16,
+      "durationMs": 44136,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_11_e1\",\"what_happens\":\"A man in blue trousers picks his bag up off the ground and throws it high into the air (the bag is airborne at 4.7s), then bends to pick it up again; the box also briefly follows a woman in a pink coat walking past quickly.\",\"tag\":\"in\",\"rule\":\"in-2 throwing\",\"confidence\":\"high\"},{\"event_id\":\"test_11_e2\",\"what_happens\":\"A woman holding a coat and …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 6,
+      "label": "labels 3/6 reviewer 2",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "a63ed8e31eb39c206",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793088087398,
+      "queuedAt": 1793088087377,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…",
+      "promptFramed": true,
+      "lastProgressAt": 1793088114001,
+      "tokens": 35082,
+      "toolCalls": 10,
+      "durationMs": 23418,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_11_e1\",\"what_happens\":\"A man in blue trousers picks up a bag from the ground and throws it into the air (the box follows the bag in flight at 2.0-4.7s), then picks it up again.\",\"tag\":\"in\",\"rule\":\"in-2 throwing\",\"confidence\":\"high\"},{\"event_id\":\"test_11_e2\",\"what_happens\":\"A woman holding papers, a coat and a bag walks toward the camera and leaves the frame on the righ…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 7,
+      "label": "labels 4/6 reviewer 1",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "a023e5e87015163fa",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793088087398,
+      "queuedAt": 1793088087377,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…",
+      "promptFramed": true,
+      "lastProgressAt": 1793088111867,
+      "tokens": 34943,
+      "toolCalls": 10,
+      "durationMs": 21283,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_21_e1\",\"what_happens\":\"A child in a light-blue jacket runs from right to left across the plaza, with long strides and motion blur in every frame.\",\"tag\":\"in\",\"rule\":\"in-1 running\",\"confidence\":\"high\"},{\"event_id\":\"test_02_e1\",\"what_happens\":\"A person in blue trousers runs quickly from right to left across the plaza, much faster than the walkers around them and blurred …"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 8,
+      "label": "labels 4/6 reviewer 2",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "afa77b8f8896f0653",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793088087398,
+      "queuedAt": 1793088087377,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…",
+      "promptFramed": true,
+      "lastProgressAt": 1793088111836,
+      "tokens": 34920,
+      "toolCalls": 10,
+      "durationMs": 21253,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_21_e1\",\"what_happens\":\"A person in a light blue jacket runs from the right side across the plaza to the left, much faster than the people walking around him.\",\"tag\":\"in\",\"rule\":\"in-1 running\",\"confidence\":\"high\"},{\"event_id\":\"test_02_e1\",\"what_happens\":\"A person in a grey top and blue trousers runs from right to left across the back of the plaza, past the walking crowd…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 9,
+      "label": "labels 5/6 reviewer 1",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "adf5c3607e418dd25",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793088087399,
+      "queuedAt": 1793088087377,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…",
+      "promptFramed": true,
+      "lastProgressAt": 1793088112062,
+      "tokens": 34966,
+      "toolCalls": 10,
+      "durationMs": 21478,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_08_e1\",\"what_happens\":\"A girl in a light blue jacket crosses the plaza with long, blurred strides, moving clearly faster than the people walking nearby.\",\"tag\":\"in\",\"rule\":\"in-1 running\",\"confidence\":\"high\"},{\"event_id\":\"test_10_e1\",\"what_happens\":\"A man in light blue trousers throws his black bag high into the air, and it falls back down onto the pavement.\",\"tag\":\"in\"…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 10,
+      "label": "labels 5/6 reviewer 2",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "a77258c0179389e15",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793088114187,
+      "queuedAt": 1793088087377,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…",
+      "promptFramed": true,
+      "lastProgressAt": 1793088133936,
+      "tokens": 35007,
+      "toolCalls": 10,
+      "durationMs": 19748,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_08_e1\",\"what_happens\":\"A girl in a light blue jacket runs across the plaza from left to right with a long, blurred stride, clearly faster than the people walking nearby.\",\"tag\":\"in\",\"rule\":\"in-1 running\",\"confidence\":\"high\"},{\"event_id\":\"test_10_e1\",\"what_happens\":\"A man in light blue trousers throws a dark bag high into the air, and it falls back onto the pavement.\",\"…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 11,
+      "label": "labels 6/6 reviewer 1",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "ad5f971f64789da59",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793088114209,
+      "queuedAt": 1793088087378,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…",
+      "promptFramed": true,
+      "lastProgressAt": 1793088130664,
+      "tokens": 31119,
+      "toolCalls": 7,
+      "durationMs": 16455,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_14_e1\",\"what_happens\":\"A man walking by tosses a stack of papers up into the air, and they scatter and fall to the ground beside him.\",\"tag\":\"in\",\"rule\":\"in-2 throwing (also in-3 dropping/littering)\",\"confidence\":\"high\"},{\"event_id\":\"test_14_e2\",\"what_happens\":\"The same man crouches and bends down to pick up the scattered papers from the ground.\",\"tag\":\"unsure\",\"rule\":…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 12,
+      "label": "labels 6/6 reviewer 2",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "aa76980da2ce4938d",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793088114567,
+      "queuedAt": 1793088087379,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…",
+      "promptFramed": true,
+      "lastProgressAt": 1793088130814,
+      "tokens": 31175,
+      "toolCalls": 7,
+      "durationMs": 16247,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_14_e1\",\"what_happens\":\"The man in blue trousers throws a stack of papers up into the air and the sheets scatter and fall onto the pavement.\",\"tag\":\"in\",\"rule\":\"in-2 throwing\",\"confidence\":\"high\"},{\"event_id\":\"test_14_e2\",\"what_happens\":\"The same man bends down and crouches to pick up the papers lying on the ground where they fell.\",\"tag\":\"unsure\",\"rule\":\"unsure odd but…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 13,
+      "label": "action:xclip",
+      "phaseIndex": 2,
+      "phaseTitle": "Action experiments",
+      "agentId": "a4d6fce86690bc36e",
+      "model": "claude-opus-5-5",
+      "state": "error",
+      "startedAt": 1793088116104,
+      "queuedAt": 1793088087406,
+      "attempt": 1,
+      "lastToolName": "Bash",
+      "lastToolSummary": "mkdir -p /Users/ianvarella/capstone_S25/notebooks/exp/actio…",
+      "promptPreview": "You are adding an ACTION-MODEL cue to Stage 1 of a YOLO->VLM surveillance pipeline (student capstone). Stage 1 is a\ncheap filter: YOLO26s detection + tracking + YOLO26s-pose per frame, then rules decide which moments (\"candidates\") to\nsend to a VLM. Recall matters most, then false alarms. Read first: /Users/ianvarella/capstone_S25/notebooks/stage1_gate.py, /Users/ianvarella/capstone_S25/notebooks/…",
+      "promptFramed": true,
+      "lastProgressAt": 1793088771631,
+      "error": "API Error: Can't reach the API server — check your internet or DNS (ENOTFOUND)",
+      "tokens": 60173,
+      "toolCalls": 9,
+      "durationMs": 655527
+    },
+    {
+      "type": "workflow_agent",
+      "index": 14,
+      "label": "action:pose_seq",
+      "phaseIndex": 2,
+      "phaseTitle": "Action experiments",
+      "agentId": "a69d33994f9d9c42f",
+      "model": "claude-opus-5-5",
+      "state": "error",
+      "startedAt": 1793088116904,
+      "queuedAt": 1793088087407,
+      "attempt": 1,
+      "lastToolName": "Bash",
+      "lastToolSummary": "cat > /private/tmp/claude-501/-Users-ianvarella-capstone-S2…",
+      "promptPreview": "You are adding an ACTION-MODEL cue to Stage 1 of a YOLO->VLM surveillance pipeline (student capstone). Stage 1 is a\ncheap filter: YOLO26s detection + tracking + YOLO26s-pose per frame, then rules decide which moments (\"candidates\") to\nsend to a VLM. Recall matters most, then false alarms. Read first: /Users/ianvarella/capstone_S25/notebooks/stage1_gate.py, /Users/ianvarella/capstone_S25/notebooks/…",
+      "promptFramed": true,
+      "lastProgressAt": 1793088802386,
+      "error": "API Error: Can't reach the API server — check your internet or DNS (ENOTFOUND)",
+      "tokens": 65751,
+      "toolCalls": 14,
+      "durationMs": 685481
+    },
+    {
+      "type": "workflow_agent",
+      "index": 15,
+      "label": "action:videomae",
+      "phaseIndex": 2,
+      "phaseTitle": "Action experiments",
+      "agentId": "a9b8e217052f9c10d",
+      "model": "claude-opus-5-5",
+      "state": "error",
+      "startedAt": 1793088117121,
+      "queuedAt": 1793088087407,
+      "attempt": 1,
+      "lastToolName": "Bash",
+      "lastToolSummary": "cd /Users/ianvarella/capstone_S25/notebooks; ../.venv/bin/p…",
+      "promptPreview": "You are adding an ACTION-MODEL cue to Stage 1 of a YOLO->VLM surveillance pipeline (student capstone). Stage 1 is a\ncheap filter: YOLO26s detection + tracking + YOLO26s-pose per frame, then rules decide which moments (\"candidates\") to\nsend to a VLM. Recall matters most, then false alarms. Read first: /Users/ianvarella/capstone_S25/notebooks/stage1_gate.py, /Users/ianvarella/capstone_S25/notebooks/…",
+      "promptFramed": true,
+      "lastProgressAt": 1793088764003,
+      "error": "API Error: Can't reach the API server — check your internet or DNS (ENOTFOUND)",
+      "tokens": 58848,
+      "toolCalls": 15,
+      "durationMs": 646882
+    }
+  ],
+  "totalTokens": 600290,
+  "totalToolCalls": 158
+}

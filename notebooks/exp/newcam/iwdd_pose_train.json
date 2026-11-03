@@ -1,0 +1,159 @@
+{
+ "rules only": {
+  "iwdd_train": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 30.0,
+   "chance@5s_%": 25.8,
+   "hit@10s_%": 34.5,
+   "chance@10s_%": 30.4,
+   "hit@end_%": 40.5,
+   "chance@end_%": 35.5,
+   "neg_any_%": 69.0,
+   "neg_cand_per_min": 13.87,
+   "hit@10s_by": {
+    "day": "55/165 (33.3%)",
+    "dynamic": "18/100 (18.0%)",
+    "night": "14/35 (40.0%)",
+    "static": "51/100 (51.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "reach_down": 26.0,
+    "fast_motion": 8.0,
+    "object_appeared": 2.5,
+    "unattended_object": 1.5,
+    "sustained_presence": 1.5
+   },
+   "rules_on_negatives_%": {
+    "fast_motion": 46.0,
+    "reach_down": 43.5,
+    "sustained_presence": 23.5,
+    "unattended_object": 9.5,
+    "object_appeared": 5.0
+   }
+  }
+ },
+ "rules + old cue": {
+  "threshold": 0.833,
+  "iwdd_train": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 34.5,
+   "chance@5s_%": 28.5,
+   "hit@10s_%": 38.0,
+   "chance@10s_%": 33.2,
+   "hit@end_%": 43.0,
+   "chance@end_%": 38.0,
+   "neg_any_%": 70.5,
+   "neg_cand_per_min": 16.1,
+   "hit@10s_by": {
+    "day": "60/165 (36.4%)",
+    "dynamic": "22/100 (22.0%)",
+    "night": "16/35 (45.7%)",
+    "static": "54/100 (54.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "reach_down": 26.0,
+    "pose_action": 8.5,
+    "fast_motion": 8.0,
+    "object_appeared": 2.5,
+    "unattended_object": 1.5,
+    "sustained_presence": 1.5
+   },
+   "rules_on_negatives_%": {
+    "fast_motion": 46.0,
+    "reach_down": 43.5,
+    "pose_action": 31.0,
+    "sustained_presence": 23.5,
+    "unattended_object": 9.5,
+    "object_appeared": 5.0
+   }
+  },
+  "littering_tune_event_%": 97.0,
+  "littering_tune_crop_%": 83.0,
+  "littering_tune_cue_alone_crop_%": 66.5,
+  "avenue_normal_cue_per_min": 0.98
+ },
+ "rules + iwdd all": {
+  "threshold": 0.778,
+  "iwdd_train": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 48.0,
+   "chance@5s_%": 42.3,
+   "hit@10s_%": 52.0,
+   "chance@10s_%": 48.2,
+   "hit@end_%": 55.0,
+   "chance@end_%": 51.8,
+   "neg_any_%": 73.5,
+   "neg_cand_per_min": 18.33,
+   "hit@10s_by": {
+    "day": "82/165 (49.7%)",
+    "dynamic": "40/100 (40.0%)",
+    "night": "22/35 (62.9%)",
+    "static": "64/100 (64.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "pose_action": 39.0,
+    "reach_down": 26.0,
+    "fast_motion": 8.0,
+    "object_appeared": 2.5,
+    "unattended_object": 1.5,
+    "sustained_presence": 1.5
+   },
+   "rules_on_negatives_%": {
+    "fast_motion": 46.0,
+    "pose_action": 45.0,
+    "reach_down": 43.5,
+    "sustained_presence": 23.5,
+    "unattended_object": 9.5,
+    "object_appeared": 5.0
+   }
+  },
+  "littering_tune_event_%": 94.3,
+  "littering_tune_crop_%": 80.4,
+  "littering_tune_cue_alone_crop_%": 60.0,
+  "avenue_normal_cue_per_min": 0.98
+ },
+ "rules + iwdd mil": {
+  "threshold": 0.784,
+  "iwdd_train": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 46.0,
+   "chance@5s_%": 40.0,
+   "hit@10s_%": 49.5,
+   "chance@10s_%": 45.8,
+   "hit@end_%": 52.0,
+   "chance@end_%": 49.2,
+   "neg_any_%": 72.5,
+   "neg_cand_per_min": 17.52,
+   "hit@10s_by": {
+    "day": "78/165 (47.3%)",
+    "dynamic": "37/100 (37.0%)",
+    "night": "21/35 (60.0%)",
+    "static": "62/100 (62.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "pose_action": 36.0,
+    "reach_down": 26.0,
+    "fast_motion": 8.0,
+    "object_appeared": 2.5,
+    "unattended_object": 1.5,
+    "sustained_presence": 1.5
+   },
+   "rules_on_negatives_%": {
+    "fast_motion": 46.0,
+    "reach_down": 43.5,
+    "pose_action": 41.5,
+    "sustained_presence": 23.5,
+    "unattended_object": 9.5,
+    "object_appeared": 5.0
+   }
+  },
+  "littering_tune_event_%": 92.6,
+  "littering_tune_crop_%": 78.3,
+  "littering_tune_cue_alone_crop_%": 59.6,
+  "avenue_normal_cue_per_min": 0.98
+ }
+}

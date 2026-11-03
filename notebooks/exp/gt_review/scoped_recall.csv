@@ -1,0 +1,7 @@
+half,labels,events,events caught %,right person %,candidate precision %
+tune,all Avenue labels,25,68.0,56.0,44.7
+tune,lenient (drop agreed-out only),19,78.9,68.4,42.6
+tune,strict (agreed-in only),14,92.9,85.7,40.4
+held-out,all Avenue labels,20,80.0,60.0,40.0
+held-out,lenient (drop agreed-out only),18,77.8,66.7,40.0
+held-out,strict (agreed-in only),15,80.0,66.7,40.0

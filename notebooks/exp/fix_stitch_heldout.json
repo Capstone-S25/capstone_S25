@@ -1,0 +1,88 @@
+{
+ "chosen": {
+  "stitch_gap_s": 8.0,
+  "loiter_s": 20.0,
+  "walk_h_per_s": 0.3,
+  "smoking": {
+   "events": 131,
+   "candidates_per_min": 7.13,
+   "method_strict_%": 33.6,
+   "same_times_strict_%": 29.7,
+   "above_same_times_strict": 3.9,
+   "method_lenient_%": 37.4,
+   "above_same_times_lenient": 5.1
+  },
+  "dwell_rule_only": {
+   "events": 131,
+   "candidates_per_min": 1.04,
+   "method_strict_%": 9.2,
+   "same_times_strict_%": 6.0,
+   "above_same_times_strict": 3.2,
+   "method_lenient_%": 9.2,
+   "above_same_times_lenient": 2.5
+  },
+  "avenue_normal_FA_per_min": 5.1
+ },
+ "held_out": {
+  "current": {
+   "smoking": {
+    "events": 143,
+    "candidates_per_min": 4.99,
+    "method_strict_%": 21.7,
+    "same_times_strict_%": 22.3,
+    "above_same_times_strict": -0.6,
+    "method_lenient_%": 23.1,
+    "above_same_times_lenient": -0.3
+   },
+   "dwell_rule_only": {
+    "events": 143,
+    "candidates_per_min": 0.88,
+    "method_strict_%": 7.0,
+    "same_times_strict_%": 6.1,
+    "above_same_times_strict": 0.9,
+    "method_lenient_%": 7.0,
+    "above_same_times_lenient": 0.4
+   },
+   "loitering": {
+    "events": 20,
+    "candidates_per_min": 7.29,
+    "method_strict_%": 50.0,
+    "same_times_strict_%": 26.0,
+    "above_same_times_strict": 24.0,
+    "method_lenient_%": 65.0,
+    "above_same_times_lenient": 25.0
+   },
+   "avenue_normal_FA_per_min": 6.5
+  },
+  "chosen": {
+   "smoking": {
+    "events": 143,
+    "candidates_per_min": 5.0,
+    "method_strict_%": 21.7,
+    "same_times_strict_%": 22.3,
+    "above_same_times_strict": -0.6,
+    "method_lenient_%": 23.1,
+    "above_same_times_lenient": -0.3
+   },
+   "dwell_rule_only": {
+    "events": 143,
+    "candidates_per_min": 0.88,
+    "method_strict_%": 7.0,
+    "same_times_strict_%": 6.1,
+    "above_same_times_strict": 0.9,
+    "method_lenient_%": 7.0,
+    "above_same_times_lenient": 0.4
+   },
+   "loitering": {
+    "events": 20,
+    "candidates_per_min": 7.29,
+    "method_strict_%": 50.0,
+    "same_times_strict_%": 26.0,
+    "above_same_times_strict": 24.0,
+    "method_lenient_%": 65.0,
+    "above_same_times_lenient": 25.0
+   },
+   "avenue_normal_FA_per_min": 6.5
+  }
+ }
+}

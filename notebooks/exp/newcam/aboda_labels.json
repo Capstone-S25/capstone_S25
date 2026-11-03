@@ -1,0 +1,280 @@
+{
+ "video1": {
+  "events": [
+   {
+    "object": "black backpack (dark with orange/red trim)",
+    "t_put_down": 43,
+    "t_unattended": 48,
+    "t_removed": null,
+    "box": [
+     125,
+     310,
+     190,
+     375
+    ],
+    "owner_returns": false,
+    "confidence": "high",
+    "notes": "Both labellers agree: put down at 43 s and unattended at 48 s. The owner is a man in a striped grey T-shirt, khaki trousers and red/blue shoes. He walks off through the bottom edge of the frame with a man in a white T-shirt and is out of view by 49 s. The bag stays until the video ends at 73.0 s (2189 frames at 29.97 fps). The merged box [125,310,190,375] is the tighter combination of L1 [125,315,190,375] and L2 [120,305,190,375]. I checked it on full-resolution frames. At 50 s the bag is upright at about x126-170, y312-375, strap included, and fits inside the box. At 61 s, the middle of the unattended period, it has toppled and lies at about x130-188, y325-375, also inside the box. Disputed point 1: L1 says a person who looks like the owner comes back at 66-70 s, while L2 says the owner never comes back. Checking the 68 s frame confirms that the owner (same striped shirt, khaki trousers and red/blue shoes) walks across the far right of the scene at about x440-530. He never goes near the bag or touches it, so owner_returns=false: he reappears but does not reclaim the bag. Disputed point 2: the round table position is only a scene note, not part of the event; it is settled in scene_notes. Passers-by in a checked shirt and a red/white striped polo (at about 50, 60-62 and 68-71 s) do not touch the bag."
+   }
+  ],
+  "scene_notes": "An indoor corridor or lobby at 640x480 and 29.97 fps, 73.0 s long, with black letterbox bars at the top (about y<60) and bottom (about y>420). The walls are dim and the tiled floor is bright. Traffic is light, with one or two people at a time. Scene furniture present from the first frame, which is not an event: a white/red hydrant cabinet on the left wall (about x70-150, y145-290), a red fire extinguisher (about x55-72, y230-282), a small wall-mounted box at the top left, a green exit sign over a dark doorway, doors in the background, a round black-legged table on the right (about x490-555, y195-270), and railings and a stairwell at the back right. The labellers disagreed on where the table is. L2 put it at x390-430, which is wrong. Frames at 50 and 61 s confirm L1's position. The only event is the backpack drop at about 43 s. The bag topples onto its side at about 51-52 s, which changes its shape briefly for a detector.",
+  "labeller_event_counts": [
+   1,
+   1
+  ]
+ },
+ "video2": {
+  "events": [
+   {
+    "object": "small black handbag/bag",
+    "t_put_down": 69.5,
+    "t_unattended": 72.5,
+    "t_removed": null,
+    "box": [
+     456,
+     73,
+     479,
+     110
+    ],
+    "owner_returns": false,
+    "confidence": "high",
+    "notes": "Both labellers agreed on the same event: a man in a brown jacket enters at about 63 s, sets a black bag down at the base of the thin pole left of the silver bollard at about 69.5 s, walks off toward the top of the frame and is gone by about 74 s. The bag stays until the end of the video (94 s), and a later person near the scooter does not take it. Disputes: (1) t_unattended was 72 vs 73 s. At 71 s the owner is only about 1 body height (~60 px) above the bag, so it becomes unattended between 72 and 73 s; I used the average, 72.5. (2) The boxes were [456,72,484,110] vs [458,78,478,112]. I checked a zoomed full-resolution frame at 83 s (middle of the unattended period). The dark bag spans about x 456-479 and y 73-110. L1's right edge of 484 runs into the pole, and L2's box cuts off the top of the bag, so I used [456,73,479,110]."
+   }
+  ],
+  "scene_notes": "Fixed high camera over a paved sidewalk in overcast daylight; the ground looks wet and the 720x480 frame is low quality. Scene furniture present from the first frame (not events): the light-blue painted utility cabinet and the small blue box (bottom right), the manhole cover and drain grate, the silver bollard/bin and the thin pole near x 470-535, the tree in a grass planter, the scooter/bike parking markings and parked scooters at the top right, and the dark doorway at the top left. The scene is empty until about 32 s. A crowd, many in red shirts, passes from about 32 to 46 s and leaves nothing behind. A woman with a backpack walks through from about 68 to 76 s and leaves nothing. From about 82 s a rider parks a white scooter at the top right (a vehicle, not an abandoned object) and stays nearby until the end, near the bag but without touching it.",
+  "labeller_event_counts": [
+   1,
+   1
+  ]
+ },
+ "video3": {
+  "events": [
+   {
+    "object": "dark navy/black small backpack (soft bag)",
+    "t_put_down": 56,
+    "t_unattended": 70,
+    "t_removed": null,
+    "box": [
+     212,
+     213,
+     258,
+     248
+    ],
+    "owner_returns": true,
+    "confidence": "high",
+    "notes": "Both labellers agree on the object, put-down time (56 s), that it is never removed (it stays until the end at 87 s, frame 2608), and that the owner returns. The man in the brown jacket and pink shirt walks back down from the top at about 84 s but has not reached the bag when the clip ends. The only difference was t_unattended: labeller 1 said 68 s and labeller 2 said 71 s, which is within the 3 s tolerance. I checked the full-resolution frame at 70 s: the owner's feet are at about y=92 and the bag is at about y=230, roughly 140-150 px apart. His body is about 90-110 px tall, so the 2-body-height threshold is reached at about 70 s, which matches the average (69.5 s). I set it to 70 s. The two boxes almost match ([212,214,258,248] and [212,212,258,248]), so I merged them to [212,213,258,248]. I checked this box on the full-resolution frame at 78 s, the middle of the unattended period, and it fits the bag tightly. The woman with the pink umbrella and trolley passes from 76 to 86 s without touching the bag."
+   }
+  ],
+  "scene_notes": "This is a fixed, high-angle outdoor view of a paved sidewalk. The day is overcast, the tiles are wet and patchy, and the lighting is even. The video is 720x480 at 29.97 fps, 2608 frames, about 87 s long. Scene furniture present from frame 0, which is not an event: a manhole cover (~x240-345, y265-330), a drain grate (~x110-180, y295-345), a large light-blue painted utility cabinet (~x500-720, y290-480), a small blue box (~x525-580, y235-290), a metal bollard and post, a trash-can post, a planter with a tree and shrubs, a bike-parking area in the top right, and a dark building corner in the top left. Crowding is low, with at most 2 people at once. A man carrying his bag walks through at 28-36 s and keeps it (not an event). The bag owner is in view at 50-74 s. A woman with a pink umbrella and a shopping trolley passes at 76-86 s and keeps the trolley. The owner comes back into view at 84-87 s.",
+  "labeller_event_counts": [
+   1,
+   1
+  ]
+ },
+ "video4": {
+  "events": [
+   {
+    "object": "black bag (handbag/briefcase-style with strap/handle)",
+    "t_put_down": 14.75,
+    "t_unattended": 21.5,
+    "t_removed": null,
+    "box": [
+     450,
+     366,
+     502,
+     414
+    ],
+    "owner_returns": false,
+    "confidence": "high",
+    "notes": "Both labellers agree on the object, the spot and the times (put down 15 vs 14.5, unattended 22 vs 21, never removed), so the values are merged by averaging. Checked on full-resolution frames. At 15 s the man in the brown jacket is still bent over the bag beside the left side of the blue utility cabinet. At 21 s he is walking away toward the bottom-left, about 230 px (roughly 2 body heights) from the bag. At 30 s the bag is still in the same place. The boxes differed only slightly (L1 [450,360,502,412], L2 [450,366,502,414]). The 3x crop at 30 s shows the bag body plus strap spanning about x 450-502, y 366-415, so L2's tighter box is used. L1's top edge of 360 included some background. A man in a similar brown jacket walks through from about 30 to 38 s but never goes near the bag, so owner_returns=false. The bag stays until the video ends (39.0 s)."
+   }
+  ],
+  "scene_notes": "Fixed elevated camera over an outdoor sidewalk (720x480, about 39 s), overcast daylight with wet patches on the paving. Not crowded: one or two people at a time. Scene furniture present from t=0, not events: a large painted light-blue utility cabinet (about x 500-720, y 290-480), a small blue box above it (about x 530-580, y 237-292), a metal trash can/bollard (about x 505-535, y 70-145), a tree planter with shrubs, a manhole cover, drain grates, a dark pillar at top-left and parked scooters at top-right. A scooter rider passes at top-right at about 2 s, which is not an event. One abandonment: a black bag next to the cabinet.",
+  "labeller_event_counts": [
+   1,
+   1
+  ]
+ },
+ "video5": {
+  "events": [
+   {
+    "object": "small white box/bag (carried by hand)",
+    "t_put_down": 37.3,
+    "t_unattended": 67.5,
+    "t_removed": null,
+    "box": [
+     136,
+     201,
+     171,
+     228
+    ],
+    "owner_returns": false,
+    "confidence": "high",
+    "notes": "Both labellers found the same single event, so the two were merged. A man in white carries the box in and sets it on the floor near (150,215). Owner lingers within ~1-1.5 body heights from ~38 to 65 s, then walks off toward bottom-left and leaves view. Box stays until end (~110 s); nobody else touches it. Disputes and how they were settled: (1) put_down was given as 38 and 37.5. Full-res frames show the box still in his hand, lowered near the floor, at 37.0 s and resting on the floor at 37.5 s, so I set 37.3. (2) unattended was given as 68 and 66.5. At 66 s the owner is standing over the box and blocking it from view. At 67 s he is about 1 body height away (~90 px, body ~90 px) and walking off. At 68 s he is about 2 body heights away at the bottom of the frame. I set 67.5, the point where he passes the ~2-body-height threshold, which falls between the two labels. (3) The boxes were nearly identical, [136,199,172,230] and [135,200,172,229]. On a 4x zoomed full-res crop at 89 s (middle of the unattended period), the white object fills about x 137-170 and y 202-227, so the tightened box is [136,201,171,228]. Object is small (~35x27 px) and sits on a dark floor stripe."
+   }
+  ],
+  "scene_notes": "Indoor lobby (720x480, 29.97 fps, ~110 s) seen from overhead at night under IR/monochrome lighting with strong bright patches. Scene furniture: a large white pillar with lamps (upper centre-right), stairs top-left, glass doors with a dark doormat, curved dark stripes on the floor, and a small light speck on the floor near (425,345) that is there from the first frame and is not an event. Crowding is light. A pair of people (one in light clothing, one in dark with a bag) talk at the bottom centre from ~20 s to ~54 s, then leave through the top doors with all their belongings. Others pass at the stairs/doors (~16-18, 28-30, 60-62, 70-74, 98-106 s) and leave nothing behind.",
+  "labeller_event_counts": [
+   1,
+   1
+  ]
+ },
+ "video6": {
+  "events": [
+   {
+    "object": "small dark bag (handbag/briefcase)",
+    "t_put_down": 114,
+    "t_unattended": 118,
+    "t_removed": 133,
+    "box": [
+     186,
+     306,
+     232,
+     333
+    ],
+    "owner_returns": true,
+    "confidence": "high",
+    "notes": "Both labellers agreed on the times (114/118/133) and the boxes overlap; the merged times are unchanged. Box check: on a full-resolution frame at 125 s the bag spans about x 187-231, y 307-332, so both labellers' boxes were too wide on the left, and the box was tightened to [186,306,232,333]. Disputed point: owner_returns. L1 said true (similar build), and L2 said true but thought it might be a different person. I checked frames at 113-117 s and 131-133.5 s. The depositor wears a hooded coat, crouches at about 113-114 s, and is at the top-left by 117 s. The person who crouches at the bag at 132 s and carries it away at 133.5 s wears a matching hooded coat and has the same build, so I set owner_returns=true. A separate person in green at the doors (131-132 s) never touches the bag. The bag is in hand at 133.5 s, so t_removed is 133."
+   },
+   {
+    "object": "dark bag/briefcase with a light top (small luggage-style case)",
+    "t_put_down": 179,
+    "t_unattended": 184,
+    "t_removed": 207,
+    "box": [
+     145,
+     313,
+     189,
+     348
+    ],
+    "owner_returns": true,
+    "confidence": "high",
+    "notes": "Both labellers agreed on t_put_down=179 and t_unattended=184. On t_removed (L1 207, L2 206), frames show the bag still on the floor at 206 s and 206.5 s, being lifted at about 207 s and in hand at 208 s, so t_removed=207. Box check: on a full-resolution frame at 195 s the case spans about x 146-187, y 315-347, so I tightened the box to [145,313,189,348]. Disputed point: owner_returns (L1 true but uncertain, L2 false). The depositor at 178-180 s wears a light coat with a fur-trimmed hood and light trousers. The person who picks the bag up at 206.5-208 s wears the same fur-trimmed hooded coat and the same light trousers. The coat only looks darker because the brightened exposure and the angle change how it appears. I judged it to be the same person and set owner_returns=true. The group near the doors at 188-196 s never comes near the bag."
+   }
+  ],
+  "scene_notes": "An indoor lobby seen from above at 720x480: a staircase at the top left, glass entrance doors with a dark door mat, a large slanted column at the right with globe lamps, a lit panel at the bottom right, and a curved carpet stripe pattern. All of these are fixed scene items, and the floor is empty at the start. Footage is grayscale with a green tint at first. Auto-exposure brightens the scene from about 162-164 s, and it is strongly washed out from about 168-172 s to the end. Foot traffic is sparse: a person in green at the doors around 0-50 s and again at 128-132 s, an empty scene for long stretches, and a group of 2-3 people near the doors at 188-196 s. There are two short drop-and-pickup events on the carpet left of the door mat, and in both the depositor comes back for the bag. Both bags are small, about 45x27 to 45x35 px, and low-contrast.",
+  "labeller_event_counts": [
+   2,
+   2
+  ]
+ },
+ "video7": {
+  "events": [
+   {
+    "object": "purple/lavender tote shopping bag",
+    "t_put_down": 120.25,
+    "t_unattended": 130,
+    "t_removed": null,
+    "box": [
+     133,
+     87,
+     182,
+     149
+    ],
+    "owner_returns": false,
+    "confidence": "high",
+    "notes": "Both labellers agree on the object, the location (on top of the back-left desk, not the floor) and the timing. A man on a phone enters at about 112 s and places the bag on the desk at about 120 s (L1 said 120.5, L2 said 120; averaged to 120.25). Disputed point: the unattended time (L1 said 129, L2 said 130). I checked full-resolution frames. At 129 s the man is still standing at the left end of the same desk (x~30-85), about 50-100 px from the bag. His body is about 180 px tall, so he is well within 2 body heights. At 130 s he is out of frame, with at most a sliver visible at the left edge. I set t_unattended to 130. The bag stays until the end of the video (160.2 s) and the owner does not return. I verified the box on a full-resolution frame at 145 s (middle of the unattended period). [133,87,182,149] fits the bag tightly and is effectively the same as both labellers' boxes."
+   }
+  ],
+  "scene_notes": "Indoor classroom, 720x480 at 29.97 fps, about 160 s long. It has white desks, a row of black chairs along the back wall, a whiteboard at the back, and curtains and a window on the right. From 0 to about 48 s the camera is in a washed-out grayscale IR mode. At about 50 s it switches to normal colour, which changes the whole image and is a likely false-foreground trigger for background subtraction. Two items are present from the first frame and are scene furniture, not events: a small dark notebook or pencil case on the back-left desk at about (35-70, 145-165), and a dark item with a red strap (a bag or clothing) on the back-right ledge or chair at about (330-375, 40-75). Only one person appears, from about 112 s to 130 s. The scene is otherwise empty.",
+  "labeller_event_counts": [
+   1,
+   1
+  ]
+ },
+ "video8": {
+  "events": [
+   {
+    "object": "long dark hard-shell instrument case",
+    "t_put_down": 119,
+    "t_unattended": 124.75,
+    "t_removed": null,
+    "box": [
+     108,
+     196,
+     283,
+     257
+    ],
+    "owner_returns": false,
+    "confidence": "high",
+    "notes": "Both labellers agree: same object, put down at 119 s on both, unattended at 124.5 and 125 s (averaged to 124.75), never removed, owner does not return, and the case sits on the far-left desk, not on the floor. The only disputes were small ones. (1) The labellers named the instrument differently (cello/guitar vs violin). Since that cannot be settled from the video, the label is just 'instrument case'. (2) The boxes differed slightly: L1 [103,180,288,252] has a top edge too high (it includes desk/background above the case) and cuts off the bottom edge, while L2 [105,193,283,257] is closer. I checked the box on a zoomed full-resolution frame at 142 s, the middle of the unattended period. The case body spans about x 108-283 (the dark strap/handle at the left end reaches about x 104) and about y 196-257. The final box is [108,196,283,257]."
+   }
+  ],
+  "scene_notes": "Indoor classroom with white desks, a row of black chairs along the back wall, a whiteboard, and curtains/window on the right. The video is in colour until about 54-55 s, then switches to an overexposed greyscale/IR-like mode with heavy glare in the centre and right until the end, so there is a large lighting change. Present from the first frame and not counted as events: a small dark item on the back ledge/windowsill near (330-360, 30-55) and a paper/notebook on the top-left desk. No people appear from 0 to about 108 s. One person enters from the bottom right around 108 s carrying the case, puts it on the left desk around 119 s, and leaves past the left edge by about 125 s. There is one abandonment event.",
+  "labeller_event_counts": [
+   1,
+   1
+  ]
+ },
+ "video9": {
+  "events": [
+   {
+    "object": "purple/lavender tote bag (non-woven shopping bag)",
+    "t_put_down": 32,
+    "t_unattended": 39,
+    "t_removed": null,
+    "box": [
+     416,
+     136,
+     478,
+     209
+    ],
+    "owner_returns": false,
+    "confidence": "high",
+    "notes": "The labellers agreed on the object, the location (top of the middle-right desk, not the floor), that the bag is never removed, and that the owner does not return. They differed on t_put_down (32 vs 34) and t_unattended (40 vs 38.5). Both differences are within 3 s, so the times would normally be averaged (33 / 39.25). I checked full-resolution frames to decide. At 31 s the bag is still held up above the desk. At 32 s it is resting on the desk with the hand still on the handle, which is also the case at 34 s. So put-down is 32 s, not the averaged 33 s, and Labeller 2's 34 s is when the hand releases rather than when the bag touches down. At 35 s the hand has let go and the man is turning away. At 38 s he is at about x 190-290, around 200 px from the bag. At 39 s he is at the far left (x about 60-130), more than 2 body heights from the bag. He leaves the frame at about 40 s. So t_unattended is 39 s, which agrees with the 39.25 average. The box is the intersection of both labellers' boxes, slightly tightened. On the full-resolution frame at 61 s (middle of the unattended period, 39-82.9 s), [416,136,478,209] fits the bag closely."
+   }
+  ],
+  "scene_notes": "Indoor classroom, 720x480 at 29.97 fps, 82.9 s long. Bright artificial light with mild flicker and exposure changes. There are six white desks, rows of black chairs along the back wall, a whiteboard at the top left and curtains on the right. One actor is in the scene, from about 16 s to 40 s. Present from the first frame and treated as scene furniture, not events: a small dark item (book, notebook or pen case) on the back-left desk at about (30-70, 100-110), and a dark/red bag or clothing bundle on the chairs or ledge near the curtain at about (330-370, 40-60). The only event is the purple tote, which is placed on a desk rather than on the floor.",
+  "labeller_event_counts": [
+   1,
+   1
+  ]
+ },
+ "video10": {
+  "events": [
+   {
+    "object": "black duffel/shoulder bag (on tabletop)",
+    "t_put_down": 40.75,
+    "t_unattended": 48,
+    "t_removed": null,
+    "box": [
+     161,
+     187,
+     252,
+     246
+    ],
+    "owner_returns": false,
+    "confidence": "high",
+    "notes": "The two labellers agree on the same object, times (put down 40.5 vs 41, both say unattended at 48 and that the bag is never removed) and nearly the same box ([160,186,252,245] vs [163,185,252,246]). Merge: t_put_down is the average, 40.75 s (lowered at about 40 s, resting with hands on it at 41 s), and t_unattended is 48 s, when the owner exits at the left edge, gone by 49 s. The owner, a man who entered from the bottom right at about 31-32 s, does not return, and the bag stays on the left-centre table until the end of the video at 75.4 s. I checked the box on the full-resolution 720x480 frame at 62 s (the middle of the unattended period) with a 4x crop. The bag body and its left strap reach x of about 160, the right edge is about 251-252, the top of the handle is at y of about 188, and the bottom edge is at about 245-246. The final box [161,187,252,246] fits the bag tightly. There were no real disputes. The scene_notes differ only in the coordinates given for the static clutter."
+   }
+  ],
+  "scene_notes": "Indoor classroom with even fluorescent lighting, seen from a fixed high camera (720x480). The scene is empty from 0 to about 31 s. One person appears from about 31-32 s to 48 s, and the scene is empty again after that. Scene items present from frame 0 (not events): a whiteboard, a row of black chairs along the back wall, several white tables, a small dark item (a phone or pen case) on the far-left back table at about x 30-70, y 145-160, and red/dark clutter on the window ledge at about x 335-375, y 45-65. The labellers gave different coordinates for these static items; the values here match the full-resolution frame.",
+  "labeller_event_counts": [
+   1,
+   1
+  ]
+ },
+ "video11": {
+  "events": [],
+  "scene_notes": "This is a crowded indoor station hall with a checkerboard floor, filmed from a high angle at 640x480 and 30 fps for 150 s. The lighting is bright and even, with glare from the shopfronts at the back. Queues stand behind the stanchions and red ropes on the left the whole time, and pedestrians pass constantly. Scene furniture present from t=0: an orange/red box or bucket at about [510,250,532,272], stanchions with red ropes, a small sign board at about [310,215,325,235], and turnstiles on the far left.\n\nRECONCILIATION. Both labellers saw the same candidate and agree on its times and boxes. The only dispute was whether it counts as unattended. Labeller 1 included it with low confidence and a nominal t_unattended of 80 s. Labeller 2 excluded it. The candidate is two objects:\n(a) A white cone-shaped object (a closed white umbrella or bag) stood upright beside a stanchion. Put down at about 26 s. Merged box [300,250,318,288].\n(b) A small red bag or pouch at the foot of the next stanchion. Put down at about 40 s. Box [319,276,334,292].\nI verified both boxes on a full-resolution frame at 100 s, and both fit the objects tightly. Both objects stay until the end of the video (about 150 s).\n\nThe labellers also disagreed on the owner. Labeller 1 says a woman in a white top. Labeller 2 says a man in a white shirt carrying a grey jacket. In the video, the owner is a person in a white top with a red waist bag who carries a grey jacket.\n\nHow I settled it: I checked the video at 20, 30, 45, 60, 66, 70, 74, 80, 90, 100, 110, 120, 130, 140, 145 and 149 s. At every check from 30 s to the end, the owner stands with a group of 2-3 people about 0-60 px from the objects, mostly 35-45 px to the right. That is at most about one body height, since a person there is about 50-60 px tall. The owner is never out of view and never more than about 2 body heights away. Under the unattended rule used here, the objects are attended throughout, so no event is recorded. I agree with Labeller 2. Labeller 1's 80 s value was only nominal and does not meet the rule.\n\nCaveat: ABODA probably intends this umbrella and red bag as video11's abandoned object. If the official ABODA GT is used, take put_down as 26 s (white object) and 40 s (red bag), with the union box [300,250,334,292]. Under our rule there is still no valid unattended time.\n\nAlso not counted: a dark bag on the floor at about [404,236,420,250] from about 35 s to the end. It sits at the feet of a standing man the whole time, so it is attended. There are also many transient carried bags.",
+  "labeller_event_counts": [
+   2,
+   0
+  ],
+  "ambiguous_events": [
+   {
+    "object": "white umbrella + small red bag by a stanchion (owner stays ~1 body height away)",
+    "t_put_down": 40,
+    "t_unattended": 80,
+    "t_removed": null,
+    "box": [
+     300,
+     250,
+     334,
+     292
+    ],
+    "confidence": "low"
+   }
+  ]
+ }
+}

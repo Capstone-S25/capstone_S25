@@ -1,0 +1,407 @@
+[
+ {
+  "event_id": "test_01_e1",
+  "video": "test/01",
+  "t0": 3.12,
+  "t1": 4.72,
+  "frames": 9,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_01_e1.jpg"
+ },
+ {
+  "event_id": "test_01_e2",
+  "video": "test/01",
+  "t0": 15.68,
+  "t1": 16.8,
+  "frames": 8,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_01_e2.jpg"
+ },
+ {
+  "event_id": "test_01_e3",
+  "video": "test/01",
+  "t0": 20.08,
+  "t1": 26.56,
+  "frames": 82,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_01_e3.jpg"
+ },
+ {
+  "event_id": "test_01_e4",
+  "video": "test/01",
+  "t0": 34.72,
+  "t1": 44.0,
+  "frames": 104,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_01_e4.jpg"
+ },
+ {
+  "event_id": "test_03_e1",
+  "video": "test/03",
+  "t0": 11.76,
+  "t1": 13.52,
+  "frames": 23,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_03_e1.jpg"
+ },
+ {
+  "event_id": "test_03_e2",
+  "video": "test/03",
+  "t0": 23.28,
+  "t1": 24.8,
+  "frames": 20,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_03_e2.jpg"
+ },
+ {
+  "event_id": "test_05_e1",
+  "video": "test/05",
+  "t0": 18.72,
+  "t1": 31.36,
+  "frames": 159,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_05_e1.jpg"
+ },
+ {
+  "event_id": "test_07_e1",
+  "video": "test/07",
+  "t0": 12.0,
+  "t1": 12.24,
+  "frames": 4,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_07_e1.jpg"
+ },
+ {
+  "event_id": "test_07_e2",
+  "video": "test/07",
+  "t0": 16.88,
+  "t1": 19.68,
+  "frames": 36,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_07_e2.jpg"
+ },
+ {
+  "event_id": "test_07_e3",
+  "video": "test/07",
+  "t0": 22.48,
+  "t1": 24.16,
+  "frames": 22,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_07_e3.jpg"
+ },
+ {
+  "event_id": "test_09_e1",
+  "video": "test/09",
+  "t0": 5.44,
+  "t1": 7.28,
+  "frames": 24,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_09_e1.jpg"
+ },
+ {
+  "event_id": "test_09_e2",
+  "video": "test/09",
+  "t0": 19.84,
+  "t1": 22.56,
+  "frames": 34,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_09_e2.jpg"
+ },
+ {
+  "event_id": "test_09_e3",
+  "video": "test/09",
+  "t0": 29.6,
+  "t1": 30.16,
+  "frames": 8,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_09_e3.jpg"
+ },
+ {
+  "event_id": "test_09_e4",
+  "video": "test/09",
+  "t0": 34.96,
+  "t1": 39.2,
+  "frames": 36,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_09_e4.jpg"
+ },
+ {
+  "event_id": "test_09_e5",
+  "video": "test/09",
+  "t0": 40.48,
+  "t1": 41.68,
+  "frames": 16,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_09_e5.jpg"
+ },
+ {
+  "event_id": "test_09_e6",
+  "video": "test/09",
+  "t0": 44.16,
+  "t1": 46.48,
+  "frames": 28,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_09_e6.jpg"
+ },
+ {
+  "event_id": "test_11_e1",
+  "video": "test/11",
+  "t0": 0.48,
+  "t1": 6.48,
+  "frames": 52,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_11_e1.jpg"
+ },
+ {
+  "event_id": "test_11_e2",
+  "video": "test/11",
+  "t0": 12.32,
+  "t1": 13.76,
+  "frames": 19,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_11_e2.jpg"
+ },
+ {
+  "event_id": "test_13_e1",
+  "video": "test/13",
+  "t0": 10.32,
+  "t1": 11.36,
+  "frames": 14,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_13_e1.jpg"
+ },
+ {
+  "event_id": "test_13_e2",
+  "video": "test/13",
+  "t0": 18.32,
+  "t1": 20.32,
+  "frames": 23,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_13_e2.jpg"
+ },
+ {
+  "event_id": "test_15_e1",
+  "video": "test/15",
+  "t0": 19.92,
+  "t1": 23.44,
+  "frames": 45,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_15_e1.jpg"
+ },
+ {
+  "event_id": "test_17_e1",
+  "video": "test/17",
+  "t0": 0.0,
+  "t1": 2.16,
+  "frames": 28,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_17_e1.jpg"
+ },
+ {
+  "event_id": "test_17_e2",
+  "video": "test/17",
+  "t0": 3.92,
+  "t1": 16.96,
+  "frames": 164,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_17_e2.jpg"
+ },
+ {
+  "event_id": "test_19_e1",
+  "video": "test/19",
+  "t0": 4.32,
+  "t1": 9.84,
+  "frames": 70,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_19_e1.jpg"
+ },
+ {
+  "event_id": "test_21_e1",
+  "video": "test/21",
+  "t0": 0.56,
+  "t1": 2.56,
+  "frames": 26,
+  "half": "tune",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_21_e1.jpg"
+ },
+ {
+  "event_id": "test_02_e1",
+  "video": "test/02",
+  "t0": 10.88,
+  "t1": 12.72,
+  "frames": 24,
+  "half": "held-out",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_02_e1.jpg"
+ },
+ {
+  "event_id": "test_02_e2",
+  "video": "test/02",
+  "t0": 28.96,
+  "t1": 30.48,
+  "frames": 20,
+  "half": "held-out",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_02_e2.jpg"
+ },
+ {
+  "event_id": "test_04_e1",
+  "video": "test/04",
+  "t0": 15.2,
+  "t1": 17.04,
+  "frames": 24,
+  "half": "held-out",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_04_e1.jpg"
+ },
+ {
+  "event_id": "test_04_e2",
+  "video": "test/04",
+  "t0": 25.92,
+  "t1": 27.6,
+  "frames": 22,
+  "half": "held-out",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_04_e2.jpg"
+ },
+ {
+  "event_id": "test_06_e1",
+  "video": "test/06",
+  "t0": 13.76,
+  "t1": 24.96,
+  "frames": 141,
+  "half": "held-out",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_06_e1.jpg"
+ },
+ {
+  "event_id": "test_06_e2",
+  "video": "test/06",
+  "t0": 32.56,
+  "t1": 32.96,
+  "frames": 6,
+  "half": "held-out",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_06_e2.jpg"
+ },
+ {
+  "event_id": "test_06_e3",
+  "video": "test/06",
+  "t0": 34.24,
+  "t1": 40.24,
+  "frames": 69,
+  "half": "held-out",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_06_e3.jpg"
+ },
+ {
+  "event_id": "test_08_e1",
+  "video": "test/08",
+  "t0": 0.0,
+  "t1": 1.36,
+  "frames": 18,
+  "half": "held-out",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_08_e1.jpg"
+ },
+ {
+  "event_id": "test_10_e1",
+  "video": "test/10",
+  "t0": 22.8,
+  "t1": 24.24,
+  "frames": 15,
+  "half": "held-out",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_10_e1.jpg"
+ },
+ {
+  "event_id": "test_10_e2",
+  "video": "test/10",
+  "t0": 25.44,
+  "t1": 30.16,
+  "frames": 40,
+  "half": "held-out",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_10_e2.jpg"
+ },
+ {
+  "event_id": "test_10_e3",
+  "video": "test/10",
+  "t0": 31.28,
+  "t1": 32.64,
+  "frames": 13,
+  "half": "held-out",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_10_e3.jpg"
+ },
+ {
+  "event_id": "test_12_e1",
+  "video": "test/12",
+  "t0": 21.52,
+  "t1": 24.64,
+  "frames": 34,
+  "half": "held-out",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_12_e1.jpg"
+ },
+ {
+  "event_id": "test_12_e2",
+  "video": "test/12",
+  "t0": 25.76,
+  "t1": 29.12,
+  "frames": 33,
+  "half": "held-out",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_12_e2.jpg"
+ },
+ {
+  "event_id": "test_12_e3",
+  "video": "test/12",
+  "t0": 30.32,
+  "t1": 31.76,
+  "frames": 19,
+  "half": "held-out",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_12_e3.jpg"
+ },
+ {
+  "event_id": "test_12_e4",
+  "video": "test/12",
+  "t0": 32.88,
+  "t1": 33.68,
+  "frames": 11,
+  "half": "held-out",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_12_e4.jpg"
+ },
+ {
+  "event_id": "test_14_e1",
+  "video": "test/14",
+  "t0": 15.92,
+  "t1": 18.16,
+  "frames": 26,
+  "half": "held-out",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_14_e1.jpg"
+ },
+ {
+  "event_id": "test_14_e2",
+  "video": "test/14",
+  "t0": 19.36,
+  "t1": 20.24,
+  "frames": 12,
+  "half": "held-out",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_14_e2.jpg"
+ },
+ {
+  "event_id": "test_16_e1",
+  "video": "test/16",
+  "t0": 25.28,
+  "t1": 29.52,
+  "frames": 54,
+  "half": "held-out",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_16_e1.jpg"
+ },
+ {
+  "event_id": "test_18_e1",
+  "video": "test/18",
+  "t0": 0.0,
+  "t1": 11.68,
+  "frames": 147,
+  "half": "held-out",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_18_e1.jpg"
+ },
+ {
+  "event_id": "test_20_e1",
+  "video": "test/20",
+  "t0": 2.56,
+  "t1": 9.6,
+  "frames": 77,
+  "half": "held-out",
+  "sheet": "/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/sheets/test_20_e1.jpg"
+ }
+]

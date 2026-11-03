@@ -27,3 +27,8 @@ notebooks/sweep*.pkl
 notebooks/exp/explorer_work/
 notebooks/exp/review_tmp/
 notebooks/exp/*.pkl
+notebooks/exp/actions/cache/
+notebooks/*.ts
+notebooks/exp/**/review_tmp/
+notebooks/exp/**/sheets/
+notebooks/exp/**/*_sheets/

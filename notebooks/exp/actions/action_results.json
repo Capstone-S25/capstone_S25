@@ -1,0 +1,1643 @@
+{
+  "summary": "Blind re-scoping of Avenue labels + three action-model experiments for Stage 1",
+  "agentCount": 15,
+  "logs": [
+    "45 labelled events to review"
+  ],
+  "result": {
+    "labels": [
+      {
+        "reviewer": 0,
+        "events": [
+          {
+            "event_id": "test_01_e1",
+            "what_happens": "A heavily motion-blurred person crosses from the stairs on the left toward the centre in about 1.6 s, covering much more ground than nearby walkers.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_01_e2",
+            "what_happens": "A motion-blurred person comes down from the stairs and moves quickly past the walkers around them, covering about a third of the frame in under a second.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_01_e3",
+            "what_happens": "A child in red stands close to the camera beside the pink bag, looks at something in their hands and finally bends or crouches down at the bag; no throwing or running is visible.",
+            "tag": "unsure",
+            "rule": "unsure (standing near camera, interacting with an existing bag; no clear in-scope action)",
+            "confidence": "low"
+          },
+          {
+            "event_id": "test_01_e4",
+            "what_happens": "A person with a backpack walks toward the camera, passes very close to it and then walks away at a normal pace.",
+            "tag": "out",
+            "rule": "out walking (close to camera)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_03_e1",
+            "what_happens": "A person in blue trousers runs with long strides from right to left across the whole frame in under 2 s.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_03_e2",
+            "what_happens": "A person in blue trousers runs/leaps with long strides from left to right across the frame in about 1.5 s.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_05_e1",
+            "what_happens": "A man in grey with blue trousers swings his black bag around, with the bag flung out away from his body at 28.2 s and moving in the air at the frame edge at 31.4 s.",
+            "tag": "in",
+            "rule": "in-2 throwing (bag)",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_07_e1",
+            "what_happens": "A person in a light jacket only partly visible at the right edge of the frame stands or steps in place for about a quarter second, with no clear action.",
+            "tag": "out",
+            "rule": "out standing/walking",
+            "confidence": "low"
+          }
+        ]
+      },
+      {
+        "reviewer": 1,
+        "events": [
+          {
+            "event_id": "test_01_e1",
+            "what_happens": "A heavily motion-blurred dark figure comes off the stairs on the left and crosses quickly toward the centre of the hall, while nearby people are shown sharp.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_01_e2",
+            "what_happens": "A motion-blurred person comes down the stairs on the left and moves quickly right, passing other pedestrians who are walking normally.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_01_e3",
+            "what_happens": "A boy in a red jacket stands right next to the camera beside the pink bag, looking down at something in his hands.",
+            "tag": "out",
+            "rule": "out standing",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_01_e4",
+            "what_happens": "A girl with a backpack walks past very close to the camera and then away from it across the plaza at normal pace.",
+            "tag": "out",
+            "rule": "out walking",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_03_e1",
+            "what_happens": "A man in blue trousers runs fast from right to left across the hall with long, blurred strides.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_03_e2",
+            "what_happens": "The same man in blue trousers runs fast from left to right across the hall, clearly faster than the walkers around him.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_05_e1",
+            "what_happens": "A man in grey with blue trousers walks toward the camera swinging a dark bag around and tossing it about, a much bigger motion than anyone else makes.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_07_e1",
+            "what_happens": "A person in a light jacket is only partly visible at the far right edge of the frame for about a quarter of a second, and no clear action can be seen.",
+            "tag": "unsure",
+            "rule": "unsure (not enough visible)",
+            "confidence": "low"
+          }
+        ]
+      },
+      {
+        "reviewer": 0,
+        "events": [
+          {
+            "event_id": "test_07_e2",
+            "what_happens": "A small person in a light blue jacket crosses the plaza from right to left with a blurred, wide-stride running posture, covering much more ground per frame than the walkers nearby.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_07_e3",
+            "what_happens": "A person in a light blue jacket moves quickly from left to right across the plaza with long, blurred strides, faster than the people walking in the background.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_09_e1",
+            "what_happens": "A man with a backpack walks slowly away from the camera close to the left edge of the frame.",
+            "tag": "out",
+            "rule": "out walking",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_09_e2",
+            "what_happens": "A person in a light blue jacket runs across the plaza from right to left, appearing motion-blurred with long strides.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_09_e3",
+            "what_happens": "A man with a backpack walks normally into view at the right edge, close to the camera.",
+            "tag": "out",
+            "rule": "out walking",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_09_e4",
+            "what_happens": "A man throws a black bag high into the air; it lands on the ground, he bends to pick it up, and he throws it into the air again before it lands once more.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_09_e5",
+            "what_happens": "A man bends over a bag lying on the ground, grabs it, and swings it upward as if to throw it.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_09_e6",
+            "what_happens": "A man throws a black bag up into the air; it falls to the ground and he bends down to pick it up.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          }
+        ]
+      },
+      {
+        "reviewer": 1,
+        "events": [
+          {
+            "event_id": "test_07_e2",
+            "what_happens": "A child in a light blue jacket runs quickly across the plaza from right to left, blurred by motion with a running stride, while the other people stand or walk.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_07_e3",
+            "what_happens": "The same child in the light blue jacket crosses back from left to right in about 1.7 s with long, blurred strides, clearly faster than the people walking behind.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_09_e1",
+            "what_happens": "A person with a backpack walks close to the camera on the left, moving away from it and toward the centre, at a normal pace.",
+            "tag": "out",
+            "rule": "out walking",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_09_e2",
+            "what_happens": "A child in a light blue jacket runs quickly across the plaza from right to left with motion blur and running strides.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_09_e3",
+            "what_happens": "A person with a backpack walks into the frame at the right edge close to the camera and heads toward the back at a normal walking pace.",
+            "tag": "out",
+            "rule": "out walking",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_09_e4",
+            "what_happens": "A man in light blue trousers throws his bag high into the air, it lands on the ground, he picks it up and throws it up again, and it lands near him.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_09_e5",
+            "what_happens": "The same man bends to pick up the bag from the ground (it was mid-air just before) and swings it up to throw it again.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_09_e6",
+            "what_happens": "The man throws his bag high into the air, it falls to the ground, and he bends over to pick it up again.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          }
+        ]
+      },
+      {
+        "reviewer": 0,
+        "events": [
+          {
+            "event_id": "test_11_e1",
+            "what_happens": "A man in blue trousers picks his bag up off the ground and throws it high into the air (the bag is airborne at 4.7s), then bends to pick it up again; the box also briefly follows a woman in a pink coat walking past quickly.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_11_e2",
+            "what_happens": "A woman holding a coat and a shopping bag walks toward the camera at a normal pace and leaves the frame at the right.",
+            "tag": "out",
+            "rule": "out walking",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_13_e1",
+            "what_happens": "A person comes in from the left edge pulling or pushing a red wheeled bag or trolley near the stairs. Nothing is visibly dropped or left behind.",
+            "tag": "out",
+            "rule": "out carrying bags",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_13_e2",
+            "what_happens": "A man in blue trousers throws a bundle of papers high into the air, and they scatter and land on the pavement, where they are left.",
+            "tag": "in",
+            "rule": "in-2 throwing (also in-3 littering)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_15_e1",
+            "what_happens": "A man in a denim jacket with a backpack walks toward the camera at a normal pace and passes close to it.",
+            "tag": "out",
+            "rule": "out walking",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_17_e1",
+            "what_happens": "A man in a white hoodie stands in one spot, raises an arm as if waving or gesturing, then stands with his hands behind his back.",
+            "tag": "unsure",
+            "rule": "unsure waving/odd harmless movement",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_17_e2",
+            "what_happens": "The same man in the white hoodie stays in one spot for about 13 s, moving his arms and swinging or kicking his legs in a dance-like or stretching way.",
+            "tag": "unsure",
+            "rule": "unsure dancing/stretching (possible in-5 loitering)",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_19_e1",
+            "what_happens": "A man in a navy and white jacket walks toward the camera at a normal pace until he fills the right side of the frame.",
+            "tag": "out",
+            "rule": "out walking close to camera",
+            "confidence": "high"
+          }
+        ]
+      },
+      {
+        "reviewer": 1,
+        "events": [
+          {
+            "event_id": "test_11_e1",
+            "what_happens": "A man in blue trousers picks up a bag from the ground and throws it into the air (the box follows the bag in flight at 2.0-4.7s), then picks it up again.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_11_e2",
+            "what_happens": "A woman holding papers, a coat and a bag walks toward the camera and leaves the frame on the right, at a normal pace like the people around her.",
+            "tag": "out",
+            "rule": "out walking (toward camera)",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_13_e1",
+            "what_happens": "The red box is on a red object (a bag or case) at the foot of the left stairs, with a dim figure behind it who seems to handle or drag it; the action is too small and dark to make out.",
+            "tag": "unsure",
+            "rule": "possible in-3 dropping/leaving object; not clearly visible",
+            "confidence": "low"
+          },
+          {
+            "event_id": "test_13_e2",
+            "what_happens": "A man in blue trousers throws a bundle of papers high into the air and they scatter onto the ground, where they stay.",
+            "tag": "in",
+            "rule": "in-2 throwing (also in-3 littering)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_15_e1",
+            "what_happens": "A man with a backpack walks normally toward the camera and leaves the frame on the right.",
+            "tag": "out",
+            "rule": "out walking (toward camera)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_17_e1",
+            "what_happens": "A man in a white hoodie stands at the left edge, raising and waving his arm, then stands with his hands behind his back.",
+            "tag": "unsure",
+            "rule": "unsure odd harmless movement (waving)",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_17_e2",
+            "what_happens": "The same man in the white hoodie stays in one spot at the left edge for about 13 s, stretching his arms, twisting and kicking his legs as if dancing or exercising, while others walk past.",
+            "tag": "unsure",
+            "rule": "unsure dancing/stretching (could be in-5 loitering, since he stays in one spot)",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_19_e1",
+            "what_happens": "A man in a dark jacket and khaki trousers walks normally toward the camera with his hand at his chest until he fills the right side of the frame.",
+            "tag": "out",
+            "rule": "out walking (toward camera)",
+            "confidence": "high"
+          }
+        ]
+      },
+      {
+        "reviewer": 0,
+        "events": [
+          {
+            "event_id": "test_21_e1",
+            "what_happens": "A child in a light-blue jacket runs from right to left across the plaza, with long strides and motion blur in every frame.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_02_e1",
+            "what_happens": "A person in blue trousers runs quickly from right to left across the plaza, much faster than the walkers around them and blurred in every frame.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_02_e2",
+            "what_happens": "A person in a grey top and blue trousers runs from left to right across the plaza with long, blurred strides.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_04_e1",
+            "what_happens": "A person in a grey top and blue trousers runs from right to left across the plaza, clearly faster than the walking man beside them.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_04_e2",
+            "what_happens": "A person in a grey top and blue trousers runs from left to right across the plaza with long, blurred strides.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_06_e1",
+            "what_happens": "An older man carrying a red plastic bag walks normally toward the camera and ends up very close to it, glancing at something in his hand.",
+            "tag": "out",
+            "rule": "out walking (toward/close to camera, carrying bag normally)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_06_e2",
+            "what_happens": "A dark bag flies through the air from the top of the frame and lands on the ground beside the right pillar, so it has been thrown.",
+            "tag": "in",
+            "rule": "in-2 throwing an object",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_06_e3",
+            "what_happens": "A person in a grey top and blue trousers walks up to the dark bag lying on the ground, swings it by the strap, leaves it on the ground again, and then bends down to pick it up.",
+            "tag": "in",
+            "rule": "in-2 throwing / in-3 dropping an object",
+            "confidence": "medium"
+          }
+        ]
+      },
+      {
+        "reviewer": 1,
+        "events": [
+          {
+            "event_id": "test_21_e1",
+            "what_happens": "A person in a light blue jacket runs from the right side across the plaza to the left, much faster than the people walking around him.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_02_e1",
+            "what_happens": "A person in a grey top and blue trousers runs from right to left across the back of the plaza, past the walking crowd, and leaves the frame on the left.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_02_e2",
+            "what_happens": "The same grey-top, blue-trousers person runs at full stride from left to right across the plaza, far faster than the standing and walking people nearby.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_04_e1",
+            "what_happens": "A person in a grey top and blue trousers runs from right to left across the plaza, passing a man who is walking normally, and leaves on the left.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_04_e2",
+            "what_happens": "The grey-top, blue-trousers person runs from left to right across the plaza with long strides and leaves on the right, while the others stand or walk.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_06_e1",
+            "what_happens": "An older man in a grey hoodie, carrying a red plastic bag, walks normally from the back of the plaza toward the camera and passes close to the lens.",
+            "tag": "out",
+            "rule": "out walking",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_06_e2",
+            "what_happens": "A black bag flies through the air from the top right of the frame and lands on the pavement, so it was thrown.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_06_e3",
+            "what_happens": "The thrown black bag lies on the pavement; a person in a grey top and blue trousers enters, swings the bag around, it ends up on the ground again, and he comes back to bend down and pick it up before leaving right.",
+            "tag": "in",
+            "rule": "in-2 throwing (also in-3 leaving an object on the ground)",
+            "confidence": "medium"
+          }
+        ]
+      },
+      {
+        "reviewer": 0,
+        "events": [
+          {
+            "event_id": "test_08_e1",
+            "what_happens": "A girl in a light blue jacket crosses the plaza with long, blurred strides, moving clearly faster than the people walking nearby.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_10_e1",
+            "what_happens": "A man in light blue trousers throws his black bag high into the air, and it falls back down onto the pavement.",
+            "tag": "in",
+            "rule": "in-2 throwing (bag into the air)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_10_e2",
+            "what_happens": "The same man bends down to pick up the bag, throws it into the air again (it is airborne at 28.2s), and then bends to pick it up once more.",
+            "tag": "in",
+            "rule": "in-2 throwing (bag into the air)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_10_e3",
+            "what_happens": "After picking the bag up, the man throws it high into the air again, and it lands on the pavement near him.",
+            "tag": "in",
+            "rule": "in-2 throwing (bag into the air)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_12_e1",
+            "what_happens": "While walking, the man throws his bag up into the air, it lands on the ground, and he bends over and picks it up.",
+            "tag": "in",
+            "rule": "in-2 throwing (bag into the air)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_12_e2",
+            "what_happens": "The man throws the bag into the air again (it is airborne at 27.0s), it lands on the ground, and he walks over, bends down and picks it up.",
+            "tag": "in",
+            "rule": "in-2 throwing (bag into the air)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_12_e3",
+            "what_happens": "The man swings the bag up and throws it high into the air, and it lands on the pavement a few metres away from him.",
+            "tag": "in",
+            "rule": "in-2 throwing (bag into the air)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_12_e4",
+            "what_happens": "The man bends over with his legs spread wide and picks up the bag he had just thrown (it is airborne in the before tile); no throw happens inside the labelled window itself.",
+            "tag": "unsure",
+            "rule": "unsure: only the pickup after an in-2 throw is visible; picking up a bag is not itself listed",
+            "confidence": "medium"
+          }
+        ]
+      },
+      {
+        "reviewer": 1,
+        "events": [
+          {
+            "event_id": "test_08_e1",
+            "what_happens": "A girl in a light blue jacket runs across the plaza from left to right with a long, blurred stride, clearly faster than the people walking nearby.",
+            "tag": "in",
+            "rule": "in-1 running",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_10_e1",
+            "what_happens": "A man in light blue trousers throws a dark bag high into the air, and it falls back onto the pavement.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_10_e2",
+            "what_happens": "The same man bends to pick up the bag from the ground, throws it into the air again, then picks it up again.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_10_e3",
+            "what_happens": "After picking up the bag, the man throws it high into the air again, and it falls to the ground beside him.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_12_e1",
+            "what_happens": "A man in light blue trousers throws his bag high into the air while walking, then bends to pick it up off the ground and walks on.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_12_e2",
+            "what_happens": "The man carries the bag, throws it high into the air, lets it land on the ground, then bends to pick it up again.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_12_e3",
+            "what_happens": "The man throws the bag high into the air again, and it lands on the pavement in front of him.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_12_e4",
+            "what_happens": "Right after a throw (the bag is in the air in the before tile), the man bends over to pick the thrown bag up off the ground and starts walking with it.",
+            "tag": "in",
+            "rule": "in-2 throwing (end of the same throw sequence)",
+            "confidence": "medium"
+          }
+        ]
+      },
+      {
+        "reviewer": 0,
+        "events": [
+          {
+            "event_id": "test_14_e1",
+            "what_happens": "A man walking by tosses a stack of papers up into the air, and they scatter and fall to the ground beside him.",
+            "tag": "in",
+            "rule": "in-2 throwing (also in-3 dropping/littering)",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_14_e2",
+            "what_happens": "The same man crouches and bends down to pick up the scattered papers from the ground.",
+            "tag": "unsure",
+            "rule": "unsure: picking up objects is not covered by the in-scope or out-of-scope lists",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_16_e1",
+            "what_happens": "A man walks slowly toward the camera, pushing a bicycle beside him.",
+            "tag": "out",
+            "rule": "out walking (pushing a bike at walking pace, no running, throwing or dropping)",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_18_e1",
+            "what_happens": "A person in a white hoodie stays at the far left edge of the frame for the whole clip, shifting stance, stepping in place and raising an arm toward the head at times.",
+            "tag": "unsure",
+            "rule": "unsure: odd movements in one spot; too short (~12 s) to clearly count as in-5 loitering",
+            "confidence": "low"
+          },
+          {
+            "event_id": "test_20_e1",
+            "what_happens": "A man throws a handful of papers into the air, the papers scatter across the walkway, and he then bends down to pick them up.",
+            "tag": "in",
+            "rule": "in-2 throwing (also in-3 dropping/littering)",
+            "confidence": "high"
+          }
+        ]
+      },
+      {
+        "reviewer": 1,
+        "events": [
+          {
+            "event_id": "test_14_e1",
+            "what_happens": "The man in blue trousers throws a stack of papers up into the air and the sheets scatter and fall onto the pavement.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          },
+          {
+            "event_id": "test_14_e2",
+            "what_happens": "The same man bends down and crouches to pick up the papers lying on the ground where they fell.",
+            "tag": "unsure",
+            "rule": "unsure odd but harmless (picking up the papers after the throw; no rule covers it)",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_16_e1",
+            "what_happens": "A man walks toward the camera at a normal pace, pushing a bicycle beside him.",
+            "tag": "out",
+            "rule": "out walking",
+            "confidence": "medium"
+          },
+          {
+            "event_id": "test_18_e1",
+            "what_happens": "A person in a white hoodie stays near the left edge of the frame for about 12 s, shifting position and stepping in place, with a hand raised to the head in some frames.",
+            "tag": "unsure",
+            "rule": "unsure odd but harmless (stepping or moving in one spot; too short to count as loitering under in-5)",
+            "confidence": "low"
+          },
+          {
+            "event_id": "test_20_e1",
+            "what_happens": "The man in blue trousers throws a handful of papers into the air, they scatter across the ground, and he then bends to pick them up.",
+            "tag": "in",
+            "rule": "in-2 throwing",
+            "confidence": "high"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "approach": "Started from scratch (exp/actions/ only had an empty cache dir). Module /Users/ianvarella/capstone_S25/notebooks/exp/actions/xclip.py builds a schedule that only looks backward in time: a call happens for a tracked person (tracker raw_id) once it has >=3 observations, then at most once per second. Each call builds an 8-frame tube from that person's last 1.5 s of observations (on low-fps sources the window is 8/fps s, capped at 8 s; frames are repeated if there are fewer than 8). All frames get the same square crop: the union of the person's boxes in the tube, padded 40%, resized to 224, then processor.image_processor. The vision tower + MIT run once per call on MPS. Cached per call: the video embedding plus the mean patch features (cache/<ds>.pt). Prompt logits come from those cached features (cache/<ds>_logits.npz). I checked my split forward against model(...).logits_per_video: max abs diff 0.0. Because of that, any prompt set or margin can be re-scored in seconds. Prompt bank: 12 positives and 8 negatives. Prompt sets: brief (the 5 positives / 3 negatives from the task), litter (6 littering positives / 3 negatives), wide (all 12 / all 8), brief_negs, litter_negs (6 littering positives / all 8 negatives). The method takes a softmax over the set and fires when the best positive prob minus the max negative prob >= margin, with a 5 s cooldown per person. The event's roi is the person's current box. Sweep: 5 sets x margins 0-0.7, method alone, with the littering lift (eval_xclip.py -> sweep_alone.csv). Selected variants were scored three ways: alone, as an add-on to baseline, and replacing reach_down (report.csv). I added a second, stronger control (xclip_controls.py). It fires the same number of X-CLIP calls per sequence but picks the calls at random from the same schedule, which separates X-CLIP's real skill from just adding candidates. Only the tune half was used (model_splits('s', heldout=False)). No GT inside methods. Feature extraction took ~13 min on MPS for 9,733 calls.",
+        "module_path": "/Users/ianvarella/capstone_S25/notebooks/exp/actions/xclip.py",
+        "summary": "X-CLIP zero-shot on person tubes is a real littering cue, but it is not an Avenue/loitering or smoking cue. Best variant: litter_negs, margin 0.2 (now DEFAULTS). Alone it gets littering crop recall 73.5 vs 56.8 for a random person at the same moments (lift +16.7, baseline +10.9) at 4.9 FA/min on normal video. It also beats random calls fired at the same rate (57.3 +- 2.5). The gain is largest on throwing (crop 30 -> 67) and tossing (28 -> 63), which reach_down misses.\n- As a REPLACEMENT for reach_down: littering crop 55.7 -> 73.5, lift 10.9 -> 15.1, Avenue 68/56 -> 88/64, FA 5.1 -> 9.4/min. But smoking event recall falls 49 -> 28, because reach_down was catching smokers' hands.\n- As an ADD-ON: littering crop 83.5, Avenue 88/64, smoking 55/20, FA 10.0/min. Lift stays about 11, since it only adds candidates at the same moments.\n- The Avenue gain is NOT from X-CLIP: random calls at the same rate give 91/64 as an add-on.\n- On smoking (1 fps), random calls do as well or better: crop 5.5 vs 3.5.\n- Cost: ~206 ms vision+MIT + ~27 ms prompt head per call on CPU (measured with 5 threads while other jobs were running, load ~6, so it is probably a bit pessimistic). Busy Avenue/normal footage has 504-563 calls/min, about 2 CPU cores, more than YOLO26s itself.\nFiles: /Users/ianvarella/capstone_S25/notebooks/exp/actions/xclip.py (make_method, DEFAULTS, build/bench CLI), /Users/ianvarella/capstone_S25/notebooks/exp/actions/eval_xclip.py (sweep/report), /Users/ianvarella/capstone_S25/notebooks/exp/actions/xclip_controls.py (rate-matched random-call control + per-action table), /Users/ianvarella/capstone_S25/notebooks/exp/actions/sweep_alone.csv, /Users/ianvarella/capstone_S25/notebooks/exp/actions/report.csv, cache in /Users/ianvarella/capstone_S25/notebooks/exp/actions/cache/ (xclip files: <ds>.pt, <ds>_logits.npz; the other files there belong to sibling experiments).",
+        "results": [
+          {
+            "variant": "litter_negs m=0.2 (DEFAULTS)",
+            "mode": "add-on",
+            "littering_event": 94.8,
+            "littering_crop": 83.5,
+            "littering_lift": 11,
+            "avenue_event": 88,
+            "avenue_crop": 64,
+            "smoking_event": 55,
+            "smoking_crop": 20,
+            "normal_fa_per_min": 9.99,
+            "cpu_ms_per_call": 233,
+            "notes": "Calls/min: normal 563, avenue 504, littering 201, smoking 21. Random-call control add-on: littering crop 78.4+-1.6, avenue 91.2/64.0, smoking 54.4/22.5, FA 10.0, so the real gain over just adding candidates is about +5 littering crop and nothing elsewhere."
+          },
+          {
+            "variant": "litter_negs m=0.2 (DEFAULTS)",
+            "mode": "replace reach_down",
+            "littering_event": 91.3,
+            "littering_crop": 73.5,
+            "littering_lift": 15.1,
+            "avenue_event": 88,
+            "avenue_crop": 64,
+            "smoking_event": 27.7,
+            "smoking_crop": 6.8,
+            "normal_fa_per_min": 9.4,
+            "cpu_ms_per_call": 233,
+            "notes": "Best skill per candidate. Random-call replacement control: littering crop 57.7+-2.4, avenue 91.2/60. Loses half of smoking recall (reach_down caught smokers)."
+          },
+          {
+            "variant": "litter_negs m=0.2 (DEFAULTS)",
+            "mode": "alone",
+            "littering_event": 91.3,
+            "littering_crop": 73.5,
+            "littering_lift": 16.7,
+            "avenue_event": 72,
+            "avenue_crop": 36,
+            "smoking_event": 19.6,
+            "smoking_crop": 3.5,
+            "normal_fa_per_min": 4.9,
+            "cpu_ms_per_call": 233,
+            "notes": "Per action crop (base -> xclip alone -> add-on): dropping 41->72->80, dumping 100->85->100, putting-down 78->80->100, throwing 30->67->72, tossing 28->63->65. Random calls at same rate: littering crop 57.3, avenue 65.6/22.4."
+          },
+          {
+            "variant": "litter_negs m=0.25",
+            "mode": "add-on",
+            "littering_event": 91.3,
+            "littering_crop": 76.1,
+            "littering_lift": 9.7,
+            "avenue_event": 80,
+            "avenue_crop": 60,
+            "smoking_event": 53.1,
+            "smoking_crop": 19.8,
+            "normal_fa_per_min": 7.84,
+            "cpu_ms_per_call": 233
+          },
+          {
+            "variant": "litter_negs m=0.25",
+            "mode": "replace reach_down",
+            "littering_event": 81.7,
+            "littering_crop": 60.4,
+            "littering_lift": 12.2,
+            "avenue_event": 80,
+            "avenue_crop": 60,
+            "smoking_event": 22.4,
+            "smoking_crop": 6.3,
+            "normal_fa_per_min": 7.25,
+            "cpu_ms_per_call": 233
+          },
+          {
+            "variant": "litter_negs m=0.1",
+            "mode": "add-on",
+            "littering_event": 97.8,
+            "littering_crop": 92.2,
+            "littering_lift": 10.4,
+            "avenue_event": 100,
+            "avenue_crop": 72,
+            "smoking_event": 59.2,
+            "smoking_crop": 24.2,
+            "normal_fa_per_min": 25.47,
+            "cpu_ms_per_call": 233,
+            "notes": "Too many false alarms."
+          },
+          {
+            "variant": "litter_negs m=0.1",
+            "mode": "replace reach_down",
+            "littering_event": 97.4,
+            "littering_crop": 90.4,
+            "littering_lift": 24.3,
+            "avenue_event": 100,
+            "avenue_crop": 72,
+            "smoking_event": 35.9,
+            "smoking_crop": 11.4,
+            "normal_fa_per_min": 24.88,
+            "cpu_ms_per_call": 233,
+            "notes": "Highest lift found (+24.3), but FA about 5x baseline."
+          },
+          {
+            "variant": "litter m=0.3",
+            "mode": "add-on",
+            "littering_event": 91.7,
+            "littering_crop": 77,
+            "littering_lift": 7.2,
+            "avenue_event": 84,
+            "avenue_crop": 64,
+            "smoking_event": 57.6,
+            "smoking_crop": 22.6,
+            "normal_fa_per_min": 11.17,
+            "cpu_ms_per_call": 233
+          },
+          {
+            "variant": "litter m=0.3",
+            "mode": "replace reach_down",
+            "littering_event": 86.5,
+            "littering_crop": 63,
+            "littering_lift": 11.1,
+            "avenue_event": 84,
+            "avenue_crop": 64,
+            "smoking_event": 32.2,
+            "smoking_crop": 10,
+            "normal_fa_per_min": 10.58,
+            "cpu_ms_per_call": 233
+          },
+          {
+            "variant": "brief m=0.5 (task's prompt set)",
+            "mode": "add-on",
+            "littering_event": 87,
+            "littering_crop": 68.7,
+            "littering_lift": 9.1,
+            "avenue_event": 96,
+            "avenue_crop": 72,
+            "smoking_event": 53.4,
+            "smoking_crop": 19.6,
+            "normal_fa_per_min": 12.34,
+            "cpu_ms_per_call": 233,
+            "notes": "'throwing a bag in the air' and 'smoking' prompts fire on ordinary people with bags; alone lift only +4.9."
+          },
+          {
+            "variant": "brief m=0.5 (task's prompt set)",
+            "mode": "replace reach_down",
+            "littering_event": 70,
+            "littering_crop": 37.8,
+            "littering_lift": 3.6,
+            "avenue_event": 96,
+            "avenue_crop": 72,
+            "smoking_event": 17.7,
+            "smoking_crop": 5.4,
+            "normal_fa_per_min": 11.76,
+            "cpu_ms_per_call": 233
+          },
+          {
+            "variant": "wide m=0.3",
+            "mode": "add-on",
+            "littering_event": 86.5,
+            "littering_crop": 65.7,
+            "littering_lift": 5.5,
+            "avenue_event": 92,
+            "avenue_crop": 72,
+            "smoking_event": 52.4,
+            "smoking_crop": 19.6,
+            "normal_fa_per_min": 9.8,
+            "cpu_ms_per_call": 233
+          },
+          {
+            "variant": "wide m=0.3",
+            "mode": "replace reach_down",
+            "littering_event": 66.5,
+            "littering_crop": 38.7,
+            "littering_lift": 3.6,
+            "avenue_event": 92,
+            "avenue_crop": 72,
+            "smoking_event": 20.5,
+            "smoking_crop": 6.1,
+            "normal_fa_per_min": 9.21,
+            "cpu_ms_per_call": 233
+          }
+        ],
+        "baseline_reference": "Same harness and tune half (YOLO26s caches, partial(baseline, cfg=GateConfig())): littering event 77.0 / crop 55.7, random-person control 44.8, lift +10.9; Avenue 68.0 / 56.0; smoking 49.4 / 18.6; normal FA 5.09/min. Baseline minus reach_down: littering 7.0 / 1.3 (lift -1.3), Avenue 68 / 52, smoking 10.7 / 4.2, FA 4.51/min.",
+        "recommended": "If anything, use litter_negs at margin 0.2-0.25 as a littering-only check on people. It is the only variant whose gain survives both controls: the random-person control (lift +16.7 alone vs +10.9 for baseline) and the rate-matched random-call control (73.5 vs 57.3 crop). Replacing reach_down gives the best skill per candidate (lift 15.1) but costs half the smoking recall. Adding it on top keeps smoking and adds about +5 littering crop over random calls, at about 2x the false alarms. Before shipping, two things are needed: (1) a held-out check, since prompt set and margin were picked on tune; (2) cutting the cost by calling it only on people a cheap pose or motion cue already flagged, or every 2-3 s, because calling it every second on everyone takes about 2 CPU cores on busy footage. Do not claim any Avenue/loitering or smoking benefit from it.",
+        "what_failed": "1) The task's prompt set ('brief') is weak. 'a person throwing a bag in the air' wins top-1 on 582 of 2661 Avenue calls, and 'a person smoking a cigarette' also fires on ordinary pedestrians. Lift alone is only +4.9 at margin 0.5, and replacing reach_down cuts littering crop to 38. The 'wide' set (all 12 positives) has the same problem. 2) The Avenue gains (68 -> 88-96 event) are just a rate effect: random calls fired at the same rate give 91/64 as an add-on, so X-CLIP has no loitering/Avenue skill here. 3) Smoking (1 fps, gappy) does not work. An 8-frame tube there covers about 8 s of almost static frames, and random calls match or beat X-CLIP (crop 5.5 vs 3.5). 4) Low margins (0-0.1) look great on littering recall (crop 90-98) but give 20-150 FA/min. Clip-level littering event recall is near 91-100% for any method that fires often, because the clips are 3 s and every frame is positive. 5) I only tried union-box square crops, not per-frame tracked crops or other tube lengths, and did not try gating the calls on a cheap cue.",
+        "risks": "- The prompt set and margin were chosen on the tune half and not checked on held-out. The positive-vs-negative softmax margin sits on a steep curve (margin 0.1 -> 0.3 moves FA from 20 to 1/min), so it will probably need recalibrating per camera or domain.\n- The littering clips are 1080p close-ups while the normal footage is 640x360 Avenue. Part of the gap between how often it fires on littering clips and on normal video may be domain or resolution rather than action.\n- The CPU latency (206 ms vision + 27 ms prompt head + ~60 ms crop/preprocess on 1080p jpgs) was measured while sibling experiments were loading the machine (load avg ~6), so it is somewhat pessimistic. Even so, about 500+ calls per minute of busy footage (about 9 tracked people) means about 2 CPU cores, more than YOLO26s itself; deploying it needs gating or a lower call rate.\n- It uses raw tracker ids, not stitched ids, so a broken track restarts its 5 s cooldown.\n- The cache directory is shared with sibling action experiments; the xclip files are only <ds>.pt (~0.5 GB total) and <ds>_logits.npz."
+      },
+      {
+        "approach": "I built a skeleton-sequence classifier on the YOLO26s-pose keypoints Stage 1 already caches, so YOLO is not re-run. Each tracked person (tracker raw_id) is checked at most once per second, starting after 0.8 s of track history. A check takes the last 1.0 s of that track only (causal) and resamples it to K=8 steps, using the latest observation at or before each step. Keypoints are taken relative to the hip centre and divided by the track's median box height so far. Each step also carries a visibility mask, keypoint velocities in body heights per second, hip-centre velocity, box height compared with the track's usual height (to catch crouching), box aspect and a frame-border flag. The summary feature vector (about 200 values) holds the per-keypoint mean, min, max and range, max and mean keypoint speed, wrist extension, wrist-below-knee and torso length. Absolute pixel size was removed on purpose, because it gives the camera away (littering footage is 1080p, Avenue is 360p).\n\nModels: lr_sum (numpy L2 logistic regression), mlp_sum (torch, 1 hidden layer of 32 with dropout) and gru_seq (torch GRU with 32 hidden units on the 8-step sequence). Each has a twin ending in _lit, trained without the normal-video negatives.\n\nLabels (used only in build()): a window is the actor (1) if the person box has IoU >= 0.4 with the GT box, a bystander (0) if IoU < 0.15, and is dropped in between. Tune normal videos add negatives. Training rows: 646 actor windows, 1441 bystander windows, 2482 normal-video windows. Cross-validation uses 5 folds, grouped by clip and stratified by action, with normal videos split by video. Every littering clip and normal video is scored by a fold model that never saw it. Avenue and smoking are scored by the model trained on everything. The threshold is set on the out-of-fold normal scores to hit a target false-alarm rate (0.5, 1, 2 or 4 per minute), with a 5 s cooldown per track. The method emits pose_action events through make_event and never reads GT. A sequence not in the cache is extracted live and scored by the full model.\n\nBecause the stock random control turned out to be gameable (see what_failed), I also built a stricter control that gives same-moment events to distinct random people, plus matched-rate references (reach_down only, a tallest-person-in-frame prior, firing once on every person), a within-clip actor-vs-bystander AUC, and a count of littering-camera candidates landing on bystanders.\n\nCompute: about 50 s to build all 6 variants on CPU, about 30 s per full evaluation sweep and about 3 min for the diagnostics. MPS was not needed.",
+        "module_path": "/Users/ianvarella/capstone_S25/notebooks/exp/actions/pose_seq.py",
+        "summary": "The learned pose model works on the littering clips. At the same number of candidates per clip it picks the right person more often than reach_down does. The tune-half normal false-alarm rate is optimistic because of a camera confound.\n\nBest variant is mlp_sum with the threshold set for 1 false alarm per minute on tune normal video. On its own it gets littering crop recall 73.5%, against 54.8% for reach_down alone. Its stock lift is +22.2 (reach_down +11.8). With the stricter distinct-person control it is +19.0 (reach_down +9.9, tallest-person prior +12.8), at about the same 1.39 candidates per clip as reach_down's 1.36. The out-of-fold within-clip actor-vs-bystander AUC is 0.747, against 0.707 for \"taller box is the actor\", so part of the gain is a size or closeness prior.\n\nAs an add-on to the baseline: littering 97.0% event / 87.0% crop, Avenue 84/64, smoking 56.6/22.6, normal false alarms 6.07 per minute. The baseline gives 77.0/55.7, 68/56, 49.4/18.6 and 5.09.\n\nReplacing reach_down: littering 90.0/73.5 with lift +20.9 (fair +17.9), Avenue 84/60, false alarms 5.49 per minute. Smoking drops to 29.4/9.6, because reach_down was producing many of the smoking candidates and at 1 fps a 1 s window holds only 1-2 frames.\n\nCPU cost is about 0.22 ms per call for features plus 0.004 ms (LR), 0.028 ms (MLP) or 0.10 ms (GRU) for the model. Calls per minute: 486 on normal Avenue video, 421 on Avenue test (raised by short tracklets restarting the per-track timer), 186 on littering clips and 33 on smoking. That is negligible next to the roughly 100 ms per frame YOLO26s costs.\n\nMain caveat: on the littering camera the same threshold puts about 13 candidates per minute on bystanders, against 1 per minute on Avenue normal footage. reach_down shows the same jump: 16.3 per minute on littering bystanders against 0.59 on normal. So the normal-video false-alarm figures do not carry over to other cameras, and the threshold needs per-camera normal footage.\n\nOutputs: per-variant results in /Users/ianvarella/capstone_S25/notebooks/exp/actions/pose_seq_results.csv. Cached scores and models are in /Users/ianvarella/capstone_S25/notebooks/exp/actions/cache/: scores.pkl, model_*.pkl, cv_report.json, calls.json, timing.json and diagnostics.json.",
+        "results": [
+          {
+            "variant": "baseline (GateConfig())",
+            "mode": "alone",
+            "littering_event": 77,
+            "littering_crop": 55.7,
+            "littering_lift": 10.9,
+            "avenue_event": 68,
+            "avenue_crop": 56,
+            "smoking_event": 49.4,
+            "smoking_crop": 18.6,
+            "normal_fa_per_min": 5.09,
+            "notes": "reference. Fair (no-replacement) lift +10.3, 1.43 candidates per clip"
+          },
+          {
+            "variant": "reach_down only",
+            "mode": "alone",
+            "littering_event": 73.9,
+            "littering_crop": 54.8,
+            "littering_lift": 11.8,
+            "avenue_event": 28,
+            "avenue_crop": 28,
+            "smoking_event": 43.4,
+            "smoking_crop": 15.4,
+            "normal_fa_per_min": 0.59,
+            "notes": "reference to beat. Fair lift +9.9, 1.36 candidates per clip, 16.3 littering-camera bystander candidates per min"
+          },
+          {
+            "variant": "baseline minus reach_down",
+            "mode": "alone",
+            "littering_event": 7,
+            "littering_crop": 1.3,
+            "littering_lift": -1.3,
+            "avenue_event": 68,
+            "avenue_crop": 52,
+            "smoking_event": 10.7,
+            "smoking_crop": 4.2,
+            "normal_fa_per_min": 4.51,
+            "notes": "reference for replacement mode"
+          },
+          {
+            "variant": "mlp_sum@FA1.0 (thr 0.786)",
+            "mode": "alone",
+            "littering_event": 89.1,
+            "littering_crop": 73.5,
+            "littering_lift": 22.2,
+            "avenue_event": 44,
+            "avenue_crop": 24,
+            "smoking_event": 22.1,
+            "smoking_crop": 5.8,
+            "normal_fa_per_min": 0.98,
+            "cpu_ms_per_call": 0.24,
+            "notes": "Fair lift +19.0 at 1.39 candidates per clip (same rate as reach_down). Littering-camera bystander candidates 13.0 per min. 486 calls per min on normal video, 421 on Avenue"
+          },
+          {
+            "variant": "mlp_sum@FA1.0",
+            "mode": "add-on",
+            "littering_event": 97,
+            "littering_crop": 87,
+            "littering_lift": 14.8,
+            "avenue_event": 84,
+            "avenue_crop": 64,
+            "smoking_event": 56.6,
+            "smoking_crop": 22.6,
+            "normal_fa_per_min": 6.07,
+            "cpu_ms_per_call": 0.24,
+            "notes": "Fair lift +13.1. Recommended (recall first): +1 false alarm per min over baseline"
+          },
+          {
+            "variant": "mlp_sum@FA1.0",
+            "mode": "replace reach_down",
+            "littering_event": 90,
+            "littering_crop": 73.5,
+            "littering_lift": 20.9,
+            "avenue_event": 84,
+            "avenue_crop": 60,
+            "smoking_event": 29.4,
+            "smoking_crop": 9.6,
+            "normal_fa_per_min": 5.49,
+            "cpu_ms_per_call": 0.24,
+            "notes": "Fair lift +17.9. Smoking drops 49 -> 29 event"
+          },
+          {
+            "variant": "mlp_sum@FA0.5",
+            "mode": "alone",
+            "littering_event": 79.6,
+            "littering_crop": 56.5,
+            "littering_lift": 14.5,
+            "avenue_event": 28,
+            "avenue_crop": 12,
+            "smoking_event": 16.6,
+            "smoking_crop": 3.7,
+            "normal_fa_per_min": 0.39,
+            "cpu_ms_per_call": 0.24,
+            "notes": "About reach_down's recall at lower normal false alarms"
+          },
+          {
+            "variant": "mlp_sum@FA0.5",
+            "mode": "add-on",
+            "littering_event": 94.3,
+            "littering_crop": 79.1,
+            "littering_lift": 12.9,
+            "avenue_event": 80,
+            "avenue_crop": 60,
+            "smoking_event": 54.3,
+            "smoking_crop": 21.7,
+            "normal_fa_per_min": 5.49,
+            "cpu_ms_per_call": 0.24
+          },
+          {
+            "variant": "mlp_sum@FA2.0",
+            "mode": "alone",
+            "littering_event": 91.7,
+            "littering_crop": 80,
+            "littering_lift": 25.8,
+            "avenue_event": 44,
+            "avenue_crop": 24,
+            "smoking_event": 24.7,
+            "smoking_crop": 6.8,
+            "normal_fa_per_min": 1.96,
+            "cpu_ms_per_call": 0.24,
+            "notes": "Fair lift +19.8"
+          },
+          {
+            "variant": "mlp_sum@FA2.0",
+            "mode": "add-on",
+            "littering_event": 97.8,
+            "littering_crop": 89.6,
+            "littering_lift": 16.7,
+            "avenue_event": 84,
+            "avenue_crop": 64,
+            "smoking_event": 57.6,
+            "smoking_crop": 23.3,
+            "normal_fa_per_min": 7.05,
+            "cpu_ms_per_call": 0.24
+          },
+          {
+            "variant": "mlp_sum@FA2.0",
+            "mode": "replace reach_down",
+            "littering_event": 92.6,
+            "littering_crop": 80,
+            "littering_lift": 24.1,
+            "avenue_event": 84,
+            "avenue_crop": 60,
+            "smoking_event": 31.9,
+            "smoking_crop": 10.5,
+            "normal_fa_per_min": 6.47,
+            "cpu_ms_per_call": 0.24
+          },
+          {
+            "variant": "gru_seq@FA2.0",
+            "mode": "alone",
+            "littering_event": 83.5,
+            "littering_crop": 65.2,
+            "littering_lift": 21.2,
+            "avenue_event": 32,
+            "avenue_crop": 8,
+            "smoking_event": 31,
+            "smoking_crop": 10.3,
+            "normal_fa_per_min": 1.96,
+            "cpu_ms_per_call": 0.32,
+            "notes": "Fair lift +17.6. Avenue crops poor"
+          },
+          {
+            "variant": "gru_seq@FA2.0",
+            "mode": "add-on",
+            "littering_event": 94.8,
+            "littering_crop": 83.5,
+            "littering_lift": 16.9,
+            "avenue_event": 80,
+            "avenue_crop": 56,
+            "smoking_event": 57.8,
+            "smoking_crop": 25.6,
+            "normal_fa_per_min": 7.05,
+            "cpu_ms_per_call": 0.32
+          },
+          {
+            "variant": "gru_seq@FA2.0",
+            "mode": "replace reach_down",
+            "littering_event": 85.2,
+            "littering_crop": 65.7,
+            "littering_lift": 18.5,
+            "avenue_event": 80,
+            "avenue_crop": 52,
+            "smoking_event": 37.5,
+            "smoking_crop": 13.3,
+            "normal_fa_per_min": 6.47,
+            "cpu_ms_per_call": 0.32
+          },
+          {
+            "variant": "gru_seq@FA4.0",
+            "mode": "add-on",
+            "littering_event": 97,
+            "littering_crop": 87.8,
+            "littering_lift": 17.3,
+            "avenue_event": 84,
+            "avenue_crop": 56,
+            "smoking_event": 62,
+            "smoking_crop": 28.4,
+            "normal_fa_per_min": 9.01,
+            "cpu_ms_per_call": 0.32,
+            "notes": "Alone: crop 78.3, fair lift +22.8"
+          },
+          {
+            "variant": "lr_sum@FA1.0",
+            "mode": "alone",
+            "littering_event": 51.3,
+            "littering_crop": 36.1,
+            "littering_lift": 8.3,
+            "avenue_event": 20,
+            "avenue_crop": 16,
+            "smoking_event": 5.1,
+            "smoking_crop": 0.7,
+            "normal_fa_per_min": 0.98,
+            "cpu_ms_per_call": 0.22,
+            "notes": "Linear model too weak at low false alarms"
+          },
+          {
+            "variant": "lr_sum@FA1.0",
+            "mode": "add-on",
+            "littering_event": 85.7,
+            "littering_crop": 67,
+            "littering_lift": 10.3,
+            "avenue_event": 68,
+            "avenue_crop": 56,
+            "smoking_event": 51,
+            "smoking_crop": 19.1,
+            "normal_fa_per_min": 6.07,
+            "cpu_ms_per_call": 0.22
+          },
+          {
+            "variant": "lr_sum@FA4.0",
+            "mode": "replace reach_down",
+            "littering_event": 84.3,
+            "littering_crop": 65.7,
+            "littering_lift": 17.7,
+            "avenue_event": 76,
+            "avenue_crop": 68,
+            "smoking_event": 22.4,
+            "smoking_crop": 6.1,
+            "normal_fa_per_min": 8.42,
+            "cpu_ms_per_call": 0.22
+          },
+          {
+            "variant": "lr_sum_lit@FA1.0 (no normal negatives)",
+            "mode": "alone",
+            "littering_event": 14.3,
+            "littering_crop": 7.4,
+            "littering_lift": 0.9,
+            "avenue_event": 28,
+            "avenue_crop": 20,
+            "smoking_event": 4,
+            "smoking_crop": 0.7,
+            "normal_fa_per_min": 0.98,
+            "notes": "Failed. Best within-clip AUC (0.771) but scores normal-video people high, so a threshold set on normal video kills recall. gru_seq_lit and mlp_sum_lit behave the same way"
+          },
+          {
+            "variant": "lr_sum_lit@FA1.0",
+            "mode": "add-on",
+            "littering_event": 80.9,
+            "littering_crop": 58.7,
+            "littering_lift": 11.5,
+            "avenue_event": 68,
+            "avenue_crop": 60,
+            "smoking_event": 50.6,
+            "smoking_crop": 18.9,
+            "normal_fa_per_min": 6.07
+          }
+        ],
+        "baseline_reference": "Same code, YOLO26s tune half, partial(exp_harness.baseline, cfg=GateConfig()):\n- Baseline: littering 77.0% event / 55.7% crop, stock lift +10.9 (control 44.8 ± 2.7); Avenue 68/56; smoking 49.4/18.6; normal false alarms 5.09 per minute.\n- reach_down only: littering 73.9/54.8, lift +11.8; Avenue 28/28; smoking 43.4/15.4; 0.59 false alarms per minute.\n- Baseline minus reach_down: littering 7.0/1.3; Avenue 68/52; smoking 10.7/4.2; 4.51 false alarms per minute.\n- Stricter control (same-moment events go to distinct random people): baseline +10.3, reach_down +9.9, tallest-person prior +12.8 at 1.19 candidates per clip (19.6 normal false alarms per minute), fire once on every person +3.8 (its stock lift is +22.5).\n- Within-clip actor-vs-bystander AUC of the trivial \"taller box\" score: 0.707.\n- Littering-camera candidates on bystanders: reach_down 16.3 per minute, baseline 17.4.",
+        "recommended": "mlp_sum, threshold set for 1 false alarm per minute on tune normal video (5 s cooldown, about one call per person per second), as an ADD-ON that keeps reach_down. Tune half: littering 97.0% event / 87.0% crop, Avenue 84/64, smoking 56.6/22.6, normal false alarms 6.07 per minute (baseline 5.09).\n\nOn its own it beats the random control by more than reach_down does at the same candidate count: stricter-control lift +19.0 vs +9.9, stock lift +22.2 vs +11.8. Do not use it as a replacement for reach_down: smoking event recall falls from 49 to 29 because the 1 s window is too short at 1 fps.\n\nBefore shipping:\n1. Measure once on the held-out half.\n2. Check the threshold on normal footage from each deployment camera; the Avenue-calibrated threshold does not carry over.\n3. Train with 3-5 seeds to check the MLP's stability (only one seed was run).",
+        "what_failed": "1. The stock random control is gameable. It samples with replacement, so firing once on every person gets lift +22.5 for free (+3.8 with the distinct-person control). Raw stock-lift numbers for high-rate variants are therefore inflated. Compare at matched candidates per clip using the stricter control in pose_seq.diagnose().\n\n2. The _lit variants, trained only on littering clips without normal-video negatives, have the best within-clip actor-vs-bystander AUC (lr_sum_lit 0.771) but are unusable with a threshold set on normal video. They score ordinary Avenue walkers higher than littering actors, so at 1 false alarm per minute recall drops to 7-15% (stricter lift about 0). The normal negatives make calibration work largely by telling the two cameras apart, not by learning the action.\n\n3. The learned models only modestly beat a size prior: within-clip AUC 0.73-0.75 against 0.707 for \"taller box is the actor\". Some of the gain is \"the person closest to the camera\".\n\n4. The logistic regression is weak at low false-alarm rates (36% crop at 1 per minute). gru_seq is no better than the MLP on summary features and gives poor Avenue crops (8% alone).\n\n5. Smoking (about 1 fps) is out of reach: a 1 s window holds 1-2 frames, so there are no usable velocities.\n\n6. The tune normal set is small (8 videos, 5.1 min) and comes from the same Avenue camera as the Avenue test videos. The threshold was set on the same normal videos used to report false alarms (out-of-fold for the model weights, in-sample for the threshold).",
+        "risks": "- Camera shift: the normal false-alarm rate is set on the Avenue camera. On the 1080p littering camera the same threshold fires about 13 times per minute on bystanders (reach_down 16 per minute there). Real false alarms depend on per-camera calibration, which needs normal footage from each camera.\n- The model may partly learn camera or resolution cues (keypoint visibility, crop geometry) rather than the action. Absolute pixel size was removed, but the confound remains.\n- Positives are all windows of the actor, not just the moment of the throw, so the model also learns who tends to be the actor (posture, closeness).\n- Only one training seed and only the tune half; the held-out half has not been measured (it must be run once with STAGE1_HELDOUT).\n- Fragmented tracklets restart the per-track timer and raise calls per minute (about 420-490 on Avenue). CPU cost stays negligible at about 0.25 ms per call.\n- Other agents write to the same cache directory. My files are scores.pkl, model_{variant}.pkl, cv_report.json, calls.json, calls_summary.json, timing.json and diagnostics.json there, plus /Users/ianvarella/capstone_S25/notebooks/exp/actions/pose_seq_results.csv.\n- Reproduce with ../.venv/bin/python exp/actions/pose_seq.py build | eval | timing | diagnose, run from notebooks/."
+      },
+      {
+        "approach": "I wrote /Users/ianvarella/capstone_S25/notebooks/exp/actions/videomae.py, which uses MCG-NJU/videomae-base-finetuned-kinetics with no fine-tuning. People are tracked with the same TrackStitcher ids the rule engine uses: I replay RuleEngine with rules=() on the cached YOLO26s observations. Each tracked person is checked at most once per second. At 10-12.5 fps a check needs 0.5 s of track history; on the 1 fps smoking camera a person is checked right away. The tube is the person's last 1.6 s (4 s on the 1 fps camera), using only frames <= t. From it I sample 16 frames evenly, repeating frames when there are fewer than 16. Each frame is a square crop 1.3x the largest box side, centred on that frame's box, resized to 224, RGB with ImageNet normalisation. I checked a few tubes by eye and they look right. The cue is the softmax mass on a class group: smoke {smoking, smoking hookah}; throw {catching/throwing baseball/frisbee/softball, hammer, javelin, throwing axe/ball/discus, tossing coin}; litter = throw + kick + pick (+ garbage collecting). The method fires make_event(f\"action_{group}\", t, person box) with a 3 s cooldown per person. It never reads ground truth.\n\nEvery scheduled call is cached once: logits (float16) plus t, cid, box and frame count, in exp/actions/cache/videomae/<dataset>.pkl. I put these in a subfolder because the parallel xclip.py and pose_seq.py agents write into exp/actions/cache/. The offline build ran on MPS in fp16 (max softmax difference from fp32 is 0.001) and took about 31 minutes for 13,574 calls. Threshold sweeps read only the cache.\n\nThe scoring is in exp/actions/eval_videomae.py: `diag` gives per-person AUROC (ground truth used only for analysis) and `sweep` writes cache/videomae/results.csv. Random-control lift uses 10 seeds. CPU latency is in exp/actions/latency_videomae.py, which writes cache/videomae/cpu_latency.json. Everything used the tune half only; held-out was never loaded.",
+        "module_path": "/Users/ianvarella/capstone_S25/notebooks/exp/actions/videomae.py",
+        "summary": "VideoMAE/Kinetics gives a modest but real throwing cue on the littering clips and no smoking cue at all.\n\nPer-person AUROC (the ground-truth actor vs other people at the same calls):\n- Throw mass on littering: 0.635 overall. By action: throwing 0.79, tossing 0.64, dropping 0.59, dumping 0.60, putting-down 0.51.\n- Smoke mass on the smoking set: 0.486, which is chance. On the right person the smoking class mass has a median of 0.002, and the model's top-1 guesses on those people are \"water skiing\", \"abseiling\" and \"laying bricks\". At 1 fps most tubes are a single repeated still, and the cigarette is a few pixels.\n- Smoke mass on Avenue: 0.26, so it fires more on non-anomalous people.\n\nBest operating point: baseline + throw mass >= 0.10 as an add-on.\n- Littering crop recall goes from 55.7 to 79.6, and event recall from 77.0 to 91.3.\n- Lift over the random-person control goes from +10.9 to +17.2 (control standard deviation about 2.4).\n- Per action, crop recall changes: throwing 30 to 80, tossing 28 to 63, dropping 41 to 76. Dumping (100) and putting-down (78) are unchanged, because reach_down already catches them.\n- Avenue event recall goes from 68 to 76, but crop recall stays at 56. The two extra events are hit in time on the wrong person, so this is not real skill.\n- Smoking goes from 49.4/18.6 to 52.7/20.3. That is incidental firing, not smoking detection.\n- Normal false alarms go from 5.09 to 5.68 per minute.\n\nThe cue alone (throw >= 0.10) gives 0.59 FA/min with lift +11.6. It is complementary to reach_down, not a substitute.\n\nCost is the main problem: 577 ms per call on CPU, plus about 34 ms to build the tube. On busy footage (Avenue/normal) that is about 440-490 calls per minute, or roughly 4.5 CPU-minutes of compute per minute of video.",
+        "results": [
+          {
+            "variant": "baseline (YOLO26s, GateConfig())",
+            "mode": "add-on",
+            "littering_crop": 55.7,
+            "littering_event": 77,
+            "littering_lift": 10.9,
+            "avenue_event": 68,
+            "avenue_crop": 56,
+            "smoking_event": 49.4,
+            "smoking_crop": 18.6,
+            "normal_fa_per_min": 5.09,
+            "notes": "Reference row (no cue). Baseline minus reach_down: littering 7.0/1.3 (lift -1.3), avenue 68/52, smoking 10.7/4.2, FA 4.51."
+          },
+          {
+            "variant": "throw mass>=0.10",
+            "mode": "add-on",
+            "littering_crop": 79.6,
+            "littering_event": 91.3,
+            "littering_lift": 17.2,
+            "avenue_event": 76,
+            "avenue_crop": 56,
+            "smoking_event": 52.7,
+            "smoking_crop": 20.3,
+            "normal_fa_per_min": 5.68,
+            "cpu_ms_per_call": 577,
+            "notes": "RECOMMENDED operating point. Cue events: littering 201, avenue 15, smoking 74, normal 3. Per-action crop: throwing 30->80, tossing 28->63, dropping 41->76. The Avenue event gain is temporal only (wrong person). Calls/min: Avenue 439, normal 492, littering 194, smoking 71."
+          },
+          {
+            "variant": "throw mass>=0.10",
+            "mode": "alone",
+            "littering_crop": 42.6,
+            "littering_event": 58.3,
+            "littering_lift": 11.6,
+            "avenue_event": 20,
+            "avenue_crop": 4,
+            "smoking_event": 10.3,
+            "smoking_crop": 2.3,
+            "normal_fa_per_min": 0.59,
+            "cpu_ms_per_call": 577,
+            "notes": "Random control 31.0 +- 2.4."
+          },
+          {
+            "variant": "throw mass>=0.10",
+            "mode": "replace reach_down",
+            "littering_crop": 43,
+            "littering_event": 60,
+            "littering_lift": 11.5,
+            "avenue_event": 76,
+            "avenue_crop": 52,
+            "smoking_event": 19.1,
+            "smoking_crop": 6.3,
+            "normal_fa_per_min": 5.09,
+            "cpu_ms_per_call": 577,
+            "notes": "Same FA as baseline and similar lift, but loses 13 pts littering crop recall. Dumping falls to 17 and putting-down to 15. Smoking drops because reach_down was carrying smoking recall."
+          },
+          {
+            "variant": "throw mass>=0.20",
+            "mode": "add-on",
+            "littering_crop": 65.2,
+            "littering_event": 82.6,
+            "littering_lift": 14.3,
+            "avenue_event": 72,
+            "avenue_crop": 56,
+            "smoking_event": 49.9,
+            "smoking_crop": 18.6,
+            "normal_fa_per_min": 5.09,
+            "cpu_ms_per_call": 577,
+            "notes": "No extra false alarms at all (cue fires 0 times on normal). Alone: 17.4 crop, lift +5.9."
+          },
+          {
+            "variant": "throw mass>=0.20",
+            "mode": "replace reach_down",
+            "littering_crop": 18.7,
+            "littering_event": 32.2,
+            "littering_lift": 5.5,
+            "avenue_event": 72,
+            "avenue_crop": 52,
+            "smoking_event": 11.9,
+            "smoking_crop": 4.2,
+            "normal_fa_per_min": 4.51,
+            "cpu_ms_per_call": 577
+          },
+          {
+            "variant": "throw mass>=0.35",
+            "mode": "add-on",
+            "littering_crop": 60,
+            "littering_event": 79.1,
+            "littering_lift": 14,
+            "avenue_event": 68,
+            "avenue_crop": 56,
+            "smoking_event": 49.4,
+            "smoking_crop": 18.6,
+            "normal_fa_per_min": 5.09,
+            "cpu_ms_per_call": 577
+          },
+          {
+            "variant": "litter mass>=0.10 (throw+kick+pick)",
+            "mode": "add-on",
+            "littering_crop": 90.4,
+            "littering_event": 97,
+            "littering_lift": 17.8,
+            "avenue_event": 100,
+            "avenue_crop": 72,
+            "smoking_event": 61.5,
+            "smoking_crop": 26.1,
+            "normal_fa_per_min": 22.73,
+            "cpu_ms_per_call": 577,
+            "notes": "Higher recall everywhere but FA 4.5x baseline. Alone it fires 90 times on normal (17.6/min), and its smoking/Avenue gains are mostly coverage from firing on many people."
+          },
+          {
+            "variant": "litter mass>=0.10",
+            "mode": "replace reach_down",
+            "littering_crop": 68.3,
+            "littering_event": 84.3,
+            "littering_lift": 18.7,
+            "avenue_event": 100,
+            "avenue_crop": 72,
+            "smoking_event": 40.1,
+            "smoking_crop": 14.5,
+            "normal_fa_per_min": 22.14,
+            "cpu_ms_per_call": 577
+          },
+          {
+            "variant": "litter mass>=0.20",
+            "mode": "add-on",
+            "littering_crop": 71.7,
+            "littering_event": 89.6,
+            "littering_lift": 14.1,
+            "avenue_event": 76,
+            "avenue_crop": 60,
+            "smoking_event": 51.5,
+            "smoking_crop": 19.8,
+            "normal_fa_per_min": 8.23,
+            "cpu_ms_per_call": 577,
+            "notes": "Strictly worse than throw>=0.10 add-on (lower recall, more FA)."
+          },
+          {
+            "variant": "litter mass>=0.20",
+            "mode": "replace reach_down",
+            "littering_crop": 31.3,
+            "littering_event": 50,
+            "littering_lift": 7.4,
+            "avenue_event": 76,
+            "avenue_crop": 56,
+            "smoking_event": 19.3,
+            "smoking_crop": 6.1,
+            "normal_fa_per_min": 7.64,
+            "cpu_ms_per_call": 577
+          },
+          {
+            "variant": "litter mass>=0.05",
+            "mode": "add-on",
+            "littering_crop": 97.4,
+            "littering_event": 100,
+            "littering_lift": 14.3,
+            "avenue_event": 100,
+            "avenue_crop": 88,
+            "smoking_event": 82.5,
+            "smoking_crop": 40.8,
+            "normal_fa_per_min": 68.97,
+            "cpu_ms_per_call": 577,
+            "notes": "Fires on almost everyone. Video skipped falls to about 0%, so this is not usable."
+          },
+          {
+            "variant": "smoke mass>=0.05",
+            "mode": "add-on",
+            "littering_crop": 56.1,
+            "littering_event": 78.3,
+            "littering_lift": 11.5,
+            "avenue_event": 76,
+            "avenue_crop": 60,
+            "smoking_event": 49.4,
+            "smoking_crop": 18.6,
+            "normal_fa_per_min": 11.17,
+            "cpu_ms_per_call": 577,
+            "notes": "FAILED. Fires 0 times on the smoking set and 31 times on normal video (FA more than doubles)."
+          },
+          {
+            "variant": "smoke mass>=0.02",
+            "mode": "add-on",
+            "littering_crop": 56.1,
+            "littering_event": 80,
+            "littering_lift": 10.1,
+            "avenue_event": 96,
+            "avenue_crop": 64,
+            "smoking_event": 49.4,
+            "smoking_crop": 18.6,
+            "normal_fa_per_min": 58.97,
+            "cpu_ms_per_call": 577,
+            "notes": "FAILED. Still 0 smoking-set firings, 275 normal firings."
+          },
+          {
+            "variant": "smoke mass>=0.10",
+            "mode": "add-on",
+            "littering_crop": 55.7,
+            "littering_event": 77.4,
+            "littering_lift": 10.4,
+            "avenue_event": 68,
+            "avenue_crop": 56,
+            "smoking_event": 49.4,
+            "smoking_crop": 18.6,
+            "normal_fa_per_min": 5.09,
+            "cpu_ms_per_call": 577,
+            "notes": "Effectively never fires."
+          }
+        ],
+        "baseline_reference": "All runs use the same code: tune half, YOLO26s caches, partial(exp_harness.baseline, cfg=GateConfig()), exp_harness.score, and random_control.lift with 10 seeds.\n- Baseline: littering event 77.0 / crop 55.7, random control 44.8 +- 2.7, lift +10.9. Avenue 68.0/56.0 (51.6% of video skipped). Smoking 49.4/18.6. Normal false alarms 5.09 per minute.\n- Baseline minus reach_down: littering 7.0/1.3 (lift -1.3), Avenue 68/52, smoking 10.7/4.2, FA 4.51.\n- Baseline per-action crop recall: dropping 41.3, dumping 100, putting-down 78.3, throwing 30.4, tossing 28.3.\n- VideoMAE call volume (tune half): littering 2,226 calls (194 per min), Avenue 2,317 (439 per min), normal 2,513 (492 per min), smoking 6,518 (71 per min).\n- CPU latency: 577 ms median, 645 ms p90 per call (batch 1, 16x224x224, 5 torch threads, measured while other jobs were running), plus 34 ms to build the tube from 1080p frames. MPS fp16 offline: about 105 ms per call.",
+        "recommended": "As an experiment, use only the throw group (throw mass >= 0.10) as an ADD-ON next to reach_down, not as a replacement. On the tune half that gives:\n- Littering crop recall 55.7 -> 79.6, and lift over random +10.9 -> +17.2.\n- Throwing, tossing and dropping all improve sharply.\n- About +0.6 false alarms per minute on normal video.\n- throw >= 0.20 is a zero-extra-false-alarm alternative: crop 65.2, lift +14.3.\n\nDo not use the smoke group, and do not use the broad litter group at 0.05-0.10.\n\nBefore integrating:\n- Measure once on the held-out half.\n- Fix the cost. At about 470 calls per minute times 0.58 s on busy footage, it does not run in real time on CPU. It needs a cheap pre-gate, such as only checking people whose wrist or arm speed is high or who are not already flagged, or a cap on concurrent people. Without a gate it should stay an offline or second-stage check on a few people.",
+        "what_failed": "- **Smoking: complete failure.** Per-person AUROC is 0.486 on the smoking set. The smoking classes get median mass 0.002 on the right person and never cross 0.05 there. The model's top-1 guesses on smokers are water skiing, abseiling and laying bricks. Causes: at 1 fps with fragmented tracks most tubes are one still frame repeated 16 times, and the cigarette is tiny at 640x480 CCTV. Meanwhile the smoke cue fires on ordinary Avenue/normal people: AUROC 0.26 on Avenue, and FA rises from 5.1 to 11.2 per minute at threshold 0.05. Every smoking-set gain in the tables comes from throw/litter firing on random people, not from smoking detection.\n- **As a reach_down replacement it loses recall.** Littering crop falls to 43 (vs 55.7) because dumping and putting-down collapse to 15-17. Kinetics has nothing like \"set an object down\"; per-action AUROC for putting-down is 0.51.\n- **Broad class groups (litter mass) are not a skill signal.** At 0.05-0.10 they raise recall mostly by firing on many people (17-64 FA per minute when used alone).\n- **Avenue gain is not real.** Avenue event recall rises 68 -> 76 with throw >= 0.10, but the crop recall does not change: the 2 newly covered events are hit in time on the wrong person.\n- **Pick and kick classes carry nearly no information** (pick AUROC 0.51 on littering).\n- **Not tested:** a cross-validated linear probe on the 400 logits; a cheaper motion-gated schedule; a smaller or distilled model.",
+        "risks": "- **Domain dependence.** The throw cue fires far more on the close, high-resolution littering clips (201 events in 11.5 minutes) than on Avenue (15 in 5.3 minutes) or normal video (3 in 5.1 minutes). The low false-alarm rate may partly reflect small, distant people in Avenue rather than specificity, so a closer camera could produce many more false alarms.\n- **Thresholds were chosen on the tune half** (0.10/0.20 from a sweep of 4 values). Held-out has not been run.\n- **Possible motion confound.** The throw signal may partly be \"this person is moving their arms\". A simple wrist-speed cue was not compared, so the gain may not need a 86M-parameter model.\n- **Small, all-positive clips.** The littering clips are 3 s and all-positive. The +6.3 lift gain over baseline is about 2.5 standard deviations of the random control, and it comes from 230 clips.\n- **Compute.** 577 ms per call on CPU at about 470 calls per minute is roughly 4.5x real time on 5 threads. MPS fp16 was used only offline.\n- **Shared cache folder.** The parallel xclip.py and pose_seq.py agents write into exp/actions/cache/ and also wrote into my build.log. My caches are in exp/actions/cache/videomae/, which the module now points to.\n- **No other files modified.** I created only videomae.py, eval_videomae.py and latency_videomae.py under exp/actions/."
+      }
+    ]
+  },
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Label review"
+    },
+    {
+      "type": "workflow_phase",
+      "index": 2,
+      "title": "Action experiments"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "labels 1/6 reviewer 1",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "ae25889802ba09577",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793090106851,
+      "lastProgressAt": 1793090106851,
+      "cached": true,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_01_e1\",\"what_happens\":\"A heavily motion-blurred person crosses from the stairs on the left toward the centre in about 1.6 s, covering much more ground than nearby walkers.\",\"tag\":\"in\",\"rule\":\"in-1 running\",\"confidence\":\"medium\"},{\"event_id\":\"test_01_e2\",\"what_happens\":\"A motion-blurred person comes down from the stairs and moves quickly past the walkers around them, co…",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "labels 1/6 reviewer 2",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "ad7120f11eaa9a07e",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793090106851,
+      "lastProgressAt": 1793090106851,
+      "cached": true,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_01_e1\",\"what_happens\":\"A heavily motion-blurred dark figure comes off the stairs on the left and crosses quickly toward the centre of the hall, while nearby people are shown sharp.\",\"tag\":\"in\",\"rule\":\"in-1 running\",\"confidence\":\"medium\"},{\"event_id\":\"test_01_e2\",\"what_happens\":\"A motion-blurred person comes down the stairs on the left and moves quickly right, passing o…",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 3,
+      "label": "labels 2/6 reviewer 1",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "a76591d3c44610991",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793090106851,
+      "lastProgressAt": 1793090106851,
+      "cached": true,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_07_e2\",\"what_happens\":\"A small person in a light blue jacket crosses the plaza from right to left with a blurred, wide-stride running posture, covering much more ground per frame than the walkers nearby.\",\"tag\":\"in\",\"rule\":\"in-1 running\",\"confidence\":\"high\"},{\"event_id\":\"test_07_e3\",\"what_happens\":\"A person in a light blue jacket moves quickly from left to right across…",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 4,
+      "label": "labels 2/6 reviewer 2",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "a61f772729d6b213b",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793090106851,
+      "lastProgressAt": 1793090106851,
+      "cached": true,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_07_e2\",\"what_happens\":\"A child in a light blue jacket runs quickly across the plaza from right to left, blurred by motion with a running stride, while the other people stand or walk.\",\"tag\":\"in\",\"rule\":\"in-1 running\",\"confidence\":\"high\"},{\"event_id\":\"test_07_e3\",\"what_happens\":\"The same child in the light blue jacket crosses back from left to right in about 1.7 s with …",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 5,
+      "label": "labels 3/6 reviewer 1",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "a01540761b3312fa0",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793090106851,
+      "lastProgressAt": 1793090106851,
+      "cached": true,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_11_e1\",\"what_happens\":\"A man in blue trousers picks his bag up off the ground and throws it high into the air (the bag is airborne at 4.7s), then bends to pick it up again; the box also briefly follows a woman in a pink coat walking past quickly.\",\"tag\":\"in\",\"rule\":\"in-2 throwing\",\"confidence\":\"high\"},{\"event_id\":\"test_11_e2\",\"what_happens\":\"A woman holding a coat and …",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 6,
+      "label": "labels 3/6 reviewer 2",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "a63ed8e31eb39c206",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793090106852,
+      "lastProgressAt": 1793090106852,
+      "cached": true,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_11_e1\",\"what_happens\":\"A man in blue trousers picks up a bag from the ground and throws it into the air (the box follows the bag in flight at 2.0-4.7s), then picks it up again.\",\"tag\":\"in\",\"rule\":\"in-2 throwing\",\"confidence\":\"high\"},{\"event_id\":\"test_11_e2\",\"what_happens\":\"A woman holding papers, a coat and a bag walks toward the camera and leaves the frame on the righ…",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 7,
+      "label": "labels 4/6 reviewer 1",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "a023e5e87015163fa",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793090106852,
+      "lastProgressAt": 1793090106852,
+      "cached": true,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_21_e1\",\"what_happens\":\"A child in a light-blue jacket runs from right to left across the plaza, with long strides and motion blur in every frame.\",\"tag\":\"in\",\"rule\":\"in-1 running\",\"confidence\":\"high\"},{\"event_id\":\"test_02_e1\",\"what_happens\":\"A person in blue trousers runs quickly from right to left across the plaza, much faster than the walkers around them and blurred …",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 8,
+      "label": "labels 4/6 reviewer 2",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "afa77b8f8896f0653",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793090106852,
+      "lastProgressAt": 1793090106852,
+      "cached": true,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_21_e1\",\"what_happens\":\"A person in a light blue jacket runs from the right side across the plaza to the left, much faster than the people walking around him.\",\"tag\":\"in\",\"rule\":\"in-1 running\",\"confidence\":\"high\"},{\"event_id\":\"test_02_e1\",\"what_happens\":\"A person in a grey top and blue trousers runs from right to left across the back of the plaza, past the walking crowd…",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 9,
+      "label": "labels 5/6 reviewer 1",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "adf5c3607e418dd25",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793090106852,
+      "lastProgressAt": 1793090106852,
+      "cached": true,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_08_e1\",\"what_happens\":\"A girl in a light blue jacket crosses the plaza with long, blurred strides, moving clearly faster than the people walking nearby.\",\"tag\":\"in\",\"rule\":\"in-1 running\",\"confidence\":\"high\"},{\"event_id\":\"test_10_e1\",\"what_happens\":\"A man in light blue trousers throws his black bag high into the air, and it falls back down onto the pavement.\",\"tag\":\"in\"…",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 10,
+      "label": "labels 5/6 reviewer 2",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "a77258c0179389e15",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793090106852,
+      "lastProgressAt": 1793090106852,
+      "cached": true,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_08_e1\",\"what_happens\":\"A girl in a light blue jacket runs across the plaza from left to right with a long, blurred stride, clearly faster than the people walking nearby.\",\"tag\":\"in\",\"rule\":\"in-1 running\",\"confidence\":\"high\"},{\"event_id\":\"test_10_e1\",\"what_happens\":\"A man in light blue trousers throws a dark bag high into the air, and it falls back onto the pavement.\",\"…",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 11,
+      "label": "labels 6/6 reviewer 1",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "ad5f971f64789da59",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793090106852,
+      "lastProgressAt": 1793090106852,
+      "cached": true,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_14_e1\",\"what_happens\":\"A man walking by tosses a stack of papers up into the air, and they scatter and fall to the ground beside him.\",\"tag\":\"in\",\"rule\":\"in-2 throwing (also in-3 dropping/littering)\",\"confidence\":\"high\"},{\"event_id\":\"test_14_e2\",\"what_happens\":\"The same man crouches and bends down to pick up the scattered papers from the ground.\",\"tag\":\"unsure\",\"rule\":…",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 12,
+      "label": "labels 6/6 reviewer 2",
+      "phaseIndex": 1,
+      "phaseTitle": "Label review",
+      "agentId": "aa76980da2ce4938d",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793090106852,
+      "lastProgressAt": 1793090106852,
+      "cached": true,
+      "resultPreview": "{\"events\":[{\"event_id\":\"test_14_e1\",\"what_happens\":\"The man in blue trousers throws a stack of papers up into the air and the sheets scatter and fall onto the pavement.\",\"tag\":\"in\",\"rule\":\"in-2 throwing\",\"confidence\":\"high\"},{\"event_id\":\"test_14_e2\",\"what_happens\":\"The same man bends down and crouches to pick up the papers lying on the ground where they fell.\",\"tag\":\"unsure\",\"rule\":\"unsure odd but…",
+      "promptPreview": "You are re-checking anomaly labels from the CUHK Avenue dataset for a student project. First read the rules in\n/Users/ianvarella/capstone_S25/notebooks/exp/gt_review/SCOPE_RULES.md. Then, for each event below, open its sheet with the Read tool. A sheet is a 2x3 grid:\nthe first tile (marked \"before\") is about 1 s before the labelled event; the other tiles span the event. The labelled\nanomaly region…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 13,
+      "label": "action:xclip",
+      "phaseIndex": 2,
+      "phaseTitle": "Action experiments",
+      "agentId": "a24eedc2ddde970be",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793090106879,
+      "queuedAt": 1793090106853,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "Started from scratch (exp/actions/ only had an empty cache …",
+      "promptPreview": "You are adding an ACTION-MODEL cue to Stage 1 of a YOLO->VLM surveillance pipeline (student capstone). Stage 1 is a\ncheap filter: YOLO26s detection + tracking + YOLO26s-pose per frame, then rules decide which moments (\"candidates\") to\nsend to a VLM. Recall matters most, then false alarms. Read first: /Users/ianvarella/capstone_S25/notebooks/stage1_gate.py, /Users/ianvarella/capstone_S25/notebooks/…",
+      "promptFramed": true,
+      "lastProgressAt": 1793091444607,
+      "tokens": 89646,
+      "toolCalls": 37,
+      "durationMs": 1337726,
+      "resultPreview": "{\"approach\":\"Started from scratch (exp/actions/ only had an empty cache dir). Module /Users/ianvarella/capstone_S25/notebooks/exp/actions/xclip.py builds a schedule that only looks backward in time: a call happens for a tracked person (tracker raw_id) once it has >=3 observations, then at most once per second. Each call builds an 8-frame tube from that person's last 1.5 s of observations (on low-f…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 14,
+      "label": "action:pose_seq",
+      "phaseIndex": 2,
+      "phaseTitle": "Action experiments",
+      "agentId": "aa9898587a4b46072",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793090106880,
+      "queuedAt": 1793090106853,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "I built a skeleton-sequence classifier on the YOLO26s-pose …",
+      "promptPreview": "You are adding an ACTION-MODEL cue to Stage 1 of a YOLO->VLM surveillance pipeline (student capstone). Stage 1 is a\ncheap filter: YOLO26s detection + tracking + YOLO26s-pose per frame, then rules decide which moments (\"candidates\") to\nsend to a VLM. Recall matters most, then false alarms. Read first: /Users/ianvarella/capstone_S25/notebooks/stage1_gate.py, /Users/ianvarella/capstone_S25/notebooks/…",
+      "promptFramed": true,
+      "lastProgressAt": 1793090877171,
+      "tokens": 109403,
+      "toolCalls": 29,
+      "durationMs": 768416,
+      "resultPreview": "{\"approach\":\"I built a skeleton-sequence classifier on the YOLO26s-pose keypoints Stage 1 already caches, so YOLO is not re-run. Each tracked person (tracker raw_id) is checked at most once per second, starting after 0.8 s of track history. A check takes the last 1.0 s of that track only (causal) and resamples it to K=8 steps, using the latest observation at or before each step. Keypoints are take…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 15,
+      "label": "action:videomae",
+      "phaseIndex": 2,
+      "phaseTitle": "Action experiments",
+      "agentId": "a2a0258dc0844f0fd",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1793090106880,
+      "queuedAt": 1793090106853,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "I wrote /Users/ianvarella/capstone_S25/notebooks/exp/action…",
+      "promptPreview": "You are adding an ACTION-MODEL cue to Stage 1 of a YOLO->VLM surveillance pipeline (student capstone). Stage 1 is a\ncheap filter: YOLO26s detection + tracking + YOLO26s-pose per frame, then rules decide which moments (\"candidates\") to\nsend to a VLM. Recall matters most, then false alarms. Read first: /Users/ianvarella/capstone_S25/notebooks/stage1_gate.py, /Users/ianvarella/capstone_S25/notebooks/…",
+      "promptFramed": true,
+      "lastProgressAt": 1793092718109,
+      "tokens": 99806,
+      "toolCalls": 53,
+      "durationMs": 2609332,
+      "resultPreview": "{\"approach\":\"I wrote /Users/ianvarella/capstone_S25/notebooks/exp/actions/videomae.py, which uses MCG-NJU/videomae-base-finetuned-kinetics with no fine-tuning. People are tracked with the same TrackStitcher ids the rule engine uses: I replay RuleEngine with rules=() on the cached YOLO26s observations. Each tracked person is checked at most once per second. At 10-12.5 fps a check needs 0.5 s of tra…"
+    }
+  ],
+  "totalTokens": 298855,
+  "totalToolCalls": 119
+}

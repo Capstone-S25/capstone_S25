@@ -1,0 +1,64 @@
+{
+ "rules": {
+  "positives": 50,
+  "negatives": 50,
+  "hit@5s_%": 36.0,
+  "chance@5s_%": 28.9,
+  "hit@10s_%": 52.0,
+  "chance@10s_%": 37.8,
+  "hit@end_%": 54.0,
+  "chance@end_%": 43.7,
+  "neg_any_%": 70.0,
+  "neg_cand_per_min": 15.33,
+  "hit@10s_by": {
+   "day": "22/45 (48.9%)",
+   "dynamic": "11/25 (44.0%)",
+   "night": "4/5 (80.0%)",
+   "static": "15/25 (60.0%)"
+  },
+  "rules_in_10s_window_%": {
+   "reach_down": 38.0,
+   "fast_motion": 18.0,
+   "unattended_object": 4.0
+  },
+  "rules_on_negatives_%": {
+   "fast_motion": 48.0,
+   "reach_down": 48.0,
+   "sustained_presence": 14.0,
+   "unattended_object": 10.0,
+   "object_appeared": 6.0
+  }
+ },
+ "rules+pose": {
+  "positives": 50,
+  "negatives": 50,
+  "hit@5s_%": 40.0,
+  "chance@5s_%": 33.3,
+  "hit@10s_%": 56.0,
+  "chance@10s_%": 42.1,
+  "hit@end_%": 58.0,
+  "chance@end_%": 48.4,
+  "neg_any_%": 76.0,
+  "neg_cand_per_min": 16.98,
+  "hit@10s_by": {
+   "day": "24/45 (53.3%)",
+   "dynamic": "12/25 (48.0%)",
+   "night": "4/5 (80.0%)",
+   "static": "16/25 (64.0%)"
+  },
+  "rules_in_10s_window_%": {
+   "reach_down": 38.0,
+   "fast_motion": 18.0,
+   "pose_action": 6.0,
+   "unattended_object": 4.0
+  },
+  "rules_on_negatives_%": {
+   "fast_motion": 48.0,
+   "reach_down": 48.0,
+   "pose_action": 32.0,
+   "sustained_presence": 14.0,
+   "unattended_object": 10.0,
+   "object_appeared": 6.0
+  }
+ }
+}

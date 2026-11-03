@@ -102,6 +102,133 @@ update `tools/report_text.json`, build and execute the report.
 * m finished. Held-out results: littering 71/57 (lift +20.6), loitering 80/60, smoking 43/14, FA 6.5, but only 4-5 fps on CPU.
   Kept **s**. `exp/model_comparison.csv` has n/s/m. Report rebuilt and executed. 22 tests pass.
 
+## 2026-10-27: action models + label re-scoping (in progress, branch feat/yolo-stage1)
+Requests: (1) continue experimenting, mainly action detection models (the professor suggested them; DeepStream needs NVIDIA,
+so it's out for CPU); (2) the user disagrees with some Avenue GT events (e.g. a man with a bag walking into frame).
+Plan: write the scope rules first (`exp/gt_review/SCOPE_RULES.md`); render every Avenue test GT event as a sheet
+(`exp/gt_review/`); have agents describe and tag each event in/out of scope blind to Stage 1 results; then the user/group
+confirms. Report recall on all labels and on in-scope labels.
+Action experiments (`exp/actions/`): X-CLIP zero-shot on person tubes, a skeleton-sequence classifier on the pose we
+already have, and VideoMAE/Kinetics; judged by crop recall vs the random control, FA on normal video and CPU latency.
+
+* Label review done (`exp/gt_review/events.csv`, raw `review_raw.json`): 45 events → 29 agreed in, 8 agreed out (all
+  "walking normally toward or close to camera", incl. the backpack man), 4 unsure, 4 disagree. The `group_decision`
+  column is empty for the group to fill in. `exp/gt_review/scoped.py` filters GT; `scoped_recall.csv`:
+  held-out (s model) all labels 80/60, lenient 78/67, strict 80/67; tune strict 93/86.
+* Action experiments: the first run died when the internet dropped; resumed the workflow (run wf_f393197a-a97).
+
+* Action experiments done (`exp/actions/action_results.json`; modules xclip.py, pose_seq.py, videomae.py; the cache is
+  gitignored). Tune half, s model, baseline lit 55.7 crop (lift +10.9), FA 5.09:
+  - pose_seq mlp_sum@FA1.0 as an add-on: lit 97/87, avenue 84/64, smoking 56.6/22.6, FA 6.07; fair lift alone +19.0 vs
+    reach_down +9.9; 0.24 ms/call. Caveats: partly a size prior (within-clip AUC 0.747 vs taller-box 0.707), and the
+    threshold is camera-specific (13 bystander candidates/min on the littering camera vs reach_down 16).
+  - videomae throw>=0.10 add-on: lit crop 79.6, lift +17.2, FA 5.68, but 577 ms/call (not real-time). Smoking fails (AUROC 0.49).
+  - xclip litter_negs m=0.2: alone lift +16.7, add-on FA 10 (2x); 233 ms/call (about 2 cores). Avenue gains are a rate effect.
+  - The stock random control can be gamed by firing on everyone (it samples with replacement); the stricter control is
+    in pose_seq.diagnose().
+  NEXT: adversarial review of pose_seq, then held-out once, then integrate as an optional rule.
+
+* pose_seq review (`exp/actions/pose_seq_review.json`, both reviewers "ok with caveats"): the single-seed 87% was lucky
+  (79.6–87.0 across seeds); held-out littering clips share source videos with tune clips; the features identify the
+  camera, so the threshold must be calibrated per camera.
+* Frozen and measured once on held-out (2026-10-27, `exp/actions/pose_seq_final.py freeze|heldout|export`): a 5-seed
+  MLP ensemble, with one threshold (0.833) set on the averaged out-of-fold tune normal scores for 1 false alarm/min.
+  - Held-out, current rules → rules + pose cue: littering event 72→97, crop 56→86; loitering 80/60→80/65 (strict labels
+    80/66.7, unchanged); smoking 36.8/12.6→43.7/15.7; normal false alarms 5.87→6.45/min.
+  - The cue alone beats "tallest person at the same moments" by +20 crop points (64 vs 44) on held-out. Per action
+    (rules→with cue): dropping 35→80, throwing 30→80, tossing 35→80, putting-down 85→90, dumping 95→100.
+  - Results in `exp/actions/pose_seq_final_{tune,held-out}.json`.
+* Integrated as the optional rule `"pose_action"` (not in DEFAULT_RULES): `stage1_pose_action.py` holds the window
+  features and a numpy ensemble (weights `notebooks/weights/pose_action_mlp.npz`, 144 KB, no torch at run time);
+  `GateConfig.pose_action_thr/pose_action_cooldown_s`. Replaying held-out through the gate reproduces the numbers
+  exactly; it adds ~0.14 ms/frame. `pose_seq.py` now imports the features from the shared module. 24 tests pass.
+  Use `GateConfig(rules=DEFAULT_RULES + ("pose_action",))`. Note that tune numbers with the final model are in-sample.
+
+## 2026-10-27/28: what limits recall, and unseen cameras (user: "happy for you to try these out")
+* Miss analysis, tune half (`exp/misses/miss_analysis.py` → `misses_tune.csv`): YOLO missed the person in ~1/684 events on
+  the original datasets. Littering misses are mostly wrong-person crops (32/39; the actor's pose score never clears the
+  threshold, a bystander's does). Loitering misses: 9/10 are events the label review tagged out/unsure/disputed.
+  Smoking is limited by the data (~1 fps, median 15.6 s sequences; smoker visible >=20 s in a small minority of episodes).
+* Rejected on tune: wider "context" crops (gain is just the bigger box; control gains more), shorter dwell on the Avenue
+  camera (10 s: smoking episode recall 37→41%, Avenue normal FA 5→16/min). Dwell must be per camera
+  (`exp/misses/sweep_*.csv`). Planned held-out check: loiter_s 8 on the smoking camera only.
+* Unseen cameras (`exp/newcam/`; caches `bench_cache/models/s/{caviar,aboda,meva}*.pkl`):
+  - MEVA (11 clips, 55 min, annotations downloaded to `data/meva_annotations` from gitlab.kitware.com): right person for
+    only ~21–23% of 52 put-downs; pose_action catches 1/52 (does not generalise). Labels are aligned; YOLO at 640
+    misses dense/seated/small people (0/22 actors <100 px). Raw YOLO on a crowd frame: 0 persons >=0.4 at 640, 44 >=0.1 at 1280.
+  - CAVIAR (384x288): YOLO never sees the 4 left bags (9–22 px), at 640 or 1280; 1280 even finds fewer people on this
+    low-res video. Old background rule fires 0 times (still-timer resets on noisy video). New persistence rule
+    `static_v2` (hold 8 s, >=60% of frames, novelty>=30, burst guard <=4 spots/2 s) gets 3/4 CAVIAR bags (in-sample, n=4)
+    at ~1/min on CAVIAR normal and 0/min on Avenue normal.
+  - ABODA: labelled by 2 agent labellers + reconciler (`aboda_labels.json`, 11 events + 1 ambiguous in video11).
+    YOLO bag rules: right crop in 4/11; YOLO sees the bag at all in 4/10 videos. static_v2 + burst guard: ~0.4/min,
+    catches 1. ABODA is now development data for static_v2 (its failures were used to design the burst guard).
+  - Running: MEVA perception variants (conf25, img1280) and COCO-vs-YOLOE (open-vocabulary) bag detection on ABODA
+    (`object_detectors.py`). Ultralytics auto-installed `clip` and `ftfy` into .venv for YOLOE.
+  - Adversarial review of these findings: workflow wf_b583d2b1-846 (results summarised below).
+
+### Corrections after the review + chance baselines (2026-10-28)
+* `exp/chance.py` → `exp/chance_results.json`: every dataset scored against a rate-matched baseline (same number of
+  candidates, random tracked person at the same moments / uniform times), with the lenient box_hit and a strict test
+  (>=50% GT covered, crop <= 16x GT area). Held-out/unseen, strict, rules+pose vs same-times chance:
+  littering 86 vs ~60 (+26), loitering 50 vs ~21 (+29), ABODA bags 45 vs 9 (+36), MEVA put-down 19 vs ~13 (+6),
+  **smoking 22 vs 23 (no better than chance)**, CAVIAR tiny bags 0 vs 0.
+* MEVA "event %" (~80%) is pure chance at ~19 candidates/min — never quote it. pose_action on MEVA = chance, and its
+  candidates take dedup slots from reach_down (23→21% crop).
+* static_v2 (background persistence) was inflated by the lenient crop test (huge padded crops): tight crop on only 1/4
+  CAVIAR bags, and no genuine ABODA catch. Background subtraction still does not deliver.
+* Smoking: the real limit is track fragmentation at the dataset's irregular ~1 fps (gaps > stitch window); deep_dive's
+  "testable" used raw ids (19) vs stitched (38). Longer stitch windows / shorter dwell (`exp/fixes.py stitch`) give at
+  most +1–2 points over chance on tune; held-out dwell rule 7% vs 6% chance. Conclusion: this dataset cannot test a
+  dwell-based smoking rule.
+* `dedup_per_rule` (new GateConfig flag, default False): more candidates, no recall gain, less above chance → keep off.
+* YOLOE-26s (open-vocabulary, prompted "bag, backpack, box, …") once per second for objects (`exp/newcam/yoloe_items.py`):
+  ABODA right crop 4→5/11, bag alarms 0.48→0.67/min, Avenue normal bag alarms 0.59→0. Once YOLOE sees a bag the rules
+  catch it 5/5; the 6 misses are small dark bags no detector found (even at 1280). MEVA perception variants
+  (`meva__{conf25,img1280,img1280_conf25}.pkl`): imgsz 1280 raises tracked persons/frame 4.4→5.9 and put-down strict
+  crop recall with pose_action 19→31% (chance ~13–18%, n=52, ±2 pts per event); pick-ups stay at chance; person_conf
+  0.25 alone does nothing. 1280 costs ~3x CPU, so only worth it per camera (wide 1080p views with small people).
+  Note: chance.py seeding was non-deterministic (python string hash salt) until fixed with crc32. Detector test
+  (`object_detectors_aboda.json`): bag found in 50% of frames (YOLOE@640) vs 18% (COCO@640), ~2x CPU.
+
+## 2026-11-03: IWDD (MIVIA illegal waste dumping) as a new littering test (user: "do your thing")
+* Data: all of MIVIA-IWDD-500 now in `data/training_sources_20261015/mivia_iwdd` (train 400 = 200 dumping / 200
+  normal, test 100 = 50/50; user downloaded the train split by hand, every file matched its pinned SHA-256, plus
+  vid0325/vid0346 that the original acquisition lacked). Labels are weak: one onset second per positive, static/dynamic,
+  day/night, no boxes. Mixed cameras 240p–4K, much of it news/municipal footage with pixelated people.
+* Code (`exp/newcam/`): `loaders.iwdd_labels/iwdd_sequences` (~10 fps like the littering clips), `run_perception.py
+  iwdd_test iwdd_train`, `iwdd_eval.py` (hit = candidate in [onset-1, onset+10 s]; chance = same number of candidates at
+  uniform random times), `iwdd_diag.py`. Tuning/diagnosis on train only; test scored once with the UNTUNED gate.
+* **Held-out test (untuned current gate):** rules+pose 28/50 = 56% (95% CI 42–70) vs chance 42%; rules 52 vs 37.
+  Train is harder: 37 vs 32. Box on the dumper/dumped waste in ~26/28 test hit videos (visual check), but almost all
+  scenes contain one person, so crop correctness is nearly free here. Normal IWDD videos: 70–76% get >=1 candidate
+  (~15–17/min) — these are hard negatives (crowds, a fall, someone carrying a box, the same dump-site cameras).
+* Why misses (train): 68/200 no tracked person near the onset (pixelated, behind/inside a car; 1280 input + conf 0.1
+  recovers few: 9→13 of 70 at >=0.4), 58/200 person tracked but no rule fires (frame-edge people skipped by reach_down,
+  unloading a boot at hip height, throwing), 51/200 clips end <3 s after the onset. Test is easier (8/50 no person,
+  6/50 short).
+* Rejected on train (none run on test):
+  - pose_action retrained with IWDD weak labels (`iwdd_pose.py`, "all" and one MIL round, same 1/min Avenue budget):
+    hit 38→52% but chance 33→48%, lead +4.8→+3.8; window AUC 0.71 but within-video 0.57–0.59, video-level 0.54;
+    littering tune event 97→93–94%.
+  - YOLOE waste objects once a second (`iwdd_objects.py eval`, 17 prompts): object rules alone 8.0% vs chance 8.1%
+    (dump sites are already full of bags).
+  - Background-subtraction static_v2 (`iwdd_objects.py bg`): alone below chance, normal-video candidates 14→35/min
+    (handheld/edited footage); with burst guard almost silent.
+  - "Person at a stopped vehicle" cue (`iwdd_vehicle.py`, COCO vehicles once a second): alone = chance at every dwell /
+    margin (people next to parked cars are just as common in normal videos).
+  - reach_down sweep (`iwdd_tune.py` → `iwdd_tune_train.csv`): looser hand-height margins raise Avenue normal FA from
+    5 to 100–128/min with no lead over chance; reach_skip_border=False / kp_conf 0.3 add ~1 point (2 videos), noise.
+* Simple timers for comparison (whole frame; same 11 s hit window): a frame every 10 s → 65/68% (train/test) at
+  7.2/min; a frame every 10 s **only while someone is tracked** → 46/62% at 5–6/min on IWDD normals and 7/min on
+  Avenue normal (gate: 37/56% at 15–17/min on IWDD normals, ~5–6/min Avenue); every 5 s while tracked → 70/78% at
+  9–11/min (Avenue 12.5/min). Caveats: whole frames (the VLM must find a small dumper), and IWDD clips are short and
+  activity-dense; on an empty dump site a presence timer sends nothing.
+* Conclusion: the current gate beats chance on IWDD held-out, modestly. The remaining misses are mostly invisible
+  dumpers and short clips — not something rules or the pose cue can fix. Recommendation (team decision, VLM budget):
+  an opt-in "presence heartbeat" (a frame every ~10 s while people are in view) as a recall floor on dump-site
+  cameras. No GateConfig default changed.
+
 ## New requests (2026-10-21, after the session-limit break)
 1. Finish the recall work: re-run the adversarial review (`wf_0880d8a2-aa0` died at the session limit before running),
    then the held-out measurement, then integration.

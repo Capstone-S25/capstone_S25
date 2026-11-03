@@ -1,0 +1,46 @@
+{
+ "aboda/coco_every_frame": {
+  "bag_alarms_per_min": 0.48,
+  "bag_rules (event%, crop%, n)": [
+   45.5,
+   36.4,
+   11
+  ]
+ },
+ "aboda/yoloe_1fps": {
+  "bag_alarms_per_min": 0.67,
+  "bag_rules (event%, crop%, n)": [
+   45.5,
+   45.5,
+   11
+  ]
+ },
+ "caviar/coco_every_frame": {
+  "bag_alarms_per_min": 0.0,
+  "bag_rules (event%, crop%, n)": [
+   0.0,
+   0.0,
+   4
+  ]
+ },
+ "caviar/yoloe_1fps": {
+  "bag_alarms_per_min": 0.0,
+  "bag_rules (event%, crop%, n)": [
+   0.0,
+   0.0,
+   4
+  ]
+ },
+ "avenue_normal/coco_every_frame": {
+  "bag_alarms_per_min": 0.59
+ },
+ "avenue_normal/yoloe_1fps": {
+  "bag_alarms_per_min": 0.0
+ },
+ "avenue_test/coco_every_frame": {
+  "bag_alarms_per_min": 1.14
+ },
+ "avenue_test/yoloe_1fps": {
+  "bag_alarms_per_min": 1.14
+ }
+}

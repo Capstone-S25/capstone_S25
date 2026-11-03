@@ -36,6 +36,8 @@ ALL_RULES = ("loiter", "speed", "smoking", "reach_down", "litter", "unattended")
 #   "smoking" (pose hand-to-face): near chance on low-resolution CCTV and the largest source of
 #            false alarms; smoking candidates come from sustained presence ("loiter") instead.
 DEFAULT_RULES = ("loiter", "in_view", "speed", "reach_down", "unattended")
+# Optional: "pose_action" (learned littering-action cue on 1 s of keypoints, stage1_pose_action.py). Raises
+# littering recall a lot; its threshold was calibrated on Avenue-style normal footage, so recalibrate per camera.
 
 
 @dataclass
@@ -121,6 +123,12 @@ class GateConfig:
     # One candidate per person: drop a new candidate if the same person (or an overlapping box, e.g. a split
     # detection) was already sent this recently, whichever rule fired.
     person_dedup_s: float = 2.5
+    dedup_per_rule: bool = False        # True: the dedup only drops repeats of the same rule (a pose_action
+                                        # candidate no longer blocks a reach_down one on the same person)
+
+    pose_action_weights: str | None = None  # None = stage1_pose_action.DEFAULT_WEIGHTS
+    pose_action_thr: float | None = None    # None = the threshold stored with the weights (~1 false alarm/min)
+    pose_action_cooldown_s: float = 5.0
 
     @property
     def uses_bg(self) -> bool:
@@ -128,7 +136,7 @@ class GateConfig:
 
     @property
     def uses_pose(self) -> bool:
-        return bool(self.pose_weights) and bool({"smoking", "reach_down"} & set(self.rules))
+        return bool(self.pose_weights) and bool({"smoking", "reach_down", "pose_action"} & set(self.rules))
 
 
 # --------------------------------------------------------------------------- sequences
@@ -576,6 +584,7 @@ HINTS = {
     "object_appeared": "A bag or object appeared on its own, away from people (thrown or dropped?). Check what happened and who it belongs to.",
     "near_camera": "Person is unusually close to the camera or in an unusual spot for this camera. Check what they are doing.",
     "long_presence": "Person has been in view for a long time, staying around one area. Check for loitering or other suspicious behaviour.",
+    "pose_action": "Person's body movement looks like dropping, tossing or throwing something. Check whether they littered or discarded an item.",
 }
 
 
@@ -595,6 +604,13 @@ class RuleEngine:
         self.sent: deque = deque()
         self.t0: float | None = None
         self.known_item_spots: list[list[float]] = []
+        self.pose_action = None
+        if "pose_action" in cfg.rules:
+            from stage1_pose_action import DEFAULT_WEIGHTS, PoseActionModel, TrackWindows
+
+            model = PoseActionModel(cfg.pose_action_weights or DEFAULT_WEIGHTS)
+            thr = model.threshold if cfg.pose_action_thr is None else cfg.pose_action_thr
+            self.pose_action = {"model": model, "thr": thr, "windows": TrackWindows(), "last": {}}
 
     def step(self, obs: Observation) -> list[dict]:
         cfg, t = self.cfg, obs.t
@@ -623,6 +639,8 @@ class RuleEngine:
             events += self._unattended(obs, persons)
         if "litter" in cfg.rules:
             events += self._litter(obs, persons)
+        if self.pose_action:
+            events += self._pose_action(obs, dict((p["raw_id"], c) for c, p in persons))
         horizon = max(cfg.loiter_s, cfg.stitch_max_gap_s, cfg.litter_owner_lookback_s + cfg.litter_static_s) + 2
         for cid in [c for c, s in self.people.items() if t - s["last_t"] > horizon]:
             del self.people[cid]
@@ -634,10 +652,12 @@ class RuleEngine:
         kept = []
         for e in events:
             box = e["roi_box"]
-            if any(ent == e["entity_id"] or iou(box, b) >= 0.5 or
-                   max(intersection_over(box, b), intersection_over(b, box)) >= 0.7 for _, ent, b in self.sent):
+            kind = e["event_type"] if self.cfg.dedup_per_rule else None
+            if any(k == kind and (ent == e["entity_id"] or iou(box, b) >= 0.5 or
+                                  max(intersection_over(box, b), intersection_over(b, box)) >= 0.7)
+                   for _, ent, b, k in self.sent):
                 continue
-            self.sent.append((t, e["entity_id"], box))
+            self.sent.append((t, e["entity_id"], box, kind))
             kept.append(e)
         return kept
 
@@ -754,6 +774,19 @@ class RuleEngine:
             st["last_reach"] = t
             return [self._event("reach_down", f"person{cid}", obs, p["box"])]
         return []
+
+    def _pose_action(self, obs, cid_of):
+        pa, out = self.pose_action, []
+        ws = pa["windows"].step(obs)
+        if not ws:
+            return out
+        probs = pa["model"].predict(np.stack([w["sum"] for w in ws]))
+        for w, prob in zip(ws, probs):
+            rid = w["raw_id"]
+            if prob >= pa["thr"] and obs.t - pa["last"].get(rid, -1e9) >= self.cfg.pose_action_cooldown_s:
+                pa["last"][rid] = obs.t
+                out.append(self._event("pose_action", f"person{cid_of[rid]}", obs, w["box"], score=round(float(prob), 3)))
+        return out
 
     def _inview(self, cid, st, p, obs):
         cfg, t = self.cfg, obs.t

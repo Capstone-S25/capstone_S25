@@ -1,0 +1,594 @@
+{
+ "rules + pose": {
+  "positives": 200,
+  "negatives": 200,
+  "hit@5s_%": 33.5,
+  "chance@5s_%": 27.6,
+  "hit@10s_%": 37.0,
+  "chance@10s_%": 32.2,
+  "hit@end_%": 42.0,
+  "chance@end_%": 37.2,
+  "neg_any_%": 70.5,
+  "neg_cand_per_min": 15.41,
+  "hit@10s_by": {
+   "day": "59/165 (35.8%)",
+   "dynamic": "22/100 (22.0%)",
+   "night": "15/35 (42.9%)",
+   "static": "52/100 (52.0%)"
+  },
+  "rules_in_10s_window_%": {
+   "reach_down": 24.5,
+   "fast_motion": 8.0,
+   "pose_action": 6.0,
+   "object_appeared": 2.5,
+   "unattended_object": 1.5,
+   "sustained_presence": 1.0
+  },
+  "rules_on_negatives_%": {
+   "fast_motion": 46.0,
+   "reach_down": 43.0,
+   "pose_action": 29.5,
+   "sustained_presence": 22.0,
+   "unattended_object": 9.5,
+   "object_appeared": 5.0
+  }
+ },
+ "dwell=1 margin=0.1": {
+  "alone": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 30.0,
+   "chance@5s_%": 29.0,
+   "hit@10s_%": 34.0,
+   "chance@10s_%": 34.3,
+   "hit@end_%": 36.0,
+   "chance@end_%": 38.0,
+   "neg_any_%": 59.5,
+   "neg_cand_per_min": 10.68,
+   "hit@10s_by": {
+    "day": "59/165 (35.8%)",
+    "dynamic": "32/100 (32.0%)",
+    "night": "9/35 (25.7%)",
+    "static": "36/100 (36.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "person_at_vehicle": 34.0
+   },
+   "rules_on_negatives_%": {
+    "person_at_vehicle": 59.5
+   }
+  },
+  "with rules": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 51.0,
+   "chance@5s_%": 45.4,
+   "hit@10s_%": 54.5,
+   "chance@10s_%": 51.9,
+   "hit@end_%": 56.0,
+   "chance@end_%": 55.0,
+   "neg_any_%": 79.5,
+   "neg_cand_per_min": 26.08,
+   "hit@10s_by": {
+    "day": "90/165 (54.5%)",
+    "dynamic": "43/100 (43.0%)",
+    "night": "19/35 (54.3%)",
+    "static": "66/100 (66.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "person_at_vehicle": 34.0,
+    "reach_down": 24.5,
+    "fast_motion": 8.0,
+    "pose_action": 6.0,
+    "object_appeared": 2.5,
+    "unattended_object": 1.5,
+    "sustained_presence": 1.0
+   },
+   "rules_on_negatives_%": {
+    "person_at_vehicle": 59.5,
+    "fast_motion": 46.0,
+    "reach_down": 43.0,
+    "pose_action": 29.5,
+    "sustained_presence": 22.0,
+    "unattended_object": 9.5,
+    "object_appeared": 5.0
+   }
+  }
+ },
+ "dwell=1 margin=0.25": {
+  "alone": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 32.5,
+   "chance@5s_%": 31.4,
+   "hit@10s_%": 35.5,
+   "chance@10s_%": 37.0,
+   "hit@end_%": 37.5,
+   "chance@end_%": 40.4,
+   "neg_any_%": 60.0,
+   "neg_cand_per_min": 12.87,
+   "hit@10s_by": {
+    "day": "61/165 (37.0%)",
+    "dynamic": "35/100 (35.0%)",
+    "night": "10/35 (28.6%)",
+    "static": "36/100 (36.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "person_at_vehicle": 35.5
+   },
+   "rules_on_negatives_%": {
+    "person_at_vehicle": 60.0
+   }
+  },
+  "with rules": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 52.5,
+   "chance@5s_%": 46.8,
+   "hit@10s_%": 55.5,
+   "chance@10s_%": 53.1,
+   "hit@end_%": 57.0,
+   "chance@end_%": 56.0,
+   "neg_any_%": 80.0,
+   "neg_cand_per_min": 28.27,
+   "hit@10s_by": {
+    "day": "92/165 (55.8%)",
+    "dynamic": "44/100 (44.0%)",
+    "night": "19/35 (54.3%)",
+    "static": "67/100 (67.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "person_at_vehicle": 35.5,
+    "reach_down": 24.5,
+    "fast_motion": 8.0,
+    "pose_action": 6.0,
+    "object_appeared": 2.5,
+    "unattended_object": 1.5,
+    "sustained_presence": 1.0
+   },
+   "rules_on_negatives_%": {
+    "person_at_vehicle": 60.0,
+    "fast_motion": 46.0,
+    "reach_down": 43.0,
+    "pose_action": 29.5,
+    "sustained_presence": 22.0,
+    "unattended_object": 9.5,
+    "object_appeared": 5.0
+   }
+  }
+ },
+ "dwell=1 margin=0.5": {
+  "alone": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 34.5,
+   "chance@5s_%": 32.8,
+   "hit@10s_%": 37.0,
+   "chance@10s_%": 38.2,
+   "hit@end_%": 39.5,
+   "chance@end_%": 41.8,
+   "neg_any_%": 61.0,
+   "neg_cand_per_min": 16.44,
+   "hit@10s_by": {
+    "day": "63/165 (38.2%)",
+    "dynamic": "35/100 (35.0%)",
+    "night": "11/35 (31.4%)",
+    "static": "39/100 (39.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "person_at_vehicle": 37.0
+   },
+   "rules_on_negatives_%": {
+    "person_at_vehicle": 61.0
+   }
+  },
+  "with rules": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 53.5,
+   "chance@5s_%": 47.8,
+   "hit@10s_%": 56.0,
+   "chance@10s_%": 54.0,
+   "hit@end_%": 58.0,
+   "chance@end_%": 56.9,
+   "neg_any_%": 80.0,
+   "neg_cand_per_min": 31.85,
+   "hit@10s_by": {
+    "day": "93/165 (56.4%)",
+    "dynamic": "44/100 (44.0%)",
+    "night": "19/35 (54.3%)",
+    "static": "68/100 (68.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "person_at_vehicle": 37.0,
+    "reach_down": 24.5,
+    "fast_motion": 8.0,
+    "pose_action": 6.0,
+    "object_appeared": 2.5,
+    "unattended_object": 1.5,
+    "sustained_presence": 1.0
+   },
+   "rules_on_negatives_%": {
+    "person_at_vehicle": 61.0,
+    "fast_motion": 46.0,
+    "reach_down": 43.0,
+    "pose_action": 29.5,
+    "sustained_presence": 22.0,
+    "unattended_object": 9.5,
+    "object_appeared": 5.0
+   }
+  }
+ },
+ "dwell=2 margin=0.1": {
+  "alone": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 15.5,
+   "chance@5s_%": 18.1,
+   "hit@10s_%": 21.5,
+   "chance@10s_%": 22.6,
+   "hit@end_%": 26.0,
+   "chance@end_%": 28.0,
+   "neg_any_%": 53.5,
+   "neg_cand_per_min": 6.43,
+   "hit@10s_by": {
+    "day": "39/165 (23.6%)",
+    "dynamic": "19/100 (19.0%)",
+    "night": "4/35 (11.4%)",
+    "static": "24/100 (24.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "person_at_vehicle": 21.5
+   },
+   "rules_on_negatives_%": {
+    "person_at_vehicle": 53.5
+   }
+  },
+  "with rules": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 39.5,
+   "chance@5s_%": 37.7,
+   "hit@10s_%": 45.0,
+   "chance@10s_%": 43.7,
+   "hit@end_%": 48.5,
+   "chance@end_%": 48.0,
+   "neg_any_%": 76.0,
+   "neg_cand_per_min": 21.84,
+   "hit@10s_by": {
+    "day": "73/165 (44.2%)",
+    "dynamic": "33/100 (33.0%)",
+    "night": "17/35 (48.6%)",
+    "static": "57/100 (57.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "reach_down": 24.5,
+    "person_at_vehicle": 21.5,
+    "fast_motion": 8.0,
+    "pose_action": 6.0,
+    "object_appeared": 2.5,
+    "unattended_object": 1.5,
+    "sustained_presence": 1.0
+   },
+   "rules_on_negatives_%": {
+    "person_at_vehicle": 53.5,
+    "fast_motion": 46.0,
+    "reach_down": 43.0,
+    "pose_action": 29.5,
+    "sustained_presence": 22.0,
+    "unattended_object": 9.5,
+    "object_appeared": 5.0
+   }
+  }
+ },
+ "dwell=2 margin=0.25": {
+  "alone": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 18.0,
+   "chance@5s_%": 19.5,
+   "hit@10s_%": 24.0,
+   "chance@10s_%": 24.1,
+   "hit@end_%": 27.5,
+   "chance@end_%": 29.2,
+   "neg_any_%": 55.0,
+   "neg_cand_per_min": 8.01,
+   "hit@10s_by": {
+    "day": "44/165 (26.7%)",
+    "dynamic": "23/100 (23.0%)",
+    "night": "4/35 (11.4%)",
+    "static": "25/100 (25.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "person_at_vehicle": 24.0
+   },
+   "rules_on_negatives_%": {
+    "person_at_vehicle": 55.0
+   }
+  },
+  "with rules": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 40.5,
+   "chance@5s_%": 38.4,
+   "hit@10s_%": 46.5,
+   "chance@10s_%": 44.4,
+   "hit@end_%": 49.0,
+   "chance@end_%": 48.4,
+   "neg_any_%": 76.5,
+   "neg_cand_per_min": 23.41,
+   "hit@10s_by": {
+    "day": "76/165 (46.1%)",
+    "dynamic": "34/100 (34.0%)",
+    "night": "17/35 (48.6%)",
+    "static": "59/100 (59.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "reach_down": 24.5,
+    "person_at_vehicle": 24.0,
+    "fast_motion": 8.0,
+    "pose_action": 6.0,
+    "object_appeared": 2.5,
+    "unattended_object": 1.5,
+    "sustained_presence": 1.0
+   },
+   "rules_on_negatives_%": {
+    "person_at_vehicle": 55.0,
+    "fast_motion": 46.0,
+    "reach_down": 43.0,
+    "pose_action": 29.5,
+    "sustained_presence": 22.0,
+    "unattended_object": 9.5,
+    "object_appeared": 5.0
+   }
+  }
+ },
+ "dwell=2 margin=0.5": {
+  "alone": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 20.5,
+   "chance@5s_%": 20.3,
+   "hit@10s_%": 25.0,
+   "chance@10s_%": 25.3,
+   "hit@end_%": 28.5,
+   "chance@end_%": 30.1,
+   "neg_any_%": 57.0,
+   "neg_cand_per_min": 10.44,
+   "hit@10s_by": {
+    "day": "46/165 (27.9%)",
+    "dynamic": "24/100 (24.0%)",
+    "night": "4/35 (11.4%)",
+    "static": "26/100 (26.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "person_at_vehicle": 25.0
+   },
+   "rules_on_negatives_%": {
+    "person_at_vehicle": 57.0
+   }
+  },
+  "with rules": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 42.0,
+   "chance@5s_%": 39.1,
+   "hit@10s_%": 47.0,
+   "chance@10s_%": 45.1,
+   "hit@end_%": 49.5,
+   "chance@end_%": 49.1,
+   "neg_any_%": 77.5,
+   "neg_cand_per_min": 25.84,
+   "hit@10s_by": {
+    "day": "77/165 (46.7%)",
+    "dynamic": "34/100 (34.0%)",
+    "night": "17/35 (48.6%)",
+    "static": "60/100 (60.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "person_at_vehicle": 25.0,
+    "reach_down": 24.5,
+    "fast_motion": 8.0,
+    "pose_action": 6.0,
+    "object_appeared": 2.5,
+    "unattended_object": 1.5,
+    "sustained_presence": 1.0
+   },
+   "rules_on_negatives_%": {
+    "person_at_vehicle": 57.0,
+    "fast_motion": 46.0,
+    "reach_down": 43.0,
+    "pose_action": 29.5,
+    "sustained_presence": 22.0,
+    "unattended_object": 9.5,
+    "object_appeared": 5.0
+   }
+  }
+ },
+ "dwell=3 margin=0.1": {
+  "alone": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 15.0,
+   "chance@5s_%": 12.7,
+   "hit@10s_%": 18.0,
+   "chance@10s_%": 16.1,
+   "hit@end_%": 21.0,
+   "chance@end_%": 21.6,
+   "neg_any_%": 49.0,
+   "neg_cand_per_min": 4.42,
+   "hit@10s_by": {
+    "day": "31/165 (18.8%)",
+    "dynamic": "16/100 (16.0%)",
+    "night": "5/35 (14.3%)",
+    "static": "20/100 (20.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "person_at_vehicle": 18.0
+   },
+   "rules_on_negatives_%": {
+    "person_at_vehicle": 49.0
+   }
+  },
+  "with rules": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 41.5,
+   "chance@5s_%": 35.0,
+   "hit@10s_%": 44.5,
+   "chance@10s_%": 40.8,
+   "hit@end_%": 49.0,
+   "chance@end_%": 45.6,
+   "neg_any_%": 75.5,
+   "neg_cand_per_min": 19.83,
+   "hit@10s_by": {
+    "day": "72/165 (43.6%)",
+    "dynamic": "31/100 (31.0%)",
+    "night": "17/35 (48.6%)",
+    "static": "58/100 (58.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "reach_down": 24.5,
+    "person_at_vehicle": 18.0,
+    "fast_motion": 8.0,
+    "pose_action": 6.0,
+    "object_appeared": 2.5,
+    "unattended_object": 1.5,
+    "sustained_presence": 1.0
+   },
+   "rules_on_negatives_%": {
+    "person_at_vehicle": 49.0,
+    "fast_motion": 46.0,
+    "reach_down": 43.0,
+    "pose_action": 29.5,
+    "sustained_presence": 22.0,
+    "unattended_object": 9.5,
+    "object_appeared": 5.0
+   }
+  }
+ },
+ "dwell=3 margin=0.25": {
+  "alone": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 17.0,
+   "chance@5s_%": 14.1,
+   "hit@10s_%": 20.5,
+   "chance@10s_%": 18.4,
+   "hit@end_%": 24.0,
+   "chance@end_%": 23.8,
+   "neg_any_%": 51.0,
+   "neg_cand_per_min": 5.61,
+   "hit@10s_by": {
+    "day": "36/165 (21.8%)",
+    "dynamic": "19/100 (19.0%)",
+    "night": "5/35 (14.3%)",
+    "static": "22/100 (22.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "person_at_vehicle": 20.5
+   },
+   "rules_on_negatives_%": {
+    "person_at_vehicle": 51.0
+   }
+  },
+  "with rules": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 41.5,
+   "chance@5s_%": 35.8,
+   "hit@10s_%": 45.5,
+   "chance@10s_%": 41.5,
+   "hit@end_%": 49.0,
+   "chance@end_%": 45.9,
+   "neg_any_%": 75.5,
+   "neg_cand_per_min": 21.01,
+   "hit@10s_by": {
+    "day": "74/165 (44.8%)",
+    "dynamic": "33/100 (33.0%)",
+    "night": "17/35 (48.6%)",
+    "static": "58/100 (58.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "reach_down": 24.5,
+    "person_at_vehicle": 20.5,
+    "fast_motion": 8.0,
+    "pose_action": 6.0,
+    "object_appeared": 2.5,
+    "unattended_object": 1.5,
+    "sustained_presence": 1.0
+   },
+   "rules_on_negatives_%": {
+    "person_at_vehicle": 51.0,
+    "fast_motion": 46.0,
+    "reach_down": 43.0,
+    "pose_action": 29.5,
+    "sustained_presence": 22.0,
+    "unattended_object": 9.5,
+    "object_appeared": 5.0
+   }
+  }
+ },
+ "dwell=3 margin=0.5": {
+  "alone": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 18.5,
+   "chance@5s_%": 15.2,
+   "hit@10s_%": 22.0,
+   "chance@10s_%": 19.7,
+   "hit@end_%": 25.0,
+   "chance@end_%": 24.7,
+   "neg_any_%": 55.0,
+   "neg_cand_per_min": 7.69,
+   "hit@10s_by": {
+    "day": "39/165 (23.6%)",
+    "dynamic": "20/100 (20.0%)",
+    "night": "5/35 (14.3%)",
+    "static": "24/100 (24.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "person_at_vehicle": 22.0
+   },
+   "rules_on_negatives_%": {
+    "person_at_vehicle": 55.0
+   }
+  },
+  "with rules": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 42.0,
+   "chance@5s_%": 36.3,
+   "hit@10s_%": 46.0,
+   "chance@10s_%": 42.0,
+   "hit@end_%": 49.0,
+   "chance@end_%": 46.4,
+   "neg_any_%": 77.0,
+   "neg_cand_per_min": 23.09,
+   "hit@10s_by": {
+    "day": "75/165 (45.5%)",
+    "dynamic": "33/100 (33.0%)",
+    "night": "17/35 (48.6%)",
+    "static": "59/100 (59.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "reach_down": 24.5,
+    "person_at_vehicle": 22.0,
+    "fast_motion": 8.0,
+    "pose_action": 6.0,
+    "object_appeared": 2.5,
+    "unattended_object": 1.5,
+    "sustained_presence": 1.0
+   },
+   "rules_on_negatives_%": {
+    "person_at_vehicle": 55.0,
+    "fast_motion": 46.0,
+    "reach_down": 43.0,
+    "pose_action": 29.5,
+    "sustained_presence": 22.0,
+    "unattended_object": 9.5,
+    "object_appeared": 5.0
+   }
+  }
+ }
+}

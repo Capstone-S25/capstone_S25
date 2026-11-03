@@ -1,0 +1,434 @@
+[
+ {
+  "stitch_gap_s": 8.0,
+  "loiter_s": 20.0,
+  "walk_h_per_s": 1.0,
+  "smoking": {
+   "events": 131,
+   "candidates_per_min": 7.06,
+   "method_strict_%": 33.6,
+   "same_times_strict_%": 29.7,
+   "above_same_times_strict": 3.9,
+   "method_lenient_%": 37.4,
+   "above_same_times_lenient": 5.3
+  },
+  "dwell_rule_only": {
+   "events": 131,
+   "candidates_per_min": 0.98,
+   "method_strict_%": 8.4,
+   "same_times_strict_%": 6.0,
+   "above_same_times_strict": 2.4,
+   "method_lenient_%": 8.4,
+   "above_same_times_lenient": 1.9
+  },
+  "avenue_normal_FA_per_min": 5.1
+ },
+ {
+  "stitch_gap_s": 8.0,
+  "loiter_s": 20.0,
+  "walk_h_per_s": 0.3,
+  "smoking": {
+   "events": 131,
+   "candidates_per_min": 7.13,
+   "method_strict_%": 33.6,
+   "same_times_strict_%": 29.7,
+   "above_same_times_strict": 3.9,
+   "method_lenient_%": 37.4,
+   "above_same_times_lenient": 5.1
+  },
+  "dwell_rule_only": {
+   "events": 131,
+   "candidates_per_min": 1.04,
+   "method_strict_%": 9.2,
+   "same_times_strict_%": 6.0,
+   "above_same_times_strict": 3.2,
+   "method_lenient_%": 9.2,
+   "above_same_times_lenient": 2.5
+  },
+  "avenue_normal_FA_per_min": 5.1
+ },
+ {
+  "stitch_gap_s": 8.0,
+  "loiter_s": 15.0,
+  "walk_h_per_s": 1.0,
+  "smoking": {
+   "events": 131,
+   "candidates_per_min": 7.54,
+   "method_strict_%": 35.1,
+   "same_times_strict_%": 31.3,
+   "above_same_times_strict": 3.8,
+   "method_lenient_%": 38.9,
+   "above_same_times_lenient": 5.0
+  },
+  "dwell_rule_only": {
+   "events": 131,
+   "candidates_per_min": 1.64,
+   "method_strict_%": 10.7,
+   "same_times_strict_%": 9.2,
+   "above_same_times_strict": 1.5,
+   "method_lenient_%": 11.5,
+   "above_same_times_lenient": 1.3
+  },
+  "avenue_normal_FA_per_min": 8.4
+ },
+ {
+  "stitch_gap_s": 8.0,
+  "loiter_s": 15.0,
+  "walk_h_per_s": 0.3,
+  "smoking": {
+   "events": 131,
+   "candidates_per_min": 7.62,
+   "method_strict_%": 34.4,
+   "same_times_strict_%": 30.8,
+   "above_same_times_strict": 3.6,
+   "method_lenient_%": 38.2,
+   "above_same_times_lenient": 4.6
+  },
+  "dwell_rule_only": {
+   "events": 131,
+   "candidates_per_min": 1.7,
+   "method_strict_%": 9.9,
+   "same_times_strict_%": 9.1,
+   "above_same_times_strict": 0.8,
+   "method_lenient_%": 10.7,
+   "above_same_times_lenient": 0.5
+  },
+  "avenue_normal_FA_per_min": 8.4
+ },
+ {
+  "stitch_gap_s": 8.0,
+  "loiter_s": 10.0,
+  "walk_h_per_s": 1.0,
+  "smoking": {
+   "events": 131,
+   "candidates_per_min": 8.18,
+   "method_strict_%": 35.1,
+   "same_times_strict_%": 32.5,
+   "above_same_times_strict": 2.6,
+   "method_lenient_%": 40.5,
+   "above_same_times_lenient": 4.6
+  },
+  "dwell_rule_only": {
+   "events": 131,
+   "candidates_per_min": 2.6,
+   "method_strict_%": 13.0,
+   "same_times_strict_%": 12.2,
+   "above_same_times_strict": 0.8,
+   "method_lenient_%": 14.5,
+   "above_same_times_lenient": 0.2
+  },
+  "avenue_normal_FA_per_min": 16.5
+ },
+ {
+  "stitch_gap_s": 8.0,
+  "loiter_s": 10.0,
+  "walk_h_per_s": 0.3,
+  "smoking": {
+   "events": 131,
+   "candidates_per_min": 8.23,
+   "method_strict_%": 35.1,
+   "same_times_strict_%": 32.5,
+   "above_same_times_strict": 2.6,
+   "method_lenient_%": 40.5,
+   "above_same_times_lenient": 4.5
+  },
+  "dwell_rule_only": {
+   "events": 131,
+   "candidates_per_min": 2.64,
+   "method_strict_%": 13.0,
+   "same_times_strict_%": 12.1,
+   "above_same_times_strict": 0.9,
+   "method_lenient_%": 14.5,
+   "above_same_times_lenient": 0.2
+  },
+  "avenue_normal_FA_per_min": 16.7
+ },
+ {
+  "stitch_gap_s": 15.0,
+  "loiter_s": 20.0,
+  "walk_h_per_s": 1.0,
+  "smoking": {
+   "events": 131,
+   "candidates_per_min": 7.43,
+   "method_strict_%": 34.4,
+   "same_times_strict_%": 30.2,
+   "above_same_times_strict": 4.2,
+   "method_lenient_%": 38.2,
+   "above_same_times_lenient": 5.8
+  },
+  "dwell_rule_only": {
+   "events": 131,
+   "candidates_per_min": 1.23,
+   "method_strict_%": 9.2,
+   "same_times_strict_%": 6.6,
+   "above_same_times_strict": 2.6,
+   "method_lenient_%": 9.2,
+   "above_same_times_lenient": 2.0
+  },
+  "avenue_normal_FA_per_min": 5.7
+ },
+ {
+  "stitch_gap_s": 15.0,
+  "loiter_s": 20.0,
+  "walk_h_per_s": 0.3,
+  "smoking": {
+   "events": 131,
+   "candidates_per_min": 7.59,
+   "method_strict_%": 34.4,
+   "same_times_strict_%": 30.0,
+   "above_same_times_strict": 4.4,
+   "method_lenient_%": 38.2,
+   "above_same_times_lenient": 5.3
+  },
+  "dwell_rule_only": {
+   "events": 131,
+   "candidates_per_min": 1.29,
+   "method_strict_%": 9.2,
+   "same_times_strict_%": 6.3,
+   "above_same_times_strict": 2.9,
+   "method_lenient_%": 9.2,
+   "above_same_times_lenient": 2.2
+  },
+  "avenue_normal_FA_per_min": 5.9
+ },
+ {
+  "stitch_gap_s": 15.0,
+  "loiter_s": 15.0,
+  "walk_h_per_s": 1.0,
+  "smoking": {
+   "events": 131,
+   "candidates_per_min": 8.0,
+   "method_strict_%": 35.1,
+   "same_times_strict_%": 31.6,
+   "above_same_times_strict": 3.5,
+   "method_lenient_%": 40.5,
+   "above_same_times_lenient": 5.5
+  },
+  "dwell_rule_only": {
+   "events": 131,
+   "candidates_per_min": 2.07,
+   "method_strict_%": 10.7,
+   "same_times_strict_%": 11.1,
+   "above_same_times_strict": -0.4,
+   "method_lenient_%": 12.2,
+   "above_same_times_lenient": -0.2
+  },
+  "avenue_normal_FA_per_min": 9.4
+ },
+ {
+  "stitch_gap_s": 15.0,
+  "loiter_s": 15.0,
+  "walk_h_per_s": 0.3,
+  "smoking": {
+   "events": 131,
+   "candidates_per_min": 8.14,
+   "method_strict_%": 34.4,
+   "same_times_strict_%": 31.2,
+   "above_same_times_strict": 3.2,
+   "method_lenient_%": 39.7,
+   "above_same_times_lenient": 5.3
+  },
+  "dwell_rule_only": {
+   "events": 131,
+   "candidates_per_min": 2.13,
+   "method_strict_%": 9.9,
+   "same_times_strict_%": 10.9,
+   "above_same_times_strict": -1.0,
+   "method_lenient_%": 11.5,
+   "above_same_times_lenient": -0.8
+  },
+  "avenue_normal_FA_per_min": 9.6
+ },
+ {
+  "stitch_gap_s": 15.0,
+  "loiter_s": 10.0,
+  "walk_h_per_s": 1.0,
+  "smoking": {
+   "events": 131,
+   "candidates_per_min": 8.74,
+   "method_strict_%": 39.7,
+   "same_times_strict_%": 34.5,
+   "above_same_times_strict": 5.2,
+   "method_lenient_%": 44.3,
+   "above_same_times_lenient": 6.7
+  },
+  "dwell_rule_only": {
+   "events": 131,
+   "candidates_per_min": 3.06,
+   "method_strict_%": 19.8,
+   "same_times_strict_%": 16.0,
+   "above_same_times_strict": 3.8,
+   "method_lenient_%": 22.1,
+   "above_same_times_lenient": 3.5
+  },
+  "avenue_normal_FA_per_min": 17.8
+ },
+ {
+  "stitch_gap_s": 15.0,
+  "loiter_s": 10.0,
+  "walk_h_per_s": 0.3,
+  "smoking": {
+   "events": 131,
+   "candidates_per_min": 8.82,
+   "method_strict_%": 39.7,
+   "same_times_strict_%": 34.4,
+   "above_same_times_strict": 5.3,
+   "method_lenient_%": 44.3,
+   "above_same_times_lenient": 6.5
+  },
+  "dwell_rule_only": {
+   "events": 131,
+   "candidates_per_min": 3.07,
+   "method_strict_%": 19.8,
+   "same_times_strict_%": 15.6,
+   "above_same_times_strict": 4.2,
+   "method_lenient_%": 22.1,
+   "above_same_times_lenient": 4.0
+  },
+  "avenue_normal_FA_per_min": 17.8
+ },
+ {
+  "stitch_gap_s": 30.0,
+  "loiter_s": 20.0,
+  "walk_h_per_s": 1.0,
+  "smoking": {
+   "events": 131,
+   "candidates_per_min": 7.91,
+   "method_strict_%": 34.4,
+   "same_times_strict_%": 30.5,
+   "above_same_times_strict": 3.9,
+   "method_lenient_%": 37.4,
+   "above_same_times_lenient": 4.9
+  },
+  "dwell_rule_only": {
+   "events": 131,
+   "candidates_per_min": 1.52,
+   "method_strict_%": 9.9,
+   "same_times_strict_%": 7.3,
+   "above_same_times_strict": 2.6,
+   "method_lenient_%": 9.9,
+   "above_same_times_lenient": 2.2
+  },
+  "avenue_normal_FA_per_min": 7.4
+ },
+ {
+  "stitch_gap_s": 30.0,
+  "loiter_s": 20.0,
+  "walk_h_per_s": 0.3,
+  "smoking": {
+   "events": 131,
+   "candidates_per_min": 8.06,
+   "method_strict_%": 34.4,
+   "same_times_strict_%": 30.5,
+   "above_same_times_strict": 3.9,
+   "method_lenient_%": 37.4,
+   "above_same_times_lenient": 4.6
+  },
+  "dwell_rule_only": {
+   "events": 131,
+   "candidates_per_min": 1.53,
+   "method_strict_%": 9.9,
+   "same_times_strict_%": 7.0,
+   "above_same_times_strict": 2.9,
+   "method_lenient_%": 9.9,
+   "above_same_times_lenient": 2.2
+  },
+  "avenue_normal_FA_per_min": 7.8
+ },
+ {
+  "stitch_gap_s": 30.0,
+  "loiter_s": 15.0,
+  "walk_h_per_s": 1.0,
+  "smoking": {
+   "events": 131,
+   "candidates_per_min": 8.35,
+   "method_strict_%": 34.4,
+   "same_times_strict_%": 31.5,
+   "above_same_times_strict": 2.9,
+   "method_lenient_%": 39.7,
+   "above_same_times_lenient": 4.9
+  },
+  "dwell_rule_only": {
+   "events": 131,
+   "candidates_per_min": 2.18,
+   "method_strict_%": 10.7,
+   "same_times_strict_%": 10.3,
+   "above_same_times_strict": 0.4,
+   "method_lenient_%": 13.7,
+   "above_same_times_lenient": 1.6
+  },
+  "avenue_normal_FA_per_min": 9.6
+ },
+ {
+  "stitch_gap_s": 30.0,
+  "loiter_s": 15.0,
+  "walk_h_per_s": 0.3,
+  "smoking": {
+   "events": 131,
+   "candidates_per_min": 8.47,
+   "method_strict_%": 33.6,
+   "same_times_strict_%": 31.1,
+   "above_same_times_strict": 2.5,
+   "method_lenient_%": 38.9,
+   "above_same_times_lenient": 4.8
+  },
+  "dwell_rule_only": {
+   "events": 131,
+   "candidates_per_min": 2.2,
+   "method_strict_%": 9.9,
+   "same_times_strict_%": 10.2,
+   "above_same_times_strict": -0.3,
+   "method_lenient_%": 13.0,
+   "above_same_times_lenient": 0.9
+  },
+  "avenue_normal_FA_per_min": 9.8
+ },
+ {
+  "stitch_gap_s": 30.0,
+  "loiter_s": 10.0,
+  "walk_h_per_s": 1.0,
+  "smoking": {
+   "events": 131,
+   "candidates_per_min": 9.04,
+   "method_strict_%": 39.7,
+   "same_times_strict_%": 34.8,
+   "above_same_times_strict": 4.9,
+   "method_lenient_%": 44.3,
+   "above_same_times_lenient": 6.5
+  },
+  "dwell_rule_only": {
+   "events": 131,
+   "candidates_per_min": 3.06,
+   "method_strict_%": 19.1,
+   "same_times_strict_%": 15.4,
+   "above_same_times_strict": 3.7,
+   "method_lenient_%": 22.1,
+   "above_same_times_lenient": 3.9
+  },
+  "avenue_normal_FA_per_min": 18.0
+ },
+ {
+  "stitch_gap_s": 30.0,
+  "loiter_s": 10.0,
+  "walk_h_per_s": 0.3,
+  "smoking": {
+   "events": 131,
+   "candidates_per_min": 9.13,
+   "method_strict_%": 39.7,
+   "same_times_strict_%": 34.9,
+   "above_same_times_strict": 4.8,
+   "method_lenient_%": 44.3,
+   "above_same_times_lenient": 5.9
+  },
+  "dwell_rule_only": {
+   "events": 131,
+   "candidates_per_min": 3.06,
+   "method_strict_%": 19.1,
+   "same_times_strict_%": 15.3,
+   "above_same_times_strict": 3.8,
+   "method_lenient_%": 22.1,
+   "above_same_times_lenient": 4.1
+  },
+  "avenue_normal_FA_per_min": 18.0
+ }
+]

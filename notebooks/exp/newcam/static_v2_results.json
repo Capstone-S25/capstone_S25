@@ -1,0 +1,65 @@
+{
+ "chosen": {
+  "hold_s": 8.0,
+  "min_frac": 0.6,
+  "min_novelty": 30.0,
+  "caviar_event_%": 75.0,
+  "caviar_crop_%": 75.0,
+  "caviar_normal_per_min": 1.47,
+  "caviar_leftbag_videos_per_min": 2.5,
+  "avenue_normal_per_min": 0.0
+ },
+ "aboda": {
+  "yolo_bag_rules (event%, crop%, n)": [
+   45.5,
+   36.4,
+   11
+  ],
+  "static_v2 (event%, crop%, n)": [
+   18.2,
+   18.2,
+   11
+  ],
+  "both (event%, crop%, n)": [
+   54.5,
+   45.5,
+   11
+  ],
+  "all_rules + static_v2 (event%, crop%, n)": [
+   100.0,
+   63.6,
+   11
+  ],
+  "static_v2_per_min": 3.63,
+  "yolo_bag_rules_per_min": 0.48
+ },
+ "aboda_with_ambiguous": {
+  "yolo_bag_rules (event%, crop%, n)": [
+   41.7,
+   33.3,
+   12
+  ],
+  "static_v2 (event%, crop%, n)": [
+   25.0,
+   25.0,
+   12
+  ],
+  "both (event%, crop%, n)": [
+   58.3,
+   50.0,
+   12
+  ],
+  "all_rules + static_v2 (event%, crop%, n)": [
+   100.0,
+   66.7,
+   12
+  ],
+  "static_v2_per_min": 3.63,
+  "yolo_bag_rules_per_min": 0.48
+ },
+ "caviar_yolo_bag_rules (event%, crop%, n)": [
+  0.0,
+  0.0,
+  4
+ ]
+}

@@ -155,6 +155,24 @@ class RuleTests(unittest.TestCase):
         k_edge = k.copy(); k_edge[:, 0] -= 100
         self.assertEqual(run(cfg, [obs(i, [person(1, (0, 100, 50, 300), kpts=k_edge)]) for i in range(3)])[0], [])
 
+    @staticmethod
+    def standing_kpts(x=125.0, top=100.0, h=200.0):
+        ys = [0.06, 0.04, 0.04, 0.05, 0.05, 0.2, 0.2, 0.35, 0.35, 0.48, 0.48, 0.52, 0.52, 0.74, 0.74, 0.96, 0.96]
+        dx = [0, -3, 3, -6, 6, -12, 12, -14, 14, -15, 15, -8, 8, -8, 8, -8, 8]
+        return np.array([(x + d, top + y * h, 0.9) for d, y in zip(dx, ys)], np.float32)
+
+    def test_pose_action_scores_once_a_second_with_cooldown(self):
+        cfg = GateConfig(rules=("pose_action",), pose_action_thr=0.0)
+        events, _ = run(cfg, [obs(i, [person(1, (100, 100, 150, 300), kpts=self.standing_kpts())]) for i in range(100)])
+        self.assertEqual([e["event_type"] for e in events], ["pose_action", "pose_action"])
+        self.assertGreaterEqual(events[1]["timestamp_s"] - events[0]["timestamp_s"], 4.9)
+        self.assertEqual(events[0]["entity_id"], "person1")
+
+    def test_pose_action_quiet_for_person_standing_still(self):
+        cfg = GateConfig(rules=("pose_action",))
+        events, _ = run(cfg, [obs(i, [person(1, (100, 100, 150, 300), kpts=self.standing_kpts())]) for i in range(100)])
+        self.assertEqual(events, [])
+
 
 class StitchTests(unittest.TestCase):
     def test_reborn_track_keeps_identity_after_occlusion(self):

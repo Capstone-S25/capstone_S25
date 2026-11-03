@@ -1,0 +1,85 @@
+{
+ "half": "held-out",
+ "threshold": 0.8331963658332825,
+ "results": {
+  "current rules": {
+   "littering_event_%": 72.0,
+   "littering_crop_%": 56.0,
+   "avenue_event_%": 80.0,
+   "avenue_crop_%": 60.0,
+   "avenue_reduction_%": 58.9,
+   "smoking_event_%": 36.8,
+   "smoking_crop_%": 12.6,
+   "smoking_reduction_%": 62.7,
+   "normal_FA_per_min": 5.87,
+   "littering_lift_random": 14.8,
+   "littering_lift_distinct_random": 15.2,
+   "loitering_strict_event_%": 80.0,
+   "loitering_strict_crop_%": 66.7
+  },
+  "pose cue alone": {
+   "littering_event_%": 81.0,
+   "littering_crop_%": 64.0,
+   "avenue_event_%": 40.0,
+   "avenue_crop_%": 25.0,
+   "avenue_reduction_%": 92.0,
+   "smoking_event_%": 13.7,
+   "smoking_crop_%": 3.0,
+   "smoking_reduction_%": 86.6,
+   "normal_FA_per_min": 0.59,
+   "littering_lift_random": 16.9,
+   "littering_lift_distinct_random": 14.5,
+   "loitering_strict_event_%": 40.0,
+   "loitering_strict_crop_%": 20.0,
+   "littering_crop_tallest_same_times_%": 44.0,
+   "skill_over_tallest": 20.0
+  },
+  "current rules + pose cue": {
+   "littering_event_%": 97.0,
+   "littering_crop_%": 86.0,
+   "avenue_event_%": 80.0,
+   "avenue_crop_%": 65.0,
+   "avenue_reduction_%": 57.7,
+   "smoking_event_%": 43.7,
+   "smoking_crop_%": 15.7,
+   "smoking_reduction_%": 54.9,
+   "normal_FA_per_min": 6.45,
+   "littering_lift_random": 17.4,
+   "littering_lift_distinct_random": 12.0,
+   "loitering_strict_event_%": 80.0,
+   "loitering_strict_crop_%": 66.7
+  }
+ },
+ "littering_per_action_crop_%": {
+  "dropping": {
+   "current rules": 35.0,
+   "with pose cue": 80.0,
+   "cue alone": 70.0,
+   "tallest same times": 50.0
+  },
+  "dumping": {
+   "current rules": 95.0,
+   "with pose cue": 100.0,
+   "cue alone": 60.0,
+   "tallest same times": 35.0
+  },
+  "putting-down": {
+   "current rules": 85.0,
+   "with pose cue": 90.0,
+   "cue alone": 55.0,
+   "tallest same times": 50.0
+  },
+  "throwing": {
+   "current rules": 30.0,
+   "with pose cue": 80.0,
+   "cue alone": 80.0,
+   "tallest same times": 60.0
+  },
+  "tossing": {
+   "current rules": 35.0,
+   "with pose cue": 80.0,
+   "cue alone": 55.0,
+   "tallest same times": 25.0
+  }
+ }
+}

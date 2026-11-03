@@ -1,0 +1,118 @@
+{
+ "current rules": {
+  "left_object_event_%": 100.0,
+  "left_object_crop_%": 50.0,
+  "left_object_events": 4,
+  "normal_candidates_per_min": 10.3,
+  "all_candidates_per_min": 9.7,
+  "candidate_types": {
+   "fast_motion": 14,
+   "reach_down": 36,
+   "sustained_presence": 8
+  },
+  "per_video": {
+   "caviar/LeftBag": {
+    "caught": false,
+    "in_time": true,
+    "object_detected_%frames": 0.0,
+    "gt_object_h_px": 22.0,
+    "fired": {
+     "fast_motion": 2,
+     "reach_down": 7,
+     "sustained_presence": 1
+    }
+   },
+   "caviar/LeftBag_AtChair": {
+    "caught": true,
+    "in_time": true,
+    "object_detected_%frames": 0.0,
+    "gt_object_h_px": 9.0,
+    "fired": {
+     "reach_down": 4,
+     "fast_motion": 1,
+     "sustained_presence": 1
+    }
+   },
+   "caviar/LeftBag_PickedUp": {
+    "caught": true,
+    "in_time": true,
+    "object_detected_%frames": 0.0,
+    "gt_object_h_px": 14.0,
+    "fired": {
+     "reach_down": 6,
+     "fast_motion": 2,
+     "sustained_presence": 2
+    }
+   },
+   "caviar/LeftBox": {
+    "caught": false,
+    "in_time": true,
+    "object_detected_%frames": 0.0,
+    "gt_object_h_px": 19.0,
+    "fired": {
+     "fast_motion": 4,
+     "reach_down": 1,
+     "sustained_presence": 1
+    }
+   }
+  }
+ },
+ "rules + pose_action": {
+  "left_object_event_%": 100.0,
+  "left_object_crop_%": 50.0,
+  "left_object_events": 4,
+  "normal_candidates_per_min": 10.3,
+  "all_candidates_per_min": 9.7,
+  "candidate_types": {
+   "fast_motion": 14,
+   "reach_down": 36,
+   "sustained_presence": 8
+  },
+  "per_video": {
+   "caviar/LeftBag": {
+    "caught": false,
+    "in_time": true,
+    "object_detected_%frames": 0.0,
+    "gt_object_h_px": 22.0,
+    "fired": {
+     "fast_motion": 2,
+     "reach_down": 7,
+     "sustained_presence": 1
+    }
+   },
+   "caviar/LeftBag_AtChair": {
+    "caught": true,
+    "in_time": true,
+    "object_detected_%frames": 0.0,
+    "gt_object_h_px": 9.0,
+    "fired": {
+     "reach_down": 4,
+     "fast_motion": 1,
+     "sustained_presence": 1
+    }
+   },
+   "caviar/LeftBag_PickedUp": {
+    "caught": true,
+    "in_time": true,
+    "object_detected_%frames": 0.0,
+    "gt_object_h_px": 14.0,
+    "fired": {
+     "reach_down": 6,
+     "fast_motion": 2,
+     "sustained_presence": 2
+    }
+   },
+   "caviar/LeftBox": {
+    "caught": false,
+    "in_time": true,
+    "object_detected_%frames": 0.0,
+    "gt_object_h_px": 19.0,
+    "fired": {
+     "fast_motion": 4,
+     "reach_down": 1,
+     "sustained_presence": 1
+    }
+   }
+  }
+ }
+}

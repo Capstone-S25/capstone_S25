@@ -1,0 +1,92 @@
+{
+ "rules (COCO items)": {
+  "positives": 200,
+  "negatives": 200,
+  "hit@5s_%": 30.0,
+  "chance@5s_%": 25.8,
+  "hit@10s_%": 34.5,
+  "chance@10s_%": 30.4,
+  "hit@end_%": 40.5,
+  "chance@end_%": 35.5,
+  "neg_any_%": 69.0,
+  "neg_cand_per_min": 13.87,
+  "hit@10s_by": {
+   "day": "55/165 (33.3%)",
+   "dynamic": "18/100 (18.0%)",
+   "night": "14/35 (40.0%)",
+   "static": "51/100 (51.0%)"
+  },
+  "rules_in_10s_window_%": {
+   "reach_down": 26.0,
+   "fast_motion": 8.0,
+   "object_appeared": 2.5,
+   "unattended_object": 1.5,
+   "sustained_presence": 1.5
+  },
+  "rules_on_negatives_%": {
+   "fast_motion": 46.0,
+   "reach_down": 43.5,
+   "sustained_presence": 23.5,
+   "unattended_object": 9.5,
+   "object_appeared": 5.0
+  }
+ },
+ "YOLOE object rules alone": {
+  "positives": 200,
+  "negatives": 200,
+  "hit@5s_%": 5.5,
+  "chance@5s_%": 5.6,
+  "hit@10s_%": 8.0,
+  "chance@10s_%": 8.1,
+  "hit@end_%": 14.0,
+  "chance@end_%": 11.7,
+  "neg_any_%": 9.0,
+  "neg_cand_per_min": 0.32,
+  "hit@10s_by": {
+   "day": "15/165 (9.1%)",
+   "dynamic": "6/100 (6.0%)",
+   "night": "1/35 (2.9%)",
+   "static": "10/100 (10.0%)"
+  },
+  "rules_in_10s_window_%": {
+   "object_appeared": 6.5,
+   "unattended_object": 1.5
+  },
+  "rules_on_negatives_%": {
+   "unattended_object": 6.5,
+   "object_appeared": 4.0
+  }
+ },
+ "rules + YOLOE object rules": {
+  "positives": 200,
+  "negatives": 200,
+  "hit@5s_%": 33.0,
+  "chance@5s_%": 29.7,
+  "hit@10s_%": 39.0,
+  "chance@10s_%": 35.3,
+  "hit@end_%": 45.5,
+  "chance@end_%": 40.5,
+  "neg_any_%": 72.0,
+  "neg_cand_per_min": 14.19,
+  "hit@10s_by": {
+   "day": "63/165 (38.2%)",
+   "dynamic": "22/100 (22.0%)",
+   "night": "15/35 (42.9%)",
+   "static": "56/100 (56.0%)"
+  },
+  "rules_in_10s_window_%": {
+   "reach_down": 26.0,
+   "fast_motion": 8.0,
+   "object_appeared": 7.5,
+   "unattended_object": 3.0,
+   "sustained_presence": 1.5
+  },
+  "rules_on_negatives_%": {
+   "fast_motion": 46.0,
+   "reach_down": 43.5,
+   "sustained_presence": 23.5,
+   "unattended_object": 15.5,
+   "object_appeared": 7.5
+  }
+ }
+}
