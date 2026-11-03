@@ -1,0 +1,59 @@
+{
+ "yolo26s.pt": {
+  "bag_found_%@0.2": 18.4,
+  "bag_found_%@0.1": 29.4,
+  "videos_seen(>=30% frames@0.2)": 2,
+  "median_conf_per_video": {
+   "video1": 0.31,
+   "video2": 0.0,
+   "video3": 0.0,
+   "video4": 0.0,
+   "video5": 0.0,
+   "video6": 0.0,
+   "video7": 0.16,
+   "video8": 0.0,
+   "video9": 0.0,
+   "video10": 0.38
+  },
+  "clutter_per_frame@0.2": 0.21,
+  "cpu_ms": 49
+ },
+ "yolo26m.pt": {
+  "bag_found_%@0.2": 29.8,
+  "bag_found_%@0.1": 30.8,
+  "videos_seen(>=30% frames@0.2)": 3,
+  "median_conf_per_video": {
+   "video1": 0.42,
+   "video2": 0.0,
+   "video3": 0.0,
+   "video4": 0.0,
+   "video5": 0.0,
+   "video6": 0.0,
+   "video7": 0.0,
+   "video8": 0.63,
+   "video9": 0.0,
+   "video10": 0.74
+  },
+  "clutter_per_frame@0.2": 0.09,
+  "cpu_ms": 104
+ },
+ "yolo26l.pt": {
+  "bag_found_%@0.2": 31.4,
+  "bag_found_%@0.1": 36.5,
+  "videos_seen(>=30% frames@0.2)": 3,
+  "median_conf_per_video": {
+   "video1": 0.39,
+   "video2": 0.0,
+   "video3": 0.0,
+   "video4": 0.0,
+   "video5": 0.0,
+   "video6": 0.0,
+   "video7": 0.0,
+   "video8": 0.4,
+   "video9": 0.09,
+   "video10": 0.83
+  },
+  "clutter_per_frame@0.2": 0.12,
+  "cpu_ms": 131
+ }
+}
