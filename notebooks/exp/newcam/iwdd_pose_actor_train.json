@@ -1,0 +1,132 @@
+{
+ "rules only": {
+  "iwdd_train": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 30.0,
+   "chance@5s_%": 25.8,
+   "hit@10s_%": 34.5,
+   "chance@10s_%": 30.4,
+   "hit@end_%": 40.5,
+   "chance@end_%": 35.5,
+   "neg_any_%": 69.0,
+   "neg_cand_per_min": 13.87,
+   "hit@10s_by": {
+    "day": "55/165 (33.3%)",
+    "dynamic": "18/100 (18.0%)",
+    "night": "14/35 (40.0%)",
+    "static": "51/100 (51.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "reach_down": 26.0,
+    "fast_motion": 8.0,
+    "object_appeared": 2.5,
+    "unattended_object": 1.5,
+    "sustained_presence": 1.5
+   },
+   "rules_on_negatives_%": {
+    "fast_motion": 46.0,
+    "reach_down": 43.5,
+    "sustained_presence": 23.5,
+    "unattended_object": 9.5,
+    "object_appeared": 5.0
+   }
+  }
+ },
+ "rules + old cue": {
+  "threshold": 0.833,
+  "iwdd_train": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 34.5,
+   "chance@5s_%": 28.5,
+   "hit@10s_%": 38.0,
+   "chance@10s_%": 33.2,
+   "hit@end_%": 43.0,
+   "chance@end_%": 38.0,
+   "neg_any_%": 70.5,
+   "neg_cand_per_min": 16.1,
+   "hit@10s_by": {
+    "day": "60/165 (36.4%)",
+    "dynamic": "22/100 (22.0%)",
+    "night": "16/35 (45.7%)",
+    "static": "54/100 (54.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "reach_down": 26.0,
+    "pose_action": 8.5,
+    "fast_motion": 8.0,
+    "object_appeared": 2.5,
+    "unattended_object": 1.5,
+    "sustained_presence": 1.5
+   },
+   "rules_on_negatives_%": {
+    "fast_motion": 46.0,
+    "reach_down": 43.5,
+    "pose_action": 31.0,
+    "sustained_presence": 23.5,
+    "unattended_object": 9.5,
+    "object_appeared": 5.0
+   }
+  },
+  "littering_tune_event_%": 97.0,
+  "littering_tune_crop_%": 83.0,
+  "littering_tune_cue_alone_crop_%": 66.5,
+  "avenue_normal_cue_per_min": 0.98
+ },
+ "rules + actor-labelled cue": {
+  "threshold": 0.847,
+  "iwdd_train": {
+   "positives": 200,
+   "negatives": 200,
+   "hit@5s_%": 43.0,
+   "chance@5s_%": 37.8,
+   "hit@10s_%": 46.5,
+   "chance@10s_%": 42.7,
+   "hit@end_%": 49.0,
+   "chance@end_%": 46.4,
+   "neg_any_%": 72.0,
+   "neg_cand_per_min": 17.03,
+   "hit@10s_by": {
+    "day": "74/165 (44.8%)",
+    "dynamic": "34/100 (34.0%)",
+    "night": "19/35 (54.3%)",
+    "static": "59/100 (59.0%)"
+   },
+   "rules_in_10s_window_%": {
+    "pose_action": 31.0,
+    "reach_down": 26.0,
+    "fast_motion": 8.0,
+    "object_appeared": 2.5,
+    "unattended_object": 1.5,
+    "sustained_presence": 1.5
+   },
+   "rules_on_negatives_%": {
+    "fast_motion": 46.0,
+    "reach_down": 43.5,
+    "pose_action": 40.0,
+    "sustained_presence": 23.5,
+    "unattended_object": 9.5,
+    "object_appeared": 5.0
+   }
+  },
+  "littering_tune_event_%": 92.2,
+  "littering_tune_crop_%": 77.0,
+  "littering_tune_cue_alone_crop_%": 52.2,
+  "avenue_normal_cue_per_min": 0.98
+ },
+ "actor metrics (IWDD train labelled videos)": {
+  "current cue": {
+   "actor_auc": 0.588,
+   "pairs": 532,
+   "videos_with_candidate": 18,
+   "first_candidate_on_dumper": 17
+  },
+  "actor-labelled cue (out-of-fold)": {
+   "actor_auc": 0.78,
+   "pairs": 532,
+   "videos_with_candidate": 57,
+   "first_candidate_on_dumper": 49
+  }
+ }
+}

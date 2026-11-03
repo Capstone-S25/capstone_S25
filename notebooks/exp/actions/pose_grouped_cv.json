@@ -1,0 +1,19 @@
+{
+ "threshold": 0.808,
+ "folds": "by (action, source video)",
+ "all 330 clips": {
+  "rules": "75.5/55.8",
+  "frozen cue alone": "90.6/84.5",
+  "grouped-CV cue alone": "88.2/77.0",
+  "rules + frozen cue": "97.6/93.3",
+  "rules + grouped-CV cue": "96.4/90.0"
+ },
+ "former held-out 100 clips": {
+  "rules": "72.0/56.0",
+  "frozen cue alone": "81.0/64.0",
+  "grouped-CV cue alone": "87.0/77.0",
+  "rules + frozen cue": "97.0/86.0",
+  "rules + grouped-CV cue": "97.0/92.0"
+ },
+ "note": "frozen cue = the shipped model; on 'all 330' it has trained on the 230 train clips (in-sample), on the former held-out it was never trained on those clips but did see their source videos"
+}
