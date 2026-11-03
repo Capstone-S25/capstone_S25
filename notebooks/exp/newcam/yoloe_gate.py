@@ -52,7 +52,9 @@ def score(cache, cfg):
         for e in lab[v]["events"]:
             total += 1
             b = e["box"]
-            hit = [x for x in evs if x["timestamp_s"] >= e["t_put_down"] - 2 and intersection_over(b, x["roi_box"]) >= 0.3]
+            end = e["t_removed"] - 2 if e["t_removed"] is not None else float("inf")  # not the pick-up
+            hit = [x for x in evs if e["t_put_down"] - 2 <= x["timestamp_s"] <= end and
+                   intersection_over(b, x["roi_box"]) >= 0.3]
             ever = any(o.t >= e["t_unattended"] and any(intersection_over(b, it["box"]) >= 0.3 or
                                                        intersection_over(it["box"], b) >= 0.3 for it in o.items)
                        for o in r.observations)

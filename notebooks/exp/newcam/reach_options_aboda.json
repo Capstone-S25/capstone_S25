@@ -1,7 +1,7 @@
 {
  "current": {
   "setting": {},
-  "aboda_bags_caught": "8/11",
+  "aboda_bags_caught": "6/11",
   "heldout": {
    "littering": "97.0/86.0",
    "avenue": "80.0/65.0",
@@ -18,12 +18,8 @@
    "video5@37.3": [
     "reach_down"
    ],
-   "video6@114": [
-    "reach_down"
-   ],
-   "video6@179": [
-    "reach_down"
-   ],
+   "video6@114": [],
+   "video6@179": [],
    "video7@120.25": [
     "fast_motion",
     "unattended_object"
@@ -46,7 +42,7 @@
    "reach_hand_pad_h": 0.25,
    "reach_refire_move_h": 1.0
   },
-  "aboda_bags_caught": "10/11",
+  "aboda_bags_caught": "8/11",
   "heldout": {
    "littering": "97.0/85.0",
    "avenue": "80.0/65.0",
@@ -67,12 +63,8 @@
    "video5@37.3": [
     "reach_down"
    ],
-   "video6@114": [
-    "reach_down"
-   ],
-   "video6@179": [
-    "reach_down"
-   ],
+   "video6@114": [],
+   "video6@179": [],
    "video7@120.25": [
     "fast_motion",
     "unattended_object"
