@@ -1,0 +1,77 @@
+{
+ "cpu": "Apple M3 Pro",
+ "threads": "all",
+ "fps": 5,
+ "walkway, busy (Avenue, 640x360)": {
+  "read": {
+   "median": 0.6,
+   "p95": 0.9
+  },
+  "det": {
+   "median": 44.7,
+   "p95": 46.4
+  },
+  "pose": {
+   "median": 49.0,
+   "p95": 50.5
+  },
+  "rules": {
+   "median": 0.6,
+   "p95": 1.0
+  },
+  "frame": {
+   "median": 95.9,
+   "p95": 99.2
+  },
+  "people_per_frame": 6.9,
+  "frames": 150
+ },
+ "indoor CCTV (ABODA, 720x480)": {
+  "read": {
+   "median": 1.3,
+   "p95": 1.5
+  },
+  "det": {
+   "median": 51.4,
+   "p95": 54.6
+  },
+  "pose": {
+   "median": 55.0,
+   "p95": 57.6
+  },
+  "rules": {
+   "median": 0.0,
+   "p95": 0.5
+  },
+  "frame": {
+   "median": 107.3,
+   "p95": 111.8
+  },
+  "people_per_frame": 0.5,
+  "frames": 150
+ },
+ "street, 1080p (IWDD)": {
+  "read": {
+   "median": 1.4,
+   "p95": 1.7
+  },
+  "det": {
+   "median": 45.7,
+   "p95": 47.1
+  },
+  "pose": {
+   "median": 0.0,
+   "p95": 50.6
+  },
+  "rules": {
+   "median": 0.0,
+   "p95": 0.4
+  },
+  "frame": {
+   "median": 48.7,
+   "p95": 99.2
+  },
+  "people_per_frame": 0.5,
+  "frames": 96
+ }
+}
