@@ -14,6 +14,7 @@ Research scripts are grouped by workflow. Run their modules from the repository 
 | `generalization/` | New-source and complete-stream pilot experiments | `python -m scripts.generalization.run_generalization_pilot --help` |
 | `expanded/` | Earlier expanded accuracy assembly and reports | `python -m scripts.expanded.run_expanded_accuracy --help` |
 | `reporting/` | Paper/deck construction and validation | `python -m scripts.reporting.build_technical_runthrough --help` |
+| `deployment/` | Portable CPU runtime packaging, integrity checks and launchers | `python scripts/deployment/cpu.py --help` |
 
 Some historical builders run their dated build directly rather than exposing a help parser. Consult the study guide before running them. Never rebuild a dated experiment over an existing frozen output to accommodate a code change.
 
