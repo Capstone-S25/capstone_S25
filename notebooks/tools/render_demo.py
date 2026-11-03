@@ -57,22 +57,34 @@ def merged(windows):
 
 
 def render_sequence(writer, g, res, events, title: str, subtitle: str, cfg: GateConfig, hold_s: float = 1.2,
-                    repeat_frames: int = 1, labels=None):
-    """labels: list of (t0, t1, text) describing the labelled anomalies, shown while they happen."""
+                    repeat_frames: int = 1, labels=None, window=None, label_prefix="True anomaly: "):
+    """labels: list of (t0, t1, text) describing the labelled anomalies, shown while they happen (and drawn on the
+    red timeline row when the sequence has no frame-level ground truth). window: (t0, t1) seconds to render; the
+    tracker and rules still see every earlier frame. Frames are streamed, so long or 1080p videos fit in memory."""
     obs = res.observations
     t0, t1 = obs[0].t, obs[-1].t + 1.0 / res.fps
+    if window:
+        t0, t1 = max(t0, window[0]), min(t1, window[1])
     span = max(1e-6, t1 - t0)
-    gt_times = [o.t for o in obs if o.index in g.gt]
+    gt_times = [o.t for o in obs if o.index in g.gt and t0 <= o.t <= t1]
     windows = merged([e["clip_window_s"] for e in events])
-    forwarded = sum(any(a <= o.t <= b for a, b in windows) for o in obs) / len(obs)
+    shown = [o for o in obs if t0 <= o.t <= t1] or obs
+    forwarded = sum(any(a <= o.t <= b for a, b in windows) for o in shown) / len(shown)
     engine = RuleEngine(cfg, res.fps)
     queue = []
     by_time = sorted(events, key=lambda e: e["timestamp_s"])
     k = 0
-    frames = {fr.index: fr.image for fr in g.seq}
+    frames = iter(g.seq)
+    fr = None
     for o in obs:
         engine.step(o)
-        img = frames[o.index]
+        while fr is None or fr.index < o.index:
+            fr = next(frames)
+        if not t0 - 1e-6 <= o.t <= t1:
+            while k < len(by_time) and by_time[k]["timestamp_s"] <= o.t + 1e-6:
+                k += 1
+            continue
+        img = fr.image
         sx, sy = VW / img.shape[1], VH / img.shape[0]
         view = cv2.resize(img, (VW, VH), interpolation=cv2.INTER_AREA)
         lw = 2
@@ -107,9 +119,9 @@ def render_sequence(writer, g, res, events, title: str, subtitle: str, cfg: Gate
         canvas = np.full((H, W, 3), 28, np.uint8)
         canvas[40:40 + VH, 10:10 + VW] = view
         text(canvas, title, (12, 28), 0.8, (255, 255, 255), 2)
-        now = [s for a, b, s in (labels or []) if a - 0.3 <= o.t - t0 <= b + 0.3]
+        now = [s for a, b, s in (labels or []) if a - 0.3 <= o.t - (0 if window else t0) <= b + 0.3]
         if now:
-            text(canvas, "True anomaly: " + now[0], (16, 40 + VH - 14), 0.75, (110, 110, 255), 2, box=True)
+            text(canvas, label_prefix + now[0], (16, 40 + VH - 14), 0.75, (110, 110, 255), 2, box=True)
         text(canvas, subtitle, (420, 28), 0.6, (190, 190, 190), 1)
 
         text(canvas, "Sent to the VLM", (PANEL_X, 70), 0.75, (90, 170, 255), 2)
@@ -133,6 +145,9 @@ def render_sequence(writer, g, res, events, title: str, subtitle: str, cfg: Gate
         cv2.rectangle(canvas, (x0, TL_Y), (x1b, TL_Y + 22), (55, 55, 55), -1)
         for t in gt_times:
             cv2.rectangle(canvas, (tx(t), TL_Y), (tx(t + 1.0 / res.fps) + 1, TL_Y + 22), (60, 60, 230), -1)
+        if not g.gt and window:
+            for a, b, _ in labels or []:
+                cv2.rectangle(canvas, (tx(max(a, t0)), TL_Y), (tx(min(b, t1)), TL_Y + 22), (60, 60, 230), -1)
         rows = [("sent to the VLM", windows, (40, 150, 255), TL_Y + 50)]
         for label, wins, col, yy in rows:
             text(canvas, label, (x0, yy - 6), 0.5, col, 1)
