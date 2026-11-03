@@ -372,3 +372,9 @@ Rule by rule at 12.5 vs 5 fps (rule alone; littering tune clips, Avenue tune nor
   cuts reach_down false alarms on IWDD train normal videos 5.26 → 4.34/min (videos with any: 43 → 36.5 %) and raises
   the IWDD train lead over chance +5.0 → +6.8. ABODA unchanged at 8/11; the walking fire at 65.6 s in video2 is gone,
   the real put-down bend at 69.0 s stays. Off by default like the other reach options.
+* **Reach options now ON by default** (reach_hand_pad_h 0.25, reach_refire_move_h 1.0, reach_max_speed_h 0.45).
+  Scored once (`exp/final_defaults.py` → `final_defaults.json`), old → new: littering held-out 97/86 → 97/85, loitering
+  80/65 → 80/65, smoking 43.7/15.4 → 43.7/15.4, normal FA 6.45 → 6.26/min, IWDD test hit@10s vs chance 56.0 vs 42.1 →
+  52.0 vs 38.6 (same +13 lead, fewer candidates), ABODA bags 6/11 → 8/11. Demo videos re-rendered with the defaults
+  (`tools/make_showcase.py`): ABODA video2 moved from the misses reel to the works reel ("caught through the person"),
+  video6 (night corridor) is now the bag miss; title cards say "footage not used for tuning".
