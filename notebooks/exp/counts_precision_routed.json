@@ -1,0 +1,52 @@
+{
+ "littering": {
+  "incidents": 100,
+  "caught": 97,
+  "right_person": 85,
+  "alerts": 184,
+  "alerts_on_incident": 91,
+  "minutes": 5.0,
+  "recall_%": 97,
+  "precision_%": 49
+ },
+ "littering: throwing on a walkway (Avenue)": {
+  "incidents": 10,
+  "caught": 10,
+  "right_person": 8,
+  "alerts": 22,
+  "alerts_on_incident": 10,
+  "minutes": 10.1,
+  "recall_%": 100,
+  "precision_%": 45
+ },
+ "smoking": {
+  "incidents": 364,
+  "caught": 38,
+  "right_person": 13,
+  "alerts": 51,
+  "alerts_on_incident": 13,
+  "minutes": 63.5,
+  "recall_%": 10,
+  "precision_%": 25
+ },
+ "illegal dumping": {
+  "incidents": 50,
+  "caught": 22,
+  "right_person": null,
+  "alerts": 153,
+  "alerts_on_incident": 23,
+  "minutes": 37.3,
+  "recall_%": 44,
+  "precision_%": 15
+ },
+ "unattended items": {
+  "incidents": 11,
+  "caught": 8,
+  "right_person": null,
+  "alerts": 81,
+  "alerts_on_incident": 12,
+  "minutes": 20.9,
+  "recall_%": 73,
+  "precision_%": 15
+ }
+}

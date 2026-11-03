@@ -10,11 +10,12 @@ Current GateConfig defaults, rules + pose cue, footage not used for tuning:
               [onset - 1 s, onset + 10 s]; caught = any such alert
   bags        ABODA: an alert is "on the incident" if its crop covers a labelled bag between put-down - 2 s and
               removal - 2 s; caught = any such alert
-Only alerts ROUTED to the event's VLM question count (data-pipeline TASKS_BY_EVENT): an alert raised for another
-event (e.g. "stays put" on ABODA) is not a false alarm for that event.
+Counted BY PERSON (default): every alert counts, and an alert is a catch if it puts the incident person / bag in front
+of the VLM at the right time, whichever rule fired (the VLM can then answer any question about them). With --routed,
+only alerts routed to the event's VLM question count (data-pipeline TASKS_BY_EVENT).
 "Right person" counts an incident only when an alert's crop is on the labelled person (littering / loitering /
 smoking); dumping and bags have no person boxes.
-Usage (from notebooks/): ../.venv/bin/python exp/counts_precision.py   -> exp/counts_precision.json
+Usage (from notebooks/): ../.venv/bin/python exp/counts_precision.py [--routed]   -> exp/counts_precision[_routed].json
 """
 import json
 import pickle
@@ -59,6 +60,8 @@ ROUTE = {"littering": {"reach_down", "pose_action", "object_appeared", "unattend
 
 
 def routed(m, event):
+    if "--routed" not in sys.argv:
+        return m
     return lambda r, ds: [e for e in m(r, ds) if e["event_type"] in ROUTE[event]]
 
 
@@ -123,7 +126,8 @@ def main():
         v["recall_%"] = round(100 * v["caught"] / v["incidents"])
         v["precision_%"] = round(100 * v["alerts_on_incident"] / v["alerts"]) if v["alerts"] else None
         print(k, json.dumps(v), flush=True)
-    (NB / "exp" / "counts_precision.json").write_text(json.dumps(out, indent=1))
+    name = "counts_precision_routed.json" if "--routed" in sys.argv else "counts_precision.json"
+    (NB / "exp" / name).write_text(json.dumps(out, indent=1))
 
 
 if __name__ == "__main__":
