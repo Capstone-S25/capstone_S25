@@ -37,6 +37,11 @@ format failures. See the dated integration report for measured request times and
 rejected iterations. This is a workstation-specific recommendation; CPU and
 multi-camera capacity are separate questions.
 
+For a CPU-only transfer, use the trained MobileCLIP2-S2 bundle and the
+[CPU packaging and deployment guide](cpu_deployment.md). Its launcher explicitly
+sets both model devices to CPU and uses a portable offline model cache. It
+packages the existing implementation; the two-second target remains unmet.
+
 ## Run from this checkout
 
 The ingestion runtime requires Python 3.12, FFmpeg and PostgreSQL for the database
