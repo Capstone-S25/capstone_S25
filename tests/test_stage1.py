@@ -316,7 +316,8 @@ class RuleTests(unittest.TestCase):
         k = np.zeros((17, 3), np.float32)
         k[13] = (125, 250, 0.9)
         k[9] = (128, 260, 0.9)
-        cfg = GateConfig(rules=("reach_down",))
+        # The geometry only: the verifier needs a second of movement, which one frame does not have.
+        cfg = GateConfig(rules=("reach_down",), reach_verifier=False)
         self.assertEqual(
             len(run(cfg, [obs(0, [person(1, (100, 100, 150, 300), kpts=k)])])[0]), 1
         )
