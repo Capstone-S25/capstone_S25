@@ -1,0 +1,182 @@
+{
+ "now": {
+  "auc_even": 0.831,
+  "even": [
+   {
+    "thr": 0.0,
+    "fpr_%": 32.7,
+    "flagged": "587/1795",
+    "alerts": 1691,
+    "quiet_alerts_min": 1.7,
+    "smoking": "90/116",
+    "littering": "245/267",
+    "lingering 20s+": "81/81",
+    "lingering 60s+": "17/17"
+   },
+   {
+    "thr": 0.2,
+    "fpr_%": 29.1,
+    "flagged": "522/1795",
+    "alerts": 1589,
+    "quiet_alerts_min": 1.47,
+    "smoking": "89/116",
+    "littering": "244/267",
+    "lingering 20s+": "81/81",
+    "lingering 60s+": "17/17"
+   },
+   {
+    "thr": 0.3,
+    "fpr_%": 25.1,
+    "flagged": "451/1795",
+    "alerts": 1479,
+    "quiet_alerts_min": 1.3,
+    "smoking": "89/116",
+    "littering": "244/267",
+    "lingering 20s+": "81/81",
+    "lingering 60s+": "17/17"
+   },
+   {
+    "thr": 0.4,
+    "fpr_%": 21.3,
+    "flagged": "383/1795",
+    "alerts": 1334,
+    "quiet_alerts_min": 1.14,
+    "smoking": "83/116",
+    "littering": "240/267",
+    "lingering 20s+": "81/81",
+    "lingering 60s+": "17/17"
+   },
+   {
+    "thr": 0.5,
+    "fpr_%": 18.6,
+    "flagged": "334/1795",
+    "alerts": 1208,
+    "quiet_alerts_min": 1.03,
+    "smoking": "80/116",
+    "littering": "235/267",
+    "lingering 20s+": "81/81",
+    "lingering 60s+": "17/17"
+   }
+  ]
+ },
+ "now+diff": {
+  "auc_even": 0.833,
+  "even": [
+   {
+    "thr": 0.0,
+    "fpr_%": 32.7,
+    "flagged": "587/1795",
+    "alerts": 1691,
+    "quiet_alerts_min": 1.7,
+    "smoking": "90/116",
+    "littering": "245/267",
+    "lingering 20s+": "81/81",
+    "lingering 60s+": "17/17"
+   },
+   {
+    "thr": 0.2,
+    "fpr_%": 28.6,
+    "flagged": "513/1795",
+    "alerts": 1583,
+    "quiet_alerts_min": 1.49,
+    "smoking": "90/116",
+    "littering": "244/267",
+    "lingering 20s+": "81/81",
+    "lingering 60s+": "17/17"
+   },
+   {
+    "thr": 0.3,
+    "fpr_%": 24.1,
+    "flagged": "433/1795",
+    "alerts": 1469,
+    "quiet_alerts_min": 1.28,
+    "smoking": "89/116",
+    "littering": "244/267",
+    "lingering 20s+": "81/81",
+    "lingering 60s+": "17/17"
+   },
+   {
+    "thr": 0.4,
+    "fpr_%": 20.7,
+    "flagged": "372/1795",
+    "alerts": 1327,
+    "quiet_alerts_min": 1.14,
+    "smoking": "86/116",
+    "littering": "241/267",
+    "lingering 20s+": "81/81",
+    "lingering 60s+": "17/17"
+   },
+   {
+    "thr": 0.5,
+    "fpr_%": 18.4,
+    "flagged": "331/1795",
+    "alerts": 1204,
+    "quiet_alerts_min": 1.04,
+    "smoking": "80/116",
+    "littering": "233/267",
+    "lingering 20s+": "81/81",
+    "lingering 60s+": "17/17"
+   }
+  ]
+ },
+ "all": {
+  "auc_even": 0.874,
+  "even": [
+   {
+    "thr": 0.0,
+    "fpr_%": 32.7,
+    "flagged": "587/1795",
+    "alerts": 1691,
+    "quiet_alerts_min": 1.7,
+    "smoking": "90/116",
+    "littering": "245/267",
+    "lingering 20s+": "81/81",
+    "lingering 60s+": "17/17"
+   },
+   {
+    "thr": 0.2,
+    "fpr_%": 25.2,
+    "flagged": "452/1795",
+    "alerts": 1512,
+    "quiet_alerts_min": 1.3,
+    "smoking": "89/116",
+    "littering": "244/267",
+    "lingering 20s+": "81/81",
+    "lingering 60s+": "17/17"
+   },
+   {
+    "thr": 0.3,
+    "fpr_%": 21.9,
+    "flagged": "393/1795",
+    "alerts": 1423,
+    "quiet_alerts_min": 1.17,
+    "smoking": "88/116",
+    "littering": "242/267",
+    "lingering 20s+": "81/81",
+    "lingering 60s+": "17/17"
+   },
+   {
+    "thr": 0.4,
+    "fpr_%": 20.5,
+    "flagged": "368/1795",
+    "alerts": 1321,
+    "quiet_alerts_min": 1.11,
+    "smoking": "86/116",
+    "littering": "242/267",
+    "lingering 20s+": "81/81",
+    "lingering 60s+": "17/17"
+   },
+   {
+    "thr": 0.5,
+    "fpr_%": 18.5,
+    "flagged": "332/1795",
+    "alerts": 1234,
+    "quiet_alerts_min": 1.03,
+    "smoking": "82/116",
+    "littering": "235/267",
+    "lingering 20s+": "81/81",
+    "lingering 60s+": "17/17"
+   }
+  ]
+ }
+}

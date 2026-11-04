@@ -1,0 +1,128 @@
+{
+ "train": {
+  "n": 780,
+  "pos": 396
+ },
+ "test": {
+  "n": 1099,
+  "pos": 687
+ },
+ "auc_even": {
+  "reach_down": 0.84,
+  "pose_action": 0.798
+ },
+ "even": [
+  {
+   "probe_thr": {
+    "reach_down": 0.0,
+    "pose_action": 0.0
+   },
+   "fpr_%": 32.7,
+   "flagged": "587/1795",
+   "alerts": 1691,
+   "quiet_alerts_min": 1.7,
+   "smoking": "90/116",
+   "littering": "245/267",
+   "lingering 20s+": "81/81",
+   "lingering 60s+": "17/17"
+  },
+  {
+   "probe_thr": {
+    "reach_down": 0.3,
+    "pose_action": 0.0
+   },
+   "fpr_%": 25.7,
+   "flagged": "462/1795",
+   "alerts": 1497,
+   "quiet_alerts_min": 1.29,
+   "smoking": "87/116",
+   "littering": "242/267",
+   "lingering 20s+": "81/81",
+   "lingering 60s+": "17/17"
+  },
+  {
+   "probe_thr": {
+    "reach_down": 0.4,
+    "pose_action": 0.0
+   },
+   "fpr_%": 21.9,
+   "flagged": "394/1795",
+   "alerts": 1357,
+   "quiet_alerts_min": 1.12,
+   "smoking": "85/116",
+   "littering": "238/267",
+   "lingering 20s+": "81/81",
+   "lingering 60s+": "17/17"
+  },
+  {
+   "probe_thr": {
+    "reach_down": 0.5,
+    "pose_action": 0.0
+   },
+   "fpr_%": 18.8,
+   "flagged": "337/1795",
+   "alerts": 1209,
+   "quiet_alerts_min": 0.99,
+   "smoking": "80/116",
+   "littering": "231/267",
+   "lingering 20s+": "81/81",
+   "lingering 60s+": "17/17"
+  },
+  {
+   "probe_thr": {
+    "reach_down": 0.4,
+    "pose_action": 0.1
+   },
+   "fpr_%": 21.8,
+   "flagged": "391/1795",
+   "alerts": 1347,
+   "quiet_alerts_min": 1.1,
+   "smoking": "85/116",
+   "littering": "238/267",
+   "lingering 20s+": "81/81",
+   "lingering 60s+": "17/17"
+  },
+  {
+   "probe_thr": {
+    "reach_down": 0.4,
+    "pose_action": 0.2
+   },
+   "fpr_%": 18.7,
+   "flagged": "336/1795",
+   "alerts": 1239,
+   "quiet_alerts_min": 0.93,
+   "smoking": "81/116",
+   "littering": "238/267",
+   "lingering 20s+": "80/81",
+   "lingering 60s+": "17/17"
+  },
+  {
+   "probe_thr": {
+    "reach_down": 0.5,
+    "pose_action": 0.1
+   },
+   "fpr_%": 18.6,
+   "flagged": "334/1795",
+   "alerts": 1199,
+   "quiet_alerts_min": 0.97,
+   "smoking": "80/116",
+   "littering": "231/267",
+   "lingering 20s+": "81/81",
+   "lingering 60s+": "17/17"
+  },
+  {
+   "probe_thr": {
+    "reach_down": 0.5,
+    "pose_action": 0.2
+   },
+   "fpr_%": 15.5,
+   "flagged": "279/1795",
+   "alerts": 1091,
+   "quiet_alerts_min": 0.8,
+   "smoking": "75/116",
+   "littering": "231/267",
+   "lingering 20s+": "80/81",
+   "lingering 60s+": "17/17"
+  }
+ ]
+}

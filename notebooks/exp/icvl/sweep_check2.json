@@ -1,0 +1,26 @@
+[
+ {
+  "setting": "current",
+  "alerts": 1150,
+  "quiet_alerts_min": 1.8,
+  "on_event": 553,
+  "smoking": "29/45",
+  "littering": "224/254",
+  "lingering 20s+": "43/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 608
+ },
+ {
+  "setting": {
+   "reach_verifier": false
+  },
+  "alerts": 1252,
+  "quiet_alerts_min": 2.01,
+  "on_event": 577,
+  "smoking": "30/45",
+  "littering": "224/254",
+  "lingering 20s+": "44/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 727
+ }
+]

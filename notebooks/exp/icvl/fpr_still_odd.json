@@ -1,0 +1,72 @@
+[
+ {
+  "setting": {
+   "crop_check": true
+  },
+  "fpr_%": 24.2,
+  "flagged": "366/1511",
+  "alerts": 995,
+  "quiet_alerts_min": 1.36,
+  "smoking": "30/45",
+  "littering": "234/254",
+  "lingering 20s+": "43/45",
+  "lingering 60s+": "10/10"
+ },
+ {
+  "setting": {
+   "crop_check": true,
+   "loiter_radius_h": 0.5
+  },
+  "fpr_%": 23.6,
+  "flagged": "357/1511",
+  "alerts": 983,
+  "quiet_alerts_min": 1.26,
+  "smoking": "30/45",
+  "littering": "234/254",
+  "lingering 20s+": "43/45",
+  "lingering 60s+": "10/10"
+ },
+ {
+  "setting": {
+   "crop_check": true,
+   "loiter_radius_h": 0.4
+  },
+  "fpr_%": 22.9,
+  "flagged": "346/1511",
+  "alerts": 971,
+  "quiet_alerts_min": 1.21,
+  "smoking": "30/45",
+  "littering": "234/254",
+  "lingering 20s+": "43/45",
+  "lingering 60s+": "10/10"
+ },
+ {
+  "setting": {
+   "crop_check": true,
+   "inview_area_h": 2.0
+  },
+  "fpr_%": 24.0,
+  "flagged": "363/1511",
+  "alerts": 994,
+  "quiet_alerts_min": 1.36,
+  "smoking": "30/45",
+  "littering": "234/254",
+  "lingering 20s+": "43/45",
+  "lingering 60s+": "10/10"
+ },
+ {
+  "setting": {
+   "crop_check": true,
+   "loiter_radius_h": 0.4,
+   "inview_area_h": 2.0
+  },
+  "fpr_%": 22.7,
+  "flagged": "343/1511",
+  "alerts": 971,
+  "quiet_alerts_min": 1.22,
+  "smoking": "30/45",
+  "littering": "234/254",
+  "lingering 20s+": "43/45",
+  "lingering 60s+": "10/10"
+ }
+]

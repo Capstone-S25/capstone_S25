@@ -1,0 +1,16 @@
+[
+ {
+  "setting": {
+   "crop_check": true,
+   "loiter_radius_h": 0.3
+  },
+  "fpr_%": 22.7,
+  "flagged": "343/1511",
+  "alerts": 955,
+  "quiet_alerts_min": 1.18,
+  "smoking": "30/45",
+  "littering": "234/254",
+  "lingering 20s+": "43/45",
+  "lingering 60s+": "10/10"
+ }
+]

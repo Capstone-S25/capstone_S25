@@ -1,0 +1,43 @@
+[
+ {
+  "setting": {
+   "crop_check": true
+  },
+  "fpr_%": 26.3,
+  "flagged": "472/1795",
+  "alerts": 1511,
+  "quiet_alerts_min": 1.31,
+  "smoking": "89/116",
+  "littering": "244/267",
+  "lingering 20s+": "81/81",
+  "lingering 60s+": "17/17"
+ },
+ {
+  "setting": {
+   "crop_check": true,
+   "loiter_radius_h": 0.4
+  },
+  "fpr_%": 25.0,
+  "flagged": "449/1795",
+  "alerts": 1462,
+  "quiet_alerts_min": 1.16,
+  "smoking": "87/116",
+  "littering": "244/267",
+  "lingering 20s+": "80/81",
+  "lingering 60s+": "17/17"
+ },
+ {
+  "setting": {
+   "crop_check": true,
+   "loiter_radius_h": 0.3
+  },
+  "fpr_%": 24.7,
+  "flagged": "443/1795",
+  "alerts": 1449,
+  "quiet_alerts_min": 1.12,
+  "smoking": "85/116",
+  "littering": "244/267",
+  "lingering 20s+": "80/81",
+  "lingering 60s+": "17/17"
+ }
+]

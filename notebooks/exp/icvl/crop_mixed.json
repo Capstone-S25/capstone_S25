@@ -1,0 +1,138 @@
+[
+ {
+  "setting": {
+   "reach_down": 0.2,
+   "pose_action": 0.2
+  },
+  "littering": "95.7/90.9",
+  "walkway_throws": "66.7/50.0",
+  "smoking": "44.1/18.2",
+  "walkway_alerts_min": 3.33,
+  "dumping_hit_vs_chance": "25.0 vs 20.8",
+  "dumping_lead": 4.2,
+  "dump_site_alerts_min": 3.24,
+  "dump_site_videos_with_alert_%": 47.0,
+  "icvl_odd_oof": {
+   "fpr_%": 22.2,
+   "flagged": "335/1511",
+   "alerts": 914,
+   "quiet_alerts_min": 1.07,
+   "smoking": "27/45",
+   "littering": "234/254",
+   "lingering 20s+": "43/45",
+   "lingering 60s+": "10/10"
+  },
+  "icvl_even": {
+   "fpr_%": 22.0,
+   "flagged": "395/1795",
+   "alerts": 1342,
+   "quiet_alerts_min": 0.96,
+   "smoking": "84/116",
+   "littering": "244/267",
+   "lingering 20s+": "80/81",
+   "lingering 60s+": "17/17"
+  }
+ },
+ {
+  "setting": {
+   "reach_down": 0.3,
+   "pose_action": 0.2
+  },
+  "littering": "95.2/90.9",
+  "walkway_throws": "66.7/50.0",
+  "smoking": "38.2/16.1",
+  "walkway_alerts_min": 3.13,
+  "dumping_hit_vs_chance": "22.5 vs 18.4",
+  "dumping_lead": 4.1,
+  "dump_site_alerts_min": 2.96,
+  "dump_site_videos_with_alert_%": 44.5,
+  "icvl_odd_oof": {
+   "fpr_%": 18.9,
+   "flagged": "286/1511",
+   "alerts": 842,
+   "quiet_alerts_min": 0.97,
+   "smoking": "24/45",
+   "littering": "234/254",
+   "lingering 20s+": "43/45",
+   "lingering 60s+": "10/10"
+  },
+  "icvl_even": {
+   "fpr_%": 18.7,
+   "flagged": "335/1795",
+   "alerts": 1236,
+   "quiet_alerts_min": 0.8,
+   "smoking": "80/116",
+   "littering": "242/267",
+   "lingering 20s+": "80/81",
+   "lingering 60s+": "17/17"
+  }
+ },
+ {
+  "setting": {
+   "reach_down": 0.3,
+   "pose_action": 0.3
+  },
+  "littering": "92.2/86.1",
+  "walkway_throws": "66.7/50.0",
+  "smoking": "37.1/15.9",
+  "walkway_alerts_min": 3.13,
+  "dumping_hit_vs_chance": "22.0 vs 18.3",
+  "dumping_lead": 3.7,
+  "dump_site_alerts_min": 2.78,
+  "dump_site_videos_with_alert_%": 44.0,
+  "icvl_odd_oof": {
+   "fpr_%": 18.1,
+   "flagged": "273/1511",
+   "alerts": 817,
+   "quiet_alerts_min": 0.9,
+   "smoking": "23/45",
+   "littering": "234/254",
+   "lingering 20s+": "43/45",
+   "lingering 60s+": "10/10"
+  },
+  "icvl_even": {
+   "fpr_%": 18.1,
+   "flagged": "325/1795",
+   "alerts": 1195,
+   "quiet_alerts_min": 0.78,
+   "smoking": "79/116",
+   "littering": "241/267",
+   "lingering 20s+": "80/81",
+   "lingering 60s+": "17/17"
+  }
+ },
+ {
+  "setting": {
+   "reach_down": 0.4,
+   "pose_action": 0.3
+  },
+  "littering": "89.1/83.5",
+  "walkway_throws": "66.7/50.0",
+  "smoking": "31.5/13.5",
+  "walkway_alerts_min": 3.13,
+  "dumping_hit_vs_chance": "19.5 vs 16.6",
+  "dumping_lead": 2.9,
+  "dump_site_alerts_min": 2.57,
+  "dump_site_videos_with_alert_%": 42.5,
+  "icvl_odd_oof": {
+   "fpr_%": 15.9,
+   "flagged": "240/1511",
+   "alerts": 760,
+   "quiet_alerts_min": 0.81,
+   "smoking": "22/45",
+   "littering": "233/254",
+   "lingering 20s+": "43/45",
+   "lingering 60s+": "10/10"
+  },
+  "icvl_even": {
+   "fpr_%": 16.2,
+   "flagged": "290/1795",
+   "alerts": 1112,
+   "quiet_alerts_min": 0.69,
+   "smoking": "78/116",
+   "littering": "238/267",
+   "lingering 20s+": "80/81",
+   "lingering 60s+": "17/17"
+  }
+ }
+]

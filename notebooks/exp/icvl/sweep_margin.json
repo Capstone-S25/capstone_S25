@@ -1,0 +1,52 @@
+[
+ {
+  "setting": "current",
+  "alerts": 1411,
+  "quiet_alerts_min": 3.1,
+  "on_event": 579,
+  "smoking": "30/45",
+  "littering": "226/254",
+  "lingering 20s+": "44/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 887
+ },
+ {
+  "setting": {
+   "reach_margin_h": -0.13
+  },
+  "alerts": 1197,
+  "quiet_alerts_min": 2.59,
+  "on_event": 521,
+  "smoking": "27/45",
+  "littering": "210/254",
+  "lingering 20s+": "44/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 659
+ },
+ {
+  "setting": {
+   "reach_margin_h": -0.11
+  },
+  "alerts": 1077,
+  "quiet_alerts_min": 2.39,
+  "on_event": 483,
+  "smoking": "25/45",
+  "littering": "185/254",
+  "lingering 20s+": "44/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 524
+ },
+ {
+  "setting": {
+   "reach_min_hits": 2
+  },
+  "alerts": 1123,
+  "quiet_alerts_min": 2.43,
+  "on_event": 501,
+  "smoking": "27/45",
+  "littering": "191/254",
+  "lingering 20s+": "44/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 577
+ }
+]

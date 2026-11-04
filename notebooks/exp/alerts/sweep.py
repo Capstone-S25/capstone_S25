@@ -30,6 +30,10 @@ from stage1_gate import DEFAULT_RULES, GateConfig  # noqa: E402
 from cached import CACHE, load_cached, splits  # noqa: E402
 
 def data():
+    # precomputed crop-check scores (crop_scores.py), so crop_check can be replayed on these frameless caches
+    import stage1_crop_check
+    for path in (q for q in CACHE.glob("crop_scores_*.pkl") if "_v1_" not in q.name):
+        stage1_crop_check.SCORES.update(pickle.loads(path.read_bytes()))
     S = splits(heldout=False)
     iw = load_cached("iwdd_train")
     have = {k: (CACHE / f"twowheel_{k}.pkl").exists() for k in ("litter_train", "avenue", "iwdd_train")}

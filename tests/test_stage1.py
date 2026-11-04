@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -387,6 +388,64 @@ class RuleTests(unittest.TestCase):
             ],
         )
         self.assertEqual(events, [])
+
+
+class StubCheck:
+    """Stands in for stage1_crop_check.CropCheck: no encoder, a fixed score."""
+
+    version, dt, threshold = 2, 0.5, 0.2
+
+    def __init__(self, score):
+        self.value, self.seen = score, []
+
+    def embed_crop(self, c):
+        return None if c is None else np.ones(4, np.float32)
+
+    def score_embeddings(self, embs):
+        self.seen.append([e is not None for e in embs])
+        return self.value
+
+
+class CropCheckTests(unittest.TestCase):
+    """The live crop check holds an alert, scores it on a background thread and releases or drops it."""
+
+    def engine(self, score):
+        cfg = GateConfig(rules=("loiter",), loiter_s=3.0, crop_check=True, crop_check_rules=("reach_down",))
+        eng = RuleEngine(cfg, FPS)
+        stub = StubCheck(score)
+        eng.crop_check["checks"] = {"sustained_presence": stub}
+        eng.crop_check["thr"] = {"sustained_presence": 0.2}
+        return eng, stub
+
+    def stream(self, eng, n):
+        img = np.zeros((720, 1280, 3), np.uint8)
+        out = []
+        for i in range(n):
+            out += [(i / FPS, e) for e in eng.step(obs(i, [person(1, (100, 100, 150, 300))]), img)]
+            time.sleep(0.002)   # frames arrive over time; the worker answers between them
+        return out
+
+    def test_held_alert_released_after_its_after_crop(self):
+        eng, stub = self.engine(0.9)
+        released = self.stream(eng, 60) + [(None, e) for e in eng.flush()]
+        self.assertEqual([e["event_type"] for _, e in released], ["sustained_presence"])
+        t_release, e = released[0]
+        self.assertGreaterEqual(t_release, 3.0 + StubCheck.dt - 1e-6)   # not before the "after" crop
+        self.assertEqual(e["crop_score"], 0.9)
+        self.assertAlmostEqual(e.pop("_t"), 3.0, places=1)              # the alert's own frame and time
+        self.assertIsNotNone(e.pop("_frame"))
+        self.assertEqual(stub.seen, [[True, True, True]])               # before, now and after crops
+
+    def test_low_score_drops_the_alert(self):
+        eng, _ = self.engine(0.05)
+        self.assertEqual(self.stream(eng, 60) + eng.flush(), [])
+
+    def test_flush_releases_alerts_held_at_the_end(self):
+        eng, stub = self.engine(0.9)
+        self.assertEqual(self.stream(eng, 32), [])                      # fired at 3.0 s, stream ends at 3.1 s
+        events = eng.flush()
+        self.assertEqual([e["event_type"] for e in events], ["sustained_presence"])
+        self.assertEqual(stub.seen, [[True, True, False]])              # no "after" crop
 
 
 class StitchTests(unittest.TestCase):

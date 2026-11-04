@@ -113,8 +113,10 @@ def render_sequence(writer, g, res, events, title: str, subtitle: str, cfg: Gate
             if 0 <= o.t - e["timestamp_s"] <= hold_s:
                 x1, y1, x2, y2 = e["roi_box"]
                 p1, p2 = (int(x1 * sx), int(y1 * sy)), (int(x2 * sx), int(y2 * sy))
-                cv2.rectangle(view, p1, p2, (40, 150, 255), 4)
-                text(view, label_of(e["event_type"]), (p1[0], min(VH - 8, p2[1] + 24)), 0.7, (90, 170, 255), 2, box=True)
+                col = tuple(e.get("colour", (40, 150, 255)))
+                cv2.rectangle(view, p1, p2, col, 4)
+                text(view, e.get("caption") or label_of(e["event_type"]), (p1[0], min(VH - 8, p2[1] + 24)), 0.7,
+                     col, 2, box=True)
 
         canvas = np.full((H, W, 3), 28, np.uint8)
         canvas[40:40 + VH, 10:10 + VW] = view

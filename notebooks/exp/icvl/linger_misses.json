@@ -1,0 +1,515 @@
+{
+ "incidents": 126,
+ "missed": 30,
+ "misses": [
+  {
+   "seq": "icvl/02/AA_001_02_20140802_03",
+   "tag": "02/AA_001_02_20140802_03.txt",
+   "pid": 1,
+   "t0": 32.9,
+   "t1": 63.7,
+   "dur_s": 30.8,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 30.6,
+   "feet_radius_h": 0.17,
+   "person_h_px": 187,
+   "other_rules": [
+    "long_presence"
+   ]
+  },
+  {
+   "seq": "icvl/02/AA_007_02_20140802_03",
+   "tag": "02/AA_007_02_20140802_03.txt",
+   "pid": 2,
+   "t0": 70.5,
+   "t1": 102.8,
+   "dur_s": 32.3,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 32.2,
+   "feet_radius_h": 0.13,
+   "person_h_px": 208,
+   "other_rules": [
+    "long_presence",
+    "pose_action"
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-001-02-20151003-01",
+   "tag": "02/AR-001-02-20151003-01.txt",
+   "pid": 2,
+   "t0": 45.9,
+   "t1": 96.1,
+   "dur_s": 50.2,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 50.0,
+   "feet_radius_h": 0.18,
+   "person_h_px": 298,
+   "other_rules": [
+    "long_presence",
+    "pose_action",
+    "reach_down"
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-001-02-20151003-01",
+   "tag": "02/AR-001-02-20151003-01.txt",
+   "pid": 2,
+   "t0": 106.5,
+   "t1": 136.8,
+   "dur_s": 30.3,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 30.2,
+   "feet_radius_h": 0.1,
+   "person_h_px": 297,
+   "other_rules": [
+    "long_presence",
+    "pose_action"
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-001-02-20151003-01",
+   "tag": "02/AR-001-02-20151003-01.txt",
+   "pid": 2,
+   "t0": 169.3,
+   "t1": 207.4,
+   "dur_s": 38.1,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 38.0,
+   "feet_radius_h": 0.12,
+   "person_h_px": 304,
+   "other_rules": [
+    "long_presence",
+    "pose_action"
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-002-02-20151003-01",
+   "tag": "02/AR-002-02-20151003-01.txt",
+   "pid": 3,
+   "t0": 42.1,
+   "t1": 66.4,
+   "dur_s": 24.3,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 24.2,
+   "feet_radius_h": 0.08,
+   "person_h_px": 287,
+   "other_rules": [
+    "pose_action",
+    "reach_down"
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-002-02-20151003-01",
+   "tag": "02/AR-002-02-20151003-01.txt",
+   "pid": 3,
+   "t0": 112.1,
+   "t1": 149.1,
+   "dur_s": 37.0,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 36.8,
+   "feet_radius_h": 0.08,
+   "person_h_px": 302,
+   "other_rules": [
+    "long_presence",
+    "pose_action",
+    "reach_down"
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-003-02-20151003-01",
+   "tag": "02/AR-003-02-20151003-01.txt",
+   "pid": 3,
+   "t0": 78.7,
+   "t1": 100.3,
+   "dur_s": 21.5,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 21.3,
+   "feet_radius_h": 0.1,
+   "person_h_px": 304,
+   "other_rules": [
+    "pose_action",
+    "reach_down"
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-003-02-20151003-01",
+   "tag": "02/AR-003-02-20151003-01.txt",
+   "pid": 6,
+   "t0": 122.0,
+   "t1": 158.7,
+   "dur_s": 36.8,
+   "tracked_%": 100,
+   "track_ids": 2,
+   "longest_id_s": 20.0,
+   "feet_radius_h": 0.08,
+   "person_h_px": 318,
+   "other_rules": [
+    "pose_action",
+    "reach_down"
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-003-02-20151003-01",
+   "tag": "02/AR-003-02-20151003-01.txt",
+   "pid": 6,
+   "t0": 160.4,
+   "t1": 186.4,
+   "dur_s": 26.0,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 25.9,
+   "feet_radius_h": 0.1,
+   "person_h_px": 325,
+   "other_rules": [
+    "pose_action",
+    "reach_down"
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-005-02-20151003-01",
+   "tag": "02/AR-005-02-20151003-01.txt",
+   "pid": 12,
+   "t0": 146.2,
+   "t1": 177.4,
+   "dur_s": 31.3,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 30.9,
+   "feet_radius_h": 0.31,
+   "person_h_px": 202,
+   "other_rules": [
+    "pose_action"
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-005-04-20140524-02",
+   "tag": "04/AA-005-04-20140524-02.txt",
+   "pid": 6,
+   "t0": 116.1,
+   "t1": 138.9,
+   "dur_s": 22.8,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 22.8,
+   "feet_radius_h": 0.04,
+   "person_h_px": 520,
+   "other_rules": [
+    "long_presence",
+    "pose_action"
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-008-04-20140524-02",
+   "tag": "04/AA-008-04-20140524-02.txt",
+   "pid": 21,
+   "t0": 145.9,
+   "t1": 184.8,
+   "dur_s": 38.8,
+   "tracked_%": 99,
+   "track_ids": 3,
+   "longest_id_s": 17.4,
+   "feet_radius_h": 0.18,
+   "person_h_px": 451,
+   "other_rules": [
+    "long_presence",
+    "pose_action",
+    "reach_down"
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-012-04-20140524-02",
+   "tag": "04/AA-012-04-20140524-02.txt",
+   "pid": 7,
+   "t0": 28.2,
+   "t1": 53.8,
+   "dur_s": 25.5,
+   "tracked_%": 52,
+   "track_ids": 5,
+   "longest_id_s": 12.8,
+   "feet_radius_h": 0.12,
+   "person_h_px": 254,
+   "other_rules": []
+  },
+  {
+   "seq": "icvl/05/AR-003-05-20151003-01",
+   "tag": "05/AR-003-05-20151003-01.txt",
+   "pid": 12,
+   "t0": 68.5,
+   "t1": 108.3,
+   "dur_s": 39.8,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 39.6,
+   "feet_radius_h": 0.09,
+   "person_h_px": 391,
+   "other_rules": [
+    "long_presence",
+    "pose_action",
+    "reach_down"
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "tag": "05/AR-004-05-20151003-01.txt",
+   "pid": 15,
+   "t0": 157.7,
+   "t1": 191.7,
+   "dur_s": 34.0,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 33.8,
+   "feet_radius_h": 0.11,
+   "person_h_px": 347,
+   "other_rules": [
+    "long_presence",
+    "pose_action"
+   ]
+  },
+  {
+   "seq": "icvl/06/AA-006-06-20140524-02",
+   "tag": "06/AA-006-06-20140524-02.txt",
+   "pid": 2,
+   "t0": 19.2,
+   "t1": 40.8,
+   "dur_s": 21.6,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 21.4,
+   "feet_radius_h": 0.05,
+   "person_h_px": 559,
+   "other_rules": [
+    "pose_action"
+   ]
+  },
+  {
+   "seq": "icvl/07/AA-004-07-20140502-01",
+   "tag": "07/AA-004-07-20140502-01.txt",
+   "pid": 1,
+   "t0": 1.4,
+   "t1": 23.6,
+   "dur_s": 22.2,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 22.2,
+   "feet_radius_h": 0.06,
+   "person_h_px": 374,
+   "other_rules": [
+    "pose_action",
+    "reach_down"
+   ]
+  },
+  {
+   "seq": "icvl/07/AA-009-07-20140502-01",
+   "tag": "07/AA-009-07-20140502-01.txt",
+   "pid": 3,
+   "t0": 59.1,
+   "t1": 86.9,
+   "dur_s": 27.8,
+   "tracked_%": 100,
+   "track_ids": 4,
+   "longest_id_s": 11.2,
+   "feet_radius_h": 0.06,
+   "person_h_px": 329,
+   "other_rules": []
+  },
+  {
+   "seq": "icvl/07/AR-004-07-20151003-01",
+   "tag": "07/AR-004-07-20151003-01.txt",
+   "pid": 12,
+   "t0": 143.3,
+   "t1": 175.6,
+   "dur_s": 32.3,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 32.2,
+   "feet_radius_h": 0.1,
+   "person_h_px": 401,
+   "other_rules": [
+    "pose_action",
+    "reach_down"
+   ]
+  },
+  {
+   "seq": "icvl/08/AA-014-08-20140524-02",
+   "tag": "08/AA-014-08-20140524-02.txt",
+   "pid": 1,
+   "t0": 53.1,
+   "t1": 74.2,
+   "dur_s": 21.1,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 21.1,
+   "feet_radius_h": 0.05,
+   "person_h_px": 382,
+   "other_rules": [
+    "pose_action"
+   ]
+  },
+  {
+   "seq": "icvl/10/AA-005-10-20140524-02",
+   "tag": "10/AA-005-10-20140524-02.txt",
+   "pid": 1,
+   "t0": 5.5,
+   "t1": 37.3,
+   "dur_s": 31.7,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 31.7,
+   "feet_radius_h": 0.05,
+   "person_h_px": 374,
+   "other_rules": [
+    "pose_action"
+   ]
+  },
+  {
+   "seq": "icvl/10/AR-001-10-20151003-01",
+   "tag": "10/AR-001-10-20151003-01.txt",
+   "pid": 2,
+   "t0": 74.0,
+   "t1": 132.9,
+   "dur_s": 58.9,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 58.8,
+   "feet_radius_h": 0.1,
+   "person_h_px": 533,
+   "other_rules": [
+    "long_presence",
+    "pose_action",
+    "reach_down"
+   ]
+  },
+  {
+   "seq": "icvl/10/AR-001-10-20151003-01",
+   "tag": "10/AR-001-10-20151003-01.txt",
+   "pid": 2,
+   "t0": 140.8,
+   "t1": 199.7,
+   "dur_s": 58.9,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 58.8,
+   "feet_radius_h": 0.45,
+   "person_h_px": 543,
+   "other_rules": [
+    "long_presence",
+    "pose_action",
+    "reach_down"
+   ]
+  },
+  {
+   "seq": "icvl/10/AR-002-10-20151003-01",
+   "tag": "10/AR-002-10-20151003-01.txt",
+   "pid": 1,
+   "t0": 43.3,
+   "t1": 125.7,
+   "dur_s": 82.4,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 82.2,
+   "feet_radius_h": 0.16,
+   "person_h_px": 404,
+   "other_rules": [
+    "long_presence",
+    "pose_action",
+    "reach_down"
+   ]
+  },
+  {
+   "seq": "icvl/10/AR-002-10-20151003-01",
+   "tag": "10/AR-002-10-20151003-01.txt",
+   "pid": 1,
+   "t0": 127.7,
+   "t1": 192.2,
+   "dur_s": 64.5,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 64.4,
+   "feet_radius_h": 0.15,
+   "person_h_px": 412,
+   "other_rules": [
+    "long_presence",
+    "pose_action",
+    "reach_down"
+   ]
+  },
+  {
+   "seq": "icvl/10/AR-003-10-20151003-01",
+   "tag": "10/AR-003-10-20151003-01.txt",
+   "pid": 1,
+   "t0": 13.3,
+   "t1": 50.6,
+   "dur_s": 37.3,
+   "tracked_%": 100,
+   "track_ids": 2,
+   "longest_id_s": 21.4,
+   "feet_radius_h": 0.09,
+   "person_h_px": 498,
+   "other_rules": [
+    "pose_action",
+    "reach_down"
+   ]
+  },
+  {
+   "seq": "icvl/10/AR-003-10-20151003-01",
+   "tag": "10/AR-003-10-20151003-01.txt",
+   "pid": 1,
+   "t0": 100.4,
+   "t1": 145.3,
+   "dur_s": 44.9,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 44.8,
+   "feet_radius_h": 0.49,
+   "person_h_px": 473,
+   "other_rules": [
+    "long_presence",
+    "pose_action",
+    "reach_down"
+   ]
+  },
+  {
+   "seq": "icvl/10/AR-005-10-20151003-01",
+   "tag": "10/AR-005-10-20151003-01.txt",
+   "pid": 5,
+   "t0": 206.1,
+   "t1": 227.1,
+   "dur_s": 21.1,
+   "tracked_%": 100,
+   "track_ids": 2,
+   "longest_id_s": 19.8,
+   "feet_radius_h": 0.15,
+   "person_h_px": 562,
+   "other_rules": [
+    "long_presence",
+    "pose_action",
+    "reach_down"
+   ]
+  },
+  {
+   "seq": "icvl/10/AR-005-10-20151003-01",
+   "tag": "10/AR-005-10-20151003-01.txt",
+   "pid": 8,
+   "t0": 148.5,
+   "t1": 234.1,
+   "dur_s": 85.6,
+   "tracked_%": 100,
+   "track_ids": 1,
+   "longest_id_s": 85.4,
+   "feet_radius_h": 0.16,
+   "person_h_px": 561,
+   "other_rules": [
+    "pose_action",
+    "reach_down"
+   ]
+  }
+ ]
+}

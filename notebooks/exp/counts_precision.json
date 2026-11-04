@@ -1,49 +1,49 @@
 {
  "littering": {
   "incidents": 100,
-  "caught": 97,
-  "right_person": 85,
-  "alerts": 184,
-  "alerts_on_incident": 91,
+  "caught": 96,
+  "right_person": 84,
+  "alerts": 174,
+  "alerts_on_incident": 90,
   "minutes": 5.0,
-  "recall_%": 97,
-  "precision_%": 49
+  "recall_%": 96,
+  "precision_%": 52
  },
  "littering: throwing on a walkway (Avenue)": {
   "incidents": 10,
   "caught": 10,
   "right_person": 8,
-  "alerts": 41,
+  "alerts": 40,
   "alerts_on_incident": 10,
   "minutes": 10.1,
   "recall_%": 100,
-  "precision_%": 24
+  "precision_%": 25
  },
  "smoking": {
   "incidents": 364,
-  "caught": 150,
-  "right_person": 54,
-  "alerts": 332,
-  "alerts_on_incident": 58,
+  "caught": 136,
+  "right_person": 47,
+  "alerts": 290,
+  "alerts_on_incident": 50,
   "minutes": 63.5,
-  "recall_%": 41,
+  "recall_%": 37,
   "precision_%": 17
  },
  "illegal dumping": {
   "incidents": 50,
-  "caught": 22,
+  "caught": 20,
   "right_person": null,
-  "alerts": 168,
-  "alerts_on_incident": 23,
+  "alerts": 144,
+  "alerts_on_incident": 21,
   "minutes": 37.3,
-  "recall_%": 44,
-  "precision_%": 14
+  "recall_%": 40,
+  "precision_%": 15
  },
  "unattended items": {
   "incidents": 11,
   "caught": 8,
   "right_person": null,
-  "alerts": 114,
+  "alerts": 109,
   "alerts_on_incident": 12,
   "minutes": 20.9,
   "recall_%": 73,

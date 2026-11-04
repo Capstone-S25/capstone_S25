@@ -1,0 +1,163 @@
+{
+ "windows": 18425,
+ "positives": 953,
+ "oof_sweep": [
+  {
+   "thr": 0.05,
+   "littering_caught": 217,
+   "of": 254,
+   "base_caught": 224,
+   "reach_alerts": 372,
+   "all_alerts": 897
+  },
+  {
+   "thr": 0.1,
+   "littering_caught": 216,
+   "of": 254,
+   "base_caught": 224,
+   "reach_alerts": 341,
+   "all_alerts": 866
+  },
+  {
+   "thr": 0.15,
+   "littering_caught": 214,
+   "of": 254,
+   "base_caught": 224,
+   "reach_alerts": 328,
+   "all_alerts": 853
+  },
+  {
+   "thr": 0.2,
+   "littering_caught": 213,
+   "of": 254,
+   "base_caught": 224,
+   "reach_alerts": 322,
+   "all_alerts": 847
+  },
+  {
+   "thr": 0.25,
+   "littering_caught": 212,
+   "of": 254,
+   "base_caught": 224,
+   "reach_alerts": 307,
+   "all_alerts": 832
+  },
+  {
+   "thr": 0.3,
+   "littering_caught": 211,
+   "of": 254,
+   "base_caught": 224,
+   "reach_alerts": 292,
+   "all_alerts": 817
+  },
+  {
+   "thr": 0.35,
+   "littering_caught": 208,
+   "of": 254,
+   "base_caught": 224,
+   "reach_alerts": 280,
+   "all_alerts": 805
+  },
+  {
+   "thr": 0.4,
+   "littering_caught": 207,
+   "of": 254,
+   "base_caught": 224,
+   "reach_alerts": 272,
+   "all_alerts": 797
+  },
+  {
+   "thr": 0.45,
+   "littering_caught": 201,
+   "of": 254,
+   "base_caught": 224,
+   "reach_alerts": 259,
+   "all_alerts": 784
+  },
+  {
+   "thr": 0.5,
+   "littering_caught": 199,
+   "of": 254,
+   "base_caught": 224,
+   "reach_alerts": 251,
+   "all_alerts": 776
+  },
+  {
+   "thr": 0.55,
+   "littering_caught": 199,
+   "of": 254,
+   "base_caught": 224,
+   "reach_alerts": 246,
+   "all_alerts": 771
+  },
+  {
+   "thr": 0.6,
+   "littering_caught": 198,
+   "of": 254,
+   "base_caught": 224,
+   "reach_alerts": 243,
+   "all_alerts": 768
+  },
+  {
+   "thr": 0.65,
+   "littering_caught": 193,
+   "of": 254,
+   "base_caught": 224,
+   "reach_alerts": 230,
+   "all_alerts": 755
+  },
+  {
+   "thr": 0.7,
+   "littering_caught": 192,
+   "of": 254,
+   "base_caught": 224,
+   "reach_alerts": 224,
+   "all_alerts": 749
+  },
+  {
+   "thr": 0.75,
+   "littering_caught": 187,
+   "of": 254,
+   "base_caught": 224,
+   "reach_alerts": 218,
+   "all_alerts": 743
+  },
+  {
+   "thr": 0.8,
+   "littering_caught": 184,
+   "of": 254,
+   "base_caught": 224,
+   "reach_alerts": 209,
+   "all_alerts": 734
+  },
+  {
+   "thr": 0.85,
+   "littering_caught": 177,
+   "of": 254,
+   "base_caught": 224,
+   "reach_alerts": 191,
+   "all_alerts": 716
+  },
+  {
+   "thr": 0.9,
+   "littering_caught": 171,
+   "of": 254,
+   "base_caught": 224,
+   "reach_alerts": 174,
+   "all_alerts": 699
+  },
+  {
+   "thr": 0.95,
+   "littering_caught": 161,
+   "of": 254,
+   "base_caught": 224,
+   "reach_alerts": 156,
+   "all_alerts": 681
+  }
+ ],
+ "thresholds": {
+  "0.97": 0.0,
+  "0.95": 0.2,
+  "0.9": 0.4
+ }
+}

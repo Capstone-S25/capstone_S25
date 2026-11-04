@@ -1,0 +1,82 @@
+[
+ {
+  "setting": {
+   "pose_action_cooldown_s": 15.0,
+   "reach_max_speed_h": 0.6,
+   "reach_margin_h": -0.2,
+   "reach_verifier_thr": 0.5
+  },
+  "alerts": 961,
+  "quiet_alerts_min": 1.41,
+  "on_event": 509,
+  "smoking": "28/45",
+  "littering": "230/254",
+  "lingering 20s+": "43/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 510
+ },
+ {
+  "setting": {
+   "pose_action_cooldown_s": 15.0,
+   "reach_max_speed_h": 0.6,
+   "reach_margin_h": -0.25,
+   "reach_verifier_thr": 0.5
+  },
+  "alerts": 1009,
+  "quiet_alerts_min": 1.5,
+  "on_event": 518,
+  "smoking": "30/45",
+  "littering": "228/254",
+  "lingering 20s+": "44/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 554
+ },
+ {
+  "setting": {
+   "pose_action_cooldown_s": 15.0,
+   "reach_max_speed_h": 0.6,
+   "reach_margin_h": -0.3,
+   "reach_verifier_thr": 0.5
+  },
+  "alerts": 1014,
+  "quiet_alerts_min": 1.56,
+  "on_event": 517,
+  "smoking": "29/45",
+  "littering": "226/254",
+  "lingering 20s+": "43/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 558
+ },
+ {
+  "setting": {
+   "pose_action_cooldown_s": 15.0,
+   "reach_max_speed_h": 0.6,
+   "reach_margin_h": -0.2,
+   "reach_verifier_thr": 0.27
+  },
+  "alerts": 1353,
+  "quiet_alerts_min": 2.39,
+  "on_event": 611,
+  "smoking": "33/45",
+  "littering": "246/254",
+  "lingering 20s+": "43/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 927
+ },
+ {
+  "setting": {
+   "pose_action_cooldown_s": 15.0,
+   "reach_max_speed_h": 0.6,
+   "reach_margin_h": -0.3,
+   "reach_verifier_thr": 0.35
+  },
+  "alerts": 1305,
+  "quiet_alerts_min": 2.27,
+  "on_event": 599,
+  "smoking": "31/45",
+  "littering": "238/254",
+  "lingering 20s+": "43/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 871
+ }
+]

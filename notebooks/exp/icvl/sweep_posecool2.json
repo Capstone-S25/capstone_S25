@@ -1,0 +1,28 @@
+[
+ {
+  "setting": {
+   "pose_action_cooldown_s": 20.0
+  },
+  "alerts": 1059,
+  "quiet_alerts_min": 1.63,
+  "on_event": 505,
+  "smoking": "28/45",
+  "littering": "224/254",
+  "lingering 20s+": "43/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 627
+ },
+ {
+  "setting": {
+   "pose_action_cooldown_s": 30.0
+  },
+  "alerts": 1039,
+  "quiet_alerts_min": 1.56,
+  "on_event": 495,
+  "smoking": "28/45",
+  "littering": "224/254",
+  "lingering 20s+": "43/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 631
+ }
+]
