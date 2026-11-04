@@ -18,6 +18,15 @@ Research scripts are grouped by workflow. Run their modules from the repository 
 
 Some historical builders run their dated build directly rather than exposing a help parser. Consult the study guide before running them. Never rebuild a dated experiment over an existing frozen output to accommodate a code change.
 
+The current consolidated paper/slides builder is
+`python -m scripts.reporting.build_current_publication`, using
+`requirements/publications.txt` and the completed study artifacts. It preserves
+handwritten LaTeX chapters, regenerates numeric tables, figures and editable
+slides, verifies 200 operating summaries and archived CPU/GPU timing statistics,
+compiles the paper and independently
+compiles its self-contained source ZIP. See the
+[publication guide](../reports/technical_runthrough_20261029/README.md).
+
 The root retains four environment/runtime launchers and `evaluate.py`, a small compatibility entry point that also works outside the checkout. Four redundant wrappers were removed or folded into shared commands: Gemma evaluation/reporting use the package commands, and the all-dataset fetcher uses `python -m anomaly_eval fetch-all`. Source-pilot features now use the shared strategy extractor with `--data-dir` instead of a wrapper that changed module globals. Acquisition and runtime verification are in `anomaly_eval/gemma4/fetch.py`; the parallel transfer helper, preflight and suite controller also live in that package.
 
 [locations.json](locations.json) maps all 84 relocated or consolidated historical script paths to current files. It is an index for old notebooks, report references and manual commands, not an extra launcher. Current imports and active documentation use the new locations. Dated published reports and raw implementation snapshots retain their original references.

@@ -1,5 +1,41 @@
 # Model evaluation presentation
 
+The current consolidated review is the **88-slide edition, 29 October 2026**:
+[PDF](model_evaluation_complete_20261029.pdf),
+[editable PowerPoint](model_evaluation_complete_20261029.pptx),
+[speaker notes](review_20261029/speaker_notes.md) and
+[source/validation manifest](review_20261029/manifest.json).
+
+It preserves the complete training and accuracy history and adds **14 performance
+slides (71–84)** covering all five Gemma variants on actual CPU and GPU:
+hardware/precision, timing boundaries, single/multiple-view baselines,
+high-detail/sheet workloads, exact selected/blended routes, startup/memory,
+sustained throughput, queueing, text confirmation, live detector/tracker costs,
+E2B empty answers and attention-path score differences. The remaining integration
+and accuracy-validation requirements stay explicit.
+
+The matching [185-page paper and source guide](../technical_runthrough_20261029/README.md)
+contains all 65 workload summaries, 100 exact route summaries and the supplemental
+math-attention controls. No model experiment is rerun to build either publication.
+Rebuild from completed evidence with:
+
+```bash
+MPLCONFIGDIR="$PWD/results/publication_20261029/mpl_cache" \
+  .venv-publications/bin/python -m scripts.reporting.build_current_publication
+```
+
+Use `requirements/publications.txt` with base NumPy, Matplotlib and Pillow.
+The paper also needs Tectonic or XeLaTeX; a fresh source ZIP is independently
+compiled without the data/model trees. Rendered layouts, references, numeric
+replays and speaker notes are checked. Full timing scope and archived raw
+records are linked from the [performance findings](../gemma4_performance_20261029/findings.md).
+
+The **74-slide edition from 28 October** remains available as a historical
+accuracy-focused review: [PDF](model_evaluation_complete_20261028.pdf),
+[PowerPoint](model_evaluation_complete_20261028.pptx),
+[notes](review_20261028/speaker_notes.md), and
+[matching paper](../technical_runthrough_20261028/README.md).
+
 The dedicated **46-slide training and evaluation review** covers the four requested
 models: MobileCLIP, SigLIP2, SmolVLM and VadCLIP. It includes detailed dataset
 splits, zero-shot/original baselines, linear probes, actual visual adaptation,

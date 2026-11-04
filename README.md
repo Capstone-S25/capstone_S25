@@ -40,6 +40,8 @@ python -m anomaly_eval predict-clip --help
 bash scripts/gemma4_gpu.sh --help
 bash scripts/gemma4_gpu.sh suite
 bash scripts/gemma4_gpu.sh optimize
+# Separate CPU/GPU latency, throughput, generation and component benchmarks.
+bash scripts/gemma4_gpu.sh benchmark
 ```
 
 The CLI also works as `anomaly-eval` after installation. [evaluate_gpu.sh](scripts/evaluate_gpu.sh) selects the existing CUDA environment and matching local driver libraries. [smolvlm_gpu.sh](scripts/smolvlm_gpu.sh) selects the isolated adaptation dependencies. From another working directory, use the installed CLI or the [generic checkout launcher](scripts/evaluate.py).
@@ -52,7 +54,7 @@ The CLI also works as `anomaly-eval` after installation. [evaluate_gpu.sh](scrip
 |---|---|
 | `anomaly_eval/` | Reusable evaluation, data, training and Gemma modules; packaged CLI |
 | `scripts/` | Research workflows grouped into datasets, clip, strategy, video, smolvlm, generalization, expanded and reporting |
-| `requirements/` | Separate base, Gemma and SmolVLM dependency sets |
+| `requirements/` | Separate base, Gemma, SmolVLM and publication dependency sets |
 | `docs/` | Current usage, methodology, dataset links/licenses and experiment history |
 | `reports/` | Concise findings, metric tables, editable paper/slides and finished publication artifacts |
 | `tests/` | Regression, data-integrity and protocol tests |
@@ -62,6 +64,10 @@ The CLI also works as `anomaly-eval` after installation. [evaluate_gpu.sh](scrip
 [Workspace organization](docs/workspace.md) explains cleanup boundaries and relocation. [Script index](scripts/README.md) lists current entry points; [locations.json](scripts/locations.json) maps historical paths to current files. Dated report contents and frozen raw-run implementations retain their original names.
 
 ## Results and methodology
+
+The [Gemma CPU/GPU performance findings](reports/gemma4_performance_20261029/findings.md) compare all five variants. The [complete timing report](reports/gemma4_performance_20261029/report.md) records loading, preprocessing, 1/4/8-view classification, queued service, bounded generation and live detector/tracker-to-confirmation costs. Its [measurement and reproduction guide](docs/gemma4_performance.md) distinguishes controlled baselines from actual optimized routes, CPU resource profiles and full-stream deployment requirements.
+
+The consolidated **29 October paper and slides** include the complete training/evaluation history, the public-source generalization study, both Gemma accuracy rounds, and the CPU/GPU performance and attention-path study: [paper PDF](reports/technical_runthrough_20261029/model_evaluation_runthrough_20261029.pdf), [LaTeX and reproduction](reports/technical_runthrough_20261029/README.md), [slides PDF](reports/slides/model_evaluation_complete_20261029.pdf) and [editable PowerPoint](reports/slides/model_evaluation_complete_20261029.pptx). Earlier dated publications remain available.
 
 The [completed Gemma comparison](reports/gemma4_evaluation_20261027/report.md) covers E2B, E4B, 12B, 26B-A4B and 31B, with 4,032 held-out cases per variant, source-level operating metrics and matched incumbent comparisons. The [completed second-stage comparison](reports/gemma4_optimization_20261028/report.md) covers all five variants with added detail, contrastive evidence, automatic crops and development-only selection. [Reproduction and findings](docs/gemma4_evaluation.md#second-stage-optimization) include operating-point comparisons and group uncertainty. Original results remain available.
 

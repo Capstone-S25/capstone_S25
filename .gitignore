@@ -9,7 +9,13 @@
 *.gguf
 *.ckpt
 *.onnx
-
+/reports/
+requirements/publications.txt
+scripts/reporting/build_current_publication.py
+scripts/reporting/publication_performance.py
+docs/gemma4_performance.md
+tests/test_gemma4_performance.py
+anomaly_eval/gemma4/performance.py
 # Environments, credentials and machine-specific configuration.
 /.venv*
 /venv/
@@ -36,8 +42,10 @@ __pycache__/
 .coverage*
 htmlcov/
 .ipynb_checkpoints/
-
+reports/slides/README.md
 # Rebuildable document output and temporary transfer/editor files.
+.tex-cache/
+*.xdv
 *.aux
 *.bbl
 *.bcf
