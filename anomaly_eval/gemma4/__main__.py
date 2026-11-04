@@ -16,6 +16,7 @@ COMMANDS = {
     "verify": ("verify", "main"),
     "optimize": ("optimization", "main"),
     "uncertainty": ("uncertainty", "main"),
+    "benchmark": ("performance", "main"),
 }
 
 

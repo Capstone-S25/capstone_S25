@@ -2,3 +2,5 @@
 *.pdf binary
 *.pptx binary
 *.zip binary
+reports/slides/README.md
+scripts/README.md
