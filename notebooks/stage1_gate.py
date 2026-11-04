@@ -11,7 +11,7 @@ import json
 import math
 import re
 import time
-from collections import deque
+from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Iterator
@@ -106,11 +106,21 @@ class GateConfig:
     reach_speed_window_s: float = 1.0
     reach_skip_riders: bool = True      # skip people riding (a seated rider's hands sit at knee height); the
                                         # detector also reports the rider classes, at no extra cost
-    reach_rider_classes: tuple[int, ...] = (3,)  # COCO 3 motorcycle; 1 bicycle is left out: cyclists stop to dump
+    reach_rider_classes: tuple[int, ...] = (1, 3)  # COCO 1 bicycle, 3 motorcycle. Bicycles were left out (cyclists
+                                                   # stop to dump) until ICVL: cyclists were 287 of its reach_down
+                                                   # false alerts; costs 1 of 100 IWDD train dumpers (a cyclist
+                                                   # bending beside the bike)
+    reach_rider_stopped_h: float | None = None   # still check a rider on a reach_rider_stop_check vehicle whose foot
+    reach_rider_stop_check: tuple[int, ...] = (1,)  # speed is below this (body heights / s): they stopped, maybe to dump
     reach_skip_overlap: float | None = 0.5   # skip a person when another person's box covers this share of theirs
                                              # (overlapping people get each other's keypoints)
     reach_skip_seated_s: float | None = 5.0   # skip a person who has been seated (thigh near horizontal: knee within
                                               # 0.12 body heights of the hip) for this long; a dumper crouches briefly
+    reach_verifier: bool = True                # re-check each reach_down with a small keypoint MLP (pose_action's 1 s
+                                               # features; exp/icvl/reach_verifier_mixed.py) and drop it below
+    reach_verifier_weights: str | None = None  # reach_verifier_thr (None = weights/reach_verifier.npz)
+    reach_verifier_thr: float | None = None    # None = the threshold stored with the weights (0.05)
+    reach_verifier_ahead_s: float = 0.0        # hold the alert this long and also score the pose that follows
 
     bg_width: int = 480
     bg_long_s: float = 30.0
@@ -161,7 +171,7 @@ class GateConfig:
 
     pose_action_weights: str | None = None  # None = stage1_pose_action.DEFAULT_WEIGHTS
     pose_action_thr: float | None = None    # None = the threshold stored with the weights (~1 false alarm/min)
-    pose_action_cooldown_s: float = 5.0
+    pose_action_cooldown_s: float = 5.0     # per track; 15 s: ICVL even (held-out) alerts -12 %, smoking 93 -> 89/116
 
     @property
     def uses_bg(self) -> bool:
@@ -690,6 +700,58 @@ class RuleEngine:
             model = PoseActionModel(cfg.pose_action_weights or DEFAULT_WEIGHTS)
             thr = model.threshold if cfg.pose_action_thr is None else cfg.pose_action_thr
             self.pose_action = {"model": model, "thr": thr, "windows": TrackWindows(), "last": {}}
+        self.verifier = None
+        if (cfg.reach_verifier or cfg.reach_verifier_weights) and "reach_down" in cfg.rules:
+            from stage1_pose_action import DEFAULT_WEIGHTS, PoseActionModel
+
+            model = PoseActionModel(cfg.reach_verifier_weights or DEFAULT_WEIGHTS.with_name("reach_verifier.npz"))
+            self.verifier = {"model": model, "thr": model.threshold if cfg.reach_verifier_thr is None else cfg.reach_verifier_thr,
+                             "kp": defaultdict(deque), "heights": defaultdict(lambda: deque(maxlen=200)), "pending": []}
+
+    def _verify_window(self, rid, t, frame_hw):
+        from stage1_pose_action import window_features
+
+        v = self.verifier
+        hist = [x for x in v["kp"].get(rid, ()) if t - 2.0 <= x[0] <= t + 1e-6]
+        if not hist:
+            return None
+        return window_features(hist, float(np.median(v["heights"][rid])), t, 1.0, 8, frame_hw)[1]
+
+    def _verify(self, events, obs):
+        """Hold each reach_down for reach_verifier_ahead_s, then keep it only if the verifier agrees."""
+        v, t, ahead = self.verifier, obs.t, self.cfg.reach_verifier_ahead_s
+        for p in obs.persons:
+            kp = v["kp"][p["raw_id"]]
+            kp.append((t, p["box"], p.get("kpts")))
+            while kp and kp[0][0] < t - 3.0:
+                kp.popleft()
+            v["heights"][p["raw_id"]].append(p["box"][3] - p["box"][1])
+        for rid in [r for r, kp in v["kp"].items() if not kp or t - kp[-1][0] > 10.0]:
+            del v["kp"][rid]
+            v["heights"].pop(rid, None)
+        out = []
+        for e in events:
+            rid = e.pop("_rid", None)
+            if e["event_type"] != "reach_down" or rid is None:
+                out.append(e)
+                continue
+            now = self._verify_window(rid, t, obs.frame_hw)
+            if now is None:
+                out.append(e)
+            else:
+                v["pending"].append((t + ahead, e, rid, now))
+        due = [x for x in v["pending"] if x[0] <= t + 1e-6]
+        v["pending"] = [x for x in v["pending"] if x[0] > t + 1e-6]
+        for _, e, rid, now in due:
+            f = now
+            if ahead:
+                later = self._verify_window(rid, t, obs.frame_hw)
+                f = np.concatenate([now, later, [1.0]] if later is not None else [now, np.zeros_like(now), [0.0]])
+            score = float(v["model"].predict(f[None])[0])
+            if score >= v["thr"]:
+                e["verifier_score"] = round(score, 3)
+                out.append(e)
+        return out
 
     def step(self, obs: Observation) -> list[dict]:
         cfg, t = self.cfg, obs.t
@@ -711,7 +773,11 @@ class RuleEngine:
                 if "smoking" in cfg.rules:
                     events += self._smoking(cid, st, p, obs)
                 if "reach_down" in cfg.rules:
-                    events += self._reach(cid, st, p, obs)
+                    new = self._reach(cid, st, p, obs)
+                    if self.verifier:
+                        for e in new:
+                            e["_rid"] = p["raw_id"]
+                    events += new
             if "near_camera" in cfg.rules and cfg.near_camera_px:
                 events += self._near_camera(cid, st, p, obs)
         if "unattended" in cfg.rules:
@@ -723,6 +789,8 @@ class RuleEngine:
         horizon = max(cfg.loiter_s, cfg.stitch_max_gap_s, cfg.litter_owner_lookback_s + cfg.litter_static_s) + 2
         for cid in [c for c, s in self.people.items() if t - s["last_t"] > horizon]:
             del self.people[cid]
+        if self.verifier:
+            events = self._verify(events, obs)
         return self._dedup(events, t)
 
     def _dedup(self, events, t):
@@ -842,22 +910,24 @@ class RuleEngine:
                 return []
         if h < cfg.pose_min_h_px or (cfg.reach_skip_border and touches_border(p["box"], obs.frame_hw)):
             return []
+        v = None  # foot speed in body heights / s over the last reach_speed_window_s (None = track too short)
+        pts = [q for q in st["hist"] if q[0] >= t - cfg.reach_speed_window_s and q[5] == p["raw_id"]]
+        if len(pts) >= 2 and pts[-1][0] - pts[0][0] >= 0.5 * cfg.reach_speed_window_s:
+            a, b = pts[0], pts[-1]
+            v = math.hypot(b[1] - a[1], b[2] - a[2]) / (b[0] - a[0]) / float(np.median([q[3] for q in pts]))
         if cfg.reach_skip_riders:
             b = p["box"]
             lower = [b[0], (b[1] + b[3]) / 2, b[2], b[3]]
-            if any(intersection_over(lower, w[:4]) >= 0.3 for w in (getattr(obs, "two_wheelers", None) or [])
-                   if len(w) < 5 or int(w[4]) in cfg.reach_rider_classes):
+            riding = [int(w[4]) if len(w) >= 5 else -1 for w in (getattr(obs, "two_wheelers", None) or [])
+                      if (len(w) < 5 or int(w[4]) in cfg.reach_rider_classes) and intersection_over(lower, w[:4]) >= 0.3]
+            stopped = cfg.reach_rider_stopped_h is not None and v is not None and v < cfg.reach_rider_stopped_h
+            if any(c not in cfg.reach_rider_stop_check or not stopped for c in riding):
                 return []
         if cfg.reach_skip_overlap is not None and any(
                 intersection_over(p["box"], q["box"]) >= cfg.reach_skip_overlap for q in obs.persons if q is not p):
             return []
-        if cfg.reach_max_speed_h is not None:
-            pts = [q for q in st["hist"] if q[0] >= t - cfg.reach_speed_window_s and q[5] == p["raw_id"]]
-            if len(pts) >= 2 and pts[-1][0] - pts[0][0] >= 0.5 * cfg.reach_speed_window_s:
-                a, b = pts[0], pts[-1]
-                v = math.hypot(b[1] - a[1], b[2] - a[2]) / (b[0] - a[0]) / float(np.median([q[3] for q in pts]))
-                if v > cfg.reach_max_speed_h:
-                    return []
+        if cfg.reach_max_speed_h is not None and v is not None and v > cfg.reach_max_speed_h:
+            return []
         if cfg.reach_skip_seated_s is not None:
             hips = [float(k[i, 1]) for i in (L_HIP, R_HIP) if k[i, 2] >= kc]
             seated = bool(hips) and float(np.mean([q[1] for q in knees])) - float(np.mean(hips)) < 0.12 * h
