@@ -1,0 +1,60 @@
+[
+ {
+  "setting": {
+   "pose_action_cooldown_s": 15.0
+  },
+  "littering": "97.8/96.5",
+  "walkway_throws": "100.0/100.0",
+  "smoking": "52.4/20.7",
+  "walkway_alerts_min": 3.53,
+  "dumping_hit_vs_chance": "31.0 vs 24.7",
+  "dumping_lead": 6.3,
+  "dump_site_alerts_min": 5.22,
+  "dump_site_videos_with_alert_%": 56.0
+ },
+ {
+  "setting": {
+   "pose_action_cooldown_s": 15.0,
+   "crop_check": true
+  },
+  "littering": "97.8/96.5",
+  "walkway_throws": "100.0/100.0",
+  "smoking": "50.3/19.6",
+  "walkway_alerts_min": 3.13,
+  "dumping_hit_vs_chance": "27.0 vs 22.2",
+  "dumping_lead": 4.8,
+  "dump_site_alerts_min": 4.75,
+  "dump_site_videos_with_alert_%": 52.5
+ },
+ {
+  "setting": {
+   "pose_action_cooldown_s": 15.0,
+   "crop_check": true,
+   "pose_action_thr": 0.95
+  },
+  "littering": "85.2/76.1",
+  "walkway_throws": "100.0/100.0",
+  "smoking": "48.7/18.2",
+  "walkway_alerts_min": 3.13,
+  "dumping_hit_vs_chance": "24.0 vs 20.7",
+  "dumping_lead": 3.3,
+  "dump_site_alerts_min": 3.9,
+  "dump_site_videos_with_alert_%": 48.0
+ },
+ {
+  "setting": {
+   "pose_action_cooldown_s": 15.0,
+   "crop_check": true,
+   "crop_check_thr": 0.4,
+   "pose_action_thr": 0.95
+  },
+  "littering": "85.2/76.1",
+  "walkway_throws": "83.3/83.3",
+  "smoking": "45.7/16.8",
+  "walkway_alerts_min": 3.13,
+  "dumping_hit_vs_chance": "23.0 vs 18.7",
+  "dumping_lead": 4.3,
+  "dump_site_alerts_min": 3.65,
+  "dump_site_videos_with_alert_%": 47.0
+ }
+]

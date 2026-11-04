@@ -21,17 +21,17 @@
  "IWDD test normal": {
   "minutes": 19.4,
   "videos": 50,
-  "total_per_min": 6.3,
+  "total_per_min": 5.37,
   "per_min": {
-   "reach_down": 3.2,
-   "pose_action": 2.01,
-   "sustained_presence": 0.72,
+   "reach_down": 2.63,
+   "pose_action": 1.6,
+   "sustained_presence": 0.77,
    "unattended_object": 0.21,
    "object_appeared": 0.15
   },
   "videos_with_any_%": {
-   "reach_down": 36,
    "pose_action": 32,
+   "reach_down": 32,
    "sustained_presence": 14,
    "unattended_object": 8,
    "object_appeared": 6

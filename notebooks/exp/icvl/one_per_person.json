@@ -1,0 +1,42 @@
+[
+ {
+  "variant": "rule_gap_30",
+  "alerts": 2046,
+  "false_alerts": 1006,
+  "quiet_alerts_min": 1.37,
+  "smoking": "109/161",
+  "littering": "410/521",
+  "lingering 20s+": "124/126",
+  "lingering 60s+": "27/27"
+ },
+ {
+  "variant": "rule_gap_60",
+  "alerts": 1875,
+  "false_alerts": 942,
+  "quiet_alerts_min": 1.28,
+  "smoking": "106/161",
+  "littering": "410/521",
+  "lingering 20s+": "119/126",
+  "lingering 60s+": "27/27"
+ },
+ {
+  "variant": "rule_gap_120",
+  "alerts": 1712,
+  "false_alerts": 877,
+  "quiet_alerts_min": 1.22,
+  "smoking": "97/161",
+  "littering": "410/521",
+  "lingering 20s+": "113/126",
+  "lingering 60s+": "27/27"
+ },
+ {
+  "variant": "still_once",
+  "alerts": 2375,
+  "false_alerts": 1099,
+  "quiet_alerts_min": 1.53,
+  "smoking": "116/161",
+  "littering": "455/521",
+  "lingering 20s+": "120/126",
+  "lingering 60s+": "26/27"
+ }
+]

@@ -1,0 +1,13 @@
+[
+ {
+  "setting": "current",
+  "alerts": 1411,
+  "quiet_alerts_min": 3.1,
+  "on_event": 579,
+  "smoking": "30/45",
+  "littering": "226/254",
+  "lingering 20s+": "44/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 887
+ }
+]

@@ -1,0 +1,82 @@
+{
+ "caught_by_rule": {
+  "smoking": {
+   "incidents": 161,
+   "reach_down": 82,
+   "sustained_presence": 50,
+   "pose_action": 88,
+   "long_presence": 38
+  },
+  "littering": {
+   "pose_action": 32,
+   "incidents": 521,
+   "reach_down": 420,
+   "object_appeared": 38
+  },
+  "lingering 20s+": {
+   "sustained_presence": 96,
+   "reach_down": 64,
+   "incidents": 126,
+   "long_presence": 57,
+   "pose_action": 71
+  },
+  "lingering 60s+": {
+   "sustained_presence": 24,
+   "long_presence": 23,
+   "incidents": 27,
+   "pose_action": 18,
+   "reach_down": 16
+  }
+ },
+ "off_event_alerts_by_what_person_was_doing": {
+  "pose_action": {
+   "standing / walking / nothing": 116,
+   "standing / walking / phoning": 65,
+   "standing / stationary / nothing": 37,
+   "standing / walking / texting": 28,
+   "nobody labelled": 17,
+   "standing / stationary / texting": 12,
+   "standing / stationary / phoning": 11,
+   "standing / walking / others": 3
+  },
+  "reach_down": {
+   "standing / walking / nothing": 422,
+   "standing / stationary / nothing": 49,
+   "standing / walking / phoning": 45,
+   "nobody labelled": 24,
+   "standing / walking / texting": 19,
+   "sitting / stationary / nothing": 14,
+   "sitting / bicycling / nothing": 13,
+   "standing / running / nothing": 12
+  },
+  "unattended_object": {
+   "nobody labelled": 4
+  },
+  "object_appeared": {
+   "standing / walking / nothing": 9,
+   "nobody labelled": 4,
+   "standing / stationary / nothing": 1,
+   "standing / walking / phoning": 1
+  },
+  "long_presence": {
+   "nobody labelled": 23,
+   "standing / walking / phoning": 23,
+   "standing / walking / nothing": 19,
+   "standing / stationary / nothing": 10,
+   "standing / stationary / texting": 6,
+   "standing / stationary / phoning": 5,
+   "sitting / stationary / texting": 1,
+   "standing / walking / texting": 1
+  },
+  "sustained_presence": {
+   "nobody labelled": 60,
+   "standing / walking / nothing": 45,
+   "standing / stationary / nothing": 29,
+   "standing / walking / phoning": 24,
+   "standing / stationary / texting": 12,
+   "standing / walking / texting": 11,
+   "standing / stationary / phoning": 7,
+   "standing / running / nothing": 1
+  }
+ }
+}

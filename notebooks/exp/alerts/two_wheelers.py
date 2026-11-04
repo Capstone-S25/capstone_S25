@@ -5,7 +5,7 @@ reach_skip_riders is on); cached runs predate that, so YOLO26s is re-run here on
 classes (conf >= the detector's det_conf).
 Each box is stored as [x1, y1, x2, y2, class, confidence].
 Usage (from notebooks/): ../.venv/bin/python exp/alerts/two_wheelers.py NAME ...   NAME in
-  litter_train litter_heldout avenue iwdd_train iwdd_test aboda   -> bench_cache/models/s/twowheel_<NAME>.pkl
+  litter_train litter_heldout avenue iwdd_train iwdd_test aboda icvl   -> bench_cache/models/s/twowheel_<NAME>.pkl
 """
 import pickle
 import sys
@@ -31,6 +31,10 @@ def sources(name):
     if name == "avenue":
         return avenue_sequences(D / "loitering", D / "loitering" / "avenue_gt" / "ground_truth_demo" / "testing_label_mask",
                                 stride=2)
+    if name == "icvl":
+        sys.path.insert(0, str(NB / "exp" / "icvl"))
+        from run import icvl_sequences
+        return icvl_sequences()
     if name.startswith("iwdd"):
         return iwdd_sequences(name.split("_")[1])
     return aboda_sequences()

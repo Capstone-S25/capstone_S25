@@ -1,0 +1,42 @@
+[
+ {
+  "setting": {
+   "reach_rider_classes": [
+    3
+   ],
+   "reach_verifier": false
+  },
+  "alerts": 2039,
+  "quiet_alerts_min": 3.1,
+  "on_event": 1106,
+  "smoking": "93/116",
+  "littering": "233/267",
+  "lingering 20s+": "81/81",
+  "lingering 60s+": "17/17",
+  "reach_down_alerts": 1056
+ },
+ {
+  "setting": {
+   "reach_verifier": false
+  },
+  "alerts": 1907,
+  "quiet_alerts_min": 1.96,
+  "on_event": 1104,
+  "smoking": "93/116",
+  "littering": "232/267",
+  "lingering 20s+": "81/81",
+  "lingering 60s+": "17/17",
+  "reach_down_alerts": 924
+ },
+ {
+  "setting": "current",
+  "alerts": 1776,
+  "quiet_alerts_min": 1.77,
+  "on_event": 1063,
+  "smoking": "93/116",
+  "littering": "231/267",
+  "lingering 20s+": "81/81",
+  "lingering 60s+": "17/17",
+  "reach_down_alerts": 779
+ }
+]

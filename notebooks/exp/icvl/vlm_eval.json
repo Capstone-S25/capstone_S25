@@ -1,0 +1,102 @@
+{
+ "candidates": 130,
+ "classified": 130,
+ "tasks": {
+  "littering": {
+   "littering": {
+    "n": 40,
+    "anomaly": 16,
+    "normal": 23,
+    "unknown": 1
+   },
+   "normal": {
+    "n": 45,
+    "anomaly": 5,
+    "normal": 33,
+    "unknown": 7
+   },
+   "auc": 0.776
+  },
+  "smoking": {
+   "smoking": {
+    "n": 25,
+    "anomaly": 1,
+    "normal": 24,
+    "unknown": 0
+   },
+   "normal": {
+    "n": 45,
+    "anomaly": 6,
+    "normal": 39,
+    "unknown": 0
+   },
+   "auc": 0.512
+  },
+  "loitering": {
+   "lingering": {
+    "n": 20,
+    "anomaly": 15,
+    "normal": 5,
+    "unknown": 0
+   },
+   "normal": {
+    "n": 45,
+    "anomaly": 12,
+    "normal": 15,
+    "unknown": 18
+   },
+   "auc": 0.683
+  },
+  "rough_sleeping": {
+   "normal": {
+    "n": 45,
+    "anomaly": 0,
+    "normal": 45,
+    "unknown": 0
+   }
+  },
+  "unattended_items": {
+   "normal": {
+    "n": 45,
+    "anomaly": 20,
+    "normal": 7,
+    "unknown": 18
+   }
+  }
+ },
+ "normal_alerts_flagged_by_rule": {
+  "reach_down": {
+   "littering anomaly": 2,
+   "smoking anomaly": 3,
+   "loitering anomaly": 2,
+   "rough_sleeping anomaly": 0,
+   "unattended_items anomaly": 5,
+   "n": 17
+  },
+  "pose_action": {
+   "littering anomaly": 2,
+   "smoking anomaly": 1,
+   "loitering anomaly": 2,
+   "rough_sleeping anomaly": 0,
+   "unattended_items anomaly": 4,
+   "n": 13
+  },
+  "sustained_presence": {
+   "littering anomaly": 1,
+   "smoking anomaly": 2,
+   "loitering anomaly": 8,
+   "rough_sleeping anomaly": 0,
+   "unattended_items anomaly": 11,
+   "n": 14
+  },
+  "long_presence": {
+   "littering anomaly": 0,
+   "smoking anomaly": 0,
+   "loitering anomaly": 0,
+   "rough_sleeping anomaly": 0,
+   "unattended_items anomaly": 0,
+   "n": 1
+  }
+ },
+ "seconds_per_candidate": null
+}

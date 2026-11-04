@@ -1,0 +1,30 @@
+[
+ {
+  "setting": {
+   "reach_rider_classes": [
+    3
+   ],
+   "reach_verifier": false,
+   "pose_action_cooldown_s": 5.0
+  },
+  "alerts": 2039,
+  "quiet_alerts_min": 3.1,
+  "on_event": 1106,
+  "smoking": "93/116",
+  "littering": "233/267",
+  "lingering 20s+": "81/81",
+  "lingering 60s+": "17/17",
+  "reach_down_alerts": 1056
+ },
+ {
+  "setting": "current",
+  "alerts": 1569,
+  "quiet_alerts_min": 1.61,
+  "on_event": 917,
+  "smoking": "89/116",
+  "littering": "231/267",
+  "lingering 20s+": "81/81",
+  "lingering 60s+": "17/17",
+  "reach_down_alerts": 814
+ }
+]

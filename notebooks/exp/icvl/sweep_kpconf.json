@@ -1,0 +1,41 @@
+[
+ {
+  "setting": {
+   "reach_kp_conf": 0.6
+  },
+  "alerts": 1401,
+  "quiet_alerts_min": 3.08,
+  "on_event": 576,
+  "smoking": "30/45",
+  "littering": "225/254",
+  "lingering 20s+": "44/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 876
+ },
+ {
+  "setting": {
+   "reach_kp_conf": 0.7
+  },
+  "alerts": 1377,
+  "quiet_alerts_min": 3.06,
+  "on_event": 568,
+  "smoking": "29/45",
+  "littering": "221/254",
+  "lingering 20s+": "44/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 852
+ },
+ {
+  "setting": {
+   "reach_max_speed_h": 0.35
+  },
+  "alerts": 1284,
+  "quiet_alerts_min": 2.86,
+  "on_event": 530,
+  "smoking": "29/45",
+  "littering": "207/254",
+  "lingering 20s+": "44/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 756
+ }
+]

@@ -463,3 +463,160 @@ Rule by rule at 12.5 vs 5 fps (rule alone; littering tune clips, Avenue tune nor
   >= 1/6 of frame height on 16:9 (>= 1/8 on 4:3), ideally >= 1/4. Matches DORI (IEC 62676-4): detect ~40 px,
   observe ~105 px for a 1.7 m person. Wide crowded halls (ABODA video11, MEVA) are outside this envelope; plan:
   per-camera higher input size / tiling after the CPU speed-up (YOLO26s @1280 triples confident people in video11).
+
+## 2026-11-04: ICVL — real CCTV, never used for tuning (`exp/icvl/`)
+* ICVL: 946 videos / 941 with per-person labels, 9.97 h, 11 cameras (01–12, no 09), 1280x720 – 1920x1080. Labels per
+  person per frame: head + feet points, posture / movement / gesture / event. No loitering, unattended-item or rough-
+  sleeping labels (2 lying episodes). `inventory.py` → `inventory.json`.
+* `run.py`: current defaults (YOLO26s + pose @640, 5 fps) on all 941 → `bench_cache/models/s/icvl.pkl` (~80 min, MPS).
+* `score.py` → `score.json`, counted BY PERSON. Boxes from head/feet (width 0.45 x height). Incidents: smoking
+  (gaps <= 15 s merged), littering, lingering = standing/sitting stationary >= 20 s / >= 60 s (loitering PROXY).
+  Caught = alert on the person within [t0 - w, t1 + w], w = 3 s littering (ICVL labels only ~2 s of the drop; 51 of 60
+  "near" alerts in a first check were on the litterer within 3 s), 1 s otherwise.
+  | event | incidents | caught |
+  | littering | 521 | 459 (88 %) — reach_down 435 |
+  | smoking | 161 | 123 (76 %) — pose_action 97, reach_down 81, stays put 53 |
+  | lingering 20 s+ | 126 | 125 (99 %) — stays put alone 93 |
+  | lingering 60 s+ | 27 | 27 (100 %) |
+  3450 alerts (5.8/min): 1685 (49 %) on a labelled event, 1610 on a labelled person doing nothing labelled, 155 on
+  nobody labelled (ICVL misses some people: 43 labelled vs 48 YOLO on 25 sampled frames). Videos with no labelled
+  event: 3.1 alerts/min. ICVL is event-dense (acted), so precision here is optimistic; alerts/min is what transfers.
+* `breakdown.py` → `breakdown.json` (what people were doing at off-event alerts): reach_down 1943 alerts, 1033 off
+  event — 528 walking, **287 cyclists (sitting / bicycling)**, 65 phoning; pose_action 943, 384 off event — phoning /
+  texting 174 (arm raised to the face, like smoking). Bicycle skip was left out on IWDD (cyclists stop to dump); the
+  ICVL cache only has motorcycle boxes, so a bicycle skip needs a detector re-run.
+
+## 2026-11-05 (overnight): cutting false alerts with ICVL (tune = ODD videos, final check = EVEN videos)
+* Correction: the first rider-skip test on ICVL showed no effect because `score.load_runs` looked for the bicycle
+  boxes in the wrong folder; fixed (`exp/alerts/two_wheelers.py icvl` → `twowheel_icvl.pkl`).
+* **Cyclist skip** (`reach_rider_classes` (3,) → (1, 3)): ICVL odd quiet-footage alerts 3.10 → 2.01/min, all alerts
+  1411 → 1252, reach_down 887 → 727, littering 226 → 224/254, smoking / lingering unchanged; cyclist reach_down false
+  alerts 155 → 10. Tune sets: littering / throws / smoking unchanged, IWDD train dumping 32.5 → 31.5 % (vid0033: a
+  cyclist bending to dump beside the bike; vid0447 was a chance hit by a passing cyclist). New option
+  `reach_rider_stopped_h` (still check a stopped rider) does not save vid0033 (its track is too short to measure
+  speed) and changes nothing else; kept off. **New default (1, 3)**, pending the held-out check.
+* Rejected on ICVL odd (`sweep_*.json`): reach_margin_h −0.13 / −0.11 (littering −16 / −41), reach_min_hits 2 (−35),
+  refire / cooldown changes (≤ 4 % fewer alerts), reach_kp_conf 0.6 / 0.7 (≤ 2 %), reach_max_speed_h 0.35
+  (littering −19: ICVL litterers drop while walking), pose_action_thr 0.9 / 0.95 (ICVL −12 % alerts, but littering
+  tune clips right person 96.5 → 76.5 at 0.95; throws / tosses need the pose cue), person_dedup_s 5 / 10 (littering
+  −10 / −27). Dwell rules on people < 30 px: only 12 alerts (1 %) — not worth an option.
+* **Chance check for ICVL littering** (`exp/icvl/chance.py`): a labelled person who never litters gets an alert in a
+  random 7.6 s window 33 % of the time (walker reach_down alerts), vs 88 % for litterers at their drop. Real signal,
+  but report caught-vs-chance, not caught alone.
+* Stays-put / long-presence alerts on "nobody labelled" (46 on odd): by eye they are real people ICVL did not label
+  (far away at the top edge, people sitting on the lobby floor), not phantom detections.
+* **Reach verifier** (`exp/icvl/reach_verifier.py`): MLP on the pose_action 1 s summary at the reach_down moment,
+  trained on ICVL odd only. ICVL even: alerts 1907 → 1363 (−29 %), quiet 1.96 → 1.33/min, littering 232 → 214/267,
+  smoking 93 → 84/116. But on the original tune sets littering clips right person 96.5 → 84.3 and IWDD lead 6.9 → 4.8:
+  it learned ICVL's "let go while walking". **Rejected as trained**; retraining on all tune sources
+  (`reach_verifier_mixed.py`: ICVL odd + littering train + IWDD train dumpers + Avenue normals).
+* **Reach verifier trained on all tune sources** (`exp/icvl/reach_verifier_mixed.py`; ICVL odd + littering train +
+  IWDD train dumpers + Avenue tune normals; 30k windows; 5-fold out-of-fold by sequence, `reach_verifier_mixed_oof.json`).
+  OOF on top of the cyclist skip, thr 0.05: littering tune 96.5 → 95.7 right person, throws 100, smoking same, IWDD
+  lead 6.9 → 6.8, dump-site 5.81 → 5.36/min, walkway 3.72 → 3.53, ICVL odd 1252 → 1118 alerts (littering 224 → 221).
+  Higher thresholds cost littering clips / IWDD. **Adopted at 0.05** (`weights/reach_verifier.npz`, final model on all
+  rows; `GateConfig.reach_verifier` True by default; in-gate version checked against the offline filter).
+  - 1 s look-ahead (hold the alert, also score the next second; `AHEAD_S=1`): same trade-off curve → not worth the delay.
+  - Applying the verifier to pose_action alerts too (`TAG=_v2`, `sweep_pose`): −2 to −5 % alerts, littering clips
+    right person 95.7 → 94.3 already at 0.05 (the pose cue is what catches throws) → **rejected**.
+* **pose_action_cooldown_s 5 → 15 s** (per track): tune sets unchanged except smoking clips 53.1 → 52.4, dump sites
+  5.42 → 4.99/min, ICVL odd 1150 → 1070 alerts, no catch lost on ICVL odd; 20 / 30 s add little. **Adopted.**
+  `loiter_repeat_s` 120 / 300: −1 % → left at 60 s.
+* **Held-out check, once** (old defaults → new: cyclist skip + reach verifier + pose cooldown 15 s):
+  | ICVL even (never used) | alerts 2039 → 1569 (−23 %), quiet footage 3.10 → 1.61/min (−48 %), on a labelled event
+    54 → 58 %; littering 233 → 231/267, smoking 93 → 89/116 (the cooldown: −4, none lost on odd), lingering 81/81, 17/17 |
+  | littering clips | 97/85 → 96/84 caught / right person, alerts 184 → 174 |
+  | walkway throws | 10/10, alerts 41 → 40 |
+  | smoking set | caught 150 → 136, alerts 332 → 290 (the set's own rule catches ~10 %; most catches were reach_down by chance) |
+  | IWDD test dumping | hit@10s 44.0 vs 31.2 chance → 40.0 vs 28.0 (lead 12.8 → 12.0), normal videos 6.30 → 5.37/min |
+  | ABODA bags | 8/11 → 8/11, alerts 114 → 109 |
+* All of ICVL with the new defaults (`score.json`; the odd half trained the verifier): 3450 → 2639 alerts (4.4/min),
+  quiet footage 3.1 → 1.62/min, 54 % on a labelled event; littering 455/521 (chance 31 %), smoking 118/161,
+  lingering 124/126 and 27/27. Remaining off-event alerts: mostly reach_down on walkers and the pose cue on people
+  raising a hand (phone / texting, same motion as smoking).
+* **Chance on ICVL for smoking and lingering** (`chance.walkers(event=...)`, all videos, new defaults): smoking 118/161
+  (73 %) caught vs 45 % for non-smokers in a 13 s window. Lingering: any-rule chance is 99.6 % for a 40 s window
+  (anyone in view that long gets some alert), so the by-person 124/126 is not meaningful; the stays-put rule alone
+  catches 108/126 (20 s+) and 27/27 (60 s+) at 0.39 alerts/min on quiet footage, but also fires in 71 % of 40 s windows
+  on other long-staying people (ICVL's "stationary" label is strict; many near-still people are labelled walking).
+  Reported as "the lingering timer works"; loitering vs waiting still needs per-camera settings and the VLM.
+* Held-out walkway (Avenue normal) unchanged at 4.5 alerts/min (2.7 of it stays-put on people standing still);
+  IWDD test normal 6.3 → 5.37/min (`per_rule_fa.json`).
+* Remaining reach_down false alerts (ICVL even, 306), by eye: people carrying a bag / paper / phone low, people
+  standing with arms down under a high camera; verifier scores 0.1–0.5, where real drops also score → VLM work.
+* Slides updated (ICVL slide, new held-out numbers, false-alert fixes, smoking / loitering with chance).
+
+## 2026-11-04 — false positives per person, recall push, crop check
+
+**New metric: per-person false positive rate** (`exp/icvl/fpr_sweep.py`): of ICVL people with no littering / smoking /
+still-20 s+ incident in their video, the share flagged at least once. Deck settings (pose cooldown 15 s) were 28.7 %
+on all of ICVL (949/3306), 29.2 % on the even half. Why (`exp/icvl/fp_people.py`, contact sheet
+`demo/icvl_fp_people.jpg`): first flagged by reach-down 68 % (carrying a bag / papers / phone low), pose cue 21 %
+(phone calls, texting), stays put / long in view 10 % (waiting, pacing on the phone; ICVL labels them walking).
+Running / cycling people are rarely flagged (8 %); phone users 61 %, people standing still under 20 s 62 %.
+Misses and false alarms explained in `exp/icvl/fp_fn.py` (`fp_fn.json`): littering misses are mostly the wrist not
+reaching knee height (drops from waist height) and the walking-speed skip; smoking misses are mostly very short
+labelled stretches (27 of 40 under 5 s; smokers who smoke 5 s+ in total: 72/80 caught).
+
+* **reach_max_speed_h 0.45 → 0.6** (tune on odd, confirm on even + tune sets): ICVL even littering 231 → 245/267,
+  quiet 1.61 → 1.70/min; tune sets unchanged (dump site 4.99 → 5.22/min). **Adopted.** Looser wrist margin with a
+  stricter verifier looked better on ICVL (255/267) but lost an Avenue throw, smoking clips 52 → 40-49 % → rejected.
+  Pose-cue threshold, dedup, keypoint confidence, reach window: no gain. Per-person FPR rose to 32.7 % (even).
+* Tried for the false positives and **rejected**: per-person caps on sends (lose catches: the first alert is often
+  before the act; `exp/icvl/one_per_person.py`), carried-bag check (YOLO sees a bag at the hand on 5 % of alerts),
+  how long the hand stays low (drops and walkers identical), new static object on the ground after a reach
+  (`ground_blobs.py`; follows 56 % of drops but also 29 % of walkers), YOLO phone boxes for the pose cue
+  (`exp/alerts/phones.py`; phones found near 10 % of either group), pose-cue verifier trained with phone / texting as
+  hard negatives (`exp/icvl/pose_verifier.py`; −1 point FPR, littering clips 97.8 → 93.9), reach verifier / pose-cue
+  thresholds alone (trade recall ~1:1; pose cue 0.95 drops littering clips to 85 %), 2 low-hand frames (−19 drops),
+  tighter stays-put radius 0.4 (−1.3 points, −1 lingering, −2 smokers; optional).
+* **Crop check** (`stage1_crop_check.py`, `GateConfig.crop_check`, off by default): the pixels decide what body points
+  cannot. Every reach_down alert's person crop (box + hand square) at t − 1 s, t and t + 1 s is embedded with a frozen
+  MobileCLIP2-S2 image encoder (the public timm weights also in Yuchuan's bundle) and scored by a logistic regression
+  trained on ICVL odd reach alerts (`exp/icvl/crop_v2.py`; one-crop v1 in `hand_probe.py`, `weights/crop_check_v1.npz`).
+  Runs before the person dedup; live, the alert is held 1 s and the handoff uses the alert's own frame. Held-out
+  ICVL even AUC 0.874 (one crop: 0.831).
+  | ICVL even (held-out) | people flagged | littering | smoking | quiet /min |
+  | no check | 32.7 % | 245/267 | 90/116 | 1.70 |
+  | v1 one crop @0.3 | 26.3 % | 244 | 89 | 1.31 |
+  | **v2 before/now/after @0.2 (default thr)** | **25.2 %** | 244 | 89 | 1.30 |
+  | v2 @0.3 | 21.9 % | 242 | 88 | 1.17 |
+  Tune sets (`exp/alerts/crop_v2_check.py`): v2 @0.2 littering clips 97.8 unchanged, throws 6/6, smoking clips
+  52.4 → 51.3, IWDD lead 6.3 → 5.4; @0.25 and @0.3 lose 1 of 6 Avenue throws. Cut-offs chosen on odd out-of-fold
+  scores agree with even. Cost: 3 encoder passes per reach_down alert (~0.28 s each on one core) and a 1 s delay.
+  Live path checked against the replay on 12 even videos (scores identical); found and fixed: a held alert was
+  suppressed by a later alert on the same person sent during the hold → the dedup now only lets earlier alerts
+  suppress (no change to any replayed number).
+* **Pose-cue crop check** (same before / now / after recipe on pose_action alerts, `crop_v2.py ... pose_action`,
+  `weights/crop_check_pose_action.npz`, threshold 0.2; ICVL even AUC 0.836): on top of the reach check, ICVL even
+  people flagged 25.2 → **23.9 %** (littering 244, smoking 89, lingering 81 → 80/81); tune sets unchanged (littering
+  clips 97.8, throws 6/6, smoking clips 51.3 → 51.0, IWDD lead 5.4). **In the gate**: `crop_check_rules` = reach_down
+  + pose_action, one weights file per rule, shared encoder; replay reproduces the numbers exactly; live path vs replay
+  on 20 even videos: same alerts kept bar one borderline score.
+  Stricter options (ICVL even): reach 0.3 / pose 0.2 → 20.4 % (littering 242, smoking 88) but 1 of 6 Avenue throws
+  lost; reach 0.3 / pose 0.3 → 18.4 % (smoking 86).
+* Rejected: stacking the crop score with the reach verifier score (odd OOF AUC 0.918 → 0.916); training the crop
+  check on ICVL odd + all tune sources (`exp/alerts/crop_rows.py`, `exp/icvl/crop_mixed.py`, out-of-fold): worse
+  everywhere at the same cut-offs (throws 6 → 4 of 6, littering clips 97.8 → 95.7, smoking clips 51 → 44, ICVL even
+  smoking 89 → 84); the tune sets' person-level labels are coarser than ICVL's.
+* **Where it stands** (ICVL even, held-out; all fixes): people with no incident flagged 32.7 → 23.9 % with
+  `crop_check=True`; it is **off by default** pending a decision: it adds open_clip + MobileCLIP2-S2 to the gate
+  (Yuchuan's VLM stage loads the same encoder), ~0.85 s of one core per reach / pose alert, and a 1 s hold.
+  Data-pipeline: `Stage1Detector` passes frames to the engine and uses a held alert's own frame for the handoff
+  (`_frame` / `_t`); its tests' fake engine takes the optional frame. Nothing committed.
+* **Crop check off the frame loop**: the encoder runs on one background thread (`RuleEngine` holds the alert; crops at
+  t − 1 s and t are cut at once and encoded, the t + 1 s crop when it arrives, the alert is released when its score
+  is ready; the encoder is warmed up on the first live frame). `RuleEngine.flush()` releases alerts still held at the
+  end of a stream (`Stage1Gate.run` calls it). Engine step on 20 even ICVL videos with real frames: max 19 ms (was
+  5.8 s at the first alert, ~0.63 s at each). The person dedup now compares the alerts' own timestamps (an alert
+  released late is judged as if sent when it fired); no replayed number changes (ICVL all 2863 alerts, 480/521,
+  121/161; even with the check 23.9 %). Live vs replay: 29 vs 28 kept (the same borderline score).
+  Cost (M3 Pro, 1 core, uncontended): 211 ms per crop, ~0.63 s per alert; 1.2 checks/min on event-free footage
+  (~1.3 % of a core), 4.2/min on busy ICVL (~4.4 %). Tests: `CropCheckTests` (hold / release / drop / flush with a
+  stub check). Data-pipeline: a held alert's `timestamp_ms` is its firing time; alerts held at a session reset are
+  still lost (≤ ~1.2 s window: 1 s hold + the last crop encoding).
+* **`crop_check` on by default** (decided 4 Nov). Needs open_clip_torch (in requirements/base.txt and
+  cpu-deployment.txt) and the MobileCLIP2-S2 weights (HF hub / cache, or `STAGE1_CROP_ENCODER=local-dir:<folder>` in
+  the data pipeline); if the encoder cannot load, a warning is raised once and alerts pass unchecked. To do: the
+  data-pipeline `stage1` extra in `data-pipeline/pyproject.toml` should add open_clip_torch==3.3.0 (needs `uv lock`).
+  Replays of cached runs are unaffected unless `stage1_crop_check.SCORES` is filled (no score = alert kept).

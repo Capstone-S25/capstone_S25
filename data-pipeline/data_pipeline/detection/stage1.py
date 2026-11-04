@@ -78,6 +78,9 @@ def default_config(gate: ModuleType, device: str = "cpu"):
         rules=gate.DEFAULT_RULES + ("pose_action",),
         inview_s=60.0,
         device=device,
+        # Crop check encoder: open_clip id or "local-dir:<MobileCLIP2-S2 folder>" for
+        # offline machines; unset = timm/MobileCLIP2-S2-OpenCLIP from the HF hub/cache.
+        crop_check_encoder=os.environ.get("STAGE1_CROP_ENCODER") or None,
     )
 
 
@@ -166,7 +169,7 @@ class Stage1Detector:
         obs = self.perception.observe(frame.image, self.index, t)
         self.writer.observe(frame.image, t, self.index)
         candidates = []
-        events = list(self.engine.step(obs))
+        events = list(self.engine.step(obs, frame.image))
         if self.safety_scan_seconds:
             if self.next_review_s is None:
                 self.next_review_s = t + self.safety_scan_seconds
@@ -199,14 +202,17 @@ class Stage1Detector:
             )
             event["session_id"] = str(frame.session_id)
             event["segment_id"] = frame.segment_id
-            event["timestamp_ms"] = frame.timestamp_ms
-            self.writer.save(event, frame.image, self.stream, t=t)
+            # A held alert (Stage 1 crop check) carries the frame and time it fired at;
+            # observed_until_s stays the release time.
+            image, te = event.pop("_frame", frame.image), event.pop("_t", t)
+            event["timestamp_ms"] = frame.timestamp_ms - round((t - te) * 1000)
+            self.writer.save(event, image, self.stream, t=te)
             event["views"] = {}
             for name, span in VIEW_WINDOWS_S.items():
                 if event["event_type"] == "periodic_review" and name == "short":
                     span = max(span, self.safety_scan_seconds)
                 paths, times = self.writer.window_frames(
-                    event, frame.image, self.stream, t - span, t, tag=f"_{name}"
+                    event, image, self.stream, te - span, te, tag=f"_{name}"
                 )
                 event["views"][name] = {"paths": paths, "times_s": times}
             event["tasks"] = list(TASKS_BY_EVENT.get(event["event_type"], ()))

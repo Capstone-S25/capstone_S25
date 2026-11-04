@@ -1,0 +1,63 @@
+[
+ {
+  "setting": "current",
+  "alerts": 1411,
+  "quiet_alerts_min": 3.1,
+  "on_event": 579,
+  "smoking": "30/45",
+  "littering": "226/254",
+  "lingering 20s+": "44/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 887
+ },
+ {
+  "setting": {
+   "reach_rider_classes": [
+    1,
+    3
+   ]
+  },
+  "alerts": 1252,
+  "quiet_alerts_min": 2.01,
+  "on_event": 577,
+  "smoking": "30/45",
+  "littering": "224/254",
+  "lingering 20s+": "44/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 727
+ },
+ {
+  "setting": {
+   "reach_rider_classes": [
+    1,
+    3
+   ],
+   "reach_rider_stopped_h": 0.1
+  },
+  "alerts": 1254,
+  "quiet_alerts_min": 2.02,
+  "on_event": 577,
+  "smoking": "30/45",
+  "littering": "224/254",
+  "lingering 20s+": "44/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 729
+ },
+ {
+  "setting": {
+   "reach_rider_classes": [
+    1,
+    3
+   ],
+   "reach_rider_stopped_h": 0.2
+  },
+  "alerts": 1258,
+  "quiet_alerts_min": 2.04,
+  "on_event": 577,
+  "smoking": "30/45",
+  "littering": "224/254",
+  "lingering 20s+": "44/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 733
+ }
+]

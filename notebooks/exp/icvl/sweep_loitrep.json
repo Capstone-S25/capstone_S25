@@ -1,0 +1,39 @@
+[
+ {
+  "setting": "current",
+  "alerts": 1070,
+  "quiet_alerts_min": 1.64,
+  "on_event": 510,
+  "smoking": "29/45",
+  "littering": "224/254",
+  "lingering 20s+": "43/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 629
+ },
+ {
+  "setting": {
+   "loiter_repeat_s": 120.0
+  },
+  "alerts": 1056,
+  "quiet_alerts_min": 1.61,
+  "on_event": 502,
+  "smoking": "29/45",
+  "littering": "224/254",
+  "lingering 20s+": "43/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 630
+ },
+ {
+  "setting": {
+   "loiter_repeat_s": 300.0
+  },
+  "alerts": 1054,
+  "quiet_alerts_min": 1.61,
+  "on_event": 500,
+  "smoking": "29/45",
+  "littering": "224/254",
+  "lingering 20s+": "43/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 630
+ }
+]

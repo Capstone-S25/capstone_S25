@@ -1,0 +1,201 @@
+{
+ "videos": 941,
+ "hours": 9.97,
+ "alerts": 2639,
+ "alerts_per_min": 4.41,
+ "videos_with_no_labelled_event": {
+  "minutes": 248.7,
+  "alerts": 404,
+  "alerts_per_min": 1.62
+ },
+ "events": {
+  "smoking": {
+   "incidents": 161,
+   "alerts_on_incident": 609,
+   "caught": 118,
+   "caught_%": 73.3,
+   "precision_%": 23.1
+  },
+  "littering": {
+   "incidents": 521,
+   "alerts_on_incident": 553,
+   "caught": 455,
+   "caught_%": 87.3,
+   "precision_%": 21.0
+  },
+  "lingering 20s+": {
+   "incidents": 126,
+   "alerts_on_incident": 496,
+   "caught": 124,
+   "caught_%": 98.4,
+   "precision_%": 18.8
+  },
+  "lingering 60s+": {
+   "incidents": 27,
+   "alerts_on_incident": 198,
+   "caught": 27,
+   "caught_%": 100.0,
+   "precision_%": 7.5
+  }
+ },
+ "alert_kinds": {
+  "on a labelled person, nothing labelled": 1080,
+  "on a labelled event": 1427,
+  "on nobody labelled": 132
+ },
+ "by_rule": {
+  "reach_down": {
+   "on smoking": 262,
+   "alerts": 1443,
+   "on a labelled person, nothing labelled": 596,
+   "on a labelled event": 823,
+   "on littering": 485,
+   "on lingering 20s+": 165,
+   "on nobody labelled": 24,
+   "on lingering 60s+": 61
+  },
+  "pose_action": {
+   "alerts": 609,
+   "on a labelled person, nothing labelled": 278,
+   "on littering": 30,
+   "on a labelled event": 314,
+   "on lingering 20s+": 147,
+   "on smoking": 216,
+   "on nobody labelled": 17,
+   "on lingering 60s+": 59
+  },
+  "object_appeared": {
+   "on littering": 38,
+   "alerts": 53,
+   "on a labelled event": 38,
+   "on a labelled person, nothing labelled": 11,
+   "on nobody labelled": 4
+  },
+  "unattended_object": {
+   "alerts": 4,
+   "on nobody labelled": 4
+  },
+  "sustained_presence": {
+   "on lingering 20s+": 114,
+   "alerts": 350,
+   "on a labelled event": 160,
+   "on lingering 60s+": 41,
+   "on nobody labelled": 60,
+   "on a labelled person, nothing labelled": 130,
+   "on smoking": 74
+  },
+  "long_presence": {
+   "on lingering 20s+": 70,
+   "alerts": 180,
+   "on a labelled event": 92,
+   "on a labelled person, nothing labelled": 65,
+   "on lingering 60s+": 37,
+   "on nobody labelled": 23,
+   "on smoking": 57
+  }
+ },
+ "per_camera": {
+  "01": {
+   "minutes": 52.6,
+   "alerts": 182,
+   "smoking incidents": 3,
+   "smoking caught": 1,
+   "littering incidents": 115,
+   "littering caught": 111
+  },
+  "02": {
+   "minutes": 89.0,
+   "alerts": 458,
+   "lingering 20s+ incidents": 27,
+   "lingering 20s+ caught": 27,
+   "lingering 60s+ incidents": 3,
+   "lingering 60s+ caught": 3,
+   "smoking incidents": 35,
+   "smoking caught": 29,
+   "littering incidents": 111,
+   "littering caught": 101
+  },
+  "03": {
+   "minutes": 109.8,
+   "alerts": 249,
+   "smoking incidents": 2,
+   "smoking caught": 1,
+   "lingering 20s+ incidents": 1,
+   "lingering 20s+ caught": 1,
+   "littering incidents": 144,
+   "littering caught": 110
+  },
+  "04": {
+   "minutes": 75.5,
+   "alerts": 345,
+   "lingering 20s+ incidents": 24,
+   "lingering 20s+ caught": 23,
+   "lingering 60s+ incidents": 5,
+   "lingering 60s+ caught": 5,
+   "smoking incidents": 1,
+   "smoking caught": 1
+  },
+  "05": {
+   "minutes": 105.7,
+   "alerts": 577,
+   "lingering 20s+ incidents": 9,
+   "lingering 20s+ caught": 9,
+   "littering incidents": 151,
+   "littering caught": 133,
+   "smoking incidents": 43,
+   "smoking caught": 28,
+   "lingering 60s+ incidents": 4,
+   "lingering 60s+ caught": 4
+  },
+  "06": {
+   "minutes": 16.8,
+   "alerts": 50,
+   "lingering 20s+ incidents": 2,
+   "lingering 20s+ caught": 2,
+   "smoking incidents": 23,
+   "smoking caught": 15
+  },
+  "07": {
+   "minutes": 55.7,
+   "alerts": 288,
+   "lingering 20s+ incidents": 20,
+   "lingering 20s+ caught": 19,
+   "lingering 60s+ incidents": 5,
+   "lingering 60s+ caught": 5,
+   "smoking incidents": 1,
+   "smoking caught": 1
+  },
+  "08": {
+   "minutes": 33.4,
+   "alerts": 119,
+   "lingering 20s+ incidents": 11,
+   "lingering 20s+ caught": 11,
+   "smoking incidents": 26,
+   "smoking caught": 15,
+   "lingering 60s+ incidents": 1,
+   "lingering 60s+ caught": 1
+  },
+  "10": {
+   "minutes": 45.3,
+   "alerts": 313,
+   "lingering 20s+ incidents": 21,
+   "lingering 20s+ caught": 21,
+   "smoking incidents": 27,
+   "smoking caught": 27,
+   "lingering 60s+ incidents": 9,
+   "lingering 60s+ caught": 9
+  },
+  "11": {
+   "minutes": 9.7,
+   "alerts": 25,
+   "lingering 20s+ incidents": 6,
+   "lingering 20s+ caught": 6
+  },
+  "12": {
+   "minutes": 4.7,
+   "alerts": 33,
+   "lingering 20s+ incidents": 5,
+   "lingering 20s+ caught": 5
+  }
+ }
+}

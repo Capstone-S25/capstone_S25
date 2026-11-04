@@ -16,7 +16,7 @@ class FakeEngine:
         FakeEngine.created += 1
         self.times = []
 
-    def step(self, obs):
+    def step(self, obs, frame=None):
         self.times.append(obs.t)
         if obs.t >= 1 and len(self.times) == 3:
             return [

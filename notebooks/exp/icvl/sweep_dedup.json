@@ -1,0 +1,28 @@
+[
+ {
+  "setting": {
+   "person_dedup_s": 5.0
+  },
+  "alerts": 1068,
+  "quiet_alerts_min": 1.79,
+  "on_event": 468,
+  "smoking": "27/45",
+  "littering": "214/254",
+  "lingering 20s+": "43/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 624
+ },
+ {
+  "setting": {
+   "person_dedup_s": 10.0
+  },
+  "alerts": 891,
+  "quiet_alerts_min": 1.45,
+  "on_event": 388,
+  "smoking": "24/45",
+  "littering": "197/254",
+  "lingering 20s+": "43/45",
+  "lingering 60s+": "10/10",
+  "reach_down_alerts": 536
+ }
+]

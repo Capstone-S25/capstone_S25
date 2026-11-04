@@ -1,0 +1,1762 @@
+{
+ "misses": {
+  "smoking": {
+   "missed": 43,
+   "reason": {
+    "never fired": 33,
+    "filter": 10
+   },
+   "fixed_by": {
+    "pose-cue threshold 0.5": 7,
+    "dedup across rules": 3,
+    "pose-cue gap 5 s": 4
+   },
+   "alert_within_10s_outside_window": 17,
+   "by_camera": {
+    "05": 15,
+    "08": 11,
+    "06": 8,
+    "02": 6,
+    "01": 2,
+    "03": 1
+   }
+  },
+  "littering": {
+   "missed": 66,
+   "reason": {
+    "not seen": 5,
+    "filter": 61
+   },
+   "fixed_by": {
+    "walking fast": 30,
+    "wrist margin -0.3": 52,
+    "frame edge": 3,
+    "keypoint confidence 0.3": 2,
+    "rider": 1,
+    "dedup across rules": 1,
+    "verifier": 1
+   },
+   "alert_within_10s_outside_window": 9,
+   "by_camera": {
+    "03": 34,
+    "05": 18,
+    "02": 10,
+    "01": 4
+   }
+  },
+  "lingering 20s+": {
+   "missed": 2,
+   "reason": {
+    "never fired": 1,
+    "filter": 1
+   },
+   "fixed_by": {
+    "stays-put repeat 20 s": 1
+   },
+   "alert_within_10s_outside_window": 1,
+   "by_camera": {
+    "04": 1,
+    "07": 1
+   }
+  },
+  "lingering 60s+": {
+   "missed": 0,
+   "reason": {},
+   "fixed_by": {},
+   "alert_within_10s_outside_window": 0,
+   "by_camera": {}
+  }
+ },
+ "false_alarms": {
+  "nothing we flag: standing / walking": 419,
+  "near a real incident (same person, within 10 s)": 215,
+  "nothing we flag: standing / walking / phoning": 135,
+  "nobody labelled": 132,
+  "nothing we flag: standing / stationary": 87,
+  "same person, other time": 74,
+  "nothing we flag: standing / walking / texting": 42,
+  "nothing we flag: standing / stationary / phoning": 27,
+  "nothing we flag: standing / stationary / texting": 23,
+  "nothing we flag: sitting / stationary": 15,
+  "nothing we flag: sitting / bicycling": 15,
+  "nothing we flag: standing / running": 13,
+  "nothing we flag: standing / walking / others": 5,
+  "nothing we flag: sitting / stationary / texting": 3,
+  "nothing we flag: sitting / stationary / phoning": 3,
+  "nothing we flag: standing / stationary / others": 1,
+  "nothing we flag: sitting / stationary / others": 1,
+  "nothing we flag: standing / bicycling": 1,
+  "nothing we flag: standing / running / others": 1
+ },
+ "false_alarms_by_rule": {
+  "pose_action": {
+   "nothing we flag": 216,
+   "near a real incident (same person, within 10 s)": 36,
+   "same person, other time": 26,
+   "nobody labelled": 17
+  },
+  "reach_down": {
+   "nothing we flag": 419,
+   "near a real incident (same person, within 10 s)": 153,
+   "nobody labelled": 24,
+   "same person, other time": 24
+  },
+  "unattended_object": {
+   "nobody labelled": 4
+  },
+  "object_appeared": {
+   "near a real incident (same person, within 10 s)": 4,
+   "nobody labelled": 4,
+   "nothing we flag": 7
+  },
+  "long_presence": {
+   "same person, other time": 16,
+   "nobody labelled": 23,
+   "near a real incident (same person, within 10 s)": 10,
+   "nothing we flag": 39
+  },
+  "sustained_presence": {
+   "nobody labelled": 60,
+   "nothing we flag": 110,
+   "same person, other time": 8,
+   "near a real incident (same person, within 10 s)": 12
+  }
+ },
+ "fpr_by_activity": {
+  "all": {
+   "people": 3306,
+   "flagged": 949,
+   "rate_%": 28.7
+  },
+  "mostly walking": {
+   "people": 2580,
+   "flagged": 783,
+   "rate_%": 30.3
+  },
+  "any sitting": {
+   "people": 408,
+   "flagged": 65,
+   "rate_%": 15.9
+  },
+  "mostly bicycling": {
+   "people": 368,
+   "flagged": 31,
+   "rate_%": 8.4
+  },
+  "any texting": {
+   "people": 289,
+   "flagged": 125,
+   "rate_%": 43.3
+  },
+  "mostly stationary": {
+   "people": 197,
+   "flagged": 122,
+   "rate_%": 61.9
+  },
+  "any phoning": {
+   "people": 169,
+   "flagged": 103,
+   "rate_%": 60.9
+  },
+  "mostly running": {
+   "people": 161,
+   "flagged": 13,
+   "rate_%": 8.1
+  },
+  "any others": {
+   "people": 28,
+   "flagged": 20,
+   "rate_%": 71.4
+  },
+  "any lying": {
+   "people": 2,
+   "flagged": 2,
+   "rate_%": 100.0
+  },
+  "any falling": {
+   "people": 1,
+   "flagged": 1,
+   "rate_%": 100.0
+  }
+ },
+ "miss_list": [
+  {
+   "event": "smoking",
+   "seq": "icvl/01/AA-005-01-20140502-01",
+   "pid": 2,
+   "t0": 8.2,
+   "camera": "01",
+   "seen": 1.0,
+   "height_px": 301,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/01/AA_006_01_20140802_03",
+   "pid": 1,
+   "t0": 10.5,
+   "camera": "01",
+   "seen": 1.0,
+   "height_px": 181,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/01/AA_032_01_20170829_01",
+   "pid": 1,
+   "t0": 5.3,
+   "camera": "01",
+   "seen": 0.36,
+   "height_px": 307,
+   "reason": "not seen",
+   "fixed_by": [
+    "walking fast",
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/01/AA_074_01_20170830_02",
+   "pid": 2,
+   "t0": 3.0,
+   "camera": "01",
+   "seen": 1.0,
+   "height_px": 400,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast",
+    "frame edge",
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/01/AA_091_01_20170830_02",
+   "pid": 3,
+   "t0": 2.0,
+   "camera": "01",
+   "seen": 1.0,
+   "height_px": 460,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast",
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/01/AA_107_01_20170830_02",
+   "pid": 1,
+   "t0": 8.3,
+   "camera": "01",
+   "seen": 1.0,
+   "height_px": 352,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast",
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/02/AA-013-02-20140524-02",
+   "pid": 1,
+   "t0": 33.4,
+   "camera": "02",
+   "seen": 1.0,
+   "height_px": 108,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/02/AA_008_02_20140802_03",
+   "pid": 6,
+   "t0": 150.4,
+   "camera": "02",
+   "seen": 0.82,
+   "height_px": 140,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/02/AA_011_02_20140802_03",
+   "pid": 1,
+   "t0": 22.6,
+   "camera": "02",
+   "seen": 1.0,
+   "height_px": 361,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/02/AA_025_02_20170830_01",
+   "pid": 1,
+   "t0": 2.8,
+   "camera": "02",
+   "seen": 1.0,
+   "height_px": 385,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/02/AA_043_02_20170830_01",
+   "pid": 1,
+   "t0": 7.1,
+   "camera": "02",
+   "seen": 1.0,
+   "height_px": 363,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/02/AA_050_02_20170830_01",
+   "pid": 1,
+   "t0": 5.8,
+   "camera": "02",
+   "seen": 1.0,
+   "height_px": 320,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/02/AA_051_02_20170830_01",
+   "pid": 1,
+   "t0": 5.9,
+   "camera": "02",
+   "seen": 1.0,
+   "height_px": 277,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast",
+    "keypoint confidence 0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/02/AA_052_02_20170830_01",
+   "pid": 1,
+   "t0": 6.4,
+   "camera": "02",
+   "seen": 1.0,
+   "height_px": 358,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast",
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/02/AA_057_02_20170830_01",
+   "pid": 1,
+   "t0": 6.6,
+   "camera": "02",
+   "seen": 0.35,
+   "height_px": 231,
+   "reason": "not seen",
+   "fixed_by": [
+    "walking fast",
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/02/AA_075_02_20170902_01",
+   "pid": 1,
+   "t0": 5.1,
+   "camera": "02",
+   "seen": 0.17,
+   "height_px": 268,
+   "reason": "not seen",
+   "fixed_by": [
+    "walking fast",
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/02/AA_092_02_20170902_01",
+   "pid": 1,
+   "t0": 2.1,
+   "camera": "02",
+   "seen": 1.0,
+   "height_px": 347,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/02/AA_096_02_20170902_01",
+   "pid": 1,
+   "t0": 3.4,
+   "camera": "02",
+   "seen": 1.0,
+   "height_px": 373,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/02/AA_105_02_20170902_01",
+   "pid": 1,
+   "t0": 7.4,
+   "camera": "02",
+   "seen": 1.0,
+   "height_px": 241,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast",
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/02/AR-005-02-20151003-01",
+   "pid": 9,
+   "t0": 52.7,
+   "camera": "02",
+   "seen": 1.0,
+   "height_px": 203,
+   "reason": "filter",
+   "fixed_by": [
+    "pose-cue threshold 0.5"
+   ],
+   "alert_nearby_s": [
+    4.6
+   ]
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/02/AR-005-02-20151003-01",
+   "pid": 10,
+   "t0": 69.7,
+   "camera": "02",
+   "seen": 1.0,
+   "height_px": 209,
+   "reason": "filter",
+   "fixed_by": [
+    "dedup across rules"
+   ],
+   "alert_nearby_s": [
+    -1.5
+   ]
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/02/AR-005-02-20151003-01",
+   "pid": 10,
+   "t0": 87.5,
+   "camera": "02",
+   "seen": 0.73,
+   "height_px": 207,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": [
+    8.7
+   ]
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/03/AA-001-03-20140524-02",
+   "pid": 2,
+   "t0": 25.2,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 410,
+   "reason": "filter",
+   "fixed_by": [
+    "pose-cue threshold 0.5"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_001_03_20170828_01",
+   "pid": 1,
+   "t0": 5.0,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 377,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_002_03_20170828_01",
+   "pid": 1,
+   "t0": 5.3,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 382,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_011_03_20170828_01",
+   "pid": 2,
+   "t0": 8.0,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 376,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_012_03_20170828_01",
+   "pid": 1,
+   "t0": 6.8,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 326,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": [
+    -4.0
+   ]
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_018_03_20170828_01",
+   "pid": 2,
+   "t0": 4.5,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 353,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_032_03_20170828_01",
+   "pid": 3,
+   "t0": 2.5,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 464,
+   "reason": "filter",
+   "fixed_by": [
+    "rider",
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_033_03_20170828_01",
+   "pid": 1,
+   "t0": 5.5,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 325,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_034_03_20170828_01",
+   "pid": 3,
+   "t0": 3.7,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 416,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_035_03_20170828_01",
+   "pid": 1,
+   "t0": 5.6,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 371,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_038_03_20170828_01",
+   "pid": 3,
+   "t0": 6.2,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 311,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_040_03_20170828_01",
+   "pid": 4,
+   "t0": 10.4,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 329,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast",
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_048_03_20170828_01",
+   "pid": 2,
+   "t0": 5.1,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 361,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_049_03_20170828_01",
+   "pid": 3,
+   "t0": 7.5,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 302,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_050_03_20170828_01",
+   "pid": 3,
+   "t0": 10.2,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 316,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_056_03_20170828_01",
+   "pid": 9,
+   "t0": 8.4,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 242,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_060_03_20170901_01",
+   "pid": 1,
+   "t0": 4.2,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 427,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_064_03_20170901_01",
+   "pid": 2,
+   "t0": 3.9,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 447,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_065_03_20170901_01",
+   "pid": 2,
+   "t0": 5.0,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 464,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_066_03_20170901_01",
+   "pid": 1,
+   "t0": 7.3,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 444,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_069_03_20170901_01",
+   "pid": 1,
+   "t0": 5.2,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 410,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_071_03_20170901_01",
+   "pid": 3,
+   "t0": 11.4,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 355,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_075_03_20170901_01",
+   "pid": 5,
+   "t0": 7.8,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 372,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_077_03_20170901_01",
+   "pid": 1,
+   "t0": 5.3,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 393,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_080_03_20170901_01",
+   "pid": 1,
+   "t0": 5.8,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 407,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_083_03_20170901_01",
+   "pid": 1,
+   "t0": 6.2,
+   "camera": "03",
+   "seen": 0.85,
+   "height_px": 412,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_086_03_20170901_01",
+   "pid": 1,
+   "t0": 7.9,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 335,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast"
+   ],
+   "alert_nearby_s": [
+    -3.3,
+    9.5
+   ]
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_092_03_20170901_01",
+   "pid": 1,
+   "t0": 6.5,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 386,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_093_03_20170901_01",
+   "pid": 1,
+   "t0": 8.7,
+   "camera": "03",
+   "seen": 0.2,
+   "height_px": 271,
+   "reason": "not seen",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_101_03_20170901_01",
+   "pid": 1,
+   "t0": 15.3,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 346,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast",
+    "frame edge",
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_103_03_20170901_01",
+   "pid": 1,
+   "t0": 14.3,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 497,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_116_03_20170901_01",
+   "pid": 2,
+   "t0": 14.4,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 503,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_127_03_20170901_01",
+   "pid": 1,
+   "t0": 4.8,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 466,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_129_03_20170901_01",
+   "pid": 1,
+   "t0": 18.1,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 495,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/03/AA_135_03_20170901_01",
+   "pid": 2,
+   "t0": 16.1,
+   "camera": "03",
+   "seen": 1.0,
+   "height_px": 522,
+   "reason": "filter",
+   "fixed_by": [
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "lingering 20s+",
+   "seq": "icvl/04/AA-012-04-20140524-02",
+   "pid": 7,
+   "t0": 28.2,
+   "camera": "04",
+   "seen": 0.52,
+   "height_px": 254,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": [
+    31.8
+   ]
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/05/AA_006_05_20170829_02",
+   "pid": 4,
+   "t0": 5.7,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 316,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/05/AA_008_05_20170829_02",
+   "pid": 4,
+   "t0": 5.2,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 335,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/05/AA_024_05_20170829_02",
+   "pid": 2,
+   "t0": 6.1,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 376,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast",
+    "frame edge"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/05/AA_027_05_20170829_02",
+   "pid": 4,
+   "t0": 3.6,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 342,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast",
+    "wrist margin -0.3",
+    "dedup across rules"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/05/AA_033_05_20170829_02",
+   "pid": 7,
+   "t0": 2.4,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 421,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast",
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/05/AA_035_05_20170829_02",
+   "pid": 4,
+   "t0": 7.1,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 325,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/05/AA_038_05_20170829_02",
+   "pid": 14,
+   "t0": 6.2,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 382,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/05/AA_056_05_20170830_03",
+   "pid": 1,
+   "t0": 9.1,
+   "camera": "05",
+   "seen": 0.6,
+   "height_px": 364,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast",
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/05/AA_067_05_20170830_03",
+   "pid": 1,
+   "t0": 7.4,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 391,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast"
+   ],
+   "alert_nearby_s": [
+    4.0,
+    7.2
+   ]
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/05/AA_076_05_20170830_03",
+   "pid": 2,
+   "t0": 6.9,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 383,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/05/AA_102_05_20170831_01",
+   "pid": 8,
+   "t0": 7.9,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 325,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast",
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": [
+    -4.5
+   ]
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/05/AA_111_05_20170831_01",
+   "pid": 7,
+   "t0": 3.4,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 360,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast"
+   ],
+   "alert_nearby_s": [
+    5.8,
+    9.2
+   ]
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/05/AA_114_05_20170831_01",
+   "pid": 10,
+   "t0": 4.2,
+   "camera": "05",
+   "seen": 0.33,
+   "height_px": 374,
+   "reason": "not seen",
+   "fixed_by": [
+    "walking fast",
+    "keypoint confidence 0.3"
+   ],
+   "alert_nearby_s": [
+    8.2
+   ]
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/05/AA_120_05_20170831_01",
+   "pid": 8,
+   "t0": 4.3,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 392,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast",
+    "verifier"
+   ],
+   "alert_nearby_s": [
+    4.0
+   ]
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/05/AA_132_05_20170831_01",
+   "pid": 6,
+   "t0": 5.7,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 370,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast"
+   ],
+   "alert_nearby_s": [
+    5.3
+   ]
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/05/AA_136_05_20170831_01",
+   "pid": 8,
+   "t0": 6.5,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 390,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast",
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/05/AA_140_05_20170831_01",
+   "pid": 1,
+   "t0": 8.8,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 456,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast",
+    "wrist margin -0.3"
+   ],
+   "alert_nearby_s": [
+    4.0,
+    5.6
+   ]
+  },
+  {
+   "event": "littering",
+   "seq": "icvl/05/AA_147_05_20170831_01",
+   "pid": 8,
+   "t0": 6.4,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 385,
+   "reason": "filter",
+   "fixed_by": [
+    "walking fast"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/05/AR-001-05-20151003-01",
+   "pid": 15,
+   "t0": 55.9,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 278,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/05/AR-001-05-20151003-01",
+   "pid": 19,
+   "t0": 55.4,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 188,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/05/AR-001-05-20151003-01",
+   "pid": 20,
+   "t0": 64.4,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 419,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": [
+    -1.0,
+    8.8
+   ]
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/05/AR-003-05-20151003-01",
+   "pid": 11,
+   "t0": 43.1,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 379,
+   "reason": "filter",
+   "fixed_by": [
+    "dedup across rules"
+   ],
+   "alert_nearby_s": [
+    -1.5
+   ]
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/05/AR-003-05-20151003-01",
+   "pid": 14,
+   "t0": 69.5,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 189,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": [
+    -2.7
+   ]
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/05/AR-003-05-20151003-01",
+   "pid": 14,
+   "t0": 102.7,
+   "camera": "05",
+   "seen": 0.54,
+   "height_px": 240,
+   "reason": "filter",
+   "fixed_by": [
+    "pose-cue gap 5 s",
+    "pose-cue threshold 0.5",
+    "dedup across rules"
+   ],
+   "alert_nearby_s": [
+    -1.5,
+    25.5
+   ]
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "pid": 9,
+   "t0": 125.1,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 347,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": [
+    -2.1
+   ]
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "pid": 12,
+   "t0": 144.7,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 333,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "pid": 13,
+   "t0": 149.8,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 330,
+   "reason": "filter",
+   "fixed_by": [
+    "pose-cue gap 5 s"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "pid": 14,
+   "t0": 155.4,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 340,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/05/AR-005-05-20151003-01",
+   "pid": 13,
+   "t0": 25.7,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 192,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/05/AR-005-05-20151003-01",
+   "pid": 19,
+   "t0": 80.7,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 364,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": [
+    -1.1
+   ]
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/05/AR-005-05-20151003-01",
+   "pid": 23,
+   "t0": 61.9,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 248,
+   "reason": "filter",
+   "fixed_by": [
+    "pose-cue gap 5 s",
+    "pose-cue threshold 0.5"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/05/AR-005-05-20151003-01",
+   "pid": 31,
+   "t0": 71.3,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 234,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": [
+    -1.1
+   ]
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/05/AR-005-05-20151003-01",
+   "pid": 32,
+   "t0": 140.4,
+   "camera": "05",
+   "seen": 1.0,
+   "height_px": 485,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": [
+    4.0,
+    10.0
+   ]
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/06/AR-002-06-20151003-01",
+   "pid": 2,
+   "t0": 17.4,
+   "camera": "06",
+   "seen": 1.0,
+   "height_px": 577,
+   "reason": "filter",
+   "fixed_by": [
+    "pose-cue threshold 0.5"
+   ],
+   "alert_nearby_s": [
+    2.2
+   ]
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/06/AR-003-06-20151003-01",
+   "pid": 7,
+   "t0": 16.2,
+   "camera": "06",
+   "seen": 1.0,
+   "height_px": 476,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/06/AR-004-06-20151003-01",
+   "pid": 1,
+   "t0": 26.5,
+   "camera": "06",
+   "seen": 1.0,
+   "height_px": 609,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/06/AR-005-06-20151003-01",
+   "pid": 4,
+   "t0": 24.1,
+   "camera": "06",
+   "seen": 1.0,
+   "height_px": 584,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/06/AR-005-06-20151003-01",
+   "pid": 8,
+   "t0": 62.5,
+   "camera": "06",
+   "seen": 1.0,
+   "height_px": 670,
+   "reason": "filter",
+   "fixed_by": [
+    "pose-cue threshold 0.5"
+   ],
+   "alert_nearby_s": [
+    -3.9,
+    -2.5,
+    2.1
+   ]
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/06/AR-005-06-20151003-01",
+   "pid": 17,
+   "t0": 118.9,
+   "camera": "06",
+   "seen": 1.0,
+   "height_px": 746,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/06/AR-005-06-20151003-01",
+   "pid": 27,
+   "t0": 97.0,
+   "camera": "06",
+   "seen": 1.0,
+   "height_px": 660,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/06/AR-005-06-20151003-01",
+   "pid": 31,
+   "t0": 73.7,
+   "camera": "06",
+   "seen": 1.0,
+   "height_px": 396,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": [
+    -4.0
+   ]
+  },
+  {
+   "event": "lingering 20s+",
+   "seq": "icvl/07/AA-009-07-20140502-01",
+   "pid": 3,
+   "t0": 59.1,
+   "camera": "07",
+   "seen": 1.0,
+   "height_px": 329,
+   "reason": "filter",
+   "fixed_by": [
+    "stays-put repeat 20 s"
+   ],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/08/AR-001-08-20151003-01",
+   "pid": 1,
+   "t0": 125.8,
+   "camera": "08",
+   "seen": 1.0,
+   "height_px": 553,
+   "reason": "filter",
+   "fixed_by": [
+    "pose-cue gap 5 s",
+    "pose-cue threshold 0.5"
+   ],
+   "alert_nearby_s": [
+    -3.4,
+    3.6
+   ]
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/08/AR-001-08-20151003-01",
+   "pid": 8,
+   "t0": 332.0,
+   "camera": "08",
+   "seen": 1.0,
+   "height_px": 231,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": [
+    2.6
+   ]
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/08/AR-001-08-20151003-01",
+   "pid": 9,
+   "t0": 342.8,
+   "camera": "08",
+   "seen": 1.0,
+   "height_px": 638,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/08/AR-002-08-20151003-01",
+   "pid": 1,
+   "t0": 18.0,
+   "camera": "08",
+   "seen": 0.84,
+   "height_px": 308,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/08/AR-002-08-20151003-01",
+   "pid": 3,
+   "t0": 37.8,
+   "camera": "08",
+   "seen": 1.0,
+   "height_px": 316,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/08/AR-004-08-20151003-01",
+   "pid": 1,
+   "t0": 13.4,
+   "camera": "08",
+   "seen": 0.66,
+   "height_px": 413,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/08/AR-004-08-20151003-01",
+   "pid": 3,
+   "t0": 34.5,
+   "camera": "08",
+   "seen": 0.77,
+   "height_px": 283,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": [
+    -6.3
+   ]
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/08/AR-004-08-20151003-01",
+   "pid": 5,
+   "t0": 54.1,
+   "camera": "08",
+   "seen": 1.0,
+   "height_px": 240,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/08/AR-004-08-20151003-01",
+   "pid": 14,
+   "t0": 127.3,
+   "camera": "08",
+   "seen": 0.93,
+   "height_px": 290,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/08/AR-005-08-20151003-01",
+   "pid": 1,
+   "t0": 13.8,
+   "camera": "08",
+   "seen": 1.0,
+   "height_px": 361,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  },
+  {
+   "event": "smoking",
+   "seq": "icvl/08/AR-005-08-20151003-01",
+   "pid": 2,
+   "t0": 37.1,
+   "camera": "08",
+   "seen": 1.0,
+   "height_px": 307,
+   "reason": "never fired",
+   "fixed_by": [],
+   "alert_nearby_s": []
+  }
+ ]
+}

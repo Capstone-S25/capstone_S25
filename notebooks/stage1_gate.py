@@ -101,8 +101,10 @@ class GateConfig:
                                            # so what they put down is in the crop (None = person box only)
     reach_refire_move_h: float | None = 1.0   # re-fire before reach_cooldown_s if the person moved this many body
                                               # heights since their last reach (None = cooldown only)
-    reach_max_speed_h: float | None = 0.45  # skip people walking faster than this (body heights / s over the last
-                                            # reach_speed_window_s): a hanging arm with a bag looks low from above
+    reach_max_speed_h: float | None = 0.6   # skip people walking faster than this (body heights / s over the last
+                                            # reach_speed_window_s): a hanging arm with a bag looks low from above.
+                                            # 0.45 -> 0.6: ICVL even (held-out) littering 231 -> 245/267, quiet
+                                            # alerts 1.61 -> 1.70/min; tune sets unchanged (dump site 4.99 -> 5.22/min)
     reach_speed_window_s: float = 1.0
     reach_skip_riders: bool = True      # skip people riding (a seated rider's hands sit at knee height); the
                                         # detector also reports the rider classes, at no extra cost
@@ -172,6 +174,19 @@ class GateConfig:
     pose_action_weights: str | None = None  # None = stage1_pose_action.DEFAULT_WEIGHTS
     pose_action_thr: float | None = None    # None = the threshold stored with the weights (~1 false alarm/min)
     pose_action_cooldown_s: float = 5.0     # per track; 15 s: ICVL even (held-out) alerts -12 %, smoking 93 -> 89/116
+
+    # Crop check (stage1_crop_check.py): re-check these rules' alerts on the pixels (MobileCLIP2-S2 image embeddings of
+    # the person 1 s before, at and 1 s after the alert + logistic regression; the alert is held 1 s) and drop those
+    # scoring below the threshold, before the person dedup. Needs the frame (RuleEngine.step(obs, frame)); replays of
+    # cached runs use stage1_crop_check.SCORES. ICVL even (held-out): people with no incident flagged 32.7 -> 25.2 %,
+    # littering 245 -> 244/267, smoking 89 -> 89; tune sets unchanged or better (0.3: 21.9 %, but 1 of 6 Avenue throws
+    # lost). The pose cue's own check at 0.2 on top: 25.2 -> 23.9 %, lingering 81 -> 80/81, tune sets unchanged.
+    crop_check: bool = True
+    crop_check_rules: tuple[str, ...] = ("reach_down", "pose_action")
+    crop_check_thr: float | None = None        # None = each rule's threshold stored with its weights (0.2 both)
+    crop_check_weights: str | None = None      # reach_down weights; None = weights/crop_check.npz (pose cue:
+                                               # weights/crop_check_pose_action.npz)
+    crop_check_encoder: str | None = None      # open_clip id or "local-dir:<folder>"; None = MobileCLIP2-S2 from the HF hub
 
     @property
     def uses_bg(self) -> bool:
@@ -707,6 +722,116 @@ class RuleEngine:
             model = PoseActionModel(cfg.reach_verifier_weights or DEFAULT_WEIGHTS.with_name("reach_verifier.npz"))
             self.verifier = {"model": model, "thr": model.threshold if cfg.reach_verifier_thr is None else cfg.reach_verifier_thr,
                              "kp": defaultdict(deque), "heights": defaultdict(lambda: deque(maxlen=200)), "pending": []}
+        self.crop_check = None
+        self.seq_id: str | None = None   # set by replay_rules, to look up precomputed crop-check scores
+        if cfg.crop_check:
+            from concurrent.futures import ThreadPoolExecutor
+
+            from stage1_crop_check import CropCheck, weights_for
+
+            checks = {r: CropCheck(cfg.crop_check_weights if r == "reach_down" and cfg.crop_check_weights else weights_for(r),
+                                   cfg.crop_check_encoder) for r in cfg.crop_check_rules}
+            self.crop_check = {"checks": checks, "frames": deque(), "pending": [],
+                               "thr": {r: c.threshold if cfg.crop_check_thr is None else cfg.crop_check_thr
+                                       for r, c in checks.items()},
+                               "keep_s": max((c.dt for c in checks.values()), default=0.0) + 0.5,
+                               # one worker: the encoder runs beside the frame loop, jobs in arrival order
+                               "pool": ThreadPoolExecutor(max_workers=1, thread_name_prefix="crop_check")}
+
+    def _crop_check(self, events, obs, frame):
+        """Drop crop_check_rules alerts whose crop scores below their rule's threshold. Without a frame (cached replay)
+        the score comes from stage1_crop_check.SCORES at once; an alert with no score is kept. Live, a version-2 check
+        holds the alert: the person's crops at t - dt and t are cut now and encoded on a background thread, the crop
+        at t + dt is cut when it arrives, and the alert is released (or dropped) once its score is ready, so the frame
+        loop never waits for the encoder."""
+        from stage1_crop_check import SCORES, crop
+
+        cc, out = self.crop_check, []
+        if frame is not None:
+            if not cc.get("warm"):   # load the encoder on the worker now, not at the first alert
+                cc["warm"] = [cc["pool"].submit(c._load) for c in cc["checks"].values() if hasattr(c, "_load")]
+            frames = cc["frames"]
+            frames.append((obs.t, frame, {p["raw_id"]: p["box"] for p in obs.persons}))
+            while frames and frames[0][0] < obs.t - cc["keep_s"]:
+                frames.popleft()
+            for x in cc["pending"]:
+                if "score" not in x and x["due"] <= obs.t + 1e-6:
+                    box = frames[-1][2].get(x["rid"])
+                    after = None if box is None else crop(frame, [box[i] + x["grow"][i] for i in range(4)]).copy()
+                    x["score"] = cc["pool"].submit(self._crop_score, x["check"], x["first"], after)
+            out += self._crop_release(lambda x: "score" in x and x["score"].done())
+        for e in events:
+            check = cc["checks"].get(e["event_type"])
+            if check is None:
+                out.append(e)
+            elif frame is None:
+                self._crop_keep(e, SCORES.get((self.seq_id, e["event_id"])), out)
+            elif check.version < 2:
+                self._crop_keep(e, check.score(frame, e["roi_box"], e["event_type"]), out)
+            else:
+                roi = e["roi_box"]
+                p = max(obs.persons, key=lambda q: intersection_over(q["box"], roi), default=None)
+                now = crop(frame, roi).copy()
+                if p is None or now.size == 0:
+                    out.append(e)
+                    continue
+                grow = [roi[i] - p["box"][i] for i in range(4)]
+                before = None
+                cand = [(abs(ft - (obs.t - check.dt)), f, boxes) for ft, f, boxes in cc["frames"]
+                        if abs(ft - (obs.t - check.dt)) <= 0.4 and p["raw_id"] in boxes]
+                if cand:
+                    _, f, boxes = min(cand, key=lambda c: c[0])
+                    b = boxes[p["raw_id"]]
+                    before = crop(f, [b[i] + grow[i] for i in range(4)]).copy()
+                first = cc["pool"].submit(lambda c=check, b=before, n=now: (c.embed_crop(b), c.embed_crop(n)))
+                cc["pending"].append({"due": obs.t + check.dt, "event": e, "check": check, "rid": p["raw_id"],
+                                      "grow": grow, "first": first, "frame": frame, "t": obs.t})
+        return out
+
+    @staticmethod
+    def _crop_score(check, first, after_crop):
+        before, now = first.result()
+        return check.score_embeddings([before, now, check.embed_crop(after_crop)])
+
+    def _crop_release(self, ready):
+        """Release the held alerts for which ready(x) holds, keeping those that score at or above the threshold
+        (an encoder error keeps the alert)."""
+        cc, out, keep = self.crop_check, [], []
+        for x in cc["pending"]:
+            if not ready(x):
+                keep.append(x)
+                continue
+            try:
+                score = x["score"].result()
+            except Exception as exc:   # e.g. open_clip or the encoder weights missing: keep the alert, say so once
+                score = None
+                if not cc.get("warned"):
+                    cc["warned"] = True
+                    import warnings
+                    warnings.warn(f"Stage 1 crop check failed, alerts pass unchecked: {exc!r}", RuntimeWarning, stacklevel=2)
+            # the handoff must crop the alert's own frame, not the release frame: callers pop these two keys
+            x["event"]["_frame"], x["event"]["_t"] = x["frame"], x["t"]
+            self._crop_keep(x["event"], score, out)
+        cc["pending"] = keep
+        return out
+
+    def flush(self) -> list[dict]:
+        """End of a stream: score and release every alert the crop check still holds (the "after" crop is the last
+        one seen, or missing), through the person dedup. Call after the last step()."""
+        if not self.crop_check or not self.crop_check["pending"]:
+            return []
+        cc = self.crop_check
+        for x in cc["pending"]:
+            if "score" not in x:
+                x["score"] = cc["pool"].submit(self._crop_score, x["check"], x["first"], None)
+        t = max(x["t"] for x in cc["pending"])
+        return self._dedup(self._crop_release(lambda x: True), t)
+
+    def _crop_keep(self, e, score, out):
+        if score is None or score >= self.crop_check["thr"][e["event_type"]]:
+            if score is not None:
+                e["crop_score"] = round(score, 3)
+            out.append(e)
 
     def _verify_window(self, rid, t, frame_hw):
         from stage1_pose_action import window_features
@@ -753,7 +878,7 @@ class RuleEngine:
                 out.append(e)
         return out
 
-    def step(self, obs: Observation) -> list[dict]:
+    def step(self, obs: Observation, frame: np.ndarray | None = None) -> list[dict]:
         cfg, t = self.cfg, obs.t
         if self.t0 is None:
             self.t0 = t
@@ -791,20 +916,27 @@ class RuleEngine:
             del self.people[cid]
         if self.verifier:
             events = self._verify(events, obs)
+        if self.crop_check:
+            events = self._crop_check(events, obs, frame)
         return self._dedup(events, t)
 
     def _dedup(self, events, t):
-        while self.sent and t - self.sent[0][0] > self.cfg.person_dedup_s:
-            self.sent.popleft()
+        """Drop an alert when the same person (or an overlapping box) already had one that happened up to
+        person_dedup_s earlier. Times are the alerts' own timestamps, so an alert held by the crop check and
+        released late is judged as if it had been sent when it fired."""
+        dedup_s = self.cfg.person_dedup_s
+        horizon = dedup_s + (self.crop_check["keep_s"] + 10.0 if self.crop_check else 0.0)   # held alerts arrive late
+        if self.sent and t - min(x[4] for x in self.sent) > horizon:
+            self.sent = deque(x for x in self.sent if t - x[4] <= horizon)
         kept = []
         for e in events:
-            box = e["roi_box"]
+            box, ts_e = e["roi_box"], e["timestamp_s"]
             kind = e["event_type"] if self.cfg.dedup_per_rule else None
-            if any(k == kind and (ent == e["entity_id"] or iou(box, b) >= 0.5 or
+            if any(k == kind and 0.0 <= ts_e - ts + 1e-6 <= dedup_s + 2e-6 and (ent == e["entity_id"] or iou(box, b) >= 0.5 or
                                   max(intersection_over(box, b), intersection_over(b, box)) >= 0.7)
-                   for _, ent, b, k in self.sent):
+                   for _, ent, b, k, ts in self.sent):
                 continue
-            self.sent.append((t, e["entity_id"], box, kind))
+            self.sent.append((t, e["entity_id"], box, kind, ts_e))
             kept.append(e)
         return kept
 
@@ -1157,23 +1289,32 @@ class Stage1Gate:
         events, observations = [], []
         if writer is not None:
             writer.start(seq)
-        t0 = time.perf_counter()
-        for fr in seq:
-            obs = self.perception.observe(fr.image, fr.index, fr.t, fr.path)
-            if writer is not None:
-                writer.observe(fr.image, fr.t, fr.index)
-            evs = engine.step(obs)
+        def finish(evs, fr):
             for e in evs:
                 e["sequence_id"] = seq.seq_id
                 e["source"] = seq.source
                 e["event_id"] = f"{seq.seq_id}_{e['event_id']}".replace("/", "-").replace("#", "-")
+                img, te = e.pop("_frame", fr.image), e.pop("_t", fr.t)   # a held alert carries its own frame
                 if writer is not None:
-                    writer.save(e, fr.image, seq, t=fr.t)
+                    writer.save(e, img, seq, t=te)
+
+        t0 = time.perf_counter()
+        fr = None
+        for fr in seq:
+            obs = self.perception.observe(fr.image, fr.index, fr.t, fr.path)
+            if writer is not None:
+                writer.observe(fr.image, fr.t, fr.index)
+            evs = engine.step(obs, fr.image)
+            finish(evs, fr)
             events += evs
             if keep_observations:
                 observations.append(obs)
             if on_frame is not None:
                 on_frame(fr, obs, evs, engine)
+        if fr is not None:
+            evs = engine.flush()   # alerts the crop check still holds at the end of the sequence
+            finish(evs, fr)
+            events += evs
         return RunResult(seq.seq_id, seq.source, seq.fps, len(observations), seq.duration_s, events,
                          observations, time.perf_counter() - t0, engine.stitcher.n_stitched)
 
@@ -1205,6 +1346,7 @@ def replay_rules(result: RunResult, cfg: GateConfig) -> tuple[list[dict], int]:
     """Re-run only the rule engine on cached observations (no YOLO). Returns (events, n_stitched).
     Perception-side settings (weights, imgsz, tracker, bg model) are fixed by the original run."""
     engine = RuleEngine(cfg, result.fps)
+    engine.seq_id = result.seq_id
     events = []
     for obs in result.observations:
         for e in engine.step(obs):
