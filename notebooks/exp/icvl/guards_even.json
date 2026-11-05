@@ -1,0 +1,274 @@
+{
+ "default": {
+  "smoking": "81/116",
+  "littering": "240/267",
+  "lingering 20s+": "77/81",
+  "lingering 60s+": "16/17",
+  "fpr_%": 12.8,
+  "alerts": 1362,
+  "false_%": 39.8,
+  "by_rule_false": {
+   "reach_down": "263/758",
+   "pose_action": "134/331",
+   "object_appeared": "10/28",
+   "sustained_presence": "97/171",
+   "long_presence": "36/72",
+   "unattended_object": "2/2"
+  }
+ },
+ "still_border_0.01": {
+  "smoking": "81/116",
+  "littering": "240/267",
+  "lingering 20s+": "77/81",
+  "lingering 60s+": "16/17",
+  "fpr_%": 12.8,
+  "alerts": 1347,
+  "false_%": 39.1,
+  "by_rule_false": {
+   "reach_down": "263/757",
+   "pose_action": "135/331",
+   "object_appeared": "10/28",
+   "sustained_presence": "84/159",
+   "long_presence": "33/70",
+   "unattended_object": "2/2"
+  }
+ },
+ "still_border_0.03": {
+  "smoking": "81/116",
+  "littering": "240/267",
+  "lingering 20s+": "77/81",
+  "lingering 60s+": "16/17",
+  "fpr_%": 12.7,
+  "alerts": 1344,
+  "false_%": 39.0,
+  "by_rule_false": {
+   "reach_down": "263/758",
+   "pose_action": "136/332",
+   "object_appeared": "10/28",
+   "sustained_presence": "81/155",
+   "long_presence": "32/69",
+   "unattended_object": "2/2"
+  }
+ },
+ "still_border_0.05": {
+  "smoking": "81/116",
+  "littering": "240/267",
+  "lingering 20s+": "76/81",
+  "lingering 60s+": "16/17",
+  "fpr_%": 12.5,
+  "alerts": 1333,
+  "false_%": 38.8,
+  "by_rule_false": {
+   "reach_down": "263/758",
+   "pose_action": "137/334",
+   "object_appeared": "10/28",
+   "sustained_presence": "74/146",
+   "long_presence": "31/65",
+   "unattended_object": "2/2"
+  }
+ },
+ "still_min_h_0.1": {
+  "smoking": "81/116",
+  "littering": "240/267",
+  "lingering 20s+": "77/81",
+  "lingering 60s+": "16/17",
+  "fpr_%": 12.0,
+  "alerts": 1338,
+  "false_%": 38.7,
+  "by_rule_false": {
+   "reach_down": "263/758",
+   "pose_action": "134/331",
+   "object_appeared": "10/28",
+   "sustained_presence": "74/148",
+   "long_presence": "35/71",
+   "unattended_object": "2/2"
+  }
+ },
+ "still_min_h_0.15": {
+  "smoking": "80/116",
+  "littering": "240/267",
+  "lingering 20s+": "77/81",
+  "lingering 60s+": "16/17",
+  "fpr_%": 11.9,
+  "alerts": 1323,
+  "false_%": 38.2,
+  "by_rule_false": {
+   "reach_down": "263/758",
+   "pose_action": "133/330",
+   "object_appeared": "10/28",
+   "sustained_presence": "66/138",
+   "long_presence": "32/67",
+   "unattended_object": "2/2"
+  }
+ },
+ "still_min_h_0.2": {
+  "smoking": "77/116",
+  "littering": "240/267",
+  "lingering 20s+": "75/81",
+  "lingering 60s+": "16/17",
+  "fpr_%": 11.8,
+  "alerts": 1308,
+  "false_%": 38.1,
+  "by_rule_false": {
+   "reach_down": "263/758",
+   "pose_action": "135/332",
+   "object_appeared": "10/28",
+   "sustained_presence": "60/126",
+   "long_presence": "29/62",
+   "unattended_object": "2/2"
+  }
+ },
+ "reach_border_0.03": {
+  "smoking": "81/116",
+  "littering": "241/267",
+  "lingering 20s+": "77/81",
+  "lingering 60s+": "16/17",
+  "fpr_%": 12.8,
+  "alerts": 1356,
+  "false_%": 39.3,
+  "by_rule_false": {
+   "reach_down": "254/753",
+   "pose_action": "134/330",
+   "object_appeared": "10/28",
+   "sustained_presence": "97/171",
+   "long_presence": "36/72",
+   "unattended_object": "2/2"
+  }
+ },
+ "reach_border_0.05": {
+  "smoking": "81/116",
+  "littering": "239/267",
+  "lingering 20s+": "77/81",
+  "lingering 60s+": "16/17",
+  "fpr_%": 12.2,
+  "alerts": 1331,
+  "false_%": 38.4,
+  "by_rule_false": {
+   "reach_down": "231/725",
+   "pose_action": "135/333",
+   "object_appeared": "10/28",
+   "sustained_presence": "97/171",
+   "long_presence": "36/72",
+   "unattended_object": "2/2"
+  }
+ },
+ "pose_border_0.01": {
+  "smoking": "81/116",
+  "littering": "240/267",
+  "lingering 20s+": "77/81",
+  "lingering 60s+": "16/17",
+  "fpr_%": 12.8,
+  "alerts": 1360,
+  "false_%": 39.6,
+  "by_rule_false": {
+   "reach_down": "263/760",
+   "pose_action": "130/325",
+   "object_appeared": "10/28",
+   "sustained_presence": "97/172",
+   "long_presence": "36/73",
+   "unattended_object": "2/2"
+  }
+ },
+ "pose_border_0.03": {
+  "smoking": "81/116",
+  "littering": "240/267",
+  "lingering 20s+": "77/81",
+  "lingering 60s+": "16/17",
+  "fpr_%": 12.7,
+  "alerts": 1354,
+  "false_%": 39.5,
+  "by_rule_false": {
+   "reach_down": "263/760",
+   "pose_action": "127/318",
+   "object_appeared": "10/28",
+   "sustained_presence": "97/173",
+   "long_presence": "36/73",
+   "unattended_object": "2/2"
+  }
+ },
+ "reach_min_h_0.1": {
+  "smoking": "81/116",
+  "littering": "240/267",
+  "lingering 20s+": "77/81",
+  "lingering 60s+": "16/17",
+  "fpr_%": 12.8,
+  "alerts": 1360,
+  "false_%": 39.7,
+  "by_rule_false": {
+   "reach_down": "262/757",
+   "pose_action": "133/330",
+   "object_appeared": "10/28",
+   "sustained_presence": "97/171",
+   "long_presence": "36/72",
+   "unattended_object": "2/2"
+  }
+ },
+ "reach_min_h_0.15": {
+  "smoking": "81/116",
+  "littering": "240/267",
+  "lingering 20s+": "77/81",
+  "lingering 60s+": "16/17",
+  "fpr_%": 12.8,
+  "alerts": 1349,
+  "false_%": 39.4,
+  "by_rule_false": {
+   "reach_down": "257/750",
+   "pose_action": "129/326",
+   "object_appeared": "10/28",
+   "sustained_presence": "97/171",
+   "long_presence": "36/72",
+   "unattended_object": "2/2"
+  }
+ },
+ "hand_age_0.5": {
+  "smoking": "81/116",
+  "littering": "241/267",
+  "lingering 20s+": "77/81",
+  "lingering 60s+": "16/17",
+  "fpr_%": 12.6,
+  "alerts": 1344,
+  "false_%": 39.1,
+  "by_rule_false": {
+   "reach_down": "245/738",
+   "pose_action": "135/333",
+   "object_appeared": "10/28",
+   "sustained_presence": "97/171",
+   "long_presence": "36/72",
+   "unattended_object": "2/2"
+  }
+ },
+ "hand_age_1.0": {
+  "smoking": "81/116",
+  "littering": "237/267",
+  "lingering 20s+": "77/81",
+  "lingering 60s+": "16/17",
+  "fpr_%": 11.8,
+  "alerts": 1320,
+  "false_%": 38.0,
+  "by_rule_false": {
+   "reach_down": "231/723",
+   "pose_action": "126/323",
+   "object_appeared": "10/28",
+   "sustained_presence": "97/172",
+   "long_presence": "36/72",
+   "unattended_object": "2/2"
+  }
+ },
+ "hand_age_2.0": {
+  "smoking": "81/116",
+  "littering": "237/267",
+  "lingering 20s+": "77/81",
+  "lingering 60s+": "16/17",
+  "fpr_%": 11.0,
+  "alerts": 1282,
+  "false_%": 36.9,
+  "by_rule_false": {
+   "reach_down": "207/690",
+   "pose_action": "121/317",
+   "object_appeared": "10/28",
+   "sustained_presence": "97/173",
+   "long_presence": "36/72",
+   "unattended_object": "2/2"
+  }
+ }
+}

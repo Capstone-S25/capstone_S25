@@ -1,0 +1,10791 @@
+{
+ "people_without_incident": 1795,
+ "flagged": 429,
+ "shared alert": 93,
+ "still by labels": 13,
+ "unexplained": 323,
+ "fpr_raw_%": 23.9,
+ "fpr_after_label_checks_%": 18.0,
+ "rows": [
+  {
+   "seq": "icvl/01/AA-002-01-20150324-01",
+   "tag": "01/AA-002-01-20150324-01.txt",
+   "fps": 28.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 9.64,
+     "rule": "reach_down",
+     "roi_box": [
+      416,
+      207,
+      506,
+      364
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/01/AA-011-01-20140502-01",
+   "tag": "01/AA-011-01-20140502-01.txt",
+   "fps": 15.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 1.2,
+     "rule": "reach_down",
+     "roi_box": [
+      515,
+      271,
+      844,
+      705
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/01/AA-016-01-20140502-01",
+   "tag": "01/AA-016-01-20140502-01.txt",
+   "fps": 15.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 9.4,
+     "rule": "reach_down",
+     "roi_box": [
+      147,
+      221,
+      290,
+      439
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/01/AA_044_01_20170829_01",
+   "tag": "01/AA_044_01_20170829_01.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.2,
+     "rule": "reach_down",
+     "roi_box": [
+      801,
+      522,
+      1051,
+      910
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/01/AA_046_01_20170829_01",
+   "tag": "01/AA_046_01_20170829_01.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 7.4,
+     "rule": "reach_down",
+     "roi_box": [
+      38,
+      616,
+      282,
+      925
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/01/AA_106_01_20170830_02",
+   "tag": "01/AA_106_01_20170830_02.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 2.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1,
+      388,
+      163,
+      704
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA-002-02-20140524-02",
+   "tag": "02/AA-002-02-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.8,
+     "rule": "pose_action",
+     "roi_box": [
+      98,
+      241,
+      183,
+      428
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA-002-02-20140524-02",
+   "tag": "02/AA-002-02-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 6.4,
+     "rule": "pose_action",
+     "roi_box": [
+      291,
+      153,
+      360,
+      344
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 9.01,
+     "rule": "pose_action",
+     "roi_box": [
+      263,
+      211,
+      335,
+      409
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA-002-02-20140524-02",
+   "tag": "02/AA-002-02-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 6.4,
+     "rule": "pose_action",
+     "roi_box": [
+      291,
+      153,
+      360,
+      344
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 9.01,
+     "rule": "pose_action",
+     "roi_box": [
+      263,
+      211,
+      335,
+      409
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA-002-02-20140524-02",
+   "tag": "02/AA-002-02-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 6.4,
+     "rule": "pose_action",
+     "roi_box": [
+      291,
+      153,
+      360,
+      344
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA-002-02-20140524-02",
+   "tag": "02/AA-002-02-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 9,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 8.01,
+     "rule": "reach_down",
+     "roi_box": [
+      779,
+      302,
+      967,
+      592
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA-002-02-20140524-02",
+   "tag": "02/AA-002-02-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 10,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 8.01,
+     "rule": "reach_down",
+     "roi_box": [
+      779,
+      302,
+      967,
+      592
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA-002-02-20140524-02",
+   "tag": "02/AA-002-02-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 11,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 8.01,
+     "rule": "reach_down",
+     "roi_box": [
+      779,
+      302,
+      967,
+      592
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA-005-02-20140524-02",
+   "tag": "02/AA-005-02-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 4.6,
+     "rule": "reach_down",
+     "roi_box": [
+      711,
+      218,
+      872,
+      455
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA-014-02-20140524-02",
+   "tag": "02/AA-014-02-20140524-02.txt",
+   "fps": 20.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.6,
+     "rule": "reach_down",
+     "roi_box": [
+      669,
+      282,
+      842,
+      568
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 1.8,
+     "rule": "reach_down",
+     "roi_box": [
+      663,
+      197,
+      790,
+      423
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA-014-02-20140524-02",
+   "tag": "02/AA-014-02-20140524-02.txt",
+   "fps": 20.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.6,
+     "rule": "reach_down",
+     "roi_box": [
+      669,
+      282,
+      842,
+      568
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA-014-02-20140524-02",
+   "tag": "02/AA-014-02-20140524-02.txt",
+   "fps": 20.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.6,
+     "rule": "reach_down",
+     "roi_box": [
+      669,
+      282,
+      842,
+      568
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 1.8,
+     "rule": "reach_down",
+     "roi_box": [
+      663,
+      197,
+      790,
+      423
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 6.6,
+     "rule": "reach_down",
+     "roi_box": [
+      428,
+      109,
+      515,
+      263
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 14.8,
+     "rule": "pose_action",
+     "roi_box": [
+      448,
+      91,
+      492,
+      219
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 21.2,
+     "rule": "pose_action",
+     "roi_box": [
+      546,
+      297,
+      689,
+      622
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 39.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      627,
+      96,
+      671,
+      237
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA-014-02-20140524-02",
+   "tag": "02/AA-014-02-20140524-02.txt",
+   "fps": 20.0,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 18.2,
+     "rule": "reach_down",
+     "roi_box": [
+      733,
+      323,
+      928,
+      656
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 21.2,
+     "rule": "pose_action",
+     "roi_box": [
+      546,
+      297,
+      689,
+      622
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA-014-02-20140524-02",
+   "tag": "02/AA-014-02-20140524-02.txt",
+   "fps": 20.0,
+   "pid": 7,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 18.2,
+     "rule": "reach_down",
+     "roi_box": [
+      733,
+      323,
+      928,
+      656
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 21.6,
+     "rule": "pose_action",
+     "roi_box": [
+      755,
+      314,
+      864,
+      579
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA-014-02-20140524-02",
+   "tag": "02/AA-014-02-20140524-02.txt",
+   "fps": 20.0,
+   "pid": 8,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 39.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      627,
+      96,
+      671,
+      237
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA-014-02-20140524-02",
+   "tag": "02/AA-014-02-20140524-02.txt",
+   "fps": 20.0,
+   "pid": 9,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 91.8,
+     "rule": "reach_down",
+     "roi_box": [
+      412,
+      174,
+      511,
+      368
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA-023-02-20140524-02",
+   "tag": "02/AA-023-02-20140524-02.txt",
+   "fps": 20.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 6.8,
+     "rule": "reach_down",
+     "roi_box": [
+      867,
+      394,
+      1074,
+      711
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA_001_02_20170830_01",
+   "tag": "02/AA_001_02_20170830_01.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.6,
+     "rule": "reach_down",
+     "roi_box": [
+      1322,
+      212,
+      1606,
+      535
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA_001_02_20170830_01",
+   "tag": "02/AA_001_02_20170830_01.txt",
+   "fps": 30.0,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.6,
+     "rule": "reach_down",
+     "roi_box": [
+      1322,
+      212,
+      1606,
+      535
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA_007_02_20170830_01",
+   "tag": "02/AA_007_02_20170830_01.txt",
+   "fps": 8.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.75,
+     "rule": "reach_down",
+     "roi_box": [
+      583,
+      323,
+      828,
+      747
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA_007_02_20170830_01",
+   "tag": "02/AA_007_02_20170830_01.txt",
+   "fps": 8.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 8.25,
+     "rule": "reach_down",
+     "roi_box": [
+      121,
+      211,
+      256,
+      433
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 16.5,
+     "rule": "reach_down",
+     "roi_box": [
+      112,
+      339,
+      220,
+      504
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 19.75,
+     "rule": "reach_down",
+     "roi_box": [
+      379,
+      142,
+      540,
+      439
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA_007_02_20170830_01",
+   "tag": "02/AA_007_02_20170830_01.txt",
+   "fps": 8.0,
+   "pid": 4,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 19.75,
+     "rule": "reach_down",
+     "roi_box": [
+      379,
+      142,
+      540,
+      439
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA_010_02_20170830_01",
+   "tag": "02/AA_010_02_20170830_01.txt",
+   "fps": 8.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 1.25,
+     "rule": "reach_down",
+     "roi_box": [
+      96,
+      327,
+      245,
+      483
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA_029_02_20170830_01",
+   "tag": "02/AA_029_02_20170830_01.txt",
+   "fps": 8.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 1.25,
+     "rule": "reach_down",
+     "roi_box": [
+      1208,
+      16,
+      1330,
+      209
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AA_087_02_20170902_01",
+   "tag": "02/AA_087_02_20170902_01.txt",
+   "fps": 9.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 2.67,
+     "rule": "reach_down",
+     "roi_box": [
+      1308,
+      302,
+      1522,
+      631
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-001-02-20151003-01",
+   "tag": "02/AR-001-02-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 17,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 230.4,
+     "rule": "reach_down",
+     "roi_box": [
+      661,
+      340,
+      826,
+      670
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-001-02-20151003-01",
+   "tag": "02/AR-001-02-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 19,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 230.4,
+     "rule": "reach_down",
+     "roi_box": [
+      661,
+      340,
+      826,
+      670
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-002-02-20151003-01",
+   "tag": "02/AR-002-02-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 25.4,
+     "rule": "reach_down",
+     "roi_box": [
+      800,
+      243,
+      991,
+      614
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 35.4,
+     "rule": "reach_down",
+     "roi_box": [
+      620,
+      166,
+      755,
+      424
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-002-02-20151003-01",
+   "tag": "02/AR-002-02-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 25.4,
+     "rule": "reach_down",
+     "roi_box": [
+      800,
+      243,
+      991,
+      614
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 35.4,
+     "rule": "reach_down",
+     "roi_box": [
+      620,
+      166,
+      755,
+      424
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-002-02-20151003-01",
+   "tag": "02/AR-002-02-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 6,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 192.0,
+     "rule": "pose_action",
+     "roi_box": [
+      120,
+      295,
+      226,
+      572
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-002-02-20151003-01",
+   "tag": "02/AR-002-02-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 7,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 35.4,
+     "rule": "reach_down",
+     "roi_box": [
+      620,
+      166,
+      755,
+      424
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 39.0,
+     "rule": "sustained_presence",
+     "roi_box": [
+      612,
+      167,
+      700,
+      422
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-002-02-20151003-01",
+   "tag": "02/AR-002-02-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 8,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 35.4,
+     "rule": "reach_down",
+     "roi_box": [
+      620,
+      166,
+      755,
+      424
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 39.0,
+     "rule": "sustained_presence",
+     "roi_box": [
+      612,
+      167,
+      700,
+      422
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-002-02-20151003-01",
+   "tag": "02/AR-002-02-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 9,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 49.2,
+     "rule": "reach_down",
+     "roi_box": [
+      645,
+      172,
+      772,
+      425
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 69.8,
+     "rule": "sustained_presence",
+     "roi_box": [
+      591,
+      9,
+      619,
+      81
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-002-02-20151003-01",
+   "tag": "02/AR-002-02-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 11,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 63.2,
+     "rule": "pose_action",
+     "roi_box": [
+      1025,
+      233,
+      1111,
+      557
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 71.4,
+     "rule": "long_presence",
+     "roi_box": [
+      662,
+      183,
+      762,
+      450
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-002-02-20151003-01",
+   "tag": "02/AR-002-02-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 12,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 87.8,
+     "rule": "reach_down",
+     "roi_box": [
+      977,
+      316,
+      1199,
+      656
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 99.0,
+     "rule": "sustained_presence",
+     "roi_box": [
+      518,
+      221,
+      617,
+      500
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-002-02-20151003-01",
+   "tag": "02/AR-002-02-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 13,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 87.8,
+     "rule": "reach_down",
+     "roi_box": [
+      977,
+      316,
+      1199,
+      656
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 99.0,
+     "rule": "sustained_presence",
+     "roi_box": [
+      518,
+      221,
+      617,
+      500
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-002-02-20151003-01",
+   "tag": "02/AR-002-02-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 18,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 106.6,
+     "rule": "reach_down",
+     "roi_box": [
+      446,
+      213,
+      611,
+      495
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 109.4,
+     "rule": "reach_down",
+     "roi_box": [
+      889,
+      307,
+      1079,
+      687
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-002-02-20151003-01",
+   "tag": "02/AR-002-02-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 17,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 106.6,
+     "rule": "reach_down",
+     "roi_box": [
+      446,
+      213,
+      611,
+      495
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-002-02-20151003-01",
+   "tag": "02/AR-002-02-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 21,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 175.8,
+     "rule": "pose_action",
+     "roi_box": [
+      624,
+      192,
+      717,
+      460
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-002-02-20151003-01",
+   "tag": "02/AR-002-02-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 22,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 180.2,
+     "rule": "reach_down",
+     "roi_box": [
+      448,
+      136,
+      569,
+      360
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-002-02-20151003-01",
+   "tag": "02/AR-002-02-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 24,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 175.8,
+     "rule": "pose_action",
+     "roi_box": [
+      624,
+      192,
+      717,
+      460
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-002-02-20151003-01",
+   "tag": "02/AR-002-02-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 27,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 175.8,
+     "rule": "pose_action",
+     "roi_box": [
+      624,
+      192,
+      717,
+      460
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 180.2,
+     "rule": "reach_down",
+     "roi_box": [
+      448,
+      136,
+      569,
+      360
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-002-02-20151003-01",
+   "tag": "02/AR-002-02-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 28,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 191.2,
+     "rule": "pose_action",
+     "roi_box": [
+      1021,
+      309,
+      1153,
+      651
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-002-02-20151003-01",
+   "tag": "02/AR-002-02-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 30,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 205.4,
+     "rule": "sustained_presence",
+     "roi_box": [
+      996,
+      334,
+      1129,
+      703
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 208.2,
+     "rule": "pose_action",
+     "roi_box": [
+      1018,
+      339,
+      1162,
+      703
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-003-02-20151003-01",
+   "tag": "02/AR-003-02-20151003-01.txt",
+   "fps": 23.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 26.52,
+     "rule": "reach_down",
+     "roi_box": [
+      741,
+      448,
+      956,
+      819
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-003-02-20151003-01",
+   "tag": "02/AR-003-02-20151003-01.txt",
+   "fps": 23.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 26.52,
+     "rule": "reach_down",
+     "roi_box": [
+      741,
+      448,
+      956,
+      819
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-003-02-20151003-01",
+   "tag": "02/AR-003-02-20151003-01.txt",
+   "fps": 23.0,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 53.48,
+     "rule": "sustained_presence",
+     "roi_box": [
+      300,
+      217,
+      374,
+      442
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 81.74,
+     "rule": "pose_action",
+     "roi_box": [
+      185,
+      237,
+      264,
+      485
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 93.26,
+     "rule": "sustained_presence",
+     "roi_box": [
+      364,
+      170,
+      445,
+      400
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 109.57,
+     "rule": "reach_down",
+     "roi_box": [
+      124,
+      279,
+      296,
+      536
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 121.3,
+     "rule": "reach_down",
+     "roi_box": [
+      154,
+      264,
+      311,
+      520
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 127.61,
+     "rule": "long_presence",
+     "roi_box": [
+      584,
+      197,
+      666,
+      444
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 139.35,
+     "rule": "pose_action",
+     "roi_box": [
+      670,
+      253,
+      773,
+      528
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 153.26,
+     "rule": "sustained_presence",
+     "roi_box": [
+      541,
+      235,
+      637,
+      522
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 173.7,
+     "rule": "pose_action",
+     "roi_box": [
+      529,
+      225,
+      622,
+      505
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 178.48,
+     "rule": "pose_action",
+     "roi_box": [
+      295,
+      308,
+      408,
+      610
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 187.61,
+     "rule": "long_presence",
+     "roi_box": [
+      514,
+      231,
+      609,
+      501
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 203.26,
+     "rule": "reach_down",
+     "roi_box": [
+      622,
+      415,
+      838,
+      786
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-003-02-20151003-01",
+   "tag": "02/AR-003-02-20151003-01.txt",
+   "fps": 23.0,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 51.3,
+     "rule": "pose_action",
+     "roi_box": [
+      456,
+      150,
+      526,
+      351
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 59.78,
+     "rule": "reach_down",
+     "roi_box": [
+      521,
+      175,
+      637,
+      389
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 67.39,
+     "rule": "reach_down",
+     "roi_box": [
+      608,
+      171,
+      728,
+      395
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 81.09,
+     "rule": "long_presence",
+     "roi_box": [
+      701,
+      201,
+      781,
+      443
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-003-02-20151003-01",
+   "tag": "02/AR-003-02-20151003-01.txt",
+   "fps": 23.0,
+   "pid": 7,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 203.26,
+     "rule": "reach_down",
+     "roi_box": [
+      622,
+      415,
+      838,
+      786
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-003-02-20151003-01",
+   "tag": "02/AR-003-02-20151003-01.txt",
+   "fps": 23.0,
+   "pid": 10,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 88.26,
+     "rule": "pose_action",
+     "roi_box": [
+      601,
+      179,
+      665,
+      403
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-003-02-20151003-01",
+   "tag": "02/AR-003-02-20151003-01.txt",
+   "fps": 23.0,
+   "pid": 11,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 81.09,
+     "rule": "long_presence",
+     "roi_box": [
+      701,
+      201,
+      781,
+      443
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-005-02-20151003-01",
+   "tag": "02/AR-005-02-20151003-01.txt",
+   "fps": 19.0,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 35.58,
+     "rule": "reach_down",
+     "roi_box": [
+      789,
+      513,
+      1058,
+      964
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-005-02-20151003-01",
+   "tag": "02/AR-005-02-20151003-01.txt",
+   "fps": 19.0,
+   "pid": 6,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 42.95,
+     "rule": "reach_down",
+     "roi_box": [
+      267,
+      205,
+      460,
+      491
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-005-02-20151003-01",
+   "tag": "02/AR-005-02-20151003-01.txt",
+   "fps": 19.0,
+   "pid": 21,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 243.79,
+     "rule": "long_presence",
+     "roi_box": [
+      1007,
+      335,
+      1155,
+      724
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 247.37,
+     "rule": "reach_down",
+     "roi_box": [
+      964,
+      334,
+      1163,
+      687
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-006-02-20151003-01",
+   "tag": "02/AR-006-02-20151003-01.txt",
+   "fps": 16.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 126.19,
+     "rule": "pose_action",
+     "roi_box": [
+      935,
+      333,
+      1053,
+      622
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/02/AR-015-02-20151031-01",
+   "tag": "02/AR-015-02-20151031-01.txt",
+   "fps": 15.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 14.4,
+     "rule": "reach_down",
+     "roi_box": [
+      131,
+      132,
+      243,
+      298
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA-010-03-20140524-02",
+   "tag": "03/AA-010-03-20140524-02.txt",
+   "fps": 14.881,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 1.81,
+     "rule": "pose_action",
+     "roi_box": [
+      703,
+      51,
+      762,
+      213
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA-010-03-20140524-02",
+   "tag": "03/AA-010-03-20140524-02.txt",
+   "fps": 14.881,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 2.82,
+     "rule": "pose_action",
+     "roi_box": [
+      786,
+      35,
+      835,
+      195
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA-010-03-20140524-02",
+   "tag": "03/AA-010-03-20140524-02.txt",
+   "fps": 14.881,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.81,
+     "rule": "pose_action",
+     "roi_box": [
+      913,
+      37,
+      968,
+      184
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA-012-03-20140524-02",
+   "tag": "03/AA-012-03-20140524-02.txt",
+   "fps": 14.881,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 32.26,
+     "rule": "pose_action",
+     "roi_box": [
+      828,
+      323,
+      1008,
+      716
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA-014-03-20140524-02",
+   "tag": "03/AA-014-03-20140524-02.txt",
+   "fps": 14.97,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 50.3,
+     "rule": "pose_action",
+     "roi_box": [
+      965,
+      308,
+      1111,
+      696
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA-020-03-20140524-02",
+   "tag": "03/AA-020-03-20140524-02.txt",
+   "fps": 14.97,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.8,
+     "rule": "pose_action",
+     "roi_box": [
+      497,
+      108,
+      557,
+      296
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA-020-03-20140524-02",
+   "tag": "03/AA-020-03-20140524-02.txt",
+   "fps": 14.97,
+   "pid": 13,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 104.41,
+     "rule": "sustained_presence",
+     "roi_box": [
+      897,
+      32,
+      948,
+      174
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 111.42,
+     "rule": "pose_action",
+     "roi_box": [
+      886,
+      31,
+      942,
+      174
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 127.45,
+     "rule": "pose_action",
+     "roi_box": [
+      934,
+      24,
+      986,
+      166
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 138.68,
+     "rule": "long_presence",
+     "roi_box": [
+      647,
+      28,
+      689,
+      169
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 151.1,
+     "rule": "sustained_presence",
+     "roi_box": [
+      699,
+      42,
+      750,
+      201
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA-022-03-20140524-02",
+   "tag": "03/AA-022-03-20140524-02.txt",
+   "fps": 14.97,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 18.84,
+     "rule": "pose_action",
+     "roi_box": [
+      1035,
+      64,
+      1087,
+      219
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA-025-03-20140524-02",
+   "tag": "03/AA-025-03-20140524-02.txt",
+   "fps": 14.97,
+   "pid": 9,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 123.05,
+     "rule": "sustained_presence",
+     "roi_box": [
+      815,
+      39,
+      857,
+      166
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA-025-03-20140524-02",
+   "tag": "03/AA-025-03-20140524-02.txt",
+   "fps": 14.97,
+   "pid": 10,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 123.05,
+     "rule": "sustained_presence",
+     "roi_box": [
+      815,
+      39,
+      857,
+      166
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_001_03_20170828_01",
+   "tag": "03/AA_001_03_20170828_01.txt",
+   "fps": 20.0,
+   "pid": 3,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 6.8,
+     "rule": "reach_down",
+     "roi_box": [
+      209,
+      259,
+      371,
+      516
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_003_03_20170828_01",
+   "tag": "03/AA_003_03_20170828_01.txt",
+   "fps": 20.0,
+   "pid": 2,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 4.6,
+     "rule": "reach_down",
+     "roi_box": [
+      186,
+      223,
+      461,
+      686
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_003_03_20170828_01",
+   "tag": "03/AA_003_03_20170828_01.txt",
+   "fps": 20.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.8,
+     "rule": "pose_action",
+     "roi_box": [
+      441,
+      49,
+      525,
+      262
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 4.6,
+     "rule": "reach_down",
+     "roi_box": [
+      186,
+      223,
+      461,
+      686
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_004_03_20170828_01",
+   "tag": "03/AA_004_03_20170828_01.txt",
+   "fps": 20.0,
+   "pid": 4,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 7.6,
+     "rule": "reach_down",
+     "roi_box": [
+      165,
+      276,
+      319,
+      513
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_004_03_20170828_01",
+   "tag": "03/AA_004_03_20170828_01.txt",
+   "fps": 20.0,
+   "pid": 5,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 7.6,
+     "rule": "reach_down",
+     "roi_box": [
+      165,
+      276,
+      319,
+      513
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_005_03_20170828_01",
+   "tag": "03/AA_005_03_20170828_01.txt",
+   "fps": 20.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.8,
+     "rule": "pose_action",
+     "roi_box": [
+      754,
+      0,
+      831,
+      230
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_005_03_20170828_01",
+   "tag": "03/AA_005_03_20170828_01.txt",
+   "fps": 20.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.8,
+     "rule": "pose_action",
+     "roi_box": [
+      754,
+      0,
+      831,
+      230
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_013_03_20170828_01",
+   "tag": "03/AA_013_03_20170828_01.txt",
+   "fps": 20.0,
+   "pid": 1,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 7.6,
+     "rule": "reach_down",
+     "roi_box": [
+      250,
+      170,
+      430,
+      426
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_027_03_20170828_01",
+   "tag": "03/AA_027_03_20170828_01.txt",
+   "fps": 20.0,
+   "pid": 2,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 9.2,
+     "rule": "reach_down",
+     "roi_box": [
+      264,
+      211,
+      381,
+      399
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_035_03_20170828_01",
+   "tag": "03/AA_035_03_20170828_01.txt",
+   "fps": 20.0,
+   "pid": 5,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 8.0,
+     "rule": "reach_down",
+     "roi_box": [
+      262,
+      138,
+      432,
+      436
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_041_03_20170828_01",
+   "tag": "03/AA_041_03_20170828_01.txt",
+   "fps": 20.0,
+   "pid": 2,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 3.8,
+     "rule": "reach_down",
+     "roi_box": [
+      357,
+      117,
+      471,
+      319
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_047_03_20170828_01",
+   "tag": "03/AA_047_03_20170828_01.txt",
+   "fps": 20.0,
+   "pid": 7,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 8.8,
+     "rule": "reach_down",
+     "roi_box": [
+      335,
+      132,
+      527,
+      413
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_047_03_20170828_01",
+   "tag": "03/AA_047_03_20170828_01.txt",
+   "fps": 20.0,
+   "pid": 8,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 8.8,
+     "rule": "reach_down",
+     "roi_box": [
+      335,
+      132,
+      527,
+      413
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_049_03_20170828_01",
+   "tag": "03/AA_049_03_20170828_01.txt",
+   "fps": 20.0,
+   "pid": 6,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 9.6,
+     "rule": "reach_down",
+     "roi_box": [
+      306,
+      194,
+      431,
+      442
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_071_03_20170901_01",
+   "tag": "03/AA_071_03_20170901_01.txt",
+   "fps": 20.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 1.2,
+     "rule": "reach_down",
+     "roi_box": [
+      456,
+      100,
+      665,
+      454
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_071_03_20170901_01",
+   "tag": "03/AA_071_03_20170901_01.txt",
+   "fps": 20.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 1.2,
+     "rule": "reach_down",
+     "roi_box": [
+      456,
+      100,
+      665,
+      454
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_073_03_20170901_01",
+   "tag": "03/AA_073_03_20170901_01.txt",
+   "fps": 20.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.8,
+     "rule": "pose_action",
+     "roi_box": [
+      430,
+      62,
+      519,
+      309
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_073_03_20170901_01",
+   "tag": "03/AA_073_03_20170901_01.txt",
+   "fps": 20.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.8,
+     "rule": "pose_action",
+     "roi_box": [
+      430,
+      62,
+      519,
+      309
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 4.4,
+     "rule": "reach_down",
+     "roi_box": [
+      154,
+      259,
+      306,
+      510
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_075_03_20170901_01",
+   "tag": "03/AA_075_03_20170901_01.txt",
+   "fps": 20.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 2.8,
+     "rule": "pose_action",
+     "roi_box": [
+      445,
+      102,
+      528,
+      359
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 6.4,
+     "rule": "reach_down",
+     "roi_box": [
+      115,
+      322,
+      490,
+      851
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 7.0,
+     "rule": "reach_down",
+     "roi_box": [
+      383,
+      30,
+      492,
+      219
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_075_03_20170901_01",
+   "tag": "03/AA_075_03_20170901_01.txt",
+   "fps": 20.0,
+   "pid": 6,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 6.4,
+     "rule": "reach_down",
+     "roi_box": [
+      115,
+      322,
+      490,
+      851
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 7.0,
+     "rule": "reach_down",
+     "roi_box": [
+      383,
+      30,
+      492,
+      219
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_085_03_20170901_01",
+   "tag": "03/AA_085_03_20170901_01.txt",
+   "fps": 20.0,
+   "pid": 2,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 11.8,
+     "rule": "reach_down",
+     "roi_box": [
+      188,
+      206,
+      393,
+      517
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_089_03_20170901_01",
+   "tag": "03/AA_089_03_20170901_01.txt",
+   "fps": 20.0,
+   "pid": 1,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 9.8,
+     "rule": "reach_down",
+     "roi_box": [
+      658,
+      384,
+      1151,
+      980
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_089_03_20170901_01",
+   "tag": "03/AA_089_03_20170901_01.txt",
+   "fps": 20.0,
+   "pid": 2,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 7.8,
+     "rule": "reach_down",
+     "roi_box": [
+      88,
+      200,
+      329,
+      549
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_089_03_20170901_01",
+   "tag": "03/AA_089_03_20170901_01.txt",
+   "fps": 20.0,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 9.8,
+     "rule": "reach_down",
+     "roi_box": [
+      658,
+      384,
+      1151,
+      980
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 13.0,
+     "rule": "reach_down",
+     "roi_box": [
+      530,
+      140,
+      751,
+      491
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_091_03_20170901_01",
+   "tag": "03/AA_091_03_20170901_01.txt",
+   "fps": 20.0,
+   "pid": 1,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 8.0,
+     "rule": "reach_down",
+     "roi_box": [
+      223,
+      247,
+      533,
+      498
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_105_03_20170901_01",
+   "tag": "03/AA_105_03_20170901_01.txt",
+   "fps": 20.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 6.8,
+     "rule": "pose_action",
+     "roi_box": [
+      615,
+      13,
+      686,
+      195
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_105_03_20170901_01",
+   "tag": "03/AA_105_03_20170901_01.txt",
+   "fps": 20.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 6.8,
+     "rule": "pose_action",
+     "roi_box": [
+      615,
+      13,
+      686,
+      195
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AA_113_03_20170901_01",
+   "tag": "03/AA_113_03_20170901_01.txt",
+   "fps": 20.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.8,
+     "rule": "pose_action",
+     "roi_box": [
+      349,
+      187,
+      491,
+      596
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-001-03-20151003-01",
+   "tag": "03/AR-001-03-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 4,
+   "kind": "still by labels",
+   "alerts": [
+    {
+     "t": 28.6,
+     "rule": "sustained_presence",
+     "roi_box": [
+      783,
+      63,
+      812,
+      151
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 31.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      798,
+      69,
+      828,
+      165
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-001-03-20151003-01",
+   "tag": "03/AR-001-03-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 7,
+   "kind": "still by labels",
+   "alerts": [
+    {
+     "t": 25.0,
+     "rule": "sustained_presence",
+     "roi_box": [
+      729,
+      54,
+      755,
+      131
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 26.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      695,
+      56,
+      723,
+      135
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-001-03-20151003-01",
+   "tag": "03/AR-001-03-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 8,
+   "kind": "still by labels",
+   "alerts": [
+    {
+     "t": 25.0,
+     "rule": "sustained_presence",
+     "roi_box": [
+      729,
+      54,
+      755,
+      131
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 26.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      695,
+      56,
+      723,
+      135
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-001-03-20151003-01",
+   "tag": "03/AR-001-03-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 9,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 26.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      695,
+      56,
+      723,
+      135
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-001-03-20151003-01",
+   "tag": "03/AR-001-03-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 11,
+   "kind": "still by labels",
+   "alerts": [
+    {
+     "t": 28.6,
+     "rule": "sustained_presence",
+     "roi_box": [
+      783,
+      63,
+      812,
+      151
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 31.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      798,
+      69,
+      828,
+      165
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-004-03-20151003-01",
+   "tag": "03/AR-004-03-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 21.6,
+     "rule": "sustained_presence",
+     "roi_box": [
+      737,
+      30,
+      755,
+      80
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-004-03-20151003-01",
+   "tag": "03/AR-004-03-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 7,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 36.4,
+     "rule": "pose_action",
+     "roi_box": [
+      1083,
+      253,
+      1195,
+      541
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-004-03-20151003-01",
+   "tag": "03/AR-004-03-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 9,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 3.4,
+     "rule": "pose_action",
+     "roi_box": [
+      1169,
+      242,
+      1245,
+      561
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 22.0,
+     "rule": "reach_down",
+     "roi_box": [
+      777,
+      220,
+      878,
+      341
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 36.4,
+     "rule": "pose_action",
+     "roi_box": [
+      1083,
+      253,
+      1195,
+      541
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-004-03-20151003-01",
+   "tag": "03/AR-004-03-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 10,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 21.6,
+     "rule": "sustained_presence",
+     "roi_box": [
+      737,
+      30,
+      755,
+      80
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 23.0,
+     "rule": "sustained_presence",
+     "roi_box": [
+      770,
+      33,
+      786,
+      83
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-004-03-20151003-01",
+   "tag": "03/AR-004-03-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 12,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 21.6,
+     "rule": "sustained_presence",
+     "roi_box": [
+      737,
+      30,
+      755,
+      80
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 23.0,
+     "rule": "sustained_presence",
+     "roi_box": [
+      770,
+      33,
+      786,
+      83
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-005-03-20151003-01",
+   "tag": "03/AR-005-03-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 11.8,
+     "rule": "pose_action",
+     "roi_box": [
+      911,
+      153,
+      984,
+      308
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 26.8,
+     "rule": "pose_action",
+     "roi_box": [
+      978,
+      167,
+      1039,
+      312
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 32.6,
+     "rule": "sustained_presence",
+     "roi_box": [
+      1048,
+      103,
+      1094,
+      244
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-005-03-20151003-01",
+   "tag": "03/AR-005-03-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 11.8,
+     "rule": "pose_action",
+     "roi_box": [
+      911,
+      153,
+      984,
+      308
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 26.8,
+     "rule": "pose_action",
+     "roi_box": [
+      978,
+      167,
+      1039,
+      312
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 32.6,
+     "rule": "sustained_presence",
+     "roi_box": [
+      1048,
+      103,
+      1094,
+      244
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-005-03-20151003-01",
+   "tag": "03/AR-005-03-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 11.8,
+     "rule": "pose_action",
+     "roi_box": [
+      911,
+      153,
+      984,
+      308
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-006-03-20151003-01",
+   "tag": "03/AR-006-03-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 1,
+   "kind": "still by labels",
+   "alerts": [
+    {
+     "t": 36.6,
+     "rule": "sustained_presence",
+     "roi_box": [
+      891,
+      56,
+      925,
+      142
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-009-03-20151031-01",
+   "tag": "03/AR-009-03-20151031-01.txt",
+   "fps": 15.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 38.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      650,
+      51,
+      685,
+      115
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-011-03-20151031-01",
+   "tag": "03/AR-011-03-20151031-01.txt",
+   "fps": 15.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 24.0,
+     "rule": "sustained_presence",
+     "roi_box": [
+      610,
+      55,
+      630,
+      120
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-011-03-20151031-01",
+   "tag": "03/AR-011-03-20151031-01.txt",
+   "fps": 15.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 43.0,
+     "rule": "sustained_presence",
+     "roi_box": [
+      617,
+      54,
+      643,
+      129
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-011-03-20151031-01",
+   "tag": "03/AR-011-03-20151031-01.txt",
+   "fps": 15.0,
+   "pid": 3,
+   "kind": "still by labels",
+   "alerts": [
+    {
+     "t": 90.6,
+     "rule": "sustained_presence",
+     "roi_box": [
+      665,
+      31,
+      688,
+      101
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-011-03-20151031-01",
+   "tag": "03/AR-011-03-20151031-01.txt",
+   "fps": 15.0,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 90.6,
+     "rule": "sustained_presence",
+     "roi_box": [
+      665,
+      31,
+      688,
+      101
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-015-03-20151031-01",
+   "tag": "03/AR-015-03-20151031-01.txt",
+   "fps": 15.0,
+   "pid": 2,
+   "kind": "still by labels",
+   "alerts": [
+    {
+     "t": 28.6,
+     "rule": "sustained_presence",
+     "roi_box": [
+      646,
+      54,
+      674,
+      142
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-015-03-20151031-01",
+   "tag": "03/AR-015-03-20151031-01.txt",
+   "fps": 15.0,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 28.6,
+     "rule": "sustained_presence",
+     "roi_box": [
+      646,
+      54,
+      674,
+      142
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-025-03-20151031-01",
+   "tag": "03/AR-025-03-20151031-01.txt",
+   "fps": 15.0,
+   "pid": 1,
+   "kind": "still by labels",
+   "alerts": [
+    {
+     "t": 24.0,
+     "rule": "sustained_presence",
+     "roi_box": [
+      670,
+      49,
+      704,
+      134
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/03/AR-029-03-20151031-01",
+   "tag": "03/AR-029-03-20151031-01.txt",
+   "fps": 15.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 46.8,
+     "rule": "sustained_presence",
+     "roi_box": [
+      581,
+      44,
+      611,
+      107
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-004-04-20140524-02",
+   "tag": "04/AA-004-04-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 32.82,
+     "rule": "pose_action",
+     "roi_box": [
+      957,
+      221,
+      1119,
+      662
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-004-04-20140524-02",
+   "tag": "04/AA-004-04-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 6,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 52.43,
+     "rule": "pose_action",
+     "roi_box": [
+      517,
+      173,
+      656,
+      578
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 60.04,
+     "rule": "long_presence",
+     "roi_box": [
+      1011,
+      325,
+      1159,
+      717
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-004-04-20140524-02",
+   "tag": "04/AA-004-04-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 13,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 116.88,
+     "rule": "pose_action",
+     "roi_box": [
+      737,
+      149,
+      871,
+      567
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-004-04-20140524-02",
+   "tag": "04/AA-004-04-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 14,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 159.7,
+     "rule": "pose_action",
+     "roi_box": [
+      402,
+      111,
+      510,
+      471
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-004-04-20140524-02",
+   "tag": "04/AA-004-04-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 24,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 238.96,
+     "rule": "sustained_presence",
+     "roi_box": [
+      839,
+      0,
+      886,
+      123
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-004-04-20140524-02",
+   "tag": "04/AA-004-04-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 26,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 297.99,
+     "rule": "pose_action",
+     "roi_box": [
+      1093,
+      108,
+      1160,
+      353
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 315.41,
+     "rule": "long_presence",
+     "roi_box": [
+      532,
+      141,
+      685,
+      346
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 325.01,
+     "rule": "sustained_presence",
+     "roi_box": [
+      533,
+      122,
+      684,
+      342
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-004-04-20140524-02",
+   "tag": "04/AA-004-04-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 34,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 486.32,
+     "rule": "sustained_presence",
+     "roi_box": [
+      294,
+      94,
+      378,
+      394
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-004-04-20140524-02",
+   "tag": "04/AA-004-04-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 42,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 714.06,
+     "rule": "pose_action",
+     "roi_box": [
+      60,
+      137,
+      208,
+      484
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-004-04-20140524-02",
+   "tag": "04/AA-004-04-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 43,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 725.07,
+     "rule": "reach_down",
+     "roi_box": [
+      67,
+      252,
+      225,
+      511
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-004-04-20140524-02",
+   "tag": "04/AA-004-04-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 44,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 765.7,
+     "rule": "pose_action",
+     "roi_box": [
+      1128,
+      107,
+      1278,
+      410
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 774.5,
+     "rule": "sustained_presence",
+     "roi_box": [
+      1075,
+      106,
+      1158,
+      354
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-004-04-20140524-02",
+   "tag": "04/AA-004-04-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 47,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 774.5,
+     "rule": "sustained_presence",
+     "roi_box": [
+      1075,
+      106,
+      1158,
+      354
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-004-04-20140524-02",
+   "tag": "04/AA-004-04-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 51,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 794.92,
+     "rule": "pose_action",
+     "roi_box": [
+      450,
+      223,
+      690,
+      642
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 801.32,
+     "rule": "reach_down",
+     "roi_box": [
+      16,
+      257,
+      224,
+      673
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-004-04-20140524-02",
+   "tag": "04/AA-004-04-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 52,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 809.93,
+     "rule": "pose_action",
+     "roi_box": [
+      254,
+      170,
+      381,
+      547
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 814.93,
+     "rule": "sustained_presence",
+     "roi_box": [
+      121,
+      190,
+      258,
+      528
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-004-04-20140524-02",
+   "tag": "04/AA-004-04-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 53,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 801.32,
+     "rule": "reach_down",
+     "roi_box": [
+      16,
+      257,
+      224,
+      673
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-004-04-20140524-02",
+   "tag": "04/AA-004-04-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 55,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 804.32,
+     "rule": "pose_action",
+     "roi_box": [
+      1128,
+      138,
+      1227,
+      431
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-004-04-20140524-02",
+   "tag": "04/AA-004-04-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 56,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 809.33,
+     "rule": "sustained_presence",
+     "roi_box": [
+      1001,
+      94,
+      1086,
+      372
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-004-04-20140524-02",
+   "tag": "04/AA-004-04-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 57,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 804.32,
+     "rule": "pose_action",
+     "roi_box": [
+      1128,
+      138,
+      1227,
+      431
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-006-04-20140524-02",
+   "tag": "04/AA-006-04-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 5.8,
+     "rule": "pose_action",
+     "roi_box": [
+      590,
+      159,
+      697,
+      501
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 20.01,
+     "rule": "sustained_presence",
+     "roi_box": [
+      532,
+      344,
+      707,
+      716
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-006-04-20140524-02",
+   "tag": "04/AA-006-04-20140524-02.txt",
+   "fps": 19.987,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 5.8,
+     "rule": "pose_action",
+     "roi_box": [
+      258,
+      113,
+      370,
+      465
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-010-04-20140502-01",
+   "tag": "04/AA-010-04-20140502-01.txt",
+   "fps": 15.0,
+   "pid": 6,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 16.4,
+     "rule": "object_appeared",
+     "roi_box": [
+      565,
+      384,
+      849,
+      706
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-013-04-20140502-01",
+   "tag": "04/AA-013-04-20140502-01.txt",
+   "fps": 15.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 48.2,
+     "rule": "pose_action",
+     "roi_box": [
+      934,
+      118,
+      1101,
+      504
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AA-013-04-20140502-01",
+   "tag": "04/AA-013-04-20140502-01.txt",
+   "fps": 15.0,
+   "pid": 6,
+   "kind": "still by labels",
+   "alerts": [
+    {
+     "t": 84.4,
+     "rule": "sustained_presence",
+     "roi_box": [
+      901,
+      275,
+      1096,
+      716
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 35.4,
+     "rule": "reach_down",
+     "roi_box": [
+      1023,
+      321,
+      1210,
+      695
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 38.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      940,
+      342,
+      1129,
+      755
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 21.6,
+     "rule": "pose_action",
+     "roi_box": [
+      766,
+      115,
+      865,
+      358
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 39.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      800,
+      87,
+      874,
+      320
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 66.8,
+     "rule": "long_presence",
+     "roi_box": [
+      564,
+      121,
+      662,
+      391
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 71.6,
+     "rule": "pose_action",
+     "roi_box": [
+      452,
+      125,
+      580,
+      398
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 77.4,
+     "rule": "long_presence",
+     "roi_box": [
+      511,
+      73,
+      607,
+      335
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 88.6,
+     "rule": "pose_action",
+     "roi_box": [
+      840,
+      164,
+      957,
+      444
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 98.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      801,
+      150,
+      908,
+      435
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 104.6,
+     "rule": "pose_action",
+     "roi_box": [
+      852,
+      158,
+      967,
+      434
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 111.6,
+     "rule": "sustained_presence",
+     "roi_box": [
+      855,
+      90,
+      941,
+      306
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 126.8,
+     "rule": "long_presence",
+     "roi_box": [
+      679,
+      127,
+      770,
+      395
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 144.6,
+     "rule": "pose_action",
+     "roi_box": [
+      884,
+      164,
+      1012,
+      446
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 158.4,
+     "rule": "sustained_presence",
+     "roi_box": [
+      803,
+      123,
+      902,
+      370
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 162.6,
+     "rule": "pose_action",
+     "roi_box": [
+      898,
+      140,
+      1007,
+      395
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 173.4,
+     "rule": "reach_down",
+     "roi_box": [
+      553,
+      358,
+      1015,
+      847
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 178.4,
+     "rule": "reach_down",
+     "roi_box": [
+      617,
+      253,
+      827,
+      673
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 183.6,
+     "rule": "pose_action",
+     "roi_box": [
+      846,
+      117,
+      933,
+      363
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 186.8,
+     "rule": "long_presence",
+     "roi_box": [
+      824,
+      126,
+      919,
+      372
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 35.4,
+     "rule": "reach_down",
+     "roi_box": [
+      1023,
+      321,
+      1210,
+      695
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 211.6,
+     "rule": "pose_action",
+     "roi_box": [
+      672,
+      128,
+      778,
+      393
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 219.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      792,
+      115,
+      886,
+      359
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 230.6,
+     "rule": "pose_action",
+     "roi_box": [
+      601,
+      108,
+      701,
+      352
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 246.8,
+     "rule": "long_presence",
+     "roi_box": [
+      611,
+      59,
+      701,
+      345
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 15,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 260.2,
+     "rule": "reach_down",
+     "roi_box": [
+      864,
+      356,
+      1124,
+      775
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 17,
+   "kind": "still by labels",
+   "alerts": [
+    {
+     "t": 38.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      656,
+      28,
+      723,
+      236
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 18,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 77.4,
+     "rule": "long_presence",
+     "roi_box": [
+      511,
+      73,
+      607,
+      335
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 88.6,
+     "rule": "pose_action",
+     "roi_box": [
+      840,
+      164,
+      957,
+      444
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 104.6,
+     "rule": "pose_action",
+     "roi_box": [
+      852,
+      158,
+      967,
+      434
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 111.6,
+     "rule": "sustained_presence",
+     "roi_box": [
+      855,
+      90,
+      941,
+      306
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 19,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 126.8,
+     "rule": "long_presence",
+     "roi_box": [
+      679,
+      127,
+      770,
+      395
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 20,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 144.6,
+     "rule": "pose_action",
+     "roi_box": [
+      884,
+      164,
+      1012,
+      446
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 21,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 162.6,
+     "rule": "pose_action",
+     "roi_box": [
+      898,
+      140,
+      1007,
+      395
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 22,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 171.8,
+     "rule": "pose_action",
+     "roi_box": [
+      1082,
+      125,
+      1169,
+      340
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 173.4,
+     "rule": "reach_down",
+     "roi_box": [
+      553,
+      358,
+      1015,
+      847
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 178.4,
+     "rule": "reach_down",
+     "roi_box": [
+      617,
+      253,
+      827,
+      673
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 23,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 186.8,
+     "rule": "long_presence",
+     "roi_box": [
+      824,
+      126,
+      919,
+      372
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 25,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 211.6,
+     "rule": "pose_action",
+     "roi_box": [
+      672,
+      128,
+      778,
+      393
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 219.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      792,
+      115,
+      886,
+      359
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 230.6,
+     "rule": "pose_action",
+     "roi_box": [
+      601,
+      108,
+      701,
+      352
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 26,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 246.8,
+     "rule": "long_presence",
+     "roi_box": [
+      611,
+      59,
+      701,
+      345
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 27,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 260.2,
+     "rule": "reach_down",
+     "roi_box": [
+      864,
+      356,
+      1124,
+      775
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 35,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 104.6,
+     "rule": "pose_action",
+     "roi_box": [
+      852,
+      158,
+      967,
+      434
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 37,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 126.8,
+     "rule": "long_presence",
+     "roi_box": [
+      679,
+      127,
+      770,
+      395
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 41,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 173.4,
+     "rule": "reach_down",
+     "roi_box": [
+      553,
+      358,
+      1015,
+      847
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 178.4,
+     "rule": "reach_down",
+     "roi_box": [
+      617,
+      253,
+      827,
+      673
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 42,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 196.8,
+     "rule": "reach_down",
+     "roi_box": [
+      407,
+      363,
+      687,
+      867
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 43,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 196.8,
+     "rule": "reach_down",
+     "roi_box": [
+      407,
+      363,
+      687,
+      867
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 44,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 196.8,
+     "rule": "reach_down",
+     "roi_box": [
+      407,
+      363,
+      687,
+      867
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-002-04-20151003-01",
+   "tag": "04/AR-002-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 48,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 200.2,
+     "rule": "pose_action",
+     "roi_box": [
+      996,
+      100,
+      1086,
+      318
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-004-04-20151003-01",
+   "tag": "04/AR-004-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 53.4,
+     "rule": "sustained_presence",
+     "roi_box": [
+      661,
+      90,
+      731,
+      329
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-004-04-20151003-01",
+   "tag": "04/AR-004-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 9,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 106.0,
+     "rule": "sustained_presence",
+     "roi_box": [
+      745,
+      85,
+      824,
+      312
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 109.4,
+     "rule": "pose_action",
+     "roi_box": [
+      779,
+      112,
+      871,
+      347
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-004-04-20151003-01",
+   "tag": "04/AR-004-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 12,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 134.8,
+     "rule": "sustained_presence",
+     "roi_box": [
+      824,
+      98,
+      910,
+      329
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-004-04-20151003-01",
+   "tag": "04/AR-004-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 15,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 44.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      1001,
+      127,
+      1069,
+      388
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 79.0,
+     "rule": "sustained_presence",
+     "roi_box": [
+      363,
+      119,
+      439,
+      354
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 82.4,
+     "rule": "long_presence",
+     "roi_box": [
+      571,
+      121,
+      669,
+      400
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 93.4,
+     "rule": "long_presence",
+     "roi_box": [
+      538,
+      121,
+      642,
+      427
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-004-04-20151003-01",
+   "tag": "04/AR-004-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 16,
+   "kind": "still by labels",
+   "alerts": [
+    {
+     "t": 142.4,
+     "rule": "long_presence",
+     "roi_box": [
+      517,
+      158,
+      617,
+      480
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-004-04-20151003-01",
+   "tag": "04/AR-004-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 19,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 43.8,
+     "rule": "reach_down",
+     "roi_box": [
+      157,
+      185,
+      312,
+      477
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 54.8,
+     "rule": "reach_down",
+     "roi_box": [
+      142,
+      188,
+      285,
+      474
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 79.0,
+     "rule": "sustained_presence",
+     "roi_box": [
+      363,
+      119,
+      439,
+      354
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-004-04-20151003-01",
+   "tag": "04/AR-004-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 22,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 142.4,
+     "rule": "long_presence",
+     "roi_box": [
+      517,
+      158,
+      617,
+      480
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-004-04-20151003-01",
+   "tag": "04/AR-004-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 28,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 93.4,
+     "rule": "long_presence",
+     "roi_box": [
+      538,
+      121,
+      642,
+      427
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-004-04-20151003-01",
+   "tag": "04/AR-004-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 30,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 109.4,
+     "rule": "pose_action",
+     "roi_box": [
+      779,
+      112,
+      871,
+      347
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-004-04-20151003-01",
+   "tag": "04/AR-004-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 31,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 109.4,
+     "rule": "pose_action",
+     "roi_box": [
+      779,
+      112,
+      871,
+      347
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-004-04-20151003-01",
+   "tag": "04/AR-004-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 34,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 134.8,
+     "rule": "sustained_presence",
+     "roi_box": [
+      824,
+      98,
+      910,
+      329
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-006-04-20151003-01",
+   "tag": "04/AR-006-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 10,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 63.0,
+     "rule": "reach_down",
+     "roi_box": [
+      330,
+      496,
+      601,
+      990
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-006-04-20151003-01",
+   "tag": "04/AR-006-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 12,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 70.0,
+     "rule": "reach_down",
+     "roi_box": [
+      49,
+      465,
+      258,
+      883
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-006-04-20151003-01",
+   "tag": "04/AR-006-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 14,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 70.0,
+     "rule": "reach_down",
+     "roi_box": [
+      49,
+      465,
+      258,
+      883
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/04/AR-006-04-20151003-01",
+   "tag": "04/AR-006-04-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 16,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 91.4,
+     "rule": "sustained_presence",
+     "roi_box": [
+      486,
+      80,
+      559,
+      336
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA-006-05-20140502-01",
+   "tag": "05/AA-006-05-20140502-01.txt",
+   "fps": 15.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 13.2,
+     "rule": "reach_down",
+     "roi_box": [
+      177,
+      212,
+      308,
+      442
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA-006-05-20140502-01",
+   "tag": "05/AA-006-05-20140502-01.txt",
+   "fps": 15.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 13.2,
+     "rule": "reach_down",
+     "roi_box": [
+      177,
+      212,
+      308,
+      442
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA-006-05-20140502-01",
+   "tag": "05/AA-006-05-20140502-01.txt",
+   "fps": 15.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 13.2,
+     "rule": "reach_down",
+     "roi_box": [
+      177,
+      212,
+      308,
+      442
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA-010-05-20140524-02",
+   "tag": "05/AA-010-05-20140524-02.txt",
+   "fps": 14.985,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 18.62,
+     "rule": "pose_action",
+     "roi_box": [
+      359,
+      197,
+      442,
+      431
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 36.24,
+     "rule": "sustained_presence",
+     "roi_box": [
+      399,
+      238,
+      492,
+      489
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA-010-05-20140524-02",
+   "tag": "05/AA-010-05-20140524-02.txt",
+   "fps": 14.985,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 18.62,
+     "rule": "pose_action",
+     "roi_box": [
+      359,
+      197,
+      442,
+      431
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA-010-05-20140524-02",
+   "tag": "05/AA-010-05-20140524-02.txt",
+   "fps": 14.985,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 18.62,
+     "rule": "pose_action",
+     "roi_box": [
+      359,
+      197,
+      442,
+      431
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA-017-05-20140502-01",
+   "tag": "05/AA-017-05-20140502-01.txt",
+   "fps": 15.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.2,
+     "rule": "reach_down",
+     "roi_box": [
+      60,
+      290,
+      203,
+      488
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 4.8,
+     "rule": "reach_down",
+     "roi_box": [
+      922,
+      212,
+      1104,
+      504
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA-018-05-20140524-02",
+   "tag": "05/AA-018-05-20140524-02.txt",
+   "fps": 14.97,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 48.3,
+     "rule": "reach_down",
+     "roi_box": [
+      132,
+      207,
+      272,
+      427
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA-018-05-20140524-02",
+   "tag": "05/AA-018-05-20140524-02.txt",
+   "fps": 14.97,
+   "pid": 13,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 116.03,
+     "rule": "reach_down",
+     "roi_box": [
+      432,
+      352,
+      588,
+      641
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_001_05_20170829_02",
+   "tag": "05/AA_001_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.4,
+     "rule": "reach_down",
+     "roi_box": [
+      416,
+      20,
+      545,
+      277
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 7.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1398,
+      56,
+      1503,
+      228
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 12.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1772,
+      165,
+      1855,
+      284
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_003_05_20140502_01",
+   "tag": "05/AA_003_05_20140502_01.txt",
+   "fps": 15.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 10.6,
+     "rule": "reach_down",
+     "roi_box": [
+      319,
+      123,
+      415,
+      282
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_003_05_20140502_01",
+   "tag": "05/AA_003_05_20140502_01.txt",
+   "fps": 15.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 10.6,
+     "rule": "reach_down",
+     "roi_box": [
+      319,
+      123,
+      415,
+      282
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_003_05_20140502_01",
+   "tag": "05/AA_003_05_20140502_01.txt",
+   "fps": 15.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 10.6,
+     "rule": "reach_down",
+     "roi_box": [
+      319,
+      123,
+      415,
+      282
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_003_05_20170829_02",
+   "tag": "05/AA_003_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.4,
+     "rule": "reach_down",
+     "roi_box": [
+      1748,
+      314,
+      1890,
+      527
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_004_05_20140802_03",
+   "tag": "05/AA_004_05_20140802_03.txt",
+   "fps": 20.027,
+   "pid": 2,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 8.79,
+     "rule": "reach_down",
+     "roi_box": [
+      241,
+      210,
+      379,
+      471
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_004_05_20140802_03",
+   "tag": "05/AA_004_05_20140802_03.txt",
+   "fps": 20.027,
+   "pid": 8,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 109.05,
+     "rule": "reach_down",
+     "roi_box": [
+      46,
+      187,
+      182,
+      446
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 117.44,
+     "rule": "pose_action",
+     "roi_box": [
+      558,
+      203,
+      658,
+      471
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_005_05_20140802_03",
+   "tag": "05/AA_005_05_20140802_03.txt",
+   "fps": 20.027,
+   "pid": 2,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 2.2,
+     "rule": "pose_action",
+     "roi_box": [
+      557,
+      202,
+      660,
+      473
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_006_05_20140802_03",
+   "tag": "05/AA_006_05_20140802_03.txt",
+   "fps": 20.027,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      436,
+      347,
+      616,
+      707
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_012_05_20170829_02",
+   "tag": "05/AA_012_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 0.2,
+     "rule": "reach_down",
+     "roi_box": [
+      158,
+      83,
+      324,
+      364
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_014_05_20170829_02",
+   "tag": "05/AA_014_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 9.2,
+     "rule": "reach_down",
+     "roi_box": [
+      1688,
+      291,
+      1839,
+      521
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 10.2,
+     "rule": "object_appeared",
+     "roi_box": [
+      1284,
+      444,
+      1925,
+      963
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_014_05_20170829_02",
+   "tag": "05/AA_014_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 3,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 1.2,
+     "rule": "reach_down",
+     "roi_box": [
+      22,
+      352,
+      208,
+      724
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_020_05_20170829_02",
+   "tag": "05/AA_020_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 5.8,
+     "rule": "pose_action",
+     "roi_box": [
+      1530,
+      357,
+      1673,
+      609
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_020_05_20170829_02",
+   "tag": "05/AA_020_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 5.8,
+     "rule": "pose_action",
+     "roi_box": [
+      1530,
+      357,
+      1673,
+      609
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_022_05_20170829_02",
+   "tag": "05/AA_022_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 4.6,
+     "rule": "reach_down",
+     "roi_box": [
+      1422,
+      271,
+      1641,
+      569
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_022_05_20170829_02",
+   "tag": "05/AA_022_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 3,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 4.6,
+     "rule": "reach_down",
+     "roi_box": [
+      1422,
+      271,
+      1641,
+      569
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_022_05_20170829_02",
+   "tag": "05/AA_022_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 7,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 12.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1407,
+      41,
+      1523,
+      207
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 13.4,
+     "rule": "object_appeared",
+     "roi_box": [
+      196,
+      258,
+      1118,
+      829
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_022_05_20170829_02",
+   "tag": "05/AA_022_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 8,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 13.4,
+     "rule": "object_appeared",
+     "roi_box": [
+      196,
+      258,
+      1118,
+      829
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_022_05_20170829_02",
+   "tag": "05/AA_022_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 10,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 13.4,
+     "rule": "object_appeared",
+     "roi_box": [
+      196,
+      258,
+      1118,
+      829
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_024_05_20170829_02",
+   "tag": "05/AA_024_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 1.8,
+     "rule": "reach_down",
+     "roi_box": [
+      631,
+      207,
+      908,
+      620
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 5.4,
+     "rule": "reach_down",
+     "roi_box": [
+      1331,
+      212,
+      1549,
+      532
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 5.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1451,
+      369,
+      1630,
+      673
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 7.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1556,
+      157,
+      1685,
+      355
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 9.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1784,
+      217,
+      1892,
+      375
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_024_05_20170829_02",
+   "tag": "05/AA_024_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 5.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1451,
+      369,
+      1630,
+      673
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 7.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1556,
+      157,
+      1685,
+      355
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_024_05_20170829_02",
+   "tag": "05/AA_024_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 9.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1784,
+      217,
+      1892,
+      375
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_032_05_20170829_02",
+   "tag": "05/AA_032_05_20170829_02.txt",
+   "fps": 29.0,
+   "pid": 6,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 9.72,
+     "rule": "reach_down",
+     "roi_box": [
+      1568,
+      179,
+      1707,
+      400
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_034_05_20170829_02",
+   "tag": "05/AA_034_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.2,
+     "rule": "reach_down",
+     "roi_box": [
+      1717,
+      343,
+      1885,
+      589
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_036_05_20170829_02",
+   "tag": "05/AA_036_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 7.2,
+     "rule": "object_appeared",
+     "roi_box": [
+      1124,
+      356,
+      1608,
+      764
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_038_05_20170829_02",
+   "tag": "05/AA_038_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 13,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 5.2,
+     "rule": "reach_down",
+     "roi_box": [
+      1459,
+      351,
+      1640,
+      665
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 5.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1518,
+      99,
+      1628,
+      271
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_040_05_20170829_02",
+   "tag": "05/AA_040_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      694,
+      229,
+      888,
+      616
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_042_05_20170829_02",
+   "tag": "05/AA_042_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1102,
+      287,
+      1300,
+      639
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1207,
+      251,
+      1368,
+      567
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_042_05_20170829_02",
+   "tag": "05/AA_042_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1102,
+      287,
+      1300,
+      639
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1207,
+      251,
+      1368,
+      567
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_042_05_20170829_02",
+   "tag": "05/AA_042_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 3,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 7.4,
+     "rule": "reach_down",
+     "roi_box": [
+      1431,
+      292,
+      1623,
+      582
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_042_05_20170829_02",
+   "tag": "05/AA_042_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 6,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 9.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1653,
+      416,
+      1856,
+      710
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_044_05_20170829_02",
+   "tag": "05/AA_044_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 10,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 6.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1250,
+      470,
+      1484,
+      714
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 8.4,
+     "rule": "object_appeared",
+     "roi_box": [
+      694,
+      316,
+      1304,
+      858
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_046_05_20170829_02",
+   "tag": "05/AA_046_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 2.6,
+     "rule": "reach_down",
+     "roi_box": [
+      0,
+      110,
+      140,
+      409
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 5.4,
+     "rule": "reach_down",
+     "roi_box": [
+      1271,
+      438,
+      1450,
+      759
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_046_05_20170829_02",
+   "tag": "05/AA_046_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 5,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 8.4,
+     "rule": "pose_action",
+     "roi_box": [
+      120,
+      221,
+      266,
+      624
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_046_05_20170829_02",
+   "tag": "05/AA_046_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 6,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 8.4,
+     "rule": "pose_action",
+     "roi_box": [
+      120,
+      221,
+      266,
+      624
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_046_05_20170829_02",
+   "tag": "05/AA_046_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 7,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 8.4,
+     "rule": "pose_action",
+     "roi_box": [
+      120,
+      221,
+      266,
+      624
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_046_05_20170829_02",
+   "tag": "05/AA_046_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 8,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 8.4,
+     "rule": "pose_action",
+     "roi_box": [
+      120,
+      221,
+      266,
+      624
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_046_05_20170829_02",
+   "tag": "05/AA_046_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 9,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 8.4,
+     "rule": "pose_action",
+     "roi_box": [
+      120,
+      221,
+      266,
+      624
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_046_05_20170829_02",
+   "tag": "05/AA_046_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 10,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 8.4,
+     "rule": "pose_action",
+     "roi_box": [
+      120,
+      221,
+      266,
+      624
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_046_05_20170829_02",
+   "tag": "05/AA_046_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 11,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 8.4,
+     "rule": "pose_action",
+     "roi_box": [
+      120,
+      221,
+      266,
+      624
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_048_05_20170829_02",
+   "tag": "05/AA_048_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1654,
+      479,
+      1882,
+      729
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_048_05_20170829_02",
+   "tag": "05/AA_048_05_20170829_02.txt",
+   "fps": 30.0,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 8.4,
+     "rule": "reach_down",
+     "roi_box": [
+      1579,
+      111,
+      1691,
+      275
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_050_05_20170830_03",
+   "tag": "05/AA_050_05_20170830_03.txt",
+   "fps": 29.0,
+   "pid": 8,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 4.34,
+     "rule": "reach_down",
+     "roi_box": [
+      1533,
+      294,
+      1698,
+      572
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_052_05_20170830_03",
+   "tag": "05/AA_052_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 13.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1332,
+      45,
+      1452,
+      213
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_052_05_20170830_03",
+   "tag": "05/AA_052_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 1.6,
+     "rule": "reach_down",
+     "roi_box": [
+      1710,
+      207,
+      1827,
+      365
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_052_05_20170830_03",
+   "tag": "05/AA_052_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 1.6,
+     "rule": "reach_down",
+     "roi_box": [
+      1710,
+      207,
+      1827,
+      365
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_054_05_20170830_03",
+   "tag": "05/AA_054_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 1.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1660,
+      203,
+      1783,
+      391
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_054_05_20170830_03",
+   "tag": "05/AA_054_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 1.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1660,
+      203,
+      1783,
+      391
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_054_05_20170830_03",
+   "tag": "05/AA_054_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 1.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1660,
+      203,
+      1783,
+      391
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_054_05_20170830_03",
+   "tag": "05/AA_054_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 1.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1660,
+      203,
+      1783,
+      391
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_058_05_20170830_03",
+   "tag": "05/AA_058_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 3.6,
+     "rule": "reach_down",
+     "roi_box": [
+      1550,
+      156,
+      1698,
+      377
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_058_05_20170830_03",
+   "tag": "05/AA_058_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 7,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 9.0,
+     "rule": "reach_down",
+     "roi_box": [
+      868,
+      328,
+      1144,
+      690
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_058_05_20170830_03",
+   "tag": "05/AA_058_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 8,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 20.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1484,
+      152,
+      1643,
+      361
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_058_05_20170830_03",
+   "tag": "05/AA_058_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 13,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 20.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1484,
+      152,
+      1643,
+      361
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_058_05_20170830_03",
+   "tag": "05/AA_058_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 15,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 20.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1484,
+      152,
+      1643,
+      361
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_060_05_20170830_03",
+   "tag": "05/AA_060_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.2,
+     "rule": "reach_down",
+     "roi_box": [
+      780,
+      97,
+      964,
+      424
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_062_05_20170830_03",
+   "tag": "05/AA_062_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 1.2,
+     "rule": "reach_down",
+     "roi_box": [
+      1709,
+      207,
+      1823,
+      368
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_066_05_20170830_03",
+   "tag": "05/AA_066_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.4,
+     "rule": "reach_down",
+     "roi_box": [
+      1374,
+      161,
+      1547,
+      397
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_066_05_20170830_03",
+   "tag": "05/AA_066_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 5,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 10.6,
+     "rule": "reach_down",
+     "roi_box": [
+      1452,
+      323,
+      1675,
+      638
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_066_05_20170830_03",
+   "tag": "05/AA_066_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 6,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 10.6,
+     "rule": "reach_down",
+     "roi_box": [
+      1452,
+      323,
+      1675,
+      638
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_066_05_20170830_03",
+   "tag": "05/AA_066_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 7,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 10.6,
+     "rule": "reach_down",
+     "roi_box": [
+      1452,
+      323,
+      1675,
+      638
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_066_05_20170830_03",
+   "tag": "05/AA_066_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 10,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 10.6,
+     "rule": "reach_down",
+     "roi_box": [
+      1452,
+      323,
+      1675,
+      638
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_068_05_20170830_03",
+   "tag": "05/AA_068_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.4,
+     "rule": "reach_down",
+     "roi_box": [
+      964,
+      119,
+      1141,
+      427
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_068_05_20170830_03",
+   "tag": "05/AA_068_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 6,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 8.2,
+     "rule": "reach_down",
+     "roi_box": [
+      1693,
+      206,
+      1824,
+      365
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 11.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1488,
+      168,
+      1629,
+      365
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_074_05_20170830_03",
+   "tag": "05/AA_074_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 4.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1626,
+      150,
+      1733,
+      314
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 9.4,
+     "rule": "reach_down",
+     "roi_box": [
+      1160,
+      62,
+      1315,
+      293
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_076_05_20170830_03",
+   "tag": "05/AA_076_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      945,
+      271,
+      1174,
+      640
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_080_05_20170830_03",
+   "tag": "05/AA_080_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 2.4,
+     "rule": "reach_down",
+     "roi_box": [
+      0,
+      279,
+      186,
+      628
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_082_05_20170830_03",
+   "tag": "05/AA_082_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1552,
+      199,
+      1699,
+      437
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_082_05_20170830_03",
+   "tag": "05/AA_082_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 16.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1634,
+      202,
+      1756,
+      394
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_086_05_20170830_03",
+   "tag": "05/AA_086_05_20170830_03.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 2.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1722,
+      390,
+      1878,
+      674
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_092_05_20170831_01",
+   "tag": "05/AA_092_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 5.0,
+     "rule": "reach_down",
+     "roi_box": [
+      44,
+      66,
+      188,
+      344
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_092_05_20170831_01",
+   "tag": "05/AA_092_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 3,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 12.0,
+     "rule": "object_appeared",
+     "roi_box": [
+      159,
+      219,
+      1299,
+      936
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_096_05_20170831_01",
+   "tag": "05/AA_096_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 1.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1658,
+      215,
+      1795,
+      403
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 12.6,
+     "rule": "reach_down",
+     "roi_box": [
+      1733,
+      195,
+      1826,
+      335
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_100_05_20170831_01",
+   "tag": "05/AA_100_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 2.2,
+     "rule": "reach_down",
+     "roi_box": [
+      1426,
+      46,
+      1551,
+      238
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_100_05_20170831_01",
+   "tag": "05/AA_100_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 7,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 4.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1698,
+      169,
+      1821,
+      339
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_102_05_20170831_01",
+   "tag": "05/AA_102_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      0,
+      268,
+      181,
+      547
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_102_05_20170831_01",
+   "tag": "05/AA_102_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 3.4,
+     "rule": "reach_down",
+     "roi_box": [
+      1702,
+      213,
+      1817,
+      380
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_102_05_20170831_01",
+   "tag": "05/AA_102_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 3.4,
+     "rule": "reach_down",
+     "roi_box": [
+      1702,
+      213,
+      1817,
+      380
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_102_05_20170831_01",
+   "tag": "05/AA_102_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 6,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 3.4,
+     "rule": "reach_down",
+     "roi_box": [
+      1702,
+      213,
+      1817,
+      380
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_104_05_20170831_01",
+   "tag": "05/AA_104_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1612,
+      174,
+      1757,
+      385
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_104_05_20170831_01",
+   "tag": "05/AA_104_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 13.2,
+     "rule": "reach_down",
+     "roi_box": [
+      1712,
+      160,
+      1819,
+      309
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_106_05_20170831_01",
+   "tag": "05/AA_106_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      149,
+      176,
+      341,
+      518
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_106_05_20170831_01",
+   "tag": "05/AA_106_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 3,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 6.2,
+     "rule": "reach_down",
+     "roi_box": [
+      1495,
+      262,
+      1701,
+      567
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_106_05_20170831_01",
+   "tag": "05/AA_106_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.4,
+     "rule": "reach_down",
+     "roi_box": [
+      1498,
+      66,
+      1639,
+      252
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 1.2,
+     "rule": "reach_down",
+     "roi_box": [
+      1735,
+      169,
+      1864,
+      342
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_106_05_20170831_01",
+   "tag": "05/AA_106_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 1.2,
+     "rule": "reach_down",
+     "roi_box": [
+      1735,
+      169,
+      1864,
+      342
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_106_05_20170831_01",
+   "tag": "05/AA_106_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 6,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 1.2,
+     "rule": "reach_down",
+     "roi_box": [
+      1735,
+      169,
+      1864,
+      342
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_106_05_20170831_01",
+   "tag": "05/AA_106_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 8,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 6.2,
+     "rule": "reach_down",
+     "roi_box": [
+      1495,
+      262,
+      1701,
+      567
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_110_05_20170831_01",
+   "tag": "05/AA_110_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 2.6,
+     "rule": "reach_down",
+     "roi_box": [
+      0,
+      284,
+      153,
+      597
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_110_05_20170831_01",
+   "tag": "05/AA_110_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 2.6,
+     "rule": "reach_down",
+     "roi_box": [
+      0,
+      284,
+      153,
+      597
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_110_05_20170831_01",
+   "tag": "05/AA_110_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 6,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1398,
+      198,
+      1595,
+      457
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_112_05_20170831_01",
+   "tag": "05/AA_112_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 3.0,
+     "rule": "reach_down",
+     "roi_box": [
+      41,
+      267,
+      207,
+      600
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_112_05_20170831_01",
+   "tag": "05/AA_112_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 3.0,
+     "rule": "reach_down",
+     "roi_box": [
+      41,
+      267,
+      207,
+      600
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_112_05_20170831_01",
+   "tag": "05/AA_112_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 9,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 11.2,
+     "rule": "reach_down",
+     "roi_box": [
+      1527,
+      187,
+      1665,
+      391
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 12.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1500,
+      86,
+      1612,
+      269
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_114_05_20170831_01",
+   "tag": "05/AA_114_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1616,
+      158,
+      1744,
+      345
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_114_05_20170831_01",
+   "tag": "05/AA_114_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 12.4,
+     "rule": "reach_down",
+     "roi_box": [
+      1764,
+      166,
+      1871,
+      305
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_114_05_20170831_01",
+   "tag": "05/AA_114_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 12.4,
+     "rule": "reach_down",
+     "roi_box": [
+      1764,
+      166,
+      1871,
+      305
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_114_05_20170831_01",
+   "tag": "05/AA_114_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 6,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 12.4,
+     "rule": "reach_down",
+     "roi_box": [
+      1764,
+      166,
+      1871,
+      305
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_118_05_20170831_01",
+   "tag": "05/AA_118_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 2.8,
+     "rule": "reach_down",
+     "roi_box": [
+      73,
+      249,
+      249,
+      602
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_118_05_20170831_01",
+   "tag": "05/AA_118_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 6,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 2.8,
+     "rule": "reach_down",
+     "roi_box": [
+      73,
+      249,
+      249,
+      602
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_118_05_20170831_01",
+   "tag": "05/AA_118_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 16,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 16.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1665,
+      150,
+      1776,
+      325
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_118_05_20170831_01",
+   "tag": "05/AA_118_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 17,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 16.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1665,
+      150,
+      1776,
+      325
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_118_05_20170831_01",
+   "tag": "05/AA_118_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 18,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 16.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1665,
+      150,
+      1776,
+      325
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_124_05_20170831_01",
+   "tag": "05/AA_124_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 13.4,
+     "rule": "reach_down",
+     "roi_box": [
+      1498,
+      44,
+      1615,
+      202
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_130_05_20170831_01",
+   "tag": "05/AA_130_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      421,
+      137,
+      698,
+      588
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 4.4,
+     "rule": "reach_down",
+     "roi_box": [
+      18,
+      265,
+      261,
+      641
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_132_05_20170831_01",
+   "tag": "05/AA_132_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 2.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1306,
+      154,
+      1487,
+      411
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_132_05_20170831_01",
+   "tag": "05/AA_132_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 2.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1306,
+      154,
+      1487,
+      411
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_132_05_20170831_01",
+   "tag": "05/AA_132_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1599,
+      178,
+      1735,
+      370
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 2.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1306,
+      154,
+      1487,
+      411
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_132_05_20170831_01",
+   "tag": "05/AA_132_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1599,
+      178,
+      1735,
+      370
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_132_05_20170831_01",
+   "tag": "05/AA_132_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 7,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 9.6,
+     "rule": "reach_down",
+     "roi_box": [
+      711,
+      109,
+      895,
+      464
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_132_05_20170831_01",
+   "tag": "05/AA_132_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 8,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 11.8,
+     "rule": "reach_down",
+     "roi_box": [
+      910,
+      110,
+      1083,
+      442
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_132_05_20170831_01",
+   "tag": "05/AA_132_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 9,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 9.6,
+     "rule": "reach_down",
+     "roi_box": [
+      711,
+      109,
+      895,
+      464
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 11.8,
+     "rule": "reach_down",
+     "roi_box": [
+      910,
+      110,
+      1083,
+      442
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_134_05_20170831_01",
+   "tag": "05/AA_134_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1366,
+      22,
+      1470,
+      204
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_134_05_20170831_01",
+   "tag": "05/AA_134_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 10,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 11.6,
+     "rule": "reach_down",
+     "roi_box": [
+      1204,
+      157,
+      1416,
+      464
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_134_05_20170831_01",
+   "tag": "05/AA_134_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 11,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 14.6,
+     "rule": "reach_down",
+     "roi_box": [
+      1454,
+      43,
+      1571,
+      211
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_134_05_20170831_01",
+   "tag": "05/AA_134_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 12,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 14.6,
+     "rule": "reach_down",
+     "roi_box": [
+      1454,
+      43,
+      1571,
+      211
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_136_05_20170831_01",
+   "tag": "05/AA_136_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1413,
+      224,
+      1600,
+      509
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_136_05_20170831_01",
+   "tag": "05/AA_136_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 9.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1127,
+      231,
+      1333,
+      547
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_138_05_20170831_01",
+   "tag": "05/AA_138_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      1369,
+      304,
+      1573,
+      573
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_138_05_20170831_01",
+   "tag": "05/AA_138_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      303,
+      112,
+      457,
+      422
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_138_05_20170831_01",
+   "tag": "05/AA_138_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 9,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 11.6,
+     "rule": "reach_down",
+     "roi_box": [
+      1477,
+      248,
+      1668,
+      517
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_138_05_20170831_01",
+   "tag": "05/AA_138_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 11,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 11.6,
+     "rule": "reach_down",
+     "roi_box": [
+      1477,
+      248,
+      1668,
+      517
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_138_05_20170831_01",
+   "tag": "05/AA_138_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 13,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 11.6,
+     "rule": "reach_down",
+     "roi_box": [
+      1477,
+      248,
+      1668,
+      517
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_140_05_20170831_01",
+   "tag": "05/AA_140_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 11.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1528,
+      296,
+      1728,
+      591
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 14.4,
+     "rule": "reach_down",
+     "roi_box": [
+      1600,
+      177,
+      1709,
+      352
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_140_05_20170831_01",
+   "tag": "05/AA_140_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 11.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1528,
+      296,
+      1728,
+      591
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 14.4,
+     "rule": "reach_down",
+     "roi_box": [
+      1600,
+      177,
+      1709,
+      352
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_140_05_20170831_01",
+   "tag": "05/AA_140_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 14.4,
+     "rule": "reach_down",
+     "roi_box": [
+      1600,
+      177,
+      1709,
+      352
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_144_05_20170831_01",
+   "tag": "05/AA_144_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 12.2,
+     "rule": "reach_down",
+     "roi_box": [
+      1234,
+      309,
+      1417,
+      606
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_144_05_20170831_01",
+   "tag": "05/AA_144_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 4,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 12.2,
+     "rule": "reach_down",
+     "roi_box": [
+      1234,
+      309,
+      1417,
+      606
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_146_05_20170831_01",
+   "tag": "05/AA_146_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 2,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 8.2,
+     "rule": "reach_down",
+     "roi_box": [
+      1643,
+      284,
+      1815,
+      550
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_146_05_20170831_01",
+   "tag": "05/AA_146_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 3,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 8.2,
+     "rule": "reach_down",
+     "roi_box": [
+      1643,
+      284,
+      1815,
+      550
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_146_05_20170831_01",
+   "tag": "05/AA_146_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 9.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1570,
+      92,
+      1683,
+      263
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_146_05_20170831_01",
+   "tag": "05/AA_146_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 7,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 8.2,
+     "rule": "reach_down",
+     "roi_box": [
+      1643,
+      284,
+      1815,
+      550
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_146_05_20170831_01",
+   "tag": "05/AA_146_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 8,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 8.2,
+     "rule": "reach_down",
+     "roi_box": [
+      1643,
+      284,
+      1815,
+      550
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 9.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1570,
+      92,
+      1683,
+      263
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AA_146_05_20170831_01",
+   "tag": "05/AA_146_05_20170831_01.txt",
+   "fps": 30.0,
+   "pid": 9,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 9.8,
+     "rule": "reach_down",
+     "roi_box": [
+      1570,
+      92,
+      1683,
+      263
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-001-05-20151003-01",
+   "tag": "05/AR-001-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 10,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 48.8,
+     "rule": "reach_down",
+     "roi_box": [
+      636,
+      419,
+      839,
+      780
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-001-05-20151003-01",
+   "tag": "05/AR-001-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 12,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 48.8,
+     "rule": "reach_down",
+     "roi_box": [
+      636,
+      419,
+      839,
+      780
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-001-05-20151003-01",
+   "tag": "05/AR-001-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 16,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 70.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      442,
+      365,
+      543,
+      654
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 73.2,
+     "rule": "pose_action",
+     "roi_box": [
+      530,
+      412,
+      636,
+      729
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-001-05-20151003-01",
+   "tag": "05/AR-001-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 28,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 92.8,
+     "rule": "long_presence",
+     "roi_box": [
+      580,
+      80,
+      638,
+      230
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-001-05-20151003-01",
+   "tag": "05/AR-001-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 31,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 48.8,
+     "rule": "reach_down",
+     "roi_box": [
+      636,
+      419,
+      839,
+      780
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-001-05-20151003-01",
+   "tag": "05/AR-001-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 32,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 48.8,
+     "rule": "reach_down",
+     "roi_box": [
+      636,
+      419,
+      839,
+      780
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-001-05-20151003-01",
+   "tag": "05/AR-001-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 37,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 112.4,
+     "rule": "long_presence",
+     "roi_box": [
+      100,
+      308,
+      177,
+      563
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-001-05-20151003-01",
+   "tag": "05/AR-001-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 43,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 160.8,
+     "rule": "sustained_presence",
+     "roi_box": [
+      26,
+      317,
+      118,
+      564
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-001-05-20151003-01",
+   "tag": "05/AR-001-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 44,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 36.8,
+     "rule": "reach_down",
+     "roi_box": [
+      719,
+      394,
+      915,
+      767
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-001-05-20151003-01",
+   "tag": "05/AR-001-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 45,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 160.8,
+     "rule": "sustained_presence",
+     "roi_box": [
+      26,
+      317,
+      118,
+      564
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-002-05-20151003-01",
+   "tag": "05/AR-002-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 20.0,
+     "rule": "reach_down",
+     "roi_box": [
+      679,
+      409,
+      890,
+      770
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-002-05-20151003-01",
+   "tag": "05/AR-002-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 29,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 215.6,
+     "rule": "reach_down",
+     "roi_box": [
+      632,
+      468,
+      985,
+      994
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-002-05-20151003-01",
+   "tag": "05/AR-002-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 32,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 237.0,
+     "rule": "sustained_presence",
+     "roi_box": [
+      672,
+      332,
+      775,
+      690
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-002-05-20151003-01",
+   "tag": "05/AR-002-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 34,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 255.0,
+     "rule": "pose_action",
+     "roi_box": [
+      672,
+      329,
+      781,
+      686
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-003-05-20151003-01",
+   "tag": "05/AR-003-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 23,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 52.2,
+     "rule": "pose_action",
+     "roi_box": [
+      95,
+      333,
+      206,
+      562
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "tag": "05/AR-004-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 16,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 57.0,
+     "rule": "pose_action",
+     "roi_box": [
+      648,
+      340,
+      773,
+      634
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "tag": "05/AR-004-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 19,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 115.2,
+     "rule": "long_presence",
+     "roi_box": [
+      312,
+      419,
+      416,
+      612
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "tag": "05/AR-004-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 21,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 166.0,
+     "rule": "long_presence",
+     "roi_box": [
+      377,
+      415,
+      496,
+      645
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "tag": "05/AR-004-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 23,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 199.2,
+     "rule": "reach_down",
+     "roi_box": [
+      735,
+      537,
+      947,
+      961
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "tag": "05/AR-004-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 27,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 63.4,
+     "rule": "pose_action",
+     "roi_box": [
+      856,
+      371,
+      969,
+      707
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 73.0,
+     "rule": "pose_action",
+     "roi_box": [
+      770,
+      335,
+      888,
+      641
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 75.0,
+     "rule": "sustained_presence",
+     "roi_box": [
+      658,
+      433,
+      791,
+      801
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "tag": "05/AR-004-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 31,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 149.0,
+     "rule": "pose_action",
+     "roi_box": [
+      48,
+      305,
+      144,
+      537
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "tag": "05/AR-004-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 32,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 149.0,
+     "rule": "pose_action",
+     "roi_box": [
+      48,
+      305,
+      144,
+      537
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "tag": "05/AR-004-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 33,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 164.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      60,
+      306,
+      145,
+      541
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "tag": "05/AR-004-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 36,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 198.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      344,
+      359,
+      432,
+      606
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "tag": "05/AR-004-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 37,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 204.2,
+     "rule": "long_presence",
+     "roi_box": [
+      466,
+      354,
+      569,
+      645
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "tag": "05/AR-004-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 40,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 77.4,
+     "rule": "pose_action",
+     "roi_box": [
+      560,
+      113,
+      625,
+      258
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "tag": "05/AR-004-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 42,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 77.4,
+     "rule": "pose_action",
+     "roi_box": [
+      560,
+      113,
+      625,
+      258
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "tag": "05/AR-004-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 43,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 77.4,
+     "rule": "pose_action",
+     "roi_box": [
+      560,
+      113,
+      625,
+      258
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "tag": "05/AR-004-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 63,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 149.0,
+     "rule": "pose_action",
+     "roi_box": [
+      48,
+      305,
+      144,
+      537
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "tag": "05/AR-004-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 64,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 159.8,
+     "rule": "reach_down",
+     "roi_box": [
+      208,
+      377,
+      356,
+      597
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "tag": "05/AR-004-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 65,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 164.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      60,
+      306,
+      145,
+      541
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-004-05-20151003-01",
+   "tag": "05/AR-004-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 75,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 57.0,
+     "rule": "pose_action",
+     "roi_box": [
+      648,
+      340,
+      773,
+      634
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-005-05-20151003-01",
+   "tag": "05/AR-005-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 14,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 21.6,
+     "rule": "reach_down",
+     "roi_box": [
+      863,
+      388,
+      1053,
+      768
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-005-05-20151003-01",
+   "tag": "05/AR-005-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 15,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 21.6,
+     "rule": "reach_down",
+     "roi_box": [
+      863,
+      388,
+      1053,
+      768
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-005-05-20151003-01",
+   "tag": "05/AR-005-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 21,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 111.8,
+     "rule": "pose_action",
+     "roi_box": [
+      285,
+      353,
+      422,
+      615
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 115.8,
+     "rule": "long_presence",
+     "roi_box": [
+      295,
+      354,
+      436,
+      612
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/05/AR-005-05-20151003-01",
+   "tag": "05/AR-005-05-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 28,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 154.6,
+     "rule": "reach_down",
+     "roi_box": [
+      506,
+      361,
+      674,
+      698
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/06/AA-003-06-20140524-02",
+   "tag": "06/AA-003-06-20140524-02.txt",
+   "fps": 29.97002997002997,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 41.24,
+     "rule": "pose_action",
+     "roi_box": [
+      662,
+      221,
+      881,
+      712
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 53.45,
+     "rule": "sustained_presence",
+     "roi_box": [
+      766,
+      284,
+      990,
+      715
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/06/AA-005-06-20140502-01",
+   "tag": "06/AA-005-06-20140502-01.txt",
+   "fps": 15.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 1.8,
+     "rule": "pose_action",
+     "roi_box": [
+      858,
+      71,
+      1064,
+      576
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/06/AA-005-06-20140502-01",
+   "tag": "06/AA-005-06-20140502-01.txt",
+   "fps": 15.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 24.4,
+     "rule": "reach_down",
+     "roi_box": [
+      875,
+      109,
+      1112,
+      583
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/06/AA-008-06-20140502-01",
+   "tag": "06/AA-008-06-20140502-01.txt",
+   "fps": 15.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 29.4,
+     "rule": "pose_action",
+     "roi_box": [
+      868,
+      152,
+      1026,
+      630
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/06/AA_001_06_20140502_01",
+   "tag": "06/AA_001_06_20140502_01.txt",
+   "fps": 15.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 5.6,
+     "rule": "reach_down",
+     "roi_box": [
+      829,
+      149,
+      1121,
+      687
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 10.6,
+     "rule": "reach_down",
+     "roi_box": [
+      815,
+      124,
+      1097,
+      628
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/06/AA_003_06_20140502_01",
+   "tag": "06/AA_003_06_20140502_01.txt",
+   "fps": 15.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 42.8,
+     "rule": "reach_down",
+     "roi_box": [
+      746,
+      170,
+      982,
+      641
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/06/AR-002-06-20151003-01",
+   "tag": "06/AR-002-06-20151003-01.txt",
+   "fps": 17.0,
+   "pid": 4,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 24.18,
+     "rule": "reach_down",
+     "roi_box": [
+      700,
+      278,
+      973,
+      777
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 25.76,
+     "rule": "reach_down",
+     "roi_box": [
+      848,
+      368,
+      1202,
+      985
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/06/AR-004-06-20151003-01",
+   "tag": "06/AR-004-06-20151003-01.txt",
+   "fps": 17.0,
+   "pid": 6,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 30.53,
+     "rule": "pose_action",
+     "roi_box": [
+      887,
+      244,
+      1002,
+      719
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 32.47,
+     "rule": "pose_action",
+     "roi_box": [
+      732,
+      320,
+      972,
+      883
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/06/AR-004-06-20151003-01",
+   "tag": "06/AR-004-06-20151003-01.txt",
+   "fps": 17.0,
+   "pid": 7,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 32.47,
+     "rule": "pose_action",
+     "roi_box": [
+      732,
+      320,
+      972,
+      883
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/06/AR-006-06-20151003-01",
+   "tag": "06/AR-006-06-20151003-01.txt",
+   "fps": 16.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 5.62,
+     "rule": "object_appeared",
+     "roi_box": [
+      886,
+      172,
+      987,
+      555
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 7.69,
+     "rule": "reach_down",
+     "roi_box": [
+      580,
+      317,
+      970,
+      932
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/06/AR-006-06-20151003-01",
+   "tag": "06/AR-006-06-20151003-01.txt",
+   "fps": 16.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 7.69,
+     "rule": "reach_down",
+     "roi_box": [
+      580,
+      317,
+      970,
+      932
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AA-007-07-20140524-02",
+   "tag": "07/AA-007-07-20140524-02.txt",
+   "fps": 20.013,
+   "pid": 14,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 139.51,
+     "rule": "reach_down",
+     "roi_box": [
+      1053,
+      232,
+      1256,
+      638
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 149.1,
+     "rule": "sustained_presence",
+     "roi_box": [
+      925,
+      361,
+      1072,
+      717
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AA-008-07-20140524-02",
+   "tag": "07/AA-008-07-20140524-02.txt",
+   "fps": 19.96,
+   "pid": 6,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 40.28,
+     "rule": "pose_action",
+     "roi_box": [
+      671,
+      193,
+      829,
+      632
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AA-008-07-20140524-02",
+   "tag": "07/AA-008-07-20140524-02.txt",
+   "fps": 19.96,
+   "pid": 8,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 40.28,
+     "rule": "pose_action",
+     "roi_box": [
+      671,
+      193,
+      829,
+      632
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AA-008-07-20140524-02",
+   "tag": "07/AA-008-07-20140524-02.txt",
+   "fps": 19.96,
+   "pid": 11,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 70.54,
+     "rule": "sustained_presence",
+     "roi_box": [
+      613,
+      233,
+      807,
+      660
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AA-008-07-20140524-02",
+   "tag": "07/AA-008-07-20140524-02.txt",
+   "fps": 19.96,
+   "pid": 12,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 70.54,
+     "rule": "sustained_presence",
+     "roi_box": [
+      613,
+      233,
+      807,
+      660
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AA-010-07-20140524-02",
+   "tag": "07/AA-010-07-20140524-02.txt",
+   "fps": 19.96,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 31.46,
+     "rule": "sustained_presence",
+     "roi_box": [
+      384,
+      234,
+      558,
+      713
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 38.68,
+     "rule": "pose_action",
+     "roi_box": [
+      297,
+      269,
+      458,
+      716
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AA-011-07-20140524-02",
+   "tag": "07/AA-011-07-20140524-02.txt",
+   "fps": 19.96,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 54.71,
+     "rule": "pose_action",
+     "roi_box": [
+      705,
+      247,
+      866,
+      677
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 57.52,
+     "rule": "sustained_presence",
+     "roi_box": [
+      704,
+      276,
+      859,
+      716
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AA-014-07-20140524-02",
+   "tag": "07/AA-014-07-20140524-02.txt",
+   "fps": 19.96,
+   "pid": 9,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 196.19,
+     "rule": "pose_action",
+     "roi_box": [
+      951,
+      184,
+      1093,
+      566
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-001-07-20151003-01",
+   "tag": "07/AR-001-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 79.4,
+     "rule": "long_presence",
+     "roi_box": [
+      631,
+      106,
+      730,
+      389
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 139.4,
+     "rule": "long_presence",
+     "roi_box": [
+      337,
+      104,
+      448,
+      371
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-003-07-20151003-01",
+   "tag": "07/AR-003-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 36.6,
+     "rule": "sustained_presence",
+     "roi_box": [
+      264,
+      186,
+      395,
+      479
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 69.4,
+     "rule": "long_presence",
+     "roi_box": [
+      423,
+      129,
+      537,
+      427
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 96.8,
+     "rule": "sustained_presence",
+     "roi_box": [
+      434,
+      148,
+      521,
+      358
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 103.6,
+     "rule": "reach_down",
+     "roi_box": [
+      381,
+      146,
+      542,
+      438
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 129.4,
+     "rule": "long_presence",
+     "roi_box": [
+      428,
+      113,
+      533,
+      375
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 156.8,
+     "rule": "sustained_presence",
+     "roi_box": [
+      512,
+      112,
+      611,
+      390
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-003-07-20151003-01",
+   "tag": "07/AR-003-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 36.6,
+     "rule": "sustained_presence",
+     "roi_box": [
+      264,
+      186,
+      395,
+      479
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 49.6,
+     "rule": "pose_action",
+     "roi_box": [
+      96,
+      162,
+      208,
+      420
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 55.4,
+     "rule": "sustained_presence",
+     "roi_box": [
+      63,
+      187,
+      198,
+      466
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 70.2,
+     "rule": "long_presence",
+     "roi_box": [
+      82,
+      196,
+      205,
+      473
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 108.6,
+     "rule": "pose_action",
+     "roi_box": [
+      120,
+      151,
+      235,
+      398
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 115.4,
+     "rule": "sustained_presence",
+     "roi_box": [
+      127,
+      149,
+      237,
+      392
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 120.4,
+     "rule": "reach_down",
+     "roi_box": [
+      20,
+      196,
+      181,
+      452
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 130.4,
+     "rule": "long_presence",
+     "roi_box": [
+      132,
+      163,
+      250,
+      411
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-003-07-20151003-01",
+   "tag": "07/AR-003-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 7,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 189.0,
+     "rule": "reach_down",
+     "roi_box": [
+      696,
+      255,
+      898,
+      657
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 191.6,
+     "rule": "reach_down",
+     "roi_box": [
+      171,
+      275,
+      443,
+      681
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 214.0,
+     "rule": "sustained_presence",
+     "roi_box": [
+      552,
+      80,
+      629,
+      320
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 240.0,
+     "rule": "long_presence",
+     "roi_box": [
+      600,
+      98,
+      686,
+      380
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 274.0,
+     "rule": "sustained_presence",
+     "roi_box": [
+      573,
+      92,
+      665,
+      353
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-003-07-20151003-01",
+   "tag": "07/AR-003-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 8,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 291.0,
+     "rule": "pose_action",
+     "roi_box": [
+      298,
+      137,
+      397,
+      410
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 300.0,
+     "rule": "long_presence",
+     "roi_box": [
+      296,
+      130,
+      396,
+      399
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 309.0,
+     "rule": "pose_action",
+     "roi_box": [
+      287,
+      134,
+      393,
+      402
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 324.0,
+     "rule": "pose_action",
+     "roi_box": [
+      356,
+      121,
+      446,
+      399
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-003-07-20151003-01",
+   "tag": "07/AR-003-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 18,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 189.0,
+     "rule": "reach_down",
+     "roi_box": [
+      696,
+      255,
+      898,
+      657
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-003-07-20151003-01",
+   "tag": "07/AR-003-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 20,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 189.0,
+     "rule": "reach_down",
+     "roi_box": [
+      696,
+      255,
+      898,
+      657
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-003-07-20151003-01",
+   "tag": "07/AR-003-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 24,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 240.0,
+     "rule": "long_presence",
+     "roi_box": [
+      600,
+      98,
+      686,
+      380
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-005-07-20151003-01",
+   "tag": "07/AR-005-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 2,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 7.8,
+     "rule": "pose_action",
+     "roi_box": [
+      907,
+      132,
+      993,
+      396
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-005-07-20151003-01",
+   "tag": "07/AR-005-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 30.4,
+     "rule": "pose_action",
+     "roi_box": [
+      1074,
+      215,
+      1263,
+      575
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-005-07-20151003-01",
+   "tag": "07/AR-005-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 51.0,
+     "rule": "pose_action",
+     "roi_box": [
+      843,
+      279,
+      1128,
+      727
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-005-07-20151003-01",
+   "tag": "07/AR-005-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 6,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 51.0,
+     "rule": "pose_action",
+     "roi_box": [
+      843,
+      279,
+      1128,
+      727
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 60.6,
+     "rule": "pose_action",
+     "roi_box": [
+      612,
+      386,
+      794,
+      829
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 60.8,
+     "rule": "pose_action",
+     "roi_box": [
+      783,
+      153,
+      920,
+      479
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 63.2,
+     "rule": "long_presence",
+     "roi_box": [
+      899,
+      243,
+      1049,
+      638
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-005-07-20151003-01",
+   "tag": "07/AR-005-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 7,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 63.2,
+     "rule": "long_presence",
+     "roi_box": [
+      899,
+      243,
+      1049,
+      638
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-005-07-20151003-01",
+   "tag": "07/AR-005-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 8,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 85.0,
+     "rule": "reach_down",
+     "roi_box": [
+      225,
+      421,
+      591,
+      889
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-005-07-20151003-01",
+   "tag": "07/AR-005-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 9,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 96.2,
+     "rule": "reach_down",
+     "roi_box": [
+      516,
+      401,
+      805,
+      863
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-005-07-20151003-01",
+   "tag": "07/AR-005-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 10,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 108.8,
+     "rule": "pose_action",
+     "roi_box": [
+      570,
+      190,
+      707,
+      611
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-005-07-20151003-01",
+   "tag": "07/AR-005-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 12,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 11.0,
+     "rule": "reach_down",
+     "roi_box": [
+      842,
+      146,
+      999,
+      423
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-005-07-20151003-01",
+   "tag": "07/AR-005-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 13,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 16.0,
+     "rule": "reach_down",
+     "roi_box": [
+      752,
+      170,
+      914,
+      475
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-005-07-20151003-01",
+   "tag": "07/AR-005-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 14,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 30.4,
+     "rule": "pose_action",
+     "roi_box": [
+      1074,
+      215,
+      1263,
+      575
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-005-07-20151003-01",
+   "tag": "07/AR-005-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 15,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 51.0,
+     "rule": "pose_action",
+     "roi_box": [
+      843,
+      279,
+      1128,
+      727
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 60.6,
+     "rule": "pose_action",
+     "roi_box": [
+      612,
+      386,
+      794,
+      829
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 60.8,
+     "rule": "pose_action",
+     "roi_box": [
+      783,
+      153,
+      920,
+      479
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 63.2,
+     "rule": "long_presence",
+     "roi_box": [
+      899,
+      243,
+      1049,
+      638
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-005-07-20151003-01",
+   "tag": "07/AR-005-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 16,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 85.0,
+     "rule": "reach_down",
+     "roi_box": [
+      225,
+      421,
+      591,
+      889
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 92.8,
+     "rule": "reach_down",
+     "roi_box": [
+      658,
+      178,
+      865,
+      523
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 96.2,
+     "rule": "reach_down",
+     "roi_box": [
+      516,
+      401,
+      805,
+      863
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 102.4,
+     "rule": "sustained_presence",
+     "roi_box": [
+      552,
+      115,
+      675,
+      431
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 108.8,
+     "rule": "pose_action",
+     "roi_box": [
+      570,
+      190,
+      707,
+      611
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-005-07-20151003-01",
+   "tag": "07/AR-005-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 17,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 11.0,
+     "rule": "reach_down",
+     "roi_box": [
+      842,
+      146,
+      999,
+      423
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 16.0,
+     "rule": "reach_down",
+     "roi_box": [
+      752,
+      170,
+      914,
+      475
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 23.6,
+     "rule": "reach_down",
+     "roi_box": [
+      687,
+      145,
+      839,
+      436
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 34.4,
+     "rule": "reach_down",
+     "roi_box": [
+      157,
+      204,
+      346,
+      523
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 39.4,
+     "rule": "reach_down",
+     "roi_box": [
+      386,
+      242,
+      627,
+      619
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 44.6,
+     "rule": "reach_down",
+     "roi_box": [
+      208,
+      553,
+      450,
+      1009
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 60.6,
+     "rule": "pose_action",
+     "roi_box": [
+      612,
+      386,
+      794,
+      829
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 60.8,
+     "rule": "pose_action",
+     "roi_box": [
+      783,
+      153,
+      920,
+      479
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 63.6,
+     "rule": "reach_down",
+     "roi_box": [
+      480,
+      552,
+      738,
+      983
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 75.4,
+     "rule": "reach_down",
+     "roi_box": [
+      706,
+      160,
+      884,
+      483
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 85.0,
+     "rule": "reach_down",
+     "roi_box": [
+      225,
+      421,
+      591,
+      889
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 87.6,
+     "rule": "reach_down",
+     "roi_box": [
+      612,
+      259,
+      859,
+      642
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 92.8,
+     "rule": "reach_down",
+     "roi_box": [
+      658,
+      178,
+      865,
+      523
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 96.2,
+     "rule": "reach_down",
+     "roi_box": [
+      516,
+      401,
+      805,
+      863
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/07/AR-005-07-20151003-01",
+   "tag": "07/AR-005-07-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 18,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 108.8,
+     "rule": "pose_action",
+     "roi_box": [
+      570,
+      190,
+      707,
+      611
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/08/AA-001-08-20140502-01",
+   "tag": "08/AA-001-08-20140502-01.txt",
+   "fps": 15.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 21.2,
+     "rule": "reach_down",
+     "roi_box": [
+      598,
+      86,
+      755,
+      401
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/08/AA-004-08-20140524-02",
+   "tag": "08/AA-004-08-20140524-02.txt",
+   "fps": 19.973,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 33.04,
+     "rule": "pose_action",
+     "roi_box": [
+      631,
+      29,
+      703,
+      210
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/08/AA-007-08-20140524-02",
+   "tag": "08/AA-007-08-20140524-02.txt",
+   "fps": 19.973,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 58.08,
+     "rule": "reach_down",
+     "roi_box": [
+      401,
+      177,
+      688,
+      627
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 66.09,
+     "rule": "long_presence",
+     "roi_box": [
+      645,
+      182,
+      770,
+      570
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/08/AA-007-08-20140524-02",
+   "tag": "08/AA-007-08-20140524-02.txt",
+   "fps": 19.973,
+   "pid": 6,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 66.09,
+     "rule": "long_presence",
+     "roi_box": [
+      645,
+      182,
+      770,
+      570
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/10/AA-003-10-20140524-02",
+   "tag": "10/AA-003-10-20140524-02.txt",
+   "fps": 20.067,
+   "pid": 1,
+   "kind": "still by labels",
+   "alerts": [
+    {
+     "t": 55.02,
+     "rule": "sustained_presence",
+     "roi_box": [
+      551,
+      83,
+      590,
+      167
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/10/AA-013-10-20140524-02",
+   "tag": "10/AA-013-10-20140524-02.txt",
+   "fps": 19.947,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 45.12,
+     "rule": "pose_action",
+     "roi_box": [
+      533,
+      105,
+      612,
+      322
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 52.54,
+     "rule": "sustained_presence",
+     "roi_box": [
+      586,
+      109,
+      651,
+      325
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 60.16,
+     "rule": "pose_action",
+     "roi_box": [
+      574,
+      105,
+      659,
+      322
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 75.2,
+     "rule": "pose_action",
+     "roi_box": [
+      617,
+      93,
+      676,
+      292
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 88.43,
+     "rule": "long_presence",
+     "roi_box": [
+      550,
+      109,
+      624,
+      318
+     ],
+     "why": "still by labels"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/10/AA-015-10-20140524-02",
+   "tag": "10/AA-015-10-20140524-02.txt",
+   "fps": 19.947,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.8,
+     "rule": "pose_action",
+     "roi_box": [
+      548,
+      44,
+      590,
+      155
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/10/AA-020-10-20140524-02",
+   "tag": "10/AA-020-10-20140524-02.txt",
+   "fps": 19.947,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 17.85,
+     "rule": "pose_action",
+     "roi_box": [
+      451,
+      237,
+      562,
+      581
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 30.88,
+     "rule": "sustained_presence",
+     "roi_box": [
+      468,
+      206,
+      580,
+      539
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 39.91,
+     "rule": "reach_down",
+     "roi_box": [
+      379,
+      212,
+      542,
+      537
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/10/AA_008_10_20140802_03",
+   "tag": "10/AA_008_10_20140802_03.txt",
+   "fps": 19.973,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 16.22,
+     "rule": "reach_down",
+     "roi_box": [
+      379,
+      258,
+      709,
+      709
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/10/AA_008_10_20140802_03",
+   "tag": "10/AA_008_10_20140802_03.txt",
+   "fps": 19.973,
+   "pid": 4,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 16.22,
+     "rule": "reach_down",
+     "roi_box": [
+      379,
+      258,
+      709,
+      709
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/10/AR-001-10-20151003-01",
+   "tag": "10/AR-001-10-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 3,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 18.0,
+     "rule": "reach_down",
+     "roi_box": [
+      614,
+      397,
+      848,
+      865
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/10/AR-001-10-20151003-01",
+   "tag": "10/AR-001-10-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 4,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 216.2,
+     "rule": "reach_down",
+     "roi_box": [
+      430,
+      448,
+      683,
+      927
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/10/AR-001-10-20151003-01",
+   "tag": "10/AR-001-10-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 5,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 201.8,
+     "rule": "reach_down",
+     "roi_box": [
+      813,
+      413,
+      1097,
+      895
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 205.2,
+     "rule": "pose_action",
+     "roi_box": [
+      704,
+      401,
+      898,
+      913
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 210.0,
+     "rule": "reach_down",
+     "roi_box": [
+      700,
+      402,
+      993,
+      912
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 221.2,
+     "rule": "reach_down",
+     "roi_box": [
+      353,
+      385,
+      562,
+      793
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/10/AR-001-10-20151003-01",
+   "tag": "10/AR-001-10-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 8,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 230.0,
+     "rule": "reach_down",
+     "roi_box": [
+      655,
+      359,
+      876,
+      791
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 235.0,
+     "rule": "reach_down",
+     "roi_box": [
+      676,
+      358,
+      893,
+      792
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/10/AR-003-10-20151003-01",
+   "tag": "10/AR-003-10-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 7,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 53.6,
+     "rule": "reach_down",
+     "roi_box": [
+      294,
+      335,
+      501,
+      749
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/10/AR-003-10-20151003-01",
+   "tag": "10/AR-003-10-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 8,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 133.4,
+     "rule": "pose_action",
+     "roi_box": [
+      370,
+      316,
+      492,
+      728
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/10/AR-003-10-20151003-01",
+   "tag": "10/AR-003-10-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 10,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 145.8,
+     "rule": "reach_down",
+     "roi_box": [
+      321,
+      309,
+      537,
+      720
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/10/AR-005-10-20151003-01",
+   "tag": "10/AR-005-10-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 6,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 31.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      448,
+      212,
+      523,
+      443
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 31.4,
+     "rule": "pose_action",
+     "roi_box": [
+      532,
+      202,
+      589,
+      437
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/10/AR-005-10-20151003-01",
+   "tag": "10/AR-005-10-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 7,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 35.6,
+     "rule": "sustained_presence",
+     "roi_box": [
+      453,
+      222,
+      557,
+      500
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/10/AR-005-10-20151003-01",
+   "tag": "10/AR-005-10-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 10,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 31.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      448,
+      212,
+      523,
+      443
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 31.4,
+     "rule": "pose_action",
+     "roi_box": [
+      532,
+      202,
+      589,
+      437
+     ],
+     "why": "unexplained"
+    },
+    {
+     "t": 35.6,
+     "rule": "sustained_presence",
+     "roi_box": [
+      453,
+      222,
+      557,
+      500
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/10/AR-005-10-20151003-01",
+   "tag": "10/AR-005-10-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 12,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 232.4,
+     "rule": "pose_action",
+     "roi_box": [
+      307,
+      428,
+      548,
+      934
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/10/AR-005-10-20151003-01",
+   "tag": "10/AR-005-10-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 13,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 232.4,
+     "rule": "pose_action",
+     "roi_box": [
+      307,
+      428,
+      548,
+      934
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/11/AR-006-11-20151003-01",
+   "tag": "11/AR-006-11-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 3,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 51.0,
+     "rule": "sustained_presence",
+     "roi_box": [
+      275,
+      71,
+      292,
+      155
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/11/AR-006-11-20151003-01",
+   "tag": "11/AR-006-11-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 4,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 54.6,
+     "rule": "sustained_presence",
+     "roi_box": [
+      288,
+      70,
+      322,
+      170
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/11/AR-006-11-20151003-01",
+   "tag": "11/AR-006-11-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 6,
+   "kind": "shared alert",
+   "alerts": [
+    {
+     "t": 44.8,
+     "rule": "sustained_presence",
+     "roi_box": [
+      285,
+      64,
+      310,
+      163
+     ],
+     "why": "shared alert"
+    },
+    {
+     "t": 51.0,
+     "rule": "sustained_presence",
+     "roi_box": [
+      275,
+      71,
+      292,
+      155
+     ],
+     "why": "still by labels"
+    },
+    {
+     "t": 54.6,
+     "rule": "sustained_presence",
+     "roi_box": [
+      288,
+      70,
+      322,
+      170
+     ],
+     "why": "shared alert"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/12/AA_001_12_20150323_01",
+   "tag": "12/AA_001_12_20150323_01.txt",
+   "fps": 25.0,
+   "pid": 1,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 0.0,
+     "rule": "reach_down",
+     "roi_box": [
+      556,
+      70,
+      661,
+      280
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/12/AR-004-12-20151003-01",
+   "tag": "12/AR-004-12-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 5,
+   "kind": "unexplained",
+   "alerts": [
+    {
+     "t": 62.6,
+     "rule": "long_presence",
+     "roi_box": [
+      366,
+      108,
+      409,
+      285
+     ],
+     "why": "unexplained"
+    }
+   ]
+  },
+  {
+   "seq": "icvl/12/AR-006-12-20151003-01",
+   "tag": "12/AR-006-12-20151003-01.txt",
+   "fps": 15.0,
+   "pid": 4,
+   "kind": "still by labels",
+   "alerts": [
+    {
+     "t": 31.2,
+     "rule": "sustained_presence",
+     "roi_box": [
+      363,
+      100,
+      416,
+      280
+     ],
+     "why": "still by labels"
+    }
+   ]
+  }
+ ]
+}

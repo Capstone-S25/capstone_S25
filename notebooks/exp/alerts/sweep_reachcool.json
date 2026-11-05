@@ -1,0 +1,43 @@
+[
+ {
+  "setting": {
+   "pose_action_cooldown_s": 15.0
+  },
+  "littering": "97.8/96.5",
+  "walkway_throws": "100.0/100.0",
+  "smoking": "50.3/19.8",
+  "walkway_alerts_min": 3.13,
+  "dumping_hit_vs_chance": "27.5 vs 22.1",
+  "dumping_lead": 5.4,
+  "dump_site_alerts_min": 4.67,
+  "dump_site_videos_with_alert_%": 52.5
+ },
+ {
+  "setting": {
+   "pose_action_cooldown_s": 15.0,
+   "reach_cooldown_s": 10.0
+  },
+  "littering": "97.8/96.5",
+  "walkway_throws": "83.3/83.3",
+  "smoking": "49.0/18.9",
+  "walkway_alerts_min": 3.13,
+  "dumping_hit_vs_chance": "27.5 vs 22.0",
+  "dumping_lead": 5.5,
+  "dump_site_alerts_min": 4.51,
+  "dump_site_videos_with_alert_%": 52.5
+ },
+ {
+  "setting": {
+   "pose_action_cooldown_s": 15.0,
+   "reach_cooldown_s": 15.0
+  },
+  "littering": "97.8/96.5",
+  "walkway_throws": "83.3/83.3",
+  "smoking": "48.7/18.4",
+  "walkway_alerts_min": 3.13,
+  "dumping_hit_vs_chance": "27.5 vs 21.8",
+  "dumping_lead": 5.7,
+  "dump_site_alerts_min": 4.43,
+  "dump_site_videos_with_alert_%": 52.5
+ }
+]

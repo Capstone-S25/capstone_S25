@@ -206,8 +206,10 @@ class RuleTests(unittest.TestCase):
             obs(i, [person(1, (10 + 30 * i, 100, 60 + 30 * i, 300))]) for i in range(80)
         ]
         self.assertEqual(run(cfg, crossing)[0], [])
+        # This crossing walks off the frame edge; the edge guard is not what is tested here.
         anywhere = GateConfig(
-            rules=("in_view",), inview_s=5.0, inview_area_h=None, inview_repeat_s=100
+            rules=("in_view",), inview_s=5.0, inview_area_h=None, inview_repeat_s=100,
+            still_border_margin=None,
         )
         self.assertEqual(len(run(anywhere, crossing)[0]), 1)
 

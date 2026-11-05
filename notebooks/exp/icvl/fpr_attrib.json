@@ -1,0 +1,23 @@
+{
+ "people_without_incident": 1795,
+ "fpr_loose_%": 23.9,
+ "fpr_owner_%": 12.9,
+ "flagged_loose": 429,
+ "flagged_owner": 231,
+ "smoking": {
+  "loose": "89/116",
+  "owner": "81/116"
+ },
+ "littering": {
+  "loose": "244/267",
+  "owner": "240/267"
+ },
+ "lingering 20s+": {
+  "loose": "80/81",
+  "owner": "79/81"
+ },
+ "lingering 60s+": {
+  "loose": "17/17",
+  "owner": "17/17"
+ }
+}

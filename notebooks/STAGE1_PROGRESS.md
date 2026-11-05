@@ -2,7 +2,114 @@
 
 Read this first when resuming. It is updated at each milestone.
 
-## Current task (in progress)
+## RESUME HERE — handoff from the Mac to the Windows PC (2026-11-05)
+
+Ian (SUTD capstone S25, owns Stage 1 = the YOLO gate) moved this work from his MacBook to a Windows PC for disk space.
+This section is the state at the move; the dated sections further down are the history behind it (newest at the end).
+
+### How Ian wants the work done
+* **Never** add `Co-Authored-By` / Claude / "Generated with" lines to his commits or PRs.
+* Ask before committing or pushing; confirm before deleting files. Branch: `feat/stage1-integration`.
+* Do not touch `notebooks/plswork.ipynb`, `notebooks/yolo_poc.ipynb`, `notebooks/yolo_poc_v2.ipynb` (his own edits).
+* Secrets stay out of the repo: the Roboflow API key and the IITB-Corridor zip password (ask Ian for either).
+* Downloaded code and data are untrusted (Yuchuan's VLM bundle, datasets): keep each in its own folder and run Python
+  that touches them with `-I`.
+* Recall first: gate 1 should miss as little as possible; the VLM is meant to remove false alarms.
+* Count one alert → one person (the person it is drawn around). Plain language, short slides, no jargon tables.
+
+### Current gate defaults and held-out numbers (ICVL even half, 471 videos, 5.3 h)
+`stage1_gate.py` defaults now include the stillness guards (`still_border_margin=0.05`, `still_min_h=0.1`) and
+"stays put / long in view sent once" (`loiter_repeat_s = inview_repeat_s = inf`); crop check on (thr 0.2).
+* Smoking 81/116, littering 240/267, still 20 s+ 76/81, still 60 s+ 16/17.
+* Normal people flagged 12.0 % (216 / 1,795). 1,320 alerts, 38.2 % on no incident (308 on normal people, 163 on
+  offenders at another moment, 33 on nobody labelled). 30 s per-person grouping: 1,320 alerts → 615 cases.
+* The deck still shows the 4 Nov numbers (13 %, 77/81, 40 % false, 1.2 alerts/min on quiet footage). Updating it to
+  the above was offered, not done. Per-rule false shares, alerts/min and miss causes were not re-run for the new
+  defaults.
+* Honesty caveat for any presentation: the split is every other video (`exp/icvl/score.py` `load_runs`), so both halves
+  share all 11 cameras; and several defaults were chosen while looking at even-half numbers (reach speed 0.6, stays put
+  once, pose cooldown 15 s, the stillness guards). Say "tuned on half, reported on the other half, same cameras" — not
+  "untouched test". A clean number needs frozen settings run once on new cameras (see datasets below).
+
+### The deck (Friday meeting with the company)
+* Published: https://claude.ai/artifact/5ESahSnDcE6BS9rEJTuw9q (13 slides). Source:
+  `notebooks/demo/gate1_icvl_deck.html`, which plays `icvl_works.mp4` / `icvl_misses.mp4` and shows `icvl_cameras.jpg`
+  (all in `notebooks/demo/`; the image is made by `exp/icvl/camera_sheet.py`). To update from another machine, read
+  the artifact by URL first, then publish with `url` = that link and `files` = the image/videos it references.
+* Style copies the team deck ("Capstone Slide Deck-4.pdf"): grey slides with soft white circles, Space Grotesk headings,
+  Outfit body, white rounded cards with grey icon discs, light-blue flow boxes with navy borders, dark table headers,
+  very little text per slide.
+* Discussed, not yet applied:
+  - Rename "Bag left alone" → "Item left alone": it fires on every COCO item class the detector keeps (backpack,
+    handbag, suitcase, umbrella, bottle, cup), not just bags.
+  - Split the rules slide into hand-written rules (reach-down, stays put, long in view, item appeared, item left alone)
+    and learned checks (pose cue, reach-down verifier, crop check). The pose cue is a model, not a rule: a 5-seed
+    ensemble of 1-hidden-layer MLPs (32 units) on 205 features from 8 steps of 1 s of keypoints, trained on the
+    littering clip set's train split (330 Roboflow clips rebuilt by `scripts/rebuild_littering_clips.py`, 5 actions)
+    plus odd-numbered CUHK Avenue training videos as normals; threshold 0.833 ≈ 1 false alarm/min. Never trained on
+    smoking or ICVL; catches smokers through hand-to-face motion.
+  - Compute-cost slide: report GFLOPs + parameters per model (hardware-free), ms/frame p50/p95 on a named CPU with
+    stated threads, cores per camera at 5 fps (~0.9 on one M3 Pro core), split by scene type (pose is skipped when
+    nobody is in view; detector and pose are one whole-frame pass each, so crowd size barely matters; crop check and
+    VLM scale with alerts/min). Offered: pull GFLOPs via `model.info()` and re-time at 1 / 2 / 4 threads.
+    Mac timings will not carry to the PC — re-measure there and name the CPU.
+
+### Datasets agreed next (not downloaded yet)
+Goal: a frozen-settings, never-seen-camera test, plus the two events ICVL lacks (rough sleeping, unattended items).
+* **CHAD** (Charlotte Anomaly Dataset, https://github.com/TeCSAR-UNCC/CHAD): car park, 4 cameras (3 Full HD + 1 HD),
+  412 videos, per-frame boxes / IDs / pose, anomaly classes include Sleeping, Littering, Throwing, Falling. Open,
+  Apache-2.0. `CHAD_Videos.zip` 82 GB, `CHAD_Meta.zip` 246 MB (Google Drive links in the README). Plan: get Meta first,
+  list videos with Sleeping / Littering (+ some normals), then either fetch only those (try HTTP range reads into the
+  zip) or the full zip on the PC.
+* **IITB-Corridor** (https://rodrigues-royston.github.io/Multi-timescale_Trajectory_Prediction): 1080p campus
+  corridor, frame-level labels incl. unattended baggage and loitering. `Train_IITB_Corridor.zip` 9.4 GB,
+  `Test_IITB_Corridor.zip` 5.7 GB, password-protected (Ian has it). "Research purposes only": use as an evaluation set
+  only, never redistribute, cite Rodrigues et al. WACV 2020; Ian may email the author to confirm the capstone use.
+* **PETS 2006 / 2007** left-luggage, train station, 4 cameras (free).
+* No public CCTV rough-sleeping set exists; CHAD "Sleeping" is the closest. Real footage from the company is the only
+  true test.
+
+### VLM (Yuchuan's part) — what was concluded
+* The bundle is a MobileCLIP2-S2 linear classifier per task (not a generative VLM on CPU). As shipped on gate alerts it
+  removes most real catches (smoking 2/116). Fusing [crop score, VLM littering score, reach verifier] on reach-down
+  only keeps recall and gets normal people flagged to ~8–9.5 %. Details: the 2026-11-05 sections below.
+* Advice given: his own benchmarks are fine for choosing a model, but the system number must be end to end on the
+  same held-out ICVL half (`exp/integration/vcal/` already has every gate alert scored); never tune on the even half.
+
+### Still-open offers from earlier
+Per-person case grouping in data-pipeline `CandidateService` (+ re-run the 4-camera test); per-task heads on crop
+embeddings as a demo for Yuchuan; wire the fused reach-down check into the pipeline; change `unattended_items` routing
+for reach / pose alerts; add `open_clip_torch==3.3.0` to the data-pipeline `stage1` extra and `uv lock`.
+
+### Where things are
+* Gate: `notebooks/stage1_gate.py` (+ `stage1_pose_action.py`, `stage1_crop_check.py`); tests `tests/test_stage1.py`
+  (gate 36 pass) and the data-pipeline suite (106 pass) at the move.
+* ICVL scoring: `notebooks/exp/icvl/` (`score.py`, `fpr_attrib.py` = one alert → one person, `guards.py`,
+  `inventory.py`, `camera_sheet.py`). All of them replay the cached perception run
+  `notebooks/bench_cache/models/s/icvl.pkl` — no YOLO needed to re-score.
+* Integration (gate + VLM): `notebooks/exp/integration/` — `run_integration.py` (live-paced cameras),
+  `vlm_cands.py` → `vlm_scores.py` → `vlm_calib.py` / `vlm_policy.py`; scored candidates for both halves in
+  `vcal/{odd,even}/` (jsonl only — the crop jpgs are rebuilt by `vlm_cands.py`); one-off analyses in `analysis/`
+  (run from `notebooks/` with `vcal` as the argument, e.g. `analysis/vlm_fuse.py exp/integration/vcal`).
+* Demo media and figures: `notebooks/demo/`.
+
+### Setting up the Windows PC
+1. Clone `https://github.com/Yc1007942/capstone_S25.git`, `git checkout feat/stage1-integration`.
+2. Python ≥ 3.12 venv at the repo root (`.venv`). Usage lines in the scripts say `../.venv/bin/python`; on Windows
+   that is `..\.venv\Scripts\python` (run from `notebooks\`). Install `requirements/base.txt` (+ `cpu-deployment.txt`
+   for OpenVINO) and the data-pipeline package as needed.
+3. Copy these from the Mac (gitignored, so not in git):
+   * `notebooks/bench_cache/` (2.6 GB) — needed for every ICVL / benchmark re-score.
+   * `data/icvl/` (26 GB) — only to re-run perception or cut new clips / images.
+   * `data/models/` (2 GB): `stage1_ov/` (OpenVINO YOLO), `vlm_ov/` (OpenVINO VLM encoder), `vlm_bundle/`
+     (Yuchuan's bundle, untrusted; `run_integration.py` / `vlm_scores.py` take its folder as `--bundle` / first arg,
+     and need `HF_HUB_CACHE=<bundle>/data/models/huggingface/hub HF_HUB_OFFLINE=1`).
+   * `notebooks/weights/yolo26s_bags.pt` (custom; `*.pt` is gitignored). Stock Ultralytics weights download themselves.
+   * Optional: `data/littering`, `data/loitering` (Avenue), `data/smoking`, `data/meva_annotations` for the other
+     benchmarks; `notebooks/exp/actions/cache` (pose cue training cache); `notebooks/demo/vlm_eval`, `vlm_demo`.
+4. Run `python -m unittest tests.test_stage1` from the repo root to check the setup.
+
+## Earlier task notes (superseded by the section above)
 **Raise Stage 1 recall, keeping false alarms in check.** The user asked to experiment with methods; recall matters most.
 
 * Harness: `notebooks/exp_harness.py`. It scores a candidate generator `method(result, dataset)` from cached detections
@@ -620,3 +727,99 @@ labelled stretches (27 of 40 under 5 s; smokers who smoke 5 s+ in total: 72/80 c
   the data pipeline); if the encoder cannot load, a warning is raised once and alerts pass unchecked. To do: the
   data-pipeline `stage1` extra in `data-pipeline/pyproject.toml` should add open_clip_torch==3.3.0 (needs `uv lock`).
   Replays of cached runs are unaffected unless `stage1_crop_check.SCORES` is filled (no score = alert kept).
+* **How true is the 24 % per-person FPR?** (`exp/icvl/fpr_true.py`, ICVL even, defaults with crop check; 429 of 1795
+  people with no incident flagged). Label checks: 69 people's only alerts were on someone else during a labelled
+  incident (alert mainly on the incident person at the alert time; the "normal" person was inside the padded crop
+  next to them) and 13 were flagged by stays put / long in view while their labelled feet stayed within the rule's
+  radius for 20 s → 347 left (19.3 %; the 24 shared cases where the alert was mainly or equally on the normal person
+  are counted as false). By eye, 40 random of the 323 unexplained (`demo/icvl_fp_review_{0,1}.jpg`, one frame each):
+  30 clearly normal (walking, carrying something low, texting, cycling), 8 waiting / standing around 20 s+ often on
+  the phone (loitering-like; stays put / long in view), 1 unclear, 1 possibly real (item appeared next to a bottle on
+  the ground). Estimate: **~15 % of people with no incident get a genuinely false alert** (95 % CI ~12-17 %), ~4 %
+  are flagged for waiting around, ~1 % unclear. Caveats: 40-person sample, single frames; the same lenient
+  "inside the VLM crop" matching also credits some catches (16 shared alerts were mainly on the normal person).
+* **One alert, one person** (`exp/icvl/fpr_attrib.py`): score.py counts an alert as "on" everyone inside the padded VLM
+  crop, so one alert in a group flags several people, and catches get credit from alerts mainly on a neighbour.
+  Re-scored with each alert owned by the labelled person it mainly covers (both sides), ICVL even, crop check on:
+  people with no incident flagged 23.9 → **12.9 %** (231/1795); littering 244 → 240/267, smoking 89 → 81/116,
+  still 20 s+ 80 → 79/81, 60 s+ 17/17. Of the 198 people no longer counted, 103 stood next to a person with an
+  incident and 95 next to another normal person (who stays counted). By eye, 10 random of the latter
+  (`demo/icvl_owner_check.jpg`): 7 clearly on the owner, 3 two people walking together inside one box → range
+  ~13-15 %. This rule is stricter on catches too, so it can be quoted as a rate.
+  Deck switched to this rule throughout (ICVL even): last week 15.8 % / littering 227 / smoking 84 / still 80;
+  + faster walkers 18.7 % / 240 / 84 / 80; + crop check 12.9 % / 240 / 81 / 79 (60 s+ 17/17); stricter crop check
+  10.9 % / 238 / 81 / 79. Alert level: 876 of 1451 alerts on a labelled incident (40 % false). Misses added by the
+  rule: littering 4, smoking 8, still 1 (alert on the neighbour). Smokers 5 s+ in total: 53/59.
+* **Stillness rules sent once per person** (`loiter_repeat_s`, `inview_repeat_s` = inf; was every 60 s). ICVL even,
+  one alert → one person: alerts 1451 → 1362, stays put + long in view 349 → 243; still 20 s+ 79 → 77/81, 60 s+
+  17 → 16/17, littering / smoking unchanged (240, 81), people flagged 12.9 → 12.8 %; median alerts per caught still
+  20 s+ 3 → 2, 60 s+ 5 → 3.5 (the rest are pose cue / reach-down on people standing around). Tune sets unchanged
+  except smoking clips 51.0 → 50.3. Per visit (any stillness alert on the person): once per person per rule 61/66
+  still 20 s+ people, 14/16 60 s+; one send at 60 s only (long in view) 39/66 and 13/16 → rejected.
+  Hand rules kept their repeats: one send per person lost 11 of 62 smokers, 34 of 237 litterers (the first alert is
+  often before the act); "resend only if the crop score is higher" lost 11 smokers. Their repeats are for the VLM
+  queue to merge (not done).
+
+## 2026-11-05 — YOLO + VLM integration test (CPU, recorded ICVL streams paced as live cameras)
+
+Harness `exp/integration/` (run_integration.py, analyze.py, accuracy.py, ov_worker.py, ov_vlm.py): data-pipeline
+decoder + 5 fps selection → Stage1Detector (gate + crop check) → the pipeline's CandidateService queue → a resident
+VLM worker speaking the pipeline's JSON-lines protocol (Yuchuan's MobileCLIP2-S2 ClipStrategy from his CPU bundle,
+patched in the harness only). Machine: M3 Pro (5 P + 6 E cores), CPU only; target box per the first client meeting is
+an AMD Ryzen AI Max+ 395 (16 Zen 5 cores) and the client's CPU expectation is ~1 s.
+* **OpenVINO** (2026.3.1): YOLO26s + pose exported with Ultralytics (dynamic shape): gate perception 94 → 58 ms per
+  frame, 260 vs 262 people, box IoU 0.993, keypoints within 0.15 % of body height. VLM encoder: one IR per weight
+  blend (alpha 0 / 0.25 / 0.5 / 1, f32), Faster R-CNN per input size (1.3 → 0.85 s per frame, same boxes).
+* **VLM time per candidate** (routed tasks): torch 1.8 s (hand rules) / ~8 s (stillness: Faster R-CNN 5.5 s);
+  all five tasks 40.9 s → OpenVINO 14.2 s (identical decisions on the 130-candidate set) → **OpenVINO + YOLO26s boxes
+  instead of Faster R-CNN 3.4 s** (littering AUC 0.777, smoking 0.505, loitering 0.683 → 0.756). The periodic
+  whole-scene review (all 5 tasks every 10 s by default) cannot run on CPU in real time; off in these tests.
+* **1 camera** (5.7 min): gate 65 ms p50 / 73 p95 per frame, 0.5 % of frames > 0.2 s late (first-frame warm-up);
+  VLM 1.1 s p50; alert → VLM decision 2.5 s p50, 3.7 s max (incl. the ~1.2 s crop-check hold).
+* **4 cameras, one VLM** (11.5 min each, 130 candidates): VLM keeps up (1.2 s p50, queue p95 2.1 s, none dropped)
+  but the gate does not: 132 / 239 ms per frame, 25 % of frames > 0.2 s late, up to 8 s behind; alert → decision
+  3.9 s p50, 10.9 s p95. Gate only: 16 % late (max 1.9 s) as threads; separate processes worse (each OpenVINO
+  instance takes every core). This laptop's CPU is full at 4 cameras × 5 fps.
+* **Accuracy end to end** (4-camera run, one alert → one person): 57 candidates on real incidents, 73 on none.
+  VLM confirmed littering 6/26, loitering 19/24; it called 33 of 73 false candidates an anomaly (~33 operator false
+  alarms per camera-hour on ICVL's dense footage): unattended_items 19 (16 alone; reach / pose alerts are routed to
+  it and ICVL has no unattended items), littering 8, loitering 8, smoking 4. The stricter `dev_fpr_budget` thresholds
+  confirm 0/40 real littering on the 130-candidate set → the classifier's calibration does not transfer to ICVL.
+
+## 2026-11-05 — VLM on every gate alert, ICVL held-out half, end to end
+
+`exp/integration/vlm_cands.py` cuts, for every default-gate alert (cached replay + cached crop-check scores), the same
+crop / context / short + long views Stage1Detector hands the VLM; `vlm_scores.py` runs the VLM (OpenVINO + YOLO boxes)
+on all 2281 (odd 1024, even 1257 after dedup) asking routed tasks + smoking; `vlm_calib.py` / `vlm_policy.py` score
+end to end with one alert → one person, any operator alarm on the person counting (gate-only row reproduces the deck:
+smoking 81/116, littering 240/267, still 20 s+ 77/81, 60 s+ 16/17, 12.8 % of normal people, 102 false alarms per
+camera-hour of ICVL).
+* **VLM as shipped (bundle thresholds, live routing): smoking 2/116, littering 98/267, still 20 s+ 42/81, 60 s+ 9/17,
+  7.2 % of normal people.** It removes most real catches; uniform re-thresholding on the odd half does not fix it.
+* Separation on held-out candidates (AUC): littering 0.79 (gate crop check on the same reach / pose rows 0.93),
+  smoking 0.46 (chance), loitering 0.68. MobileCLIP-as-classifier adds little over the gate on ICVL.
+* **Fusion helps littering:** logistic on [crop score, VLM littering score, reach verifier], fit on odd reach / pose
+  alerts → even AUC 0.965 (crop alone 0.93). Applied to reach-down alerts only (pose cue passes, it is how smokers are
+  caught; stillness passes): keep 98 % → smoking 75, littering 236, 20 s+ 76, 60 s+ 16, **9.5 %** normal people,
+  75 false / camera-hour; keep 95 % → 72 / 231 / 76 / 16, **8.2 %**, 65 / h. Filtering pose or stillness with the
+  VLM too reaches 2–4 % but loses half the smokers and lingerers.
+* Pose every 2nd frame (`pose_every_n=2`, simulated on cache, nearest-frame crop scores): smoking 81 → 79,
+  20 s+ 77 → 75, littering unchanged, 12.6 % normal people. A cheap gate speed lever if a box falls behind.
+
+## 2026-11-05 — Gate false alerts: where the 40 % comes from, person-rule guards
+
+Default gate, ICVL even, one alert → one person: 542 of 1362 alerts false (39.8 %). By rule: reach down 263/758,
+pose cue 134/331, stays put 97/171 (57 %), long in view 36/72. 165 of the 542 are on a person who does have an
+incident, just not at that moment — mostly reach-downs 3–10 s before that person's littering (the run-up: bending,
+reaching into a bag; one alert per person was already shown to lose those catches). False share by at-alert feature:
+stays-put boxes touching an edge 86–94 % false, people under 10–15 % of frame height ~90 %, hand alerts in a track's
+first second ~95 % (partly ICVL's short clips).
+`exp/icvl/guards.py` (new GateConfig fields still_border_margin, still_min_h, reach_min_h, hand_min_age_s,
+pose_border_margin, reach_border_margin; tuned on odd, judged on even, plus exp/alerts/sweep.py on the other sets):
+* **Stillness guards on by default (still_border_margin 0.05, still_min_h 0.1):** false alerts 39.8 → **38.2 %**,
+  normal people 12.8 → **12.0 %**, still 20 s+ 77 → 76 (odd 42 → 43), else unchanged; walkway alerts 3.13 → 2.55 / min,
+  IWDD lead 5.2 → 5.7, littering / throws / smoking clips unchanged. Now: 504 / 1320 false, of which 163 on offenders
+  at another moment and **341 (25.8 % of alerts) on people with no incident or nobody labelled**.
+* Track age ≥ 1 s for hand alerts: ICVL even 36.3 % / 11.0 % (littering −3) but smoking clips 50.6 → 45.9 %,
+  littering clips 97.8 → 96.1 % → off. Wider reach / pose edge margins, reach min height: ≤ 1 point, not adopted.
+* + crop check threshold 0.3: 32.6 % / 8.4 % but littering −4, still 20 s+ −3, 60 s+ 16 → 14, Avenue throws 6 → 5 → off.
