@@ -94,7 +94,7 @@ for reach / pose alerts; add `open_clip_torch==3.3.0` to the data-pipeline `stag
 * Demo media and figures: `notebooks/demo/`.
 
 ### Setting up the Windows PC
-1. Clone `https://github.com/Yc1007942/capstone_S25.git`, `git checkout feat/stage1-integration`.
+1. Clone `https://github.com/Capstone-S25/capstone_S25.git` (moved from Yc1007942/capstone_S25), `git checkout feat/stage1-integration`.
 2. Python ≥ 3.12 venv at the repo root (`.venv`). Usage lines in the scripts say `../.venv/bin/python`; on Windows
    that is `..\.venv\Scripts\python` (run from `notebooks\`). Install `requirements/base.txt` (+ `cpu-deployment.txt`
    for OpenVINO) and the data-pipeline package as needed.
