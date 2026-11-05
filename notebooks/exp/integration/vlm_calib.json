@@ -1,0 +1,420 @@
+{
+ "gate only (every candidate shown)": {
+  "smoking": "81/116",
+  "littering": "240/267",
+  "lingering 20s+": "77/81",
+  "lingering 60s+": "16/17",
+  "fpr_%": 12.8,
+  "false_per_h": 102.2,
+  "alarms_per_h": 256.8
+ },
+ "bundle thresholds, live routing": {
+  "smoking": "2/116",
+  "littering": "98/267",
+  "lingering 20s+": "42/81",
+  "lingering 60s+": "9/17",
+  "fpr_%": 7.2,
+  "false_per_h": 56.2,
+  "alarms_per_h": 164.0
+ },
+ "live, q=0.02": {
+  "odd": {
+   "smoking": "0/45",
+   "littering": "9/254",
+   "lingering 20s+": "4/45",
+   "lingering 60s+": "2/10",
+   "fpr_%": 0.3,
+   "false_per_h": 3.2,
+   "alarms_per_h": 7.9
+  },
+  "even": {
+   "smoking": "0/116",
+   "littering": "14/267",
+   "lingering 20s+": "0/81",
+   "lingering 60s+": "0/17",
+   "fpr_%": 0.4,
+   "false_per_h": 4.0,
+   "alarms_per_h": 8.9
+  }
+ },
+ "live, q=0.05": {
+  "odd": {
+   "smoking": "0/45",
+   "littering": "29/254",
+   "lingering 20s+": "9/45",
+   "lingering 60s+": "3/10",
+   "fpr_%": 1.1,
+   "false_per_h": 7.3,
+   "alarms_per_h": 20.4
+  },
+  "even": {
+   "smoking": "0/116",
+   "littering": "25/267",
+   "lingering 20s+": "7/81",
+   "lingering 60s+": "2/17",
+   "fpr_%": 1.4,
+   "false_per_h": 9.6,
+   "alarms_per_h": 27.5
+  }
+ },
+ "live, q=0.1": {
+  "odd": {
+   "smoking": "0/45",
+   "littering": "52/254",
+   "lingering 20s+": "13/45",
+   "lingering 60s+": "4/10",
+   "fpr_%": 1.9,
+   "false_per_h": 12.7,
+   "alarms_per_h": 34.3
+  },
+  "even": {
+   "smoking": "1/116",
+   "littering": "55/267",
+   "lingering 20s+": "13/81",
+   "lingering 60s+": "3/17",
+   "fpr_%": 2.7,
+   "false_per_h": 18.3,
+   "alarms_per_h": 53.7
+  }
+ },
+ "live, q=0.2": {
+  "odd": {
+   "smoking": "0/45",
+   "littering": "119/254",
+   "lingering 20s+": "16/45",
+   "lingering 60s+": "5/10",
+   "fpr_%": 4.0,
+   "false_per_h": 25.5,
+   "alarms_per_h": 67.1
+  },
+  "even": {
+   "smoking": "2/116",
+   "littering": "107/267",
+   "lingering 20s+": "22/81",
+   "lingering 60s+": "5/17",
+   "fpr_%": 4.9,
+   "false_per_h": 32.4,
+   "alarms_per_h": 90.7
+  }
+ },
+ "live, q=0.3": {
+  "odd": {
+   "smoking": "0/45",
+   "littering": "155/254",
+   "lingering 20s+": "22/45",
+   "lingering 60s+": "5/10",
+   "fpr_%": 5.8,
+   "false_per_h": 37.5,
+   "alarms_per_h": 94.6
+  },
+  "even": {
+   "smoking": "7/116",
+   "littering": "152/267",
+   "lingering 20s+": "26/81",
+   "lingering 60s+": "5/17",
+   "fpr_%": 6.1,
+   "false_per_h": 43.2,
+   "alarms_per_h": 124.4
+  }
+ },
+ "live, no unattended on put-down, q=0.02": {
+  "odd": {
+   "smoking": "0/45",
+   "littering": "9/254",
+   "lingering 20s+": "4/45",
+   "lingering 60s+": "2/10",
+   "fpr_%": 0.3,
+   "false_per_h": 2.6,
+   "alarms_per_h": 6.6
+  },
+  "even": {
+   "smoking": "0/116",
+   "littering": "14/267",
+   "lingering 20s+": "0/81",
+   "lingering 60s+": "0/17",
+   "fpr_%": 0.3,
+   "false_per_h": 3.2,
+   "alarms_per_h": 7.7
+  }
+ },
+ "live, no unattended on put-down, q=0.05": {
+  "odd": {
+   "smoking": "0/45",
+   "littering": "29/254",
+   "lingering 20s+": "9/45",
+   "lingering 60s+": "3/10",
+   "fpr_%": 0.8,
+   "false_per_h": 5.8,
+   "alarms_per_h": 17.4
+  },
+  "even": {
+   "smoking": "0/116",
+   "littering": "25/267",
+   "lingering 20s+": "7/81",
+   "lingering 60s+": "2/17",
+   "fpr_%": 1.2,
+   "false_per_h": 8.1,
+   "alarms_per_h": 23.8
+  }
+ },
+ "live, no unattended on put-down, q=0.1": {
+  "odd": {
+   "smoking": "0/45",
+   "littering": "52/254",
+   "lingering 20s+": "13/45",
+   "lingering 60s+": "4/10",
+   "fpr_%": 1.4,
+   "false_per_h": 9.9,
+   "alarms_per_h": 29.4
+  },
+  "even": {
+   "smoking": "1/116",
+   "littering": "55/267",
+   "lingering 20s+": "13/81",
+   "lingering 60s+": "3/17",
+   "fpr_%": 2.3,
+   "false_per_h": 15.8,
+   "alarms_per_h": 47.5
+  }
+ },
+ "live, no unattended on put-down, q=0.2": {
+  "odd": {
+   "smoking": "0/45",
+   "littering": "119/254",
+   "lingering 20s+": "16/45",
+   "lingering 60s+": "5/10",
+   "fpr_%": 3.0,
+   "false_per_h": 20.2,
+   "alarms_per_h": 58.1
+  },
+  "even": {
+   "smoking": "2/116",
+   "littering": "107/267",
+   "lingering 20s+": "22/81",
+   "lingering 60s+": "5/17",
+   "fpr_%": 4.2,
+   "false_per_h": 26.6,
+   "alarms_per_h": 76.2
+  }
+ },
+ "live, no unattended on put-down, q=0.3": {
+  "odd": {
+   "smoking": "0/45",
+   "littering": "155/254",
+   "lingering 20s+": "22/45",
+   "lingering 60s+": "5/10",
+   "fpr_%": 4.6,
+   "false_per_h": 29.6,
+   "alarms_per_h": 82.1
+  },
+  "even": {
+   "smoking": "7/116",
+   "littering": "152/267",
+   "lingering 20s+": "26/81",
+   "lingering 60s+": "5/17",
+   "fpr_%": 5.2,
+   "false_per_h": 35.6,
+   "alarms_per_h": 99.2
+  }
+ },
+ "+ smoking on pose cue, q=0.02": {
+  "odd": {
+   "smoking": "0/45",
+   "littering": "9/254",
+   "lingering 20s+": "4/45",
+   "lingering 60s+": "2/10",
+   "fpr_%": 0.3,
+   "false_per_h": 3.0,
+   "alarms_per_h": 7.1
+  },
+  "even": {
+   "smoking": "0/116",
+   "littering": "14/267",
+   "lingering 20s+": "0/81",
+   "lingering 60s+": "0/17",
+   "fpr_%": 0.3,
+   "false_per_h": 3.2,
+   "alarms_per_h": 7.7
+  }
+ },
+ "+ smoking on pose cue, q=0.05": {
+  "odd": {
+   "smoking": "0/45",
+   "littering": "29/254",
+   "lingering 20s+": "9/45",
+   "lingering 60s+": "3/10",
+   "fpr_%": 0.9,
+   "false_per_h": 6.4,
+   "alarms_per_h": 18.4
+  },
+  "even": {
+   "smoking": "4/116",
+   "littering": "25/267",
+   "lingering 20s+": "7/81",
+   "lingering 60s+": "2/17",
+   "fpr_%": 1.6,
+   "false_per_h": 10.0,
+   "alarms_per_h": 26.6
+  }
+ },
+ "+ smoking on pose cue, q=0.1": {
+  "odd": {
+   "smoking": "1/45",
+   "littering": "52/254",
+   "lingering 20s+": "13/45",
+   "lingering 60s+": "4/10",
+   "fpr_%": 1.8,
+   "false_per_h": 11.6,
+   "alarms_per_h": 31.5
+  },
+  "even": {
+   "smoking": "10/116",
+   "littering": "55/267",
+   "lingering 20s+": "13/81",
+   "lingering 60s+": "3/17",
+   "fpr_%": 3.1,
+   "false_per_h": 20.4,
+   "alarms_per_h": 54.7
+  }
+ },
+ "+ smoking on pose cue, q=0.2": {
+  "odd": {
+   "smoking": "1/45",
+   "littering": "119/254",
+   "lingering 20s+": "16/45",
+   "lingering 60s+": "5/10",
+   "fpr_%": 3.6,
+   "false_per_h": 23.6,
+   "alarms_per_h": 62.2
+  },
+  "even": {
+   "smoking": "22/116",
+   "littering": "107/267",
+   "lingering 20s+": "22/81",
+   "lingering 60s+": "5/17",
+   "fpr_%": 5.1,
+   "false_per_h": 33.2,
+   "alarms_per_h": 87.9
+  }
+ },
+ "+ smoking on pose cue, q=0.3": {
+  "odd": {
+   "smoking": "2/45",
+   "littering": "155/254",
+   "lingering 20s+": "22/45",
+   "lingering 60s+": "5/10",
+   "fpr_%": 5.3,
+   "false_per_h": 34.7,
+   "alarms_per_h": 88.1
+  },
+  "even": {
+   "smoking": "33/116",
+   "littering": "152/267",
+   "lingering 20s+": "26/81",
+   "lingering 60s+": "5/17",
+   "fpr_%": 6.1,
+   "false_per_h": 43.7,
+   "alarms_per_h": 115.0
+  }
+ },
+ "+ smoking on pose cue, no rough sleeping, q=0.02": {
+  "odd": {
+   "smoking": "0/45",
+   "littering": "9/254",
+   "lingering 20s+": "4/45",
+   "lingering 60s+": "2/10",
+   "fpr_%": 0.3,
+   "false_per_h": 2.4,
+   "alarms_per_h": 6.4
+  },
+  "even": {
+   "smoking": "0/116",
+   "littering": "14/267",
+   "lingering 20s+": "0/81",
+   "lingering 60s+": "0/17",
+   "fpr_%": 0.2,
+   "false_per_h": 2.3,
+   "alarms_per_h": 5.5
+  }
+ },
+ "+ smoking on pose cue, no rough sleeping, q=0.05": {
+  "odd": {
+   "smoking": "0/45",
+   "littering": "29/254",
+   "lingering 20s+": "9/45",
+   "lingering 60s+": "3/10",
+   "fpr_%": 0.9,
+   "false_per_h": 5.8,
+   "alarms_per_h": 17.8
+  },
+  "even": {
+   "smoking": "4/116",
+   "littering": "25/267",
+   "lingering 20s+": "7/81",
+   "lingering 60s+": "2/17",
+   "fpr_%": 0.9,
+   "false_per_h": 6.8,
+   "alarms_per_h": 18.5
+  }
+ },
+ "+ smoking on pose cue, no rough sleeping, q=0.1": {
+  "odd": {
+   "smoking": "1/45",
+   "littering": "52/254",
+   "lingering 20s+": "13/45",
+   "lingering 60s+": "4/10",
+   "fpr_%": 1.7,
+   "false_per_h": 10.9,
+   "alarms_per_h": 30.4
+  },
+  "even": {
+   "smoking": "10/116",
+   "littering": "55/267",
+   "lingering 20s+": "13/81",
+   "lingering 60s+": "3/17",
+   "fpr_%": 2.5,
+   "false_per_h": 16.2,
+   "alarms_per_h": 45.1
+  }
+ },
+ "+ smoking on pose cue, no rough sleeping, q=0.2": {
+  "odd": {
+   "smoking": "1/45",
+   "littering": "119/254",
+   "lingering 20s+": "16/45",
+   "lingering 60s+": "5/10",
+   "fpr_%": 3.4,
+   "false_per_h": 22.1,
+   "alarms_per_h": 60.0
+  },
+  "even": {
+   "smoking": "22/116",
+   "littering": "107/267",
+   "lingering 20s+": "22/81",
+   "lingering 60s+": "5/17",
+   "fpr_%": 4.3,
+   "false_per_h": 27.3,
+   "alarms_per_h": 76.7
+  }
+ },
+ "+ smoking on pose cue, no rough sleeping, q=0.3": {
+  "odd": {
+   "smoking": "2/45",
+   "littering": "155/254",
+   "lingering 20s+": "22/45",
+   "lingering 60s+": "5/10",
+   "fpr_%": 4.8,
+   "false_per_h": 32.2,
+   "alarms_per_h": 84.1
+  },
+  "even": {
+   "smoking": "33/116",
+   "littering": "152/267",
+   "lingering 20s+": "26/81",
+   "lingering 60s+": "5/17",
+   "fpr_%": 5.6,
+   "false_per_h": 37.7,
+   "alarms_per_h": 103.9
+  }
+ }
+}

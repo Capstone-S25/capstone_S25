@@ -71,7 +71,9 @@ class GateConfig:
     loiter_s: float = 20.0
     loiter_radius_h: float = 0.6
     loiter_release_h: float = 0.9
-    loiter_repeat_s: float = 60.0       # re-send while the person stays (e.g. starts smoking later); 30 s cost
+    loiter_repeat_s: float = float("inf")   # re-send while the person stays; inf = once per person. 60 s re-sends
+                                            # (with inview_repeat_s): ICVL even 243 -> 349 stillness alerts for 2 more
+                                            # of 81 still-20 s+ and 1 more of 17 still-60 s+ incidents
                                         # 10% more walkway alerts for no gain (exp/newcam/alert_budget.py)
 
     # In view for a long time (wandering / pacing), moving or not. Should exceed how long people normally take
@@ -79,7 +81,7 @@ class GateConfig:
     # (stitch_max_gap_s) do not restart the timer.
     inview_s: float = 120.0
     inview_area_h: float | None = 4.0   # only if they stayed within this many body heights of one area (None = anywhere)
-    inview_repeat_s: float = 60.0
+    inview_repeat_s: float = float("inf")   # once per person (was every 60 s; see loiter_repeat_s)
 
     speed_h_per_s: float = 1.2
     speed_window_s: float = 0.6
@@ -95,6 +97,20 @@ class GateConfig:
     reach_window_s: float = 0.6         # ... within this window (stretched to 2 frames at low fps)
     pose_min_h_px: float = 0.0          # pose rules skip people smaller than this (0 = off; tested 40-60 px, no gain)
     reach_skip_border: bool = True      # skip people cut off by the frame edge (their keypoints are unreliable)
+    reach_border_margin: float = 0.01   # ... within this share of the frame of an edge
+    # Person-rule guards (None = off), all at the alerting frame. border: skip people whose box is within this share of
+    # the frame of an edge (partly out of view); min_h: skip people shorter than this share of the frame height;
+    # min_age_s: the person must have been tracked this long (a box just entering or a fresh track jumps).
+    # ICVL even (held out): stays-put alerts touching an edge were 86-94 % false, people under 10 % of the frame 90 %.
+    # Stillness guards 0.05 / 0.1: false alerts 39.8 -> 38.2 %, normal people flagged 12.8 -> 12.0 %, still 20 s+
+    # 77 -> 76 / 81 (odd half 42 -> 43); walkway alerts 3.13 -> 2.55 / min, littering / throws / smoking clips unchanged.
+    still_border_margin: float | None = 0.05   # stays put / long in view
+    still_min_h: float | None = 0.1
+    reach_min_h: float | None = None           # reach down and pose cue
+    # 1 s: ICVL even false alerts -> 36.3 %, flagged 11.0 %, but smoking clips 50.6 -> 45.9 % and littering clips
+    # 97.8 -> 96.1 % (alerts early in short clips) -> off.
+    hand_min_age_s: float | None = None        # reach down and pose cue
+    pose_border_margin: float | None = None    # pose cue
     reach_kp_conf: float = 0.5          # keypoint confidence needed for the wrist and knee (0.3 let walkers through)
     reach_bend_ratio: float | None = None  # also require bending: box height <= this x the person's usual height
     reach_hand_pad_h: float | None = 0.25  # crop = person box + a square of this x body height around the low wrist,
@@ -969,6 +985,16 @@ class RuleEngine:
             **extra,
         }
 
+    @staticmethod
+    def _guard_ok(st, p, obs, min_h, border, min_age_s) -> bool:
+        """The person-rule guards (GateConfig still_* / reach_min_h / hand_min_age_s / pose_border_margin)."""
+        b = p["box"]
+        if min_h is not None and b[3] - b[1] < min_h * obs.frame_hw[0]:
+            return False
+        if border is not None and touches_border(b, obs.frame_hw, border):
+            return False
+        return min_age_s is None or obs.t - st["first_t"] >= min_age_s
+
     def _loiter(self, cid, st, p, obs):
         cfg, t = self.cfg, obs.t
         pts = [h for h in st["hist"] if h[0] >= t - cfg.loiter_s]
@@ -981,7 +1007,8 @@ class RuleEngine:
         radius = float(np.max(np.hypot(*(xy - xy.mean(axis=0)).T))) / float(np.median([h[3] for h in pts]))
         if radius >= cfg.loiter_release_h:
             st["loiter_flagged"] = None
-        if radius < cfg.loiter_radius_h and (st["loiter_flagged"] is None or t - st["loiter_flagged"] >= cfg.loiter_repeat_s):
+        if radius < cfg.loiter_radius_h and (st["loiter_flagged"] is None or t - st["loiter_flagged"] >= cfg.loiter_repeat_s) \
+                and self._guard_ok(st, p, obs, cfg.still_min_h, cfg.still_border_margin, None):
             st["loiter_flagged"] = t
             return [self._event("sustained_presence", f"person{cid}", obs, p["box"],
                                 evidence_window_s=[round(t - cfg.loiter_s, 2), round(t, 2)],
@@ -1040,7 +1067,9 @@ class RuleEngine:
             usual = float(np.percentile([q[3] for q in st["hist"]], 75))
             if len(st["hist"]) < 3 or h > cfg.reach_bend_ratio * usual:
                 return []
-        if h < cfg.pose_min_h_px or (cfg.reach_skip_border and touches_border(p["box"], obs.frame_hw)):
+        if h < cfg.pose_min_h_px or (cfg.reach_skip_border and touches_border(p["box"], obs.frame_hw, cfg.reach_border_margin)):
+            return []
+        if not self._guard_ok(st, p, obs, cfg.reach_min_h, None, cfg.hand_min_age_s):
             return []
         v = None  # foot speed in body heights / s over the last reach_speed_window_s (None = track too short)
         pts = [q for q in st["hist"] if q[0] >= t - cfg.reach_speed_window_s and q[5] == p["raw_id"]]
@@ -1101,6 +1130,10 @@ class RuleEngine:
         probs = pa["model"].predict(np.stack([w["sum"] for w in ws]))
         for w, prob in zip(ws, probs):
             rid = w["raw_id"]
+            st = self.people.get(cid_of[rid])
+            if st is not None and not self._guard_ok(st, {"box": w["box"]}, obs, self.cfg.reach_min_h,
+                                                     self.cfg.pose_border_margin, self.cfg.hand_min_age_s):
+                continue
             if prob >= pa["thr"] and obs.t - pa["last"].get(rid, -1e9) >= self.cfg.pose_action_cooldown_s:
                 pa["last"][rid] = obs.t
                 out.append(self._event("pose_action", f"person{cid_of[rid]}", obs, w["box"], score=round(float(prob), 3)))
@@ -1117,6 +1150,8 @@ class RuleEngine:
         if t - st["first_t"] < cfg.inview_s:
             return []
         if st["last_inview"] is not None and t - st["last_inview"] < cfg.inview_repeat_s:
+            return []
+        if not self._guard_ok(st, p, obs, cfg.still_min_h, cfg.still_border_margin, None):
             return []
         metrics = {"time_in_view_s": round(t - st["first_t"], 1)}
         if cfg.inview_area_h is not None:

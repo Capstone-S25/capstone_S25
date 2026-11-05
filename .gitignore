@@ -80,3 +80,7 @@ notebooks/exp/**/*_sheets/
 /reports/evaluation*/
 /reports/**/previews/
 /reports/**/logs/
+
+# Large generated VLM review media (copy by drive if needed)
+notebooks/demo/vlm_eval/
+notebooks/demo/vlm_demo/
