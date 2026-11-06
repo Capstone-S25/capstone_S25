@@ -1,5 +1,6 @@
 import sys, numpy as np
-sys.path.insert(0, "/Users/ianvarella/capstone_S25/notebooks"); sys.path.insert(0, ".")
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1])); sys.path.insert(0, str(Path(__file__).resolve().parent))
 exec(open("combo_eval.py").read().split("combos = {")[0])
 from exp_harness import SPLITS
 for name, m in [("baseline", baseline), ("act(A)", LA_A), ("motion", MOT), ("crop", CROP), ("dwell(A_lean)", SD_A), ("poseanom(A)", PA_A)]:

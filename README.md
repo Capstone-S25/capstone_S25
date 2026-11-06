@@ -24,6 +24,9 @@ evidence confirmation** workflow. See [Stage 1 integration](docs/stage1_reasonin
 for direct-video/database commands, periodic scene review, model choices and
 the distinction between historical ranking quality and continuous event quality.
 
+The Stage 1 YOLO gate itself (rules, pose cue, crop check, ICVL results and demo) is documented in
+[notebooks/README.md](notebooks/README.md).
+
 ```bash
 # Inspect sources/licenses and the complete acquisition plan.
 python -m anomaly_eval fetch-all --list

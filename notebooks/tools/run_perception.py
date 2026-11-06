@@ -1,11 +1,12 @@
 import pickle
 import sys
 
-sys.path.insert(0, "/Users/ianvarella/capstone_S25/notebooks")
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from stage1_bench import avenue_sequences, littering_sequences, run_perception  # noqa: E402
 from stage1_gate import GateConfig, Stage1Gate  # noqa: E402
 
-D = "/Users/ianvarella/capstone_S25/data"
+D = str(Path(__file__).resolve().parents[1].parent / "data")
 OUT = sys.argv[1]
 which = sys.argv[2]
 if which == "litter":

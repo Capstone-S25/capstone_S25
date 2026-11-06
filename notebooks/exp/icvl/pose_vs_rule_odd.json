@@ -1,0 +1,96 @@
+{
+ "half": "odd",
+ "pose cue (default)": {
+  "smoking": "26/45",
+  "littering": "235/254",
+  "in view 60s+": "38/41",
+  "normal_flagged": "9.6 %",
+  "alerts_per_min": 3.13,
+  "pose_or_hand_alerts": 174
+ },
+ "neither": {
+  "smoking": "21/45",
+  "littering": "235/254",
+  "in view 60s+": "38/41",
+  "normal_flagged": "7.5 %",
+  "alerts_per_min": 2.61,
+  "pose_or_hand_alerts": 0
+ },
+ "hand-to-face rule": {
+  "smoking": "31/45",
+  "littering": "238/254",
+  "in view 60s+": "41/41",
+  "normal_flagged": "26.0 %",
+  "alerts_per_min": 4.52,
+  "pose_or_hand_alerts": 0
+ },
+ "hand-to-face, 1 hit": {
+  "smoking": "33/45",
+  "littering": "237/254",
+  "in view 60s+": "40/41",
+  "normal_flagged": "32.4 %",
+  "alerts_per_min": 5.13,
+  "pose_or_hand_alerts": 0
+ },
+ "hand-to-face, 0.15 h, 3 hits": {
+  "smoking": "33/45",
+  "littering": "237/254",
+  "in view 60s+": "40/41",
+  "normal_flagged": "16.7 %",
+  "alerts_per_min": 3.73,
+  "pose_or_hand_alerts": 0
+ },
+ "pose cue + hand-to-face": {
+  "smoking": "34/45",
+  "littering": "238/254",
+  "in view 60s+": "41/41",
+  "normal_flagged": "27.4 %",
+  "alerts_per_min": 4.96,
+  "pose_or_hand_alerts": 151
+ },
+ "hand-to-face, 0.12 h, 3 hits": {
+  "smoking": "31/45",
+  "littering": "237/254",
+  "in view 60s+": "40/41",
+  "normal_flagged": "13.2 %",
+  "alerts_per_min": 3.43,
+  "pose_or_hand_alerts": 0
+ },
+ "hand-to-face, 0.12 h, 4 hits": {
+  "smoking": "29/45",
+  "littering": "235/254",
+  "in view 60s+": "39/41",
+  "normal_flagged": "12.4 %",
+  "alerts_per_min": 3.31,
+  "pose_or_hand_alerts": 0
+ },
+ "hand-to-face, 0.1 h, 3 hits": {
+  "smoking": "25/45",
+  "littering": "235/254",
+  "in view 60s+": "39/41",
+  "normal_flagged": "11.8 %",
+  "alerts_per_min": 3.24,
+  "pose_or_hand_alerts": 0
+ },
+ "hand-to-face, 0.1 h, 4 hits": {
+  "smoking": "23/45",
+  "littering": "235/254",
+  "in view 60s+": "39/41",
+  "normal_flagged": "10.8 %",
+  "alerts_per_min": 3.14,
+  "pose_or_hand_alerts": 0
+ },
+ "hand-to-face, 0.08 h, 3 hits": {
+  "smoking": "22/45",
+  "littering": "235/254",
+  "in view 60s+": "38/41",
+  "normal_flagged": "9.4 %",
+  "alerts_per_min": 2.95,
+  "pose_or_hand_alerts": 0
+ },
+ "caught only by the pose cue (default)": {
+  "littering": 3,
+  "smoking": 6,
+  "in view 20s+": 5
+ }
+}

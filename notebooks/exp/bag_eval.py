@@ -1,7 +1,8 @@
 import sys
 from collections import Counter
 from functools import partial
-sys.path.insert(0, "/Users/ianvarella/capstone_S25/notebooks"); sys.path.insert(0, "/Users/ianvarella/capstone_S25/notebooks/exp")
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1])); sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "exp"))
 from exp_harness import SPLITS, baseline, score
 from stage1_gate import GateConfig, calibrate_inview
 cfg = GateConfig(inview_s=calibrate_inview([r for _, r in SPLITS["normal"]]))

@@ -36,7 +36,8 @@ from collections import deque
 
 import numpy as np
 
-NB = "/Users/ianvarella/capstone_S25/notebooks"
+from pathlib import Path
+NB = str(Path(__file__).resolve().parents[1])
 if NB not in sys.path:
     sys.path.insert(0, NB)
 

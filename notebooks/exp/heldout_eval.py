@@ -1,7 +1,8 @@
 """ONE-TIME held-out measurement (STAGE1_HELDOUT=1). Thresholds were fixed on the tune half beforehand."""
 import os, sys, json
 os.environ["STAGE1_HELDOUT"] = "1"
-sys.path.insert(0, "/Users/ianvarella/capstone_S25/notebooks"); sys.path.insert(0, ".")
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1])); sys.path.insert(0, str(Path(__file__).resolve().parent))
 import numpy as np, pandas as pd
 from exp_harness import SPLITS, score, combine, baseline, dedup, make_event, load_splits
 import motion_anomaly, littering_act

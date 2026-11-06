@@ -20,7 +20,7 @@ TL_Y = VH + 70
 SKELETON = [(5, 7), (7, 9), (6, 8), (8, 10), (5, 6), (5, 11), (6, 12), (11, 12), (11, 13), (13, 15), (12, 14), (14, 16)]
 FONT = cv2.FONT_HERSHEY_SIMPLEX
 
-LABELS = [("reach_down", "reached to the ground"), ("littering_act", "arm out / hand low"), ("fast", "moving fast"),
+LABELS = [("reach_down", "hand dropped low"), ("littering_act", "arm out / hand low"), ("fast", "moving fast"),
           ("dens", "unusual for this spot"), ("sustained", "stayed in one area"), ("unattended", "bag left alone"),
           ("neighbour_", "person next to the action"), ("context_", "person next to the action")]
 
@@ -57,10 +57,11 @@ def merged(windows):
 
 
 def render_sequence(writer, g, res, events, title: str, subtitle: str, cfg: GateConfig, hold_s: float = 1.2,
-                    repeat_frames: int = 1, labels=None, window=None, label_prefix="True anomaly: "):
+                    repeat_frames: int = 1, labels=None, window=None, label_prefix="True anomaly: ", stride: int = 1):
     """labels: list of (t0, t1, text) describing the labelled anomalies, shown while they happen (and drawn on the
     red timeline row when the sequence has no frame-level ground truth). window: (t0, t1) seconds to render; the
-    tracker and rules still see every earlier frame. Frames are streamed, so long or 1080p videos fit in memory."""
+    tracker and rules still see every earlier frame. Frames are streamed, so long or 1080p videos fit in memory.
+    stride: write only every stride-th frame of the window (plays that many times faster)."""
     obs = res.observations
     t0, t1 = obs[0].t, obs[-1].t + 1.0 / res.fps
     if window:
@@ -74,6 +75,7 @@ def render_sequence(writer, g, res, events, title: str, subtitle: str, cfg: Gate
     queue = []
     by_time = sorted(events, key=lambda e: e["timestamp_s"])
     k = 0
+    n_shown = -1
     frames = iter(g.seq)
     fr = None
     for o in obs:
@@ -161,6 +163,9 @@ def render_sequence(writer, g, res, events, title: str, subtitle: str, cfg: Gate
         text(canvas, f"{o.t - t0:5.1f}s / {span:.1f}s", (x1b - 150, TL_Y - 8), 0.55)
         text(canvas, "thin red box = labelled anomaly, orange = sent to VLM", (PANEL_X, TL_Y + 10), 0.45, (90, 90, 255), 1)
         text(canvas, f"VLM sees {100 * forwarded:.0f}% of this video", (PANEL_X, TL_Y + 40), 0.6, (255, 255, 255), 1)
+        n_shown += 1
+        if n_shown % stride:
+            continue
         for _ in range(repeat_frames):
             writer.write(canvas)
 

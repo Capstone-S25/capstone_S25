@@ -1,7 +1,8 @@
 """Rate-matched random control for littering clips: same number of candidates per clip at the same times,
 each on a random person visible in that frame. Lift = method crop recall - control crop recall."""
 import sys, random
-sys.path.insert(0, "/Users/ianvarella/capstone_S25/notebooks"); sys.path.insert(0, ".")
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1])); sys.path.insert(0, str(Path(__file__).resolve().parent))
 import numpy as np
 from exp_harness import SPLITS, baseline, make_event
 from stage1_bench import evaluate_run, summarize

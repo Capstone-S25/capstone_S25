@@ -1,0 +1,21 @@
+{
+ "half": "even",
+ "smoking": "81/116",
+ "littering": "240/267",
+ "lingering 20s+": "76/81",
+ "lingering 60s+": "16/17",
+ "in view 20s+": {
+  "incidents": 219,
+  "any_rule": 133,
+  "dwell_rules": 106,
+  "never_still_20s": 153
+ },
+ "in view 60s+": {
+  "incidents": 70,
+  "any_rule": 66,
+  "dwell_rules": 60,
+  "never_still_20s": 29
+ },
+ "normal_flagged_old": "216/1795 (12.0 %)",
+ "normal_flagged_new": "171/1669 (10.2 %)"
+}

@@ -57,7 +57,7 @@ def load_gate() -> ModuleType:
 
 
 def default_config(gate: ModuleType, device: str = "cpu"):
-    """The Stage 1 settings chosen in notebooks/STAGE1_PROGRESS.md."""
+    """The Stage 1 settings chosen in the notebooks/ experiments (see notebooks/README.md)."""
     return gate.GateConfig(
         det_weights=str(
             Path(

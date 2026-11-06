@@ -1,6 +1,6 @@
 """Who dumps, in IWDD train videos: raw track ids read off actor_sheets/sheet_NN.jpg (iwdd_actor_sheets.py).
 
-Reviewed by eye on 2026-11-03 (Claude, for Ian). Per video: the track id(s) of the dumper in [onset - 1 s, onset + 5 s].
+Reviewed from the contact sheets on 2026-11-03. Per video: the track id(s) of the dumper in [onset - 1 s, onset + 5 s].
 EX = ambiguous (crowd, two people handling the same item, or a "person" box that is the rubbish itself);
 NT = dumper never tracked; "only" = every tracked id near the onset is the dumper (box label hidden on the sheet).
 Ids outside [onset - 1, onset + 5] are dropped with a warning. Test videos were not reviewed.

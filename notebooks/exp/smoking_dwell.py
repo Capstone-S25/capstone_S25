@@ -27,7 +27,8 @@ import math
 import sys
 from collections import deque
 
-sys.path.insert(0, "/Users/ianvarella/capstone_S25/notebooks")
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import numpy as np  # noqa: E402
 

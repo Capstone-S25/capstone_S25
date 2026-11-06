@@ -1,0 +1,22 @@
+{
+ "stays upright, standing still": {
+  "incidents": 222,
+  "caught": 207,
+  "by_rule": {
+   "reach_down": 200,
+   "pose_action": 8,
+   "object_appeared": 15
+  },
+  "caught_%": 93
+ },
+ "stays upright, walking": {
+  "incidents": 45,
+  "caught": 33,
+  "by_rule": {
+   "reach_down": 31,
+   "pose_action": 1,
+   "object_appeared": 3
+  },
+  "caught_%": 73
+ }
+}
