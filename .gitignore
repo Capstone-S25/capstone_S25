@@ -84,3 +84,17 @@ notebooks/exp/**/*_sheets/
 # Large generated VLM review media (copy by drive if needed)
 notebooks/demo/vlm_eval/
 notebooks/demo/vlm_demo/
+
+# Local working notes and assistant instructions (kept on disk, not published)
+/CLAUDE.md
+notebooks/STAGE1_PROGRESS.md
+notebooks/demo/gate1_icvl_deck.html
+notebooks/exp/explorer_results.json
+notebooks/exp/review_results.json
+notebooks/exp/gt_review/review_raw.json
+notebooks/exp/actions/action_results.json
+notebooks/exp/actions/pose_seq_review.json
+
+# Demo videos are rebuilt by notebooks/tools/make_*.py; only the current one is published
+notebooks/demo/*.mp4
+!notebooks/demo/icvl_activities.mp4

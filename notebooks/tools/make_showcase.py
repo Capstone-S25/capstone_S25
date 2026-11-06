@@ -5,7 +5,7 @@ not used for tuning.
   demo/stage1_misses.mp4  typical misses, each preceded by a card saying why Stage 1 misses it
 
 Usage (from notebooks/): ../.venv/bin/python tools/make_showcase.py [works|misses]   (default: both)
-Clips are picked for illustration; the benchmark numbers are in STAGE1_PROGRESS.md.
+Clips are picked for illustration; the benchmark numbers are in README.md.
 """
 import pickle
 import sys

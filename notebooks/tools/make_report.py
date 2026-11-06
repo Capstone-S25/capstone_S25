@@ -1,7 +1,7 @@
 """Generates notebooks/yolo_poc_v3.ipynb (Stage 1 progress report).
 
 Usage (from notebooks/):  ../.venv/bin/python tools/make_report.py yolo_poc_v3.ipynb
-Then execute it with nbclient (see STAGE1_PROGRESS.md).
+Then execute it with nbclient.
 """
 import json
 import sys

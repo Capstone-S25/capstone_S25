@@ -31,7 +31,8 @@ from collections import deque
 
 import numpy as np
 
-sys.path.insert(0, "/Users/ianvarella/capstone_S25/notebooks")
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from exp_harness import BASE_CFG, make_event  # noqa: E402
 from stage1_gate import TrackStitcher, replay_rules  # noqa: E402

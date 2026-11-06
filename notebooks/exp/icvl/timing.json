@@ -1,0 +1,42 @@
+{
+ "machine": "Apple M3 Pro",
+ "videos": 20,
+ "frames": 11932,
+ "fps": 5.0,
+ "share_of_frames_with_pose": 0.856,
+ "ms": {
+  "YOLO26s detector (per frame)": [
+   36.14,
+   42.1
+  ],
+  "ByteTrack + bookkeeping (per frame)": [
+   0.67,
+   1.2
+  ],
+  "YOLO26s-pose (per frame it runs)": [
+   38.84,
+   44.5
+  ],
+  "YOLO26s-pose (averaged over all frames)": [
+   33.23,
+   null
+  ],
+  "Rules incl. pose cue + reach verifier (per frame)": [
+   0.138,
+   null
+  ],
+  "Pose cue alone (per frame)": [
+   0.039,
+   null
+  ],
+  "Crop check (per crop; 3 per alert)": [
+   464.32,
+   496.8
+  ],
+  "Gate total (per frame, no crop check)": [
+   70.05,
+   86.1
+  ]
+ },
+ "note": "[mean, p95] ms; OpenVINO models, default threads; crop check is torch open_clip on the CPU."
+}

@@ -2,10 +2,11 @@
 
   demo/icvl_works.mp4    littering (reach-down, pose cue, item appeared), smoking and lingering caught
   demo/icvl_misses.mp4   typical misses and false alerts, each preceded by a card saying why
+  demo/icvl_activities.mp4  one caught example per activity (casual littering, dumping, smoking, loitering), today's gate
 
 The thin red box is the ICVL-labelled person during the labelled event. Clips come from the even half of ICVL (never
 used for tuning) except the lingering tracking miss. Picked from exp/icvl/examples.json and the miss analysis.
-Usage (from notebooks/): ../.venv/bin/python tools/make_icvl_showcase.py [works|misses]   (default: both)
+Usage (from notebooks/): ../.venv/bin/python tools/make_icvl_showcase.py [works|misses|activities]   (default: works, misses)
 """
 import sys
 from bisect import bisect_left
@@ -67,6 +68,61 @@ def works():
     print("wrote", OUT / "icvl_works.mp4")
 
 
+class Counted:
+    """VideoWriter wrapper that counts frames, so chapter times can be printed for the slide."""
+    def __init__(self, w):
+        self.w, self.n = w, 0
+
+    def write(self, img):
+        self.w.write(img)
+        self.n += 1
+
+    def release(self):
+        self.w.release()
+
+
+def activities():
+    """One caught example per activity with today's gate (crop check on, cached scores): casual littering, dumping,
+    smoking, loitering (in view 60 s+). Picked from exp/icvl/demo_picks.py, even half."""
+    from fpr_attrib import CFG as NOW   # current defaults + pose cue; loads the cached crop-check scores
+    w = Counted(open_writer(OUT / "icvl_activities.mp4", FPS))
+    chapters = []
+
+    def part(heading, lines, seq, pid, t0, t1, what, title, **kw):
+        chapters.append((w.n / FPS, heading))   # no title card: each clip's own title bar names it
+        g, r = RUNS[f"icvl/{seq}"]
+        _, people = labels_for(g.tag, g.seq.native_fps)
+        tr = people[pid]
+        g.gt = {}
+        for o in r.observations:
+            if t0 - 0.2 <= o.t <= t1 + 0.2:
+                k = min(bisect_left(tr["ts"], o.t), len(tr["ts"]) - 1)
+                g.gt[o.index] = [tr["boxes"][k]]
+        before, after = kw.pop("before", 5.0), kw.pop("after", 4.0)
+        render_sequence(w, g, r, replay_rules(r, NOW)[0], title, f"{seq}  |  {NOTE}", NOW,
+                        window=(max(0.0, t0 - before), t1 + after), labels=[(t0, t1, what)],
+                        label_prefix="Labelled: ", **kw)
+
+    part("Littering, casual: dropped while walking", ["He lets the bag fall without stopping or bending.",
+                                                      "Reach-down: the hand comes down near knee height"],
+         "05/AA_122_05_20170831_01", 2, 5.9, 6.7, "littering", "Casual littering: reach-down", repeat_frames=2)
+    part("Littering, dumping: stops and puts it down", ["He walks up, bends and adds his bag to the pile.",
+                                                        "Reach-down: one alert, as he bends"],
+         "03/AA_123_03_20170901_01", 1, 13.2, 15.3, "littering", "Dumping: caught by reach-down", repeat_frames=2)
+    part("Smoking", ["Both men are smoking. The pose cue fires on each one's hand-to-mouth motion;",
+                     "the VLM decides if it is a cigarette  (slowed down)"],
+         "10/AR-001-10-20151003-01", 1, 27.0, 31.0, "smoking", "Smoking: both caught, pose cue",
+         before=1.0, after=1.0, repeat_frames=3)
+    part("Loitering: in view 60 s+", ["Long in view: the same person has been around one area for 60 s,",
+                                      "moving or not  (4x speed)"],
+         "07/AR-001-07-20151003-01", 1, 19.7, 85.0, "in view", "Loitering: caught by long in view",
+         before=1, after=6, stride=2, hold_s=6.0)
+    w.release()
+    print("wrote", OUT / "icvl_activities.mp4", f"{w.n / FPS:.0f} s")
+    for t, h in chapters:
+        print(f"{int(t // 60)}:{int(t % 60):02d}  {h}")
+
+
 def misses():
     w = open_writer(OUT / "icvl_misses.mp4", FPS)
     card(w, "Stage 1 on real CCTV: misses and false alerts", ["Each clip is a labelled event Stage 1 did not send,",
@@ -109,4 +165,4 @@ def misses():
 
 if __name__ == "__main__":
     for job in sys.argv[1:] or ("works", "misses"):
-        {"works": works, "misses": misses}[job]()
+        {"works": works, "misses": misses, "activities": activities}[job]()

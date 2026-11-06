@@ -1,0 +1,40 @@
+{
+ "half": "even",
+ "events": {
+  "littering": {
+   "incidents": 267,
+   "caught": 240,
+   "caught_%": 90,
+   "median_s_to_alert": 0.3
+  },
+  "littering: dropped while walking": {
+   "incidents": 45,
+   "caught": 33,
+   "caught_%": 73,
+   "median_s_to_alert": 0.0
+  },
+  "littering: put down standing still": {
+   "incidents": 222,
+   "caught": 207,
+   "caught_%": 93,
+   "median_s_to_alert": 0.4
+  },
+  "loitering: in view 60 s+": {
+   "incidents": 70,
+   "caught": 66,
+   "caught_%": 94,
+   "median_s_to_alert": 13.3
+  },
+  "smoking": {
+   "incidents": 116,
+   "caught": 81,
+   "caught_%": 70,
+   "median_s_to_alert": 3.7
+  }
+ },
+ "normal_flagged": "223/1801 (12.4 %)",
+ "alerts_on_an_incident": "923/1320 (70 %)",
+ "alerts_per_min": 4.15,
+ "alerts_per_min_no_incident_footage": 0.92,
+ "no_incident_minutes": 115.8
+}

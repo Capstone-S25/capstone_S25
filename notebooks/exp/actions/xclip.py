@@ -30,7 +30,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-NB = Path("/Users/ianvarella/capstone_S25/notebooks")
+NB = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(NB), str(NB / "exp"), str(NB / "tools")]
 
 from exp_harness import make_event  # noqa: E402

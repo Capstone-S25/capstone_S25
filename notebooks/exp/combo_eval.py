@@ -1,5 +1,6 @@
 import sys, importlib, json
-sys.path.insert(0, "/Users/ianvarella/capstone_S25/notebooks"); sys.path.insert(0, "/Users/ianvarella/capstone_S25/notebooks/exp")
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1])); sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "exp"))
 import pandas as pd
 from exp_harness import score, combine, baseline, dedup, per_action
 pd.set_option("display.width", 250); pd.set_option("display.max_columns", 30)

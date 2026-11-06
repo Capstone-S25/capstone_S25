@@ -13,7 +13,8 @@ import sys
 import cv2
 import numpy as np
 
-sys.path.insert(0, "/Users/ianvarella/capstone_S25/notebooks")
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from stage1_bench import box_hit  # noqa: E402
 from stage1_gate import expand_box  # noqa: E402
 
@@ -125,7 +126,7 @@ def score(litter, avenue, p):
 if __name__ == "__main__":
     S = sys.argv[1]
     litter_tune = load_litter(f"{S}/litter_clips_train.pkl")
-    avenue = load_avenue_normal("/Users/ianvarella/capstone_S25/notebooks/bench_cache/avenue.pkl")
+    avenue = load_avenue_normal(str(Path(__file__).resolve().parents[1] / "bench_cache" / "avenue.pkl"))
     print("tuning clips", len(litter_tune), "| avenue normal 3s windows", len(avenue), flush=True)
     base = {"diff_thr": 25, "steady_thr": 10, "stable_s": 0.5, "grow": 0.25, "min_area": 2e-4, "max_area": 0.02,
             "owner_s": 2.0, "owner_h": 1.0}

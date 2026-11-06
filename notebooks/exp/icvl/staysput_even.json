@@ -1,0 +1,26 @@
+{
+ "half": "even",
+ "default": {
+  "smoking": "81/116",
+  "littering": "240/267",
+  "in view 20s+": "133/219",
+  "in view 60s+": "66/70",
+  "normal_flagged": "171/1669 (10.2 %)",
+  "alerts": 1320,
+  "alerts_per_min": 4.15
+ },
+ "without stays put": {
+  "smoking": "75/116",
+  "littering": "240/267",
+  "in view 20s+": "111/219",
+  "in view 60s+": "64/70",
+  "normal_flagged": "165/1669 (9.9 %)",
+  "alerts": 1199,
+  "alerts_per_min": 3.77
+ },
+ "caught only by stays put (default)": {
+  "smoking": 6,
+  "in view 20s+": 23,
+  "in view 60s+": 3
+ }
+}

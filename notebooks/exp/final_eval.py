@@ -1,7 +1,8 @@
 """Final configuration numbers on both halves (thresholds fixed beforehand; calibration uses tune normal footage only)."""
 import sys
 from functools import partial
-sys.path.insert(0, "/Users/ianvarella/capstone_S25/notebooks")
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import pandas as pd
 from exp_harness import load_splits, baseline, dedup
 from stage1_bench import evaluate_run, summarize

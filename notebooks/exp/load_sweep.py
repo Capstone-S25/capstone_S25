@@ -1,5 +1,6 @@
 import sys
-sys.path.insert(0, "/Users/ianvarella/capstone_S25/notebooks"); sys.path.insert(0, ".")
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1])); sys.path.insert(0, str(Path(__file__).resolve().parent))
 exec(open("combo_eval.py").read().split("combos = {")[0])
 rows = []
 def shorten(method, pad):
