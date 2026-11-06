@@ -14,6 +14,7 @@ from data_pipeline.database.base import Base
 config = context.config
 
 # Explicit process environment (including CI) takes precedence over local .env.
+load_dotenv(Path(__file__).resolve().parents[2] / ".env", override=False)
 load_dotenv(Path(__file__).resolve().parents[1] / ".env", override=False)
 database_url = os.environ.get("DATABASE_URL")
 if database_url:

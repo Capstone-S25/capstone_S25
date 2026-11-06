@@ -1,0 +1,275 @@
+"""Application integration contracts: queues, evidence lifetime and safe states."""
+
+import io
+import threading
+from types import SimpleNamespace
+from uuid import uuid4
+
+import numpy as np
+from PIL import Image
+
+from vision_runtime.evidence import history_problem, validated_views
+from vision_runtime.review import Reviewer
+from vision_runtime.service import ConfirmationQueue, EventStore, ScreeningQueue
+
+
+class Classifier:
+    metadata = {"model": "fixture", "device": "cpu"}
+
+    def classify(self, candidate):
+        views = validated_views(candidate)
+        predictions = {}
+        for task in candidate["tasks"]:
+            view = views["short" if task == "littering" else "long"]
+            problem = history_problem(task, view, clip=True)
+            predictions[task] = (
+                {"decision": "unknown", "evidence": problem, "alert": False}
+                if problem
+                else {
+                    "decision": "normal",
+                    "score": -1.0,
+                    "threshold": 0.0,
+                    "alert": False,
+                }
+            )
+        return {"predictions": predictions, "seconds": 0.001}
+
+
+def candidate(tmp_path, ident="one"):
+    path = tmp_path / "frame.jpg"
+    Image.new("RGB", (32, 32), (100, 120, 110)).save(path)
+    view = {"paths": [str(path)], "times_s": [0.0]}
+    return {
+        "event_id": ident,
+        "source_id": "camera",
+        "event_type": "image_review",
+        "timestamp_s": 0.0,
+        "tasks": ["smoking"],
+        "views": {"long": view},
+    }
+
+
+def test_confirmation_does_not_block_second_screening(tmp_path):
+    entered, finish = threading.Event(), threading.Event()
+
+    class SlowGemma:
+        def classify(self, event):
+            entered.set()
+            assert finish.wait(5)
+            return {
+                "predictions": {
+                    "smoking": {
+                        "decision": "normal",
+                        "frame_refs": [1],
+                        "evidence": "Ordinary visible activity",
+                        "alert": False,
+                    }
+                }
+            }
+
+    review = ConfirmationQueue(SlowGemma())
+    store = EventStore(tmp_path)
+    screening = ScreeningQueue(Classifier(), store, review)
+    try:
+        screening.submit(candidate(tmp_path))
+        assert entered.wait(2)
+        screening.submit(candidate(tmp_path, "two"))
+        screening.close()
+        assert len(store.snapshot()) == 2
+        assert all(
+            row["predictions"]["smoking"]["decision"] == "normal"
+            for row in store.snapshot()
+        )
+        assert any(row["status"] == "confirming" for row in store.snapshot())
+    finally:
+        finish.set()
+        screening.close()
+        review.close()
+    assert all(row["status"] == "reviewed" for row in store.snapshot())
+
+
+def test_confirmation_overflow_is_explicit_and_preserves_provisional(tmp_path):
+    entered, finish = threading.Event(), threading.Event()
+
+    class Slow:
+        def classify(self, event):
+            entered.set()
+            assert finish.wait(5)
+            return {
+                "predictions": {
+                    "smoking": {
+                        "decision": "unknown",
+                        "evidence": "Not visible",
+                        "alert": False,
+                    }
+                }
+            }
+
+    review = ConfirmationQueue(Slow(), capacity=1)
+    store = EventStore(tmp_path)
+    result = Classifier().classify(candidate(tmp_path))
+    try:
+        assert review.submit(candidate(tmp_path), result, store)
+        assert entered.wait(2)
+        assert review.submit(candidate(tmp_path, "two"), result, store)
+        assert not review.submit(candidate(tmp_path, "three"), result, store)
+        row = store.snapshot()[-1]
+        assert row["status"] == "confirmation_not_run"
+        assert row["reason"] == "confirmation_queue_full"
+        assert row["predictions"]["smoking"]["decision"] == "normal"
+    finally:
+        finish.set()
+        review.close()
+
+
+def test_evidence_survives_clear_until_active_review_finishes(tmp_path):
+    folder = tmp_path / "upload"
+    folder.mkdir()
+    path = folder / "frame.jpg"
+    entered, finish = threading.Event(), threading.Event()
+
+    class Slow:
+        def classify(self, event):
+            entered.set()
+            assert finish.wait(5)
+            assert path.exists()
+            return {
+                "predictions": {
+                    "smoking": {
+                        "decision": "normal",
+                        "evidence": "Ordinary activity",
+                        "alert": False,
+                    }
+                }
+            }
+
+    def cleanup():
+        path.unlink()
+        (folder / "events.jsonl").unlink()
+        folder.rmdir()
+
+    store = EventStore(folder, cleanup=cleanup)
+    event = candidate(folder)
+    review = ConfirmationQueue(Slow())
+    try:
+        review.submit(event, Classifier().classify(event), store)
+        assert entered.wait(2)
+        store.release()
+        assert path.exists()
+    finally:
+        finish.set()
+        review.close()
+    assert not folder.exists()
+
+
+def test_malformed_confirmation_is_unknown_and_cannot_alert(tmp_path):
+    class Broken:
+        def classify(self, event):
+            return {"predictions": {}}
+
+    store = EventStore(tmp_path)
+    review = ConfirmationQueue(Broken())
+    event = candidate(tmp_path)
+    review.submit(event, Classifier().classify(event), store)
+    review.close()
+    result = store.snapshot()[0]
+    assert result["status"] == "confirmation_error"
+    assert result["confirmation"]["smoking"]["decision"] == "unknown"
+    assert not result["confirmation"]["smoking"]["alert"]
+
+
+def test_image_has_no_invented_temporal_evidence(monkeypatch, tmp_path):
+    monkeypatch.setenv("VISION_RUNTIME_DIR", str(tmp_path))
+    monkeypatch.delenv("GEMMA_BASE_URL", raising=False)
+    buffer = io.BytesIO()
+    Image.new("RGB", (64, 64)).save(buffer, "PNG")
+    reviewer = Reviewer(Classifier())
+    result = reviewer.analyze(buffer.getvalue(), "image.png")
+    assert all(
+        result["report"]["summary"][task]["decision"] == "unknown"
+        for task in ["littering", "loitering", "unattended_items"]
+    )
+    assert result["report"]["summary"]["smoking"]["decision"] == "normal"
+    reviewer.release(result["run_id"])
+    reviewer.close()
+    assert not list((tmp_path / "uploads").iterdir())
+
+
+def test_crop_delays_keep_trigger_frame_and_decision_availability(tmp_path):
+    from data_pipeline.detection.stage1 import Stage1Detector
+    from data_pipeline.video_ingestion.decoding.decoder import DecodedFrame
+
+    from vision_runtime.tracking.gate import HandoffWriter
+
+    class Perception:
+        def __init__(self, cfg):
+            pass
+
+        def reset(self, fps):
+            pass
+
+        def observe(self, frame, index, t):
+            return SimpleNamespace(t=t, index=index)
+
+    class Engine:
+        crop_check = None
+
+        def __init__(self, cfg, fps):
+            self.first = None
+
+        def step(self, obs, frame):
+            if self.first is None:
+                self.first = frame.copy()
+                return []
+            return [
+                {
+                    "event_id": "delayed",
+                    "event_type": "reach_down",
+                    "timestamp_s": 0.0,
+                    "frame_index": 0,
+                    "roi_box": [0, 0, 8, 8],
+                    "_frame": self.first,
+                    "_t": 0.0,
+                }
+            ]
+
+        def flush(self):
+            return []
+
+    gate = SimpleNamespace(
+        Perception=Perception, RuleEngine=Engine, HandoffWriter=HandoffWriter
+    )
+    detector = Stage1Detector("camera", tmp_path, fps=5, cfg=object(), gate=gate)
+    session = uuid4()
+    first = DecodedFrame(
+        0, "camera", session, 0, 0, np.full((8, 8, 3), (0, 0, 240), np.uint8)
+    )
+    second = DecodedFrame(
+        0, "camera", session, 1, 1000, np.full((8, 8, 3), (240, 0, 0), np.uint8)
+    )
+    assert detector.process(first) == []
+    event = detector.process(second)[0]
+    assert event["timestamp_s"] == 0
+    assert event["available_at_s"] == 1
+    assert max(event["views"]["short"]["times_s"]) == 0
+    with Image.open(event["context_frame_path"]) as image:
+        assert image.getpixel((4, 4))[0] > 200
+    assert detector.finish()[-1]["event_type"] == "final_scene_review"
+
+
+def test_release_and_journaling_failure_do_not_hang_worker(tmp_path, monkeypatch):
+    store = EventStore(tmp_path)
+    original = store.write
+
+    def fail_later(event, status, **fields):
+        if status != "queued":
+            raise OSError("disk full")
+        return original(event, status, **fields)
+
+    monkeypatch.setattr(store, "write", fail_later)
+    worker = ScreeningQueue(Classifier(), store)
+    worker.submit(candidate(tmp_path))
+    import pytest
+
+    with pytest.raises(RuntimeError, match="journal failed"):
+        worker.close()

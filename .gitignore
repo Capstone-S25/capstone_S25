@@ -1,10 +1,28 @@
-data/
-results/
-models/
+# Local models, uploads, recordings and secrets
+/models/
+/runtime/
+/data/
+/results/
+/.local/
+/.venv*/
 .env
-.venv
+.env.*
+!.env.example
+*.pt
+*.pth
+*.safetensors
+*.gguf
+*.onnx
+# Python and editor output
 __pycache__/
 *.py[cod]
+*.egg-info/
+.pytest_cache/
 .ruff_cache/
-cookies.txt
-cookies*.txt
+.coverage*
+htmlcov/
+/dist/
+/build/
+.idea/
+.vscode/
+*.log

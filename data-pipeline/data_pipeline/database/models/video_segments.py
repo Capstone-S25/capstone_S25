@@ -21,11 +21,12 @@ class SegmentStatus(StrEnum):
     """Track a finalized segment's progress through video analysis.
 
     PENDING: Recorded and registered, waiting for a worker to claim it.
-    PROCESSING: Claimed by a worker; decoding and analysis are in progress.
-    PROCESSED: All required segment analysis finished successfully.
+    PROCESSING: Claimed by a worker; decoding and frame callbacks are in progress.
+    PROCESSED: Decoding and configured frame callbacks finished successfully.
     FAILED: Processing could not finish because of an error.
 
-    These states describe segment analysis, not recording or VLM event review.
+    AI callbacks may enqueue work. PROCESSED does not mean screening or VLM
+    confirmation has finished; those transitions live in the AI event journal.
     """
 
     PENDING = "pending"

@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "capstone-vision-application"
+version = "0.1.0"
+description = "Video ingestion, tracked anomaly screening and asynchronous Gemma review"
+requires-python = ">=3.12"
+dynamic = ["dependencies"]
+
+[tool.setuptools.packages.find]
+include = ["vision_runtime*"]
+
+[tool.setuptools.package-data]
+vision_runtime = ["definitions.json", "tracking/weights/*.npz"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "data-pipeline/tests"]
+pythonpath = [".", "data-pipeline"]
+addopts = "-ra --import-mode=importlib"
