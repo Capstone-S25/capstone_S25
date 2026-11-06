@@ -74,7 +74,6 @@ ICVL labels as doing the event.
 | `exp/*.py` | Earlier recall experiments on the littering, Avenue and smoking benchmarks |
 | `tools/` | Demo videos, the report notebook builder, timing and model comparison |
 | `demo/` | The demo video and figures |
-| `yolo_poc.ipynb`, `yolo_poc_v2.ipynb`, `plswork.ipynb`, `new.py` | Early prototypes from before the gate was split into modules; kept for history |
 
 Every script's docstring ends with a `Usage` line. Scripts are run from this folder, for example:
 
