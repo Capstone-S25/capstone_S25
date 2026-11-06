@@ -98,3 +98,9 @@ notebooks/exp/actions/pose_seq_review.json
 # Demo videos are rebuilt by notebooks/tools/make_*.py; only the current one is published
 notebooks/demo/*.mp4
 !notebooks/demo/icvl_activities.mp4
+
+# Early Stage 1 prototypes (kept locally)
+notebooks/plswork.ipynb
+notebooks/yolo_poc.ipynb
+notebooks/yolo_poc_v2.ipynb
+notebooks/new.py
