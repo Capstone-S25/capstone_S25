@@ -1,6 +1,6 @@
 # Scene review application
 
-Minimal upload application and camera backend for five anomaly objectives:
+Minimal upload/live-camera application and camera backend for five anomaly objectives:
 smoking, littering, loitering, apparent public sleeping, and unattended items.
 MobileCLIP2-S2 screens evidence on CPU. An optional separately served Gemma
 model reviews the same evidence asynchronously.
@@ -16,6 +16,8 @@ flowchart LR
     F --> DB[(PostgreSQL segment jobs)]
     DB --> D[Decode and select frames]
     U[Streamlit video upload] --> D
+    W[Built-in / USB webcam] --> L[Latest-frame capture worker]
+    L --> T
     D --> T[YOLO + ByteTrack + temporal rules]
     T --> S[Bounded screening queue]
     S --> M[Trained MobileCLIP]
@@ -139,6 +141,39 @@ outputs, not probabilities.
 
 ## Camera backend
 
+### Built-in or USB camera in Streamlit
+
+Start the normal application with `python3.12 deploy.py start`, select **Live
+camera**, choose a camera index (usually **0**, or **1/2** for a USB device), and
+select **Start camera**. **Stop camera** releases capture while in-flight model
+work finishes. **Clear camera** also discards its temporary evidence. Switching
+back to uploads stops capture. There is no extra Python dependency or database
+requirement for a local webcam.
+
+The camera must be attached to the **machine running Streamlit**. A remote
+browser does not capture its own webcam through this interface. Permit camera
+access in the operating system and close applications holding the device.
+Resolution is requested at 640 × 480; the driver may choose another supported
+resolution. Camera hardware was not available on the development host; simulated
+capture and a paced video fixture exercise lifecycle and real-model inference.
+
+Capture and preview are independent of tracking/classification. Tracking selects
+up to 5 FPS from a single latest-frame slot, using actual host monotonic read
+timestamps. Periodic scene review defaults to 3 seconds, alongside rule-triggered
+events. The screening queue keeps at most one waiting candidate, replacing it
+with newer live evidence during overload. Skipped windows remain explicit.
+Gemma, when configured, runs through the same separate confirmation queue.
+
+The view shows tracking lag and scored-evidence age. Live signals use the most
+recent completed window per objective. It keeps the newest 30 evidence windows
+plus in-flight work, compacts its rolling journal and deletes retired event
+images only after screening/confirmation releases them. No full video is
+recorded. A live view that stops polling for about 20 seconds stops capture and
+discards temporary evidence; uninterruptible driver calls can delay release.
+This path does not establish a two-second anomaly-detection guarantee.
+
+### RTSP and recorded-segment backend
+
 Use the same activated root environment. Start a database, configure
 `DATABASE_URL`, and apply the retained migrations:
 
@@ -163,7 +198,8 @@ The backend supports `--record-only`, `--model`, `--device`, `--target-fps`,
 2-second target segments, and a 10-second periodic scene scan in addition to
 rule-triggered events. FFmpeg keyframes can make actual segments longer.
 The CLI writes camera evidence and `events.jsonl` under `runtime/cameras/`.
-Streamlit currently reviews uploads; it does not display a live camera dashboard.
+Streamlit's local webcam view is independent of this backend; it does not
+display a shared RTSP/backend camera dashboard.
 
 See [backend operations](data-pipeline/README.md) and the
 [integration audit, state transitions, and validation](docs/integration.md).

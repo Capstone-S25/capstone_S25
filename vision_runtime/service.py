@@ -11,6 +11,7 @@ import logging
 import queue
 import threading
 import time
+from collections import Counter
 from pathlib import Path
 
 from .evidence import unknown
@@ -25,6 +26,7 @@ class EventStore:
         self.lock = threading.RLock()
         self.records = {}
         self.pending = 0
+        self.active = Counter()
         self.released = False
         self.cleanup = cleanup
         self.error = None
@@ -66,14 +68,59 @@ class EventStore:
                 ) from self.error
             return copy.deepcopy(list(self.records.values()))
 
-    def retain(self):
+    def retain(self, event_id=None):
         with self.lock:
             self.pending += 1
+            self.active[event_id] += 1
 
-    def done(self):
+    def done(self, event_id=None):
         with self.lock:
             self.pending -= 1
+            self.active[event_id] -= 1
+            if not self.active[event_id]:
+                del self.active[event_id]
             self._clean()
+
+    def prune(self, keep):
+        """Compact a live session's rolling journal, preserving in-flight evidence.
+
+        Upload/camera journals remain append-only unless this method is called.
+        Return retired event IDs so their caller can delete event-owned files.
+        """
+        if keep < 1:
+            raise ValueError("Retained event count must be positive")
+        with self.lock:
+            terminal = {
+                "screened",
+                "reviewed",
+                "not_run",
+                "screening_error",
+                "confirmation_error",
+                "confirmation_not_run",
+            }
+            removable = [
+                ident
+                for ident, row in list(self.records.items())[:-keep]
+                if not self.active.get(ident) and row["status"] in terminal
+            ]
+            if not removable:
+                return []
+            retired = set(removable)
+            remaining = {k: v for k, v in self.records.items() if k not in retired}
+            path = self.directory / "events.jsonl"
+            temporary = path.with_suffix(".jsonl.compacting")
+            try:
+                with temporary.open("w") as stream:
+                    for row in remaining.values():
+                        stream.write(json.dumps(row, allow_nan=False) + "\n")
+                temporary.replace(path)
+            except Exception as exc:
+                self.error = exc
+                raise
+            finally:
+                temporary.unlink(missing_ok=True)
+            self.records = remaining
+            return removable
 
     def release(self):
         with self.lock:
@@ -121,7 +168,7 @@ class ConfirmationQueue:
     def submit(self, candidate, provisional, store):
         if self.closed:
             raise RuntimeError("Confirmation queue is closed")
-        store.retain()
+        store.retain(candidate["event_id"])
         try:
             # Publish before the worker can finish and overwrite this transition.
             store.write(
@@ -138,10 +185,10 @@ class ConfirmationQueue:
                     candidate, "confirmation_not_run", reason="confirmation_queue_full"
                 )
             finally:
-                store.done()
+                store.done(candidate["event_id"])
             return False
         except BaseException:
-            store.done()
+            store.done(candidate["event_id"])
             raise
         return True
 
@@ -186,7 +233,7 @@ class ConfirmationQueue:
                         },
                     )
                 finally:
-                    store.done()
+                    store.done(candidate["event_id"])
             except BaseException:
                 logger.exception("Could not journal confirmation state")
             finally:
@@ -201,11 +248,14 @@ class ConfirmationQueue:
 
 
 class ScreeningQueue:
-    def __init__(self, classifier, store, confirmation=None, capacity=16):
+    def __init__(
+        self, classifier, store, confirmation=None, capacity=16, latest_only=False
+    ):
         if capacity < 1:
             raise ValueError("Queue capacity must be positive")
         self.classifier, self.store, self.confirmation = classifier, store, confirmation
         self.queue = queue.Queue(maxsize=capacity)
+        self.latest_only = latest_only
         self.closed = False
         self.fatal_error = None
         self.thread = threading.Thread(
@@ -223,9 +273,9 @@ class ScreeningQueue:
             "queued",
             view_times_s={k: v["times_s"] for k, v in candidate["views"].items()},
         )
-        self.store.retain()
+        self.store.retain(candidate["event_id"])
         try:
-            self.queue.put_nowait(copy.deepcopy(candidate))
+            self._enqueue(copy.deepcopy(candidate))
         except queue.Full:
             try:
                 self.store.write(
@@ -237,12 +287,34 @@ class ScreeningQueue:
                     },
                 )
             finally:
-                self.store.done()
+                self.store.done(candidate["event_id"])
             return False
         except BaseException:
-            self.store.done()
+            self.store.done(candidate["event_id"])
             raise
         return True
+
+    def _enqueue(self, candidate):
+        if self.latest_only and self.queue.full():
+            try:
+                previous = self.queue.get_nowait()
+            except queue.Empty:
+                pass
+            else:
+                try:
+                    self.store.write(
+                        previous,
+                        "not_run",
+                        reason="newer_live_evidence_available",
+                        predictions={
+                            t: unknown("Superseded by newer live evidence")
+                            for t in previous["tasks"]
+                        },
+                    )
+                finally:
+                    self.store.done(previous["event_id"])
+                    self.queue.task_done()
+        self.queue.put_nowait(candidate)
 
     def _consume(self):
         while True:
@@ -281,7 +353,7 @@ class ScreeningQueue:
             finally:
                 try:
                     if candidate is not None:
-                        self.store.done()
+                        self.store.done(candidate["event_id"])
                 except Exception as exc:
                     self.fatal_error = exc
                     logger.exception("Could not release screening evidence")

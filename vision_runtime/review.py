@@ -80,6 +80,38 @@ def jpeg_preview(image):
     return out.getvalue()
 
 
+def event_report(report, events, gemma_enabled):
+    """Use the same provisional/confirmation states for uploads and live video."""
+    for event in events:
+        event.setdefault(
+            "predictions",
+            {
+                t: {
+                    "decision": "unknown",
+                    "evidence": "Screening not completed",
+                    "alert": False,
+                }
+                for t in TASKS
+            },
+        )
+    return {
+        **report,
+        "events": events,
+        "summary": summarize(events),
+        "gemma_enabled": gemma_enabled,
+        "confirmation_pending": sum(
+            e["status"] in {"confirmation_pending", "confirming"} for e in events
+        ),
+        "confirmation_failed": sum(
+            e["status"] in {"confirmation_error", "confirmation_not_run"}
+            for e in events
+        ),
+        "screening_failed": sum(
+            e["status"] in {"not_run", "screening_error"} for e in events
+        ),
+    }
+
+
 class LockedClassifier:
     def __init__(self, classifier):
         self.classifier = classifier
@@ -232,34 +264,7 @@ class Reviewer:
             if run is None:
                 raise ValueError("This review has expired; upload the file again")
             events = run["store"].snapshot()
-        for event in events:
-            event.setdefault(
-                "predictions",
-                {
-                    t: {
-                        "decision": "unknown",
-                        "evidence": "Screening not completed",
-                        "alert": False,
-                    }
-                    for t in TASKS
-                },
-            )
-        report = {
-            **result["report"],
-            "events": events,
-            "summary": summarize(events),
-            "gemma_enabled": self.confirmation is not None,
-            "confirmation_pending": sum(
-                e["status"] in {"confirmation_pending", "confirming"} for e in events
-            ),
-            "confirmation_failed": sum(
-                e["status"] in {"confirmation_error", "confirmation_not_run"}
-                for e in events
-            ),
-            "screening_failed": sum(
-                e["status"] in {"not_run", "screening_error"} for e in events
-            ),
-        }
+        report = event_report(result["report"], events, self.confirmation is not None)
         return {
             **result,
             "report": report,

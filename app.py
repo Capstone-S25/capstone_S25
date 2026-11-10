@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from vision_runtime.live import CameraManager  # noqa: E402
 from vision_runtime.review import IMAGE_TYPES, LABELS, TASKS, Reviewer  # noqa: E402
 
 st.set_page_config(page_title="Scene review", page_icon="◉", layout="wide")
@@ -47,6 +48,11 @@ def reviewer():
     return Reviewer()
 
 
+@st.cache_resource(show_spinner=False)
+def cameras():
+    return CameraManager(reviewer())
+
+
 def results_view(result):
     report = result["report"] if result else None
     st.subheader("Model signals")
@@ -68,9 +74,20 @@ def results_view(result):
     if not report:
         st.caption("Results appear here after you analyze a file.")
         return
-    st.caption(
-        f"{len(report['events'])} evidence windows · {report['processing_seconds']:.1f}s processing"
-    )
+    if report["kind"] == "live":
+        st.caption(
+            f"{len(report['events'])} recent windows · {report['observed_seconds']:.1f}s observed"
+        )
+        age = report.get("result_age_seconds")
+        st.caption(
+            f"Most recent screened window · evidence age {age:.1f}s"
+            if age is not None
+            else "Gathering evidence for the first scene review…"
+        )
+    else:
+        st.caption(
+            f"{len(report['events'])} evidence windows · {report['processing_seconds']:.1f}s processing"
+        )
     st.caption(
         "Signals require review. No signal applies only to scored windows; it does not certify the whole recording."
     )
@@ -86,12 +103,25 @@ def results_view(result):
         st.caption(
             "Some windows lacked enough evidence. Their counts and reasons are included in the details."
         )
+    if report["kind"] == "live":
+        if st.button("Prepare results download", width="stretch"):
+            st.session_state["camera_export"] = (
+                result["run_id"],
+                json.dumps(report, indent=2, allow_nan=False),
+            )
+        export = st.session_state.get("camera_export")
+        if not export or export[0] != result["run_id"]:
+            return
+        data = export[1]
+    else:
+        data = json.dumps(report, indent=2, allow_nan=False)
     st.download_button(
         "Download results",
-        json.dumps(report, indent=2, allow_nan=False),
+        data,
         file_name="scene_review.json",
         mime="application/json",
         width="stretch",
+        on_click="ignore",
     )
 
 
@@ -103,7 +133,10 @@ def live_results(result):
     results_view(result)
     if not result:
         return
-    report = result["report"]
+    review_states(result["report"])
+
+
+def review_states(report):
     if report["screening_failed"]:
         st.warning(
             f"{report['screening_failed']} windows were not screened. See the event details."
@@ -136,15 +169,120 @@ def live_results(result):
     )
 
 
+@st.fragment(run_every=0.5)
+def camera_panel():
+    session = st.session_state.get("camera_session")
+    active = session is not None and session.active
+    st.caption(
+        "Uses a built-in or USB camera attached to the machine running Streamlit. "
+        "Camera 0 is usually the default. A remote browser uses the server’s camera."
+    )
+    device, cadence = st.columns(2)
+    index = device.number_input(
+        "Camera index",
+        min_value=0,
+        max_value=15,
+        value=0,
+        step=1,
+        disabled=active,
+        help="Try 1 or 2 if the desired USB camera is not camera 0.",
+    )
+    seconds = cadence.number_input(
+        "Scene review interval (seconds)",
+        min_value=2,
+        max_value=30,
+        value=3,
+        disabled=active,
+        help="Tracking selects up to 5 frames/second. Model inference adds processing time.",
+    )
+    start, stop, clear, _ = st.columns([1.3, 1, 1, 3])
+    if start.button("Start camera", type="primary", disabled=active, width="stretch"):
+        try:
+            with st.spinner("Preparing the local models…"):
+                session = cameras().start(int(index), scan_seconds=int(seconds))
+                st.session_state["camera_session"] = session
+        except Exception as exc:
+            st.error(str(exc))
+    if stop.button("Stop camera", disabled=session is None, width="stretch"):
+        session.stop()
+    if clear.button("Clear camera", disabled=session is None, width="stretch"):
+        session.release()
+        st.session_state.pop("camera_session", None)
+        session = None
+    if session is None:
+        st.info(
+            "Choose your camera and select Start camera. The preview and results update automatically."
+        )
+        return
+    try:
+        result = session.snapshot()
+    except Exception as exc:
+        session.stop()
+        st.error(f"Live results could not be read: {exc}")
+        return
+    state = result["state"]
+    if state == "error":
+        st.error(result["error"])
+    elif state == "starting":
+        st.info("Opening the camera and preparing tracking…")
+    elif state == "stopping":
+        st.info(
+            "Stopping capture and finishing in-flight analysis; provisional results remain available."
+        )
+    elif state in {"stopped", "expired"}:
+        st.info(result["stop_reason"] or "Camera stopped")
+    preview, signals = st.columns([1.35, 1], gap="large")
+    with preview, st.container(border=True):
+        st.subheader("Live camera")
+        if result["frame"]:
+            st.image(result["frame"], width="stretch")
+            report = result["report"]
+            width, height = result["frame_size"]
+            st.caption(
+                f"{width} × {height} · {report['captured_frames']} captured · "
+                f"{report['selected_frames']} tracked · "
+                f"{report['tracking_lag_seconds']:.1f}s tracking lag"
+            )
+            st.caption(
+                "Live preview is separate from inference. Proposed boxes appear in the evidence frames below."
+            )
+        else:
+            st.caption("Waiting for the first camera frame…")
+    with signals, st.container(border=True):
+        results_view(result)
+        review_states(result["report"])
+    events = result["report"]["events"]
+    if events:
+        with st.expander("Recent camera evidence"):
+            chosen = next(
+                (i for i in reversed(range(len(events))) if result["previews"][i]), None
+            )
+            if chosen is not None:
+                st.image(result["previews"][chosen], width="stretch")
+            st.json(events[-1], expanded=False)
+    st.caption(
+        "Recent evidence is temporary; no full video is recorded. "
+        "Stop releases the camera while pending analysis finishes. "
+        "Closing or leaving this live view stops capture after about 20 seconds."
+    )
+
+
 def main():
     st.markdown(
         '<div class="eyebrow">SCENE / LOCAL VISION</div>', unsafe_allow_html=True
     )
     st.title("A closer look.")
     st.markdown(
-        '<div class="subtitle">Drop an image or video. Review the model’s signals.</div>',
+        '<div class="subtitle">Review a file or watch a live camera.</div>',
         unsafe_allow_html=True,
     )
+    source = st.radio("Input source", ["Upload a file", "Live camera"], horizontal=True)
+    if source == "Live camera":
+        camera_panel()
+        return
+    camera = st.session_state.pop("camera_session", None)
+    if camera is not None:
+        camera.release()
     uploaded = st.file_uploader(
         "Drop your file here",
         type=[

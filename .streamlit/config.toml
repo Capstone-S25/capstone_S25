@@ -9,6 +9,7 @@ font = "sans-serif"
 [server]
 maxUploadSize = 200
 address = "127.0.0.1"
+fileWatcherType = "none"
 
 [browser]
 gatherUsageStats = false

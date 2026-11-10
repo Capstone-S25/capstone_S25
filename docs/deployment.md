@@ -24,6 +24,15 @@ first-run email prompt. Stop it with Ctrl+C. To change the localhost port:
 python3.12 deploy.py start --port 8502
 ```
 
+For a built-in/USB webcam, select **Live camera**, select an index (usually 0),
+then **Start camera**. The device belongs to the Streamlit host; this is not
+browser webcam streaming from a remote client. Local webcam capture uses the
+already installed OpenCV and needs no PostgreSQL/Docker/FFmpeg executable.
+Stop/Clear controls, bounded latest-frame work, evidence age, temporary rolling
+evidence and disconnect shutdown are described in the README. Operating-system
+camera permissions/device access must be available. Physical camera hardware
+has not been validated on this development host.
+
 Setup performs the following steps:
 
 1. Checks the interpreter/platform, archive checksum and available environment
@@ -156,3 +165,17 @@ Docker Compose configuration and flags were validated; the camera test used an
 external test database, so this run did not launch the Compose container or a
 new Gemma model server. Windows remains untested. Raw receipts are kept outside
 Git in the original workspace's `.local/deployment_validation_20261110/`.
+
+The subsequent live-camera extension passed **117 tests**, with 8 PostgreSQL
+tests skipped because no disposable database was configured. Nine new camera
+tests cover device failures, stop/disconnect cleanup, concurrent camera refusal,
+timestamps, rolling retention, pending confirmation and latest-evidence work.
+A real browser exercised a paced video source through the actual CPU models,
+camera-index selection, stop/restart/clear, unavailable-device handling, JSON
+export, uploads and mobile layout. A final export check confirmed that a frozen
+download remains valid across live fragment refreshes. The development host has
+no physical webcam; built-in/USB hardware and OS permissions need destination
+validation. These are execution checks, not a new accuracy or latency benchmark.
+Receipts are in `.local/live_camera_validation_20261110/` in the original
+workspace. The production Streamlit configuration disables source-file watching;
+restart the application after changing code/configuration.
