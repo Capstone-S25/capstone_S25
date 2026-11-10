@@ -26,7 +26,28 @@ flowchart LR
     I[Image upload] --> S
 ```
 
-## Install
+## One-command setup
+
+With Python 3.12 on an x86_64 Linux machine, transfer the model archive and run:
+
+```bash
+python3.12 deploy.py setup --bundle /path/to/capstone-mobileclip2-s2-cpu-20261103.tar.gz
+python3.12 deploy.py start
+```
+
+Open `http://localhost:8501`. Setup creates `.venv`, installs the CPU packages,
+verifies/imports weights, creates configuration if absent, and runs real CPU
+classifier/tracker checks. It preserves existing configuration/models and can
+be rerun after a failed step. Startup does not install anything. A repeat setup
+without `--bundle` works once model files have been verified/imported.
+
+For camera support, install FFmpeg and use `setup --with-camera`; the tool
+starts the existing local PostgreSQL Compose service unless an external
+`DATABASE_URL` is configured, and applies migrations. Gemma stays optional:
+`setup --gemma-url http://server:8080/v1` configures a separately served model.
+See [deployment commands, prerequisites and recovery](docs/deployment.md).
+
+## Manual install
 
 Use Python 3.12 and run these commands from this checkout. Camera recording
 also needs `ffmpeg` on `PATH` and PostgreSQL. File uploads do not need PostgreSQL.

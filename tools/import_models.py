@@ -17,6 +17,68 @@ REVISION = "ac6b37c8fc40b62b623d09ed228a6f0c9bc29fe6"
 MODEL = "mobileclip2-s2"
 
 
+def model_mapping():
+    """The complete required file set, shared by import and verification."""
+    mapping = {
+        f"results/strategy_study_20261016/{MODEL}/selected_heads.pt": f"{MODEL}/selected_heads.pt",
+        f"results/strategy_study_20261016/{MODEL}/transfer_evaluation/frozen_policies.json": f"{MODEL}/frozen_policies.json",
+        f"results/strategy_study_20261016/{MODEL}/transfer_evaluation/state.json": f"{MODEL}/state.json",
+        f"results/clip_finetuning_20261015/seed_42/{MODEL}/finetuned_best.pt": f"{MODEL}/finetuned_best.pt",
+        "results/clip_finetuning_20261015/provenance.json": f"{MODEL}/provenance.json",
+    }
+    for name in ["yolo26s.pt", "yolo26s-pose.pt"]:
+        mapping["data/models/stage1/" + name] = "detectors/" + name
+    detector = "fasterrcnn_resnet50_fpn_v2_coco-dd69338a.pth"
+    mapping["data/models/detection/" + detector] = "detectors/" + detector
+    for name in [
+        "open_clip_config.json",
+        "open_clip_model.safetensors",
+        "merges.txt",
+        "vocab.json",
+        "tokenizer.json",
+        "tokenizer_config.json",
+        "special_tokens_map.json",
+    ]:
+        mapping[
+            f"data/models/huggingface/hub/models--timm--MobileCLIP2-S2-OpenCLIP/snapshots/{REVISION}/{name}"
+        ] = f"{MODEL}/base/{name}"
+    return mapping
+
+
+def verify_models(directory, *, hashes=True, definitions=None):
+    """Check a complete imported bundle; never trust arbitrary manifest paths."""
+    directory = Path(directory).resolve(strict=True)
+    manifest = json.loads((directory / "manifest.json").read_text())
+    files = manifest["files"]
+    if manifest["base_revision"] != REVISION:
+        raise ValueError("Unexpected base model revision")
+    expected = set(model_mapping().values())
+    if len(files) != len(expected) or {f["path"] for f in files} != expected:
+        raise ValueError("Model manifest does not list the complete required file set")
+    for item in files:
+        path = (directory / item["path"]).resolve(strict=True)
+        if not path.is_relative_to(directory) or not path.is_file():
+            raise ValueError("Model path escapes storage or is not a file")
+        if path.stat().st_size != item["bytes"]:
+            raise ValueError("Model size mismatch: " + item["path"])
+        if hashes:
+            with path.open("rb") as stream:
+                actual = hashlib.file_digest(stream, "sha256").hexdigest()
+            if actual != item["sha256"]:
+                raise ValueError("Model checksum mismatch: " + item["path"])
+    definitions = Path(definitions or ROOT / "vision_runtime/definitions.json")
+    provenance = json.loads((directory / MODEL / "provenance.json").read_text())
+    if (
+        hashlib.sha256(definitions.read_bytes()).hexdigest()
+        != provenance["definitions_sha256"]
+    ):
+        raise ValueError("Training definition mismatch")
+    state = json.loads((directory / MODEL / "state.json").read_text())
+    if state["status"] != "complete":
+        raise ValueError("Model bundle is incomplete")
+    return manifest
+
+
 def import_models(archive, destination):
     if destination.exists():
         raise FileExistsError(f"Model directory exists: {destination}")
@@ -35,29 +97,7 @@ def import_models(archive, destination):
         if manifest["model"] != MODEL or manifest["base_model"]["revision"] != REVISION:
             raise ValueError("Unexpected model or revision")
         index = {v["path"]: v for v in manifest["files"]}
-        mapping = {
-            f"results/strategy_study_20261016/{MODEL}/selected_heads.pt": f"{MODEL}/selected_heads.pt",
-            f"results/strategy_study_20261016/{MODEL}/transfer_evaluation/frozen_policies.json": f"{MODEL}/frozen_policies.json",
-            f"results/strategy_study_20261016/{MODEL}/transfer_evaluation/state.json": f"{MODEL}/state.json",
-            f"results/clip_finetuning_20261015/seed_42/{MODEL}/finetuned_best.pt": f"{MODEL}/finetuned_best.pt",
-            "results/clip_finetuning_20261015/provenance.json": f"{MODEL}/provenance.json",
-        }
-        for name in ["yolo26s.pt", "yolo26s-pose.pt"]:
-            mapping["data/models/stage1/" + name] = "detectors/" + name
-        detector = "fasterrcnn_resnet50_fpn_v2_coco-dd69338a.pth"
-        mapping["data/models/detection/" + detector] = "detectors/" + detector
-        for name in [
-            "open_clip_config.json",
-            "open_clip_model.safetensors",
-            "merges.txt",
-            "vocab.json",
-            "tokenizer.json",
-            "tokenizer_config.json",
-            "special_tokens_map.json",
-        ]:
-            mapping[
-                f"data/models/huggingface/hub/models--timm--MobileCLIP2-S2-OpenCLIP/snapshots/{REVISION}/{name}"
-            ] = f"{MODEL}/base/{name}"
+        mapping = model_mapping()
         needed = sum(index[name]["bytes"] for name in mapping)
         if shutil.disk_usage(destination.parent).free < needed + 50 * 1024**2:
             raise OSError("Insufficient model storage")
@@ -111,6 +151,7 @@ def import_models(archive, destination):
                 )
                 + "\n"
             )
+            verify_models(stage, hashes=False)
             stage.rename(destination)
     return entries
 

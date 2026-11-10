@@ -1,9 +1,9 @@
 name: Vision application
 on:
   push:
-    paths: ["app.py", "vision_runtime/**", "data-pipeline/**", "tests/**", "tools/**", "requirements*.txt", "pyproject.toml", ".streamlit/**", ".github/workflows/application-ci.yml"]
+    paths: ["app.py", "deploy.py", "vision_runtime/**", "data-pipeline/**", "tests/**", "tools/**", "requirements*.txt", "pyproject.toml", ".streamlit/**", ".github/workflows/application-ci.yml"]
   pull_request:
-    paths: ["app.py", "vision_runtime/**", "data-pipeline/**", "tests/**", "tools/**", "requirements*.txt", "pyproject.toml", ".streamlit/**", ".github/workflows/application-ci.yml"]
+    paths: ["app.py", "deploy.py", "vision_runtime/**", "data-pipeline/**", "tests/**", "tools/**", "requirements*.txt", "pyproject.toml", ".streamlit/**", ".github/workflows/application-ci.yml"]
 permissions:
   contents: read
 jobs:
