@@ -36,6 +36,10 @@ python3.12 scripts/deployment/cpu.py setup
 .venv-cpu/bin/python scripts/deployment/cpu.py smoke
 ```
 
+For the optional image/video upload interface, use `setup --with-ui` in place
+of `setup`, then run `.venv-cpu/bin/python -m streamlit run app.py`. See the
+[interface guide](inference_ui.md) for evidence limits and result interpretation.
+
 `setup` requires internet access to install Python packages. It installs the
 official CPU-only PyTorch 2.8.0 / torchvision 0.23.0 wheels, then the pinned direct
 dependencies in `requirements/cpu-deployment.txt`. It refuses to overwrite an

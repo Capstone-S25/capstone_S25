@@ -19,10 +19,15 @@ Gemma uses a separate runtime because its Transformers version differs. Follow [
 
 ## Main workflows
 
-The feature branch also has a resident **YOLO/ByteTrack → trained SigLIP → Gemma
+The repository also has a resident **YOLO/ByteTrack → trained SigLIP → Gemma
 evidence confirmation** workflow. See [Stage 1 integration](docs/stage1_reasoning.md)
 for direct-video/database commands, periodic scene review, model choices and
 the distinction between historical ranking quality and continuous event quality.
+
+For a minimal image/video upload interface, use the CPU inference environment:
+install `requirements/ui.txt`, then run `python -m streamlit run app.py`.
+The [Streamlit guide](docs/inference_ui.md) covers the trained MobileCLIP model
+files, five-task results and temporal-evidence requirements.
 
 ```bash
 # Inspect sources/licenses and the complete acquisition plan.
