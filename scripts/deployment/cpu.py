@@ -45,6 +45,10 @@ ARTIFACTS = (
     f"results/strategy_study_20261016/{MODEL}/transfer_evaluation/state.json",
 )
 SOURCE_FILES = {
+    "app.py",
+    ".streamlit/config.toml",
+    "requirements/ui.txt",
+    "docs/inference_ui.md",
     "notebooks/stage1_gate.py",
     "notebooks/stage1_pose_action.py",
     "notebooks/weights/pose_action_mlp.npz",
@@ -377,9 +381,10 @@ def main():
     sub.add_parser(
         "smoke", help="Load detectors and run synthetic five-task CPU inference"
     )
-    sub.add_parser(
+    p = sub.add_parser(
         "setup", help="Create .venv-cpu and install CPU wheels (internet required)"
     )
+    p.add_argument("--with-ui", action="store_true", help="Also install Streamlit")
     for name in ["video", "live"]:
         p = sub.add_parser(name)
         p.add_argument("--target-fps", type=float, default=5)
@@ -439,6 +444,18 @@ def main():
             ],
             check=True,
         )
+        if args.with_ui:
+            subprocess.run(
+                [
+                    str(python),
+                    "-m",
+                    "pip",
+                    "install",
+                    "-r",
+                    str(ROOT / "requirements/ui.txt"),
+                ],
+                check=True,
+            )
         subprocess.run(
             [
                 str(python),
