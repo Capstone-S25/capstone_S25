@@ -54,6 +54,26 @@ deletion worker is provided. Pending segment metadata survives a restart.
 Jobs left `processing` after a crash have no automatic lease expiry/requeue.
 Recovery and retry policy require additional operational work.
 
+## Run the API
+
+The dashboard API needs the database running and migrations applied. To
+fill the database with 30 fake incidents for development:
+
+```bash
+npm run db:seed
+```
+
+Running it again replaces the previous seed data and leaves other incidents
+alone. Start the API with:
+
+```bash
+npm run api
+```
+
+Browse and try the endpoints at
+[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs). Login is temporary:
+every request runs as user 1, with the role from `DEV_USER_ROLE`.
+
 ## Backend-only development
 
 The retained `uv.lock` covers the lightweight backend and its tests; it does
