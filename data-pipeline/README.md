@@ -97,6 +97,7 @@ migrations or the app.
 | ------------------- | ----------------------------------------------------- |
 | `DATABASE_URL`      | PostgreSQL connection used by the app and migrations. |
 | `TEST_DATABASE_URL` | PostgreSQL connection used by database tests.         |
+| `DEV_USER_ROLE`     | Temporary API login role, `admin` or `member`.        |
 
 ## Setup local development database
 
@@ -169,6 +170,26 @@ npm start -- --source rtsp --rtsp-url "rtsp://camera-address/stream"
 This starts PostgreSQL and waits until healthy before launching the app.
 Migrations must already be applied. Press Ctrl+C to stop recording; PostgreSQL
 stays running until you run `npm run db:down`.
+
+## Run the API
+
+The dashboard API needs the database running and migrations applied. To
+fill the database with 30 fake incidents for development:
+
+```bash
+npm run db:seed
+```
+
+Running it again replaces the previous seed data and leaves other incidents
+alone. Start the API with:
+
+```bash
+npm run api
+```
+
+Browse and try the endpoints at
+[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs). Login is temporary:
+every request runs as user 1, with the role from `DEV_USER_ROLE`.
 
 ## Mock RTSP camera
 
