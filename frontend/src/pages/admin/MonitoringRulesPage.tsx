@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { Clock, MoreVertical } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Clock, MoreVertical, Check } from 'lucide-react';
 import { AppLayout } from '../../components/layout/AppLayout';
 import { Button } from '../../components/ui/Button';
+import AddRuleModal from '../../components/modals/AddRuleModal';
 import { SeverityBadge } from '../../components/ui/Badge';
 import { Toggle } from '../../components/ui/Toggle';
 import { MOCK_RULES } from '../../data/mock';
@@ -76,26 +77,40 @@ function buildInitial(rules: MonitoringRule[]): Record<string, RowState> {
 // ── Main page ──────────────────────────────────────────────────────────────
 export default function MonitoringRulesPage() {
   const [rows, setRows] = useState<Record<string, RowState>>(buildInitial(ALL_RULES));
+  const [showAddRule, setShowAddRule] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   function update<K extends keyof RowState>(id: string, key: K, value: RowState[K]) {
     setRows((prev) => ({ ...prev, [id]: { ...prev[id], [key]: value } }));
   }
 
+  function handleSave() {
+    setSaved(true);
+  }
+
+  useEffect(() => {
+    if (!saved) return;
+    const t = setTimeout(() => setSaved(false), 2000);
+    return () => clearTimeout(t);
+  }, [saved]);
+
   return (
     <AppLayout role="admin" activePath="/admin/rules">
-      <div className="p-6 max-w-screen-xl mx-auto">
+      <div style={{ padding: '20px 28px 20px 20px' }}>
 
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <h1 className="text-xl font-bold text-gray-900">Monitoring Rules</h1>
           <div className="flex gap-2">
-            <Button variant="secondary">+ Add rule</Button>
-            <Button variant="primary">Save changes</Button>
+            <Button variant="secondary" onClick={() => setShowAddRule(true)}>+ Add rule</Button>
+            <Button variant="primary" onClick={handleSave}>
+              {saved ? <><Check size={14} /> Saved</> : 'Save changes'}
+            </Button>
           </div>
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-2xl overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
@@ -215,6 +230,12 @@ export default function MonitoringRulesPage() {
           </table>
         </div>
       </div>
+
+      <AddRuleModal
+        isOpen={showAddRule}
+        onClose={() => setShowAddRule(false)}
+        onAdd={() => setShowAddRule(false)}
+      />
     </AppLayout>
   );
 }

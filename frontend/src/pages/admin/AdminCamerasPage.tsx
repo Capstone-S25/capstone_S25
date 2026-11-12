@@ -4,6 +4,8 @@ import { AppLayout } from '../../components/layout/AppLayout';
 import { Button } from '../../components/ui/Button';
 import { MOCK_CAMERAS, MOCK_INCIDENTS, MOCK_RULES } from '../../data/mock';
 import type { Camera } from '../../types';
+import AddCameraModal from '../../components/modals/AddCameraModal';
+import CameraDetailDrawer from '../../components/drawers/CameraDetailDrawer';
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 function todayIncidentCount(camId: string): number {
@@ -24,14 +26,20 @@ function cameraRuleSummary(cam: Camera): string {
 const ALL_LOCATIONS = ['All locations', ...Array.from(new Set(MOCK_CAMERAS.map((c) => c.location)))];
 
 // ── Camera card ────────────────────────────────────────────────────────────
-function CameraCard({ cam }: { cam: Camera }) {
+function CameraCard({ cam, onSelect }: { cam: Camera; onSelect: (cam: Camera) => void }) {
   const online        = cam.status === 'online';
   const incidentCount = todayIncidentCount(cam.id);
   const ruleSummary   = cameraRuleSummary(cam);
   const label         = `${cam.name} · ${cam.location}`;
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div
+      className="bg-white rounded-2xl overflow-hidden cursor-pointer"
+      onClick={() => onSelect(cam)}
+      style={{ transition: 'box-shadow 0.15s' }}
+      onMouseEnter={(e) => (e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.10)')}
+      onMouseLeave={(e) => (e.currentTarget.style.boxShadow = 'none')}
+    >
 
       {/* Thumbnail */}
       <div className="relative w-full aspect-video bg-gray-200 flex items-center justify-center">
@@ -89,6 +97,8 @@ function CameraCard({ cam }: { cam: Camera }) {
 // ── Main page ──────────────────────────────────────────────────────────────
 export default function AdminCamerasPage() {
   const [locationFilter, setLocationFilter] = useState('All locations');
+  const [showAddCamera, setShowAddCamera] = useState(false);
+  const [selectedCam, setSelectedCam] = useState<Camera | null>(null);
 
   const filtered = locationFilter === 'All locations'
     ? MOCK_CAMERAS
@@ -96,7 +106,7 @@ export default function AdminCamerasPage() {
 
   return (
     <AppLayout role="admin" activePath="/admin/cameras">
-      <div className="p-6 max-w-screen-xl mx-auto">
+      <div style={{ padding: '20px 28px 20px 20px' }}>
 
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
@@ -113,7 +123,7 @@ export default function AdminCamerasPage() {
             </select>
           </div>
 
-          <Button variant="primary">
+          <Button variant="primary" onClick={() => setShowAddCamera(true)}>
             <Plus size={15} />
             Add camera
           </Button>
@@ -122,7 +132,7 @@ export default function AdminCamerasPage() {
         {/* Grid */}
         <div className="grid grid-cols-4 gap-4">
           {filtered.map((cam) => (
-            <CameraCard key={cam.id} cam={cam} />
+            <CameraCard key={cam.id} cam={cam} onSelect={setSelectedCam} />
           ))}
         </div>
 
@@ -132,6 +142,14 @@ export default function AdminCamerasPage() {
           </div>
         )}
       </div>
+
+      <AddCameraModal
+        isOpen={showAddCamera}
+        onClose={() => setShowAddCamera(false)}
+        onAdd={() => setShowAddCamera(false)}
+      />
+
+      <CameraDetailDrawer cam={selectedCam} onClose={() => setSelectedCam(null)} />
     </AppLayout>
   );
 }

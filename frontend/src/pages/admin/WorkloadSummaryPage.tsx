@@ -38,7 +38,7 @@ interface StatCardProps {
 function StatCard({ title, subtitle, children, trend, trendColor = 'green', trendText }: StatCardProps) {
   const trendCls = trendColor === 'red' ? 'text-red-500' : 'text-green-600';
   return (
-    <div className="bg-white rounded-xl border border-gray-200 px-5 py-4 flex-1">
+    <div className="bg-white rounded-2xl px-5 py-4 flex-1">
       <p className="text-xs text-gray-500 mb-1">{title}</p>
       <p className="text-lg font-bold text-gray-900 leading-tight">{subtitle}</p>
       {children}
@@ -89,7 +89,7 @@ function AlertsBar() {
 export default function WorkloadSummaryPage() {
   return (
     <AppLayout role="admin" activePath="/admin/workload">
-      <div className="p-6 max-w-screen-xl mx-auto">
+      <div style={{ padding: '20px 28px 20px 20px' }}>
 
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
@@ -168,7 +168,7 @@ export default function WorkloadSummaryPage() {
         <div className="flex gap-5">
 
           {/* Left: stacked bar chart (60%) */}
-          <div className="bg-white rounded-xl border border-gray-200 p-5" style={{ flex: '0 0 60%' }}>
+          <div className="bg-white rounded-2xl p-5" style={{ flex: '0 0 60%' }}>
             <p className="text-sm font-semibold text-gray-800 mb-4">Alerts per day</p>
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={DAILY_DATA} barCategoryGap="30%">
@@ -195,7 +195,7 @@ export default function WorkloadSummaryPage() {
           </div>
 
           {/* Right: alerts by type (40%) */}
-          <div className="bg-white rounded-xl border border-gray-200 p-5 flex-1">
+          <div className="bg-white rounded-2xl p-5 flex-1">
             <p className="text-sm font-semibold text-gray-800 mb-5">Alerts by type</p>
             <div className="flex flex-col gap-4">
               {BY_TYPE.map(({ type, count }) => (
