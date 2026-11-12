@@ -245,12 +245,13 @@ export default function LoginPage() {
                 <input
                   id="email"
                   type="email"
-                  autoComplete="email"
+                  autoComplete="off"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   onFocus={() => setEmailFocused(true)}
                   onBlur={() => setEmailFocused(false)}
-                  placeholder="you@towers.sg"
+                  placeholder="Email address"
+                  className="placeholder-gray-400"
                   style={{
                     border: emailFocused ? '1.5px solid #1f4fd1' : '1px solid #d9dee5',
                     borderRadius: '10px',
@@ -277,12 +278,13 @@ export default function LoginPage() {
                   <input
                     id="password"
                     type={showPw ? 'text' : 'password'}
-                    autoComplete="current-password"
+                    autoComplete="off"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     onFocus={() => setPwFocused(true)}
                     onBlur={() => setPwFocused(false)}
-                    placeholder="••••••••"
+                    placeholder="Password"
+                    className="placeholder-gray-400"
                     style={{
                       border: pwFocused ? '1.5px solid #1f4fd1' : '1px solid #d9dee5',
                       borderRadius: '10px',

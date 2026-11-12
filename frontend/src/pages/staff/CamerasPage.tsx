@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { WifiOff, Camera as CameraIcon } from 'lucide-react';
 import { AppLayout } from '../../components/layout/AppLayout';
 import { MOCK_CAMERAS } from '../../data/mock';
+import type { Camera } from '../../types';
+import CameraDetailDrawer from '../../components/drawers/CameraDetailDrawer';
 
 // Camera rules lookup (mocked — in real app would join via MOCK_RULES)
 const CAMERA_RULE_LABELS: Record<string, string[]> = {
@@ -32,6 +34,7 @@ const DISPLAY_CAMERAS = MOCK_CAMERAS.slice(0, 8);
 
 export default function CamerasPage() {
   const [locationFilter, setLocationFilter] = useState('all');
+  const [selectedCam, setSelectedCam] = useState<Camera | null>(null);
 
   const filtered = DISPLAY_CAMERAS.filter((cam) => {
     if (locationFilter !== 'all' && cam.location !== locationFilter) return false;
@@ -70,6 +73,7 @@ export default function CamerasPage() {
               <div
                 key={cam.id}
                 className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => setSelectedCam(cam)}
               >
                 {/* Thumbnail */}
                 <div
@@ -132,6 +136,8 @@ export default function CamerasPage() {
           </div>
         )}
       </div>
+
+      <CameraDetailDrawer cam={selectedCam} onClose={() => setSelectedCam(null)} />
     </AppLayout>
   );
 }
