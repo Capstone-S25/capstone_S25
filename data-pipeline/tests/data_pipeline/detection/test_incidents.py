@@ -152,3 +152,36 @@ def test_evidence_endpoints_serve_only_files_under_the_recordings_root(
         incident.evidence_clip_path = "../secret.mp4"
         postgres_session.flush()
         assert client.get(f"/api/v1/incidents/{incident.id}/clip").status_code == 404
+
+
+def test_guarded_confirmation_keeps_gemmas_own_evidence(
+    postgres_session, recorder, tmp_path
+):
+    event = candidate(tmp_path, "event_a", 40.0, scene=True)
+    recorder(event, screened("anomaly"))
+    recorder(
+        event,
+        {
+            "status": "reviewed",
+            "confirmation": {
+                "unattended_items": {
+                    "decision": "unknown",
+                    "evidence": "Owner/item association is not established by this candidate",
+                    "model_decision_before_guard": "anomaly",
+                    "model_evidence_before_guard": "Purple bag left on table",
+                }
+            },
+            "confirmation_details": {
+                "model": "gemma4-e4b",
+                "summary": "A bag sits alone.",
+            },
+        },
+    )
+    incident = postgres_session.scalars(select(Incident)).one()
+    postgres_session.refresh(incident)
+    verdict = incident.vlm_results[-1]
+    assert verdict.assessment == VLMAssessment.CONFIRMED
+    assert verdict.description == (
+        "Confirmed by gemma4-e4b: Purple bag left on table. A bag sits alone. "
+        "(Runtime note: Owner/item association is not established by this candidate.)"
+    )

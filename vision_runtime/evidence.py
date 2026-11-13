@@ -266,6 +266,7 @@ def qualify(task: str, result: dict, candidate: dict, view: dict) -> dict:
         return {
             **unknown(reason),
             "model_decision_before_guard": result["decision"],
+            "model_evidence_before_guard": result.get("evidence"),
             **(
                 {"response_valid": result["response_valid"]}
                 if "response_valid" in result

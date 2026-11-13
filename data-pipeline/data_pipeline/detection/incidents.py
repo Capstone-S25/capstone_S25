@@ -279,10 +279,17 @@ class IncidentRecorder:
                 "anomaly": "Confirmed",
                 "normal": "Not confirmed",
             }.get(seen, "Uncertain")
-            evidence = (value.get("evidence") or "no evidence text").rstrip(". ")
+            guarded = "model_decision_before_guard" in value
+            evidence = (
+                value.get("model_evidence_before_guard" if guarded else "evidence")
+                or "no evidence text"
+            ).rstrip(". ")
             description = f"{verdict} by {model}: {evidence}."
             if summary:
                 description += f" {summary}"
+            if guarded and value.get("evidence"):
+                # Why the runtime itself would not raise an alert on this.
+                description += f" (Runtime note: {value['evidence'].rstrip('. ')}.)"
             with self.session_factory.begin() as db:
                 db.add(
                     VLMResult(
