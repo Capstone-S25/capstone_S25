@@ -1,7 +1,7 @@
-"""Build or verify the ensemble classifier folder (models/ensemble-20261111).
+"""Build or verify an ensemble classifier folder (default models/ensemble-20261113).
 
     python tools/ensemble_bundle.py build EXPORT_DIR --hf-cache ~/.cache/huggingface/hub
-    python tools/ensemble_bundle.py verify [models/ensemble-20261111]
+    python tools/ensemble_bundle.py verify [models/ensemble-20261113]
 
 `build` copies the exported heads and the two pinned image encoders into one
 folder with regular files and writes manifest.json (sizes and SHA-256).
@@ -15,7 +15,7 @@ import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DEFAULT = ROOT / "models/ensemble-20261111"
+DEFAULT = ROOT / "models/ensemble-20261113"
 ENCODERS = {
     "siglip2-b": (
         "models--google--siglip2-base-patch16-224",

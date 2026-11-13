@@ -231,7 +231,8 @@ class EnsembleStrategy:
         if threads:
             torch.set_num_threads(int(threads))
         self.torch, self.device = torch, resolve_device(device)
-        self.directory = Path(directory or models_root() / "ensemble-20261111")
+        self.directory = Path(directory or models_root() / "ensemble-20261113")
+        self.name = self.directory.name
         bundle = json.loads((self.directory / "ensemble.json").read_text())
         heads_path = self.directory / "heads.npz"
         digest = hashlib.sha256(heads_path.read_bytes()).hexdigest()
@@ -251,12 +252,17 @@ class EnsembleStrategy:
         self.frcnn = self.yolo = self.smoking = None
         self.cache = LRU(cache_size)
         self.metadata = {
-            "model": "ensemble-20261111",
+            "model": self.name,
             "backend": "cross_fitted_two_backbone_ensemble",
             "backbones": {k: v["source"] for k, v in bundle["backbones"].items()},
             "device": self.device,
             "precision": "float32",
-            "operating_point": "out_of_fold_macro_source_max_f1",
+            "operating_point": "out_of_fold_macro_source_max_f1"
+            + (
+                f", raised until at most {bundle['cross_task_cap']:.0%} of other tasks' out-of-fold windows are flagged"
+                if "cross_task_cap" in bundle
+                else ""
+            ),
             "heads_sha256": digest,
             "held_out_macro_f1": bundle["held_out"]["macro_f1"],
             "scope": "Scene/window classifier; entity and ownership not independently verified.",
@@ -471,6 +477,18 @@ class EnsembleStrategy:
             members.append((np.mean(zs) - member["mean"]) / member["std"])
         return float(np.mean(members))
 
+    def _probability(self, task, score):
+        """Out-of-fold logistic calibration of the score, when the bundle has one.
+
+        It assumes balanced classes and sources, so it ranks windows for display
+        and is not the precision to expect on a camera.
+        """
+        calibration = self.tasks[task].get("calibration")
+        if not calibration:
+            return {}
+        z = calibration["slope"] * score + calibration["intercept"]
+        return {"probability": float(1 / (1 + np.exp(-np.clip(z, -30, 30))))}
+
     def classify(self, candidate):
         views = validated_views(candidate)
         out = {}
@@ -501,7 +519,8 @@ class EnsembleStrategy:
                     "decision": "anomaly" if score >= threshold else "normal",
                     "score": score,
                     "threshold": threshold,
-                    "strategy": "ensemble-20261111",
+                    **self._probability(task, score),
+                    "strategy": self.name,
                     "reference_frame": bool(reference),
                     "input_history_supported": True,
                     "alert": False,

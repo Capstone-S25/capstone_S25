@@ -51,8 +51,14 @@ def _parse_args(project_dir: Path) -> argparse.Namespace:
     )
     parser.add_argument(
         "--model",
-        choices=["ensemble-20261111", "mobileclip2-s2", "siglip2-b16-224"],
-        default="ensemble-20261111",
+        choices=[
+            "ensemble-20261113",
+            "ensemble-20261111",
+            "mobileclip2-s2",
+            "siglip2-b16-224",
+        ],
+        default=None,
+        help="Screening classifier; default: the newest installed ensemble",
     )
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--source-id", default="camera_01")

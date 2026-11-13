@@ -402,7 +402,7 @@ def smoke():
     import torch
     from PIL import Image
 
-    from vision_runtime.classifier import ENSEMBLE, load_classifier
+    from vision_runtime.classifier import default_classifier, load_classifier
     from vision_runtime.config import models_root
 
     settings()
@@ -427,11 +427,9 @@ def smoke():
         ]
         view = {"paths": [str(path)], "times_s": [0.0]}
         # The ensemble is the default classifier when its folder is installed.
-        name = (
-            ENSEMBLE
-            if (models_root() / ENSEMBLE / "ensemble.json").is_file()
-            else "mobileclip2-s2"
-        )
+        name = default_classifier()
+        if not (models_root() / name / "ensemble.json").is_file():
+            name = "mobileclip2-s2"
         print("Smoke classifier:", name, flush=True)
         result = load_classifier(name, "cpu").classify(
             {"tasks": tasks, "timestamp_s": 0, "views": {"short": view, "long": view}}

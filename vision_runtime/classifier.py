@@ -265,14 +265,30 @@ class ClipStrategy:
         }
 
 
-ENSEMBLE = "ensemble-20261111"
-CLASSIFIERS = (ENSEMBLE, "mobileclip2-s2", "siglip2-b16-224")
+# Newest first. 20261113 keeps the 20261111 encoders and recipes; its loitering
+# heads also saw other tasks' windows as negatives and its thresholds are capped
+# so that at most 5% of other tasks' out-of-fold windows are flagged.
+ENSEMBLES = ("ensemble-20261113", "ensemble-20261111")
+ENSEMBLE = ENSEMBLES[0]
+CLASSIFIERS = (*ENSEMBLES, "mobileclip2-s2", "siglip2-b16-224")
 
 
-def load_classifier(model=ENSEMBLE, device="cpu"):
-    """The November ensemble by default; the October single-backbone routes on request."""
-    if model == ENSEMBLE:
+def default_classifier():
+    """The newest ensemble whose folder is installed, else the newest name."""
+    from .config import models_root
+
+    for name in ENSEMBLES:
+        if (models_root() / name / "ensemble.json").is_file():
+            return name
+    return ENSEMBLE
+
+
+def load_classifier(model=None, device="cpu"):
+    """An ensemble by default; the October single-backbone routes on request."""
+    model = model or default_classifier()
+    if model in ENSEMBLES:
+        from .config import models_root
         from .ensemble import EnsembleStrategy
 
-        return EnsembleStrategy(device=device)
+        return EnsembleStrategy(device=device, directory=models_root() / model)
     return ClipStrategy(model, device)
