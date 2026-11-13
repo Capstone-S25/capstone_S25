@@ -98,6 +98,7 @@ def prompt(
         + " ".join(f"{t}: {definitions[t]}" for t in tasks)
         + " Return ONLY one compact JSON object with exactly these task keys: "
         + ", ".join(tasks)
+        + (', followed by a "summary" key' if object_output else "")
         + ". "
         + shape
         + "decision is anomaly, normal, or unknown. References are integer F ordinals. "
@@ -105,7 +106,15 @@ def prompt(
         "Use unknown when visibility, identity, duration, or a required relationship cannot be established. "
         "Cite one or two frame ORDINALS for anomaly and normal, never seconds; frame 1 is the first image. "
         "Write a meaningful visible observation or missing fact in each evidence field; never write empty brackets. "
-        "Use at most six words for each evidence phrase. No markdown or reasoning trace."
+        "Use at most six words for each evidence phrase. "
+        + (
+            "summary is one or two plain sentences for a human reviewer: who and what is visible, "
+            "what they are doing across the frames, and whether that matches the listed behaviours. "
+            "Describe only what the frames show. "
+            if object_output
+            else ""
+        )
+        + "No markdown or reasoning trace."
     )
 
 
@@ -115,7 +124,8 @@ def parse_answer(text: str, tasks: list[str], count: int) -> dict:
         cleaned = cleaned.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
     try:
         value = json.loads(cleaned)
-        if not isinstance(value, dict) or set(value) != set(tasks):
+        # "summary" is optional free text; see parse_summary.
+        if not isinstance(value, dict) or set(value) - {"summary"} != set(tasks):
             raise ValueError("Wrong task keys")
     except (ValueError, TypeError):
         return {
@@ -157,6 +167,34 @@ def parse_answer(text: str, tasks: list[str], count: int) -> dict:
     return result
 
 
+def parse_summary(text: str) -> str | None:
+    """The model's scene description, or None if it gave none."""
+    cleaned = text.strip()
+    if cleaned.startswith("```") and cleaned.endswith("```"):
+        cleaned = cleaned.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+    try:
+        summary = json.loads(cleaned).get("summary")
+    except (ValueError, TypeError, AttributeError):
+        return None
+    if not isinstance(summary, str) or not summary.strip():
+        return None
+    return " ".join(summary.split())[:400]
+
+
+def headline(predictions: dict) -> str:
+    """One line on what the confirmation model concluded, per task."""
+    names = {
+        "anomaly": "confirmed",
+        "normal": "did not see",
+        "unknown": "could not confirm",
+    }
+    parts = []
+    for task, value in predictions.items():
+        seen = value.get("model_decision_before_guard", value.get("decision"))
+        parts.append(f"{names.get(seen, 'could not confirm')} {task.replace('_', ' ')}")
+    return "; ".join(parts)
+
+
 def qualify(task: str, result: dict, candidate: dict, view: dict) -> dict:
     reason = history_problem(task, view)
     if (
@@ -195,7 +233,10 @@ def output_schema(tasks: list[str], count: int) -> dict:
     }
     return {
         "type": "object",
-        "properties": {task: value for task in tasks},
-        "required": tasks,
+        "properties": {
+            **{task: value for task in tasks},
+            "summary": {"type": "string", "minLength": 1, "maxLength": 320},
+        },
+        "required": [*tasks, "summary"],
         "additionalProperties": False,
     }

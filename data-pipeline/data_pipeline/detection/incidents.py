@@ -165,7 +165,7 @@ class IncidentRecorder:
                 self._reviewed(
                     candidate,
                     row.get("confirmation") or {},
-                    (row.get("confirmation_details") or {}).get("model", "gemma"),
+                    row.get("confirmation_details") or {},
                 )
 
     def _screened(self, candidate: dict, predictions: dict) -> None:
@@ -264,21 +264,33 @@ class IncidentRecorder:
                 "opened" if created else "extended",
             )
 
-    def _reviewed(self, candidate: dict, confirmation: dict, model: str) -> None:
+    def _reviewed(self, candidate: dict, confirmation: dict, details: dict) -> None:
+        model = str(details.get("model", "gemma"))
+        summary = details.get("summary")
         for task, value in confirmation.items():
             incident_id = self.incident_for.get((candidate["event_id"], task))
             if incident_id is None:
                 continue
+            # What the model saw. A runtime guard may have turned an "anomaly"
+            # into "unknown" (for example, no tracked owner for an unattended
+            # item); the reviewer still wants the model's own reading.
+            seen = value.get("model_decision_before_guard", value.get("decision"))
+            verdict = {
+                "anomaly": "Confirmed",
+                "normal": "Not confirmed",
+            }.get(seen, "Uncertain")
+            evidence = (value.get("evidence") or "no evidence text").rstrip(". ")
+            description = f"{verdict} by {model}: {evidence}."
+            if summary:
+                description += f" {summary}"
             with self.session_factory.begin() as db:
                 db.add(
                     VLMResult(
                         incident_id=incident_id,
                         event_type=task,
-                        assessment=ASSESSMENT.get(
-                            value.get("decision"), VLMAssessment.UNCERTAIN
-                        ),
+                        assessment=ASSESSMENT.get(seen, VLMAssessment.UNCERTAIN),
                         confidence=None,
-                        description=value.get("evidence"),
+                        description=description,
                         model_version=model,
                         processed_at=datetime.now(UTC),
                     )

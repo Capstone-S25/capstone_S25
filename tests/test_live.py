@@ -318,8 +318,13 @@ def test_live_queue_replaces_waiting_work_with_newest_evidence(tmp_path):
     assert store.pending == 0 and not store.active
 
 
-def test_discard_waits_for_active_confirmation_before_removing_files(camera_setup):
+def test_discard_waits_for_active_confirmation_before_removing_files(
+    camera_setup, monkeypatch
+):
     from vision_runtime.service import ConfirmationQueue
+
+    # This fixture's windows screen as normal; review them all to hold a job.
+    monkeypatch.setenv("GEMMA_CONFIRM", "all")
 
     reviewer, _, _, options = camera_setup
     entered, finish = threading.Event(), threading.Event()

@@ -9,9 +9,12 @@ import os
 import platform
 import re
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
+import time
+import urllib.request
 import venv
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -20,6 +23,31 @@ ROOT = Path(__file__).resolve().parent
 KNOWN_BUNDLE_SHA256 = "efabaddee92e5036918932ba0e4eb3840292124f50a8fe2b8bcb95f2786119fc"
 LOCAL_DATABASE = "postgresql+psycopg://capstone:password@127.0.0.1:5432/capstone"
 INSTALL_REVISION = "cpu-setup-v1"
+# A transfer bundle may carry Python wheels (offline install), a CPU build of
+# the llama.cpp server with Gemma weights, and the built dashboard.
+WHEELS = ROOT / "wheels"
+GEMMA = ROOT / "gemma"
+DASHBOARD = ROOT / "frontend/dist"
+LOCAL_GEMMA_URL = "http://127.0.0.1:8090/v1"
+
+
+def local_gemma():
+    """(server, weights, projector) of the bundled CPU Gemma, or None."""
+    server = GEMMA / "llama/llama-server"
+    files = sorted((GEMMA / "models").glob("*.gguf")) if GEMMA.is_dir() else []
+    weights = [f for f in files if "mmproj" not in f.name]
+    projectors = [f for f in files if "mmproj" in f.name]
+    if not server.is_file() or len(weights) != 1 or len(projectors) != 1:
+        return None
+    return server, weights[0], projectors[0]
+
+
+def gemma_environment():
+    env = environment()
+    env["LD_LIBRARY_PATH"] = str(GEMMA / "llama") + (
+        os.pathsep + env["LD_LIBRARY_PATH"] if env.get("LD_LIBRARY_PATH") else ""
+    )
+    return env
 
 
 def digest(path):
@@ -165,17 +193,15 @@ def install_dependencies(directory):
         return python
     run([python, "-m", "ensurepip", "--upgrade"], "Checking pip")
     pip = [python, "-m", "pip", "--disable-pip-version-check", "--no-input"]
+    # A bundled wheels/ folder makes setup work without internet access.
+    offline = ["--no-index", "--find-links", WHEELS] if WHEELS.is_dir() else []
     if not status["cpu_torch"]:
         run(
             pip
-            + [
-                "install",
-                "torch==2.8.0+cpu",
-                "torchvision==0.23.0+cpu",
-                "--index-url",
-                "https://download.pytorch.org/whl/cpu",
-            ],
-            "Installing CPU-only Torch",
+            + ["install", "torch==2.8.0+cpu", "torchvision==0.23.0+cpu"]
+            + (offline or ["--index-url", "https://download.pytorch.org/whl/cpu"]),
+            "Installing CPU-only Torch"
+            + (" from the bundled wheels" if offline else ""),
         )
     run(
         pip
@@ -185,8 +211,10 @@ def install_dependencies(directory):
             ROOT / "requirements.txt",
             "setuptools==78.1.0",
             "wheel==0.45.1",
-        ],
-        "Installing application dependencies",
+        ]
+        + offline,
+        "Installing application dependencies"
+        + (" from the bundled wheels" if offline else ""),
     )
     run(
         pip + ["install", "-e", ROOT, "--no-deps", "--no-build-isolation"],
@@ -260,6 +288,18 @@ def settings():
         if database == LOCAL_DATABASE
         else "external",
         "gemma": bool(os.environ.get("GEMMA_BASE_URL")),
+        # Present only for the bundled server on this machine (GEMMA_LOCAL=1).
+        "gemma_local": {
+            "port": urlsplit(os.environ.get("GEMMA_BASE_URL", "")).port or 8090,
+            "model": os.environ.get("GEMMA_MODEL", "gemma4-e4b"),
+            "threads": int(
+                os.environ.get("GEMMA_LOCAL_THREADS")
+                or max(2, (os.cpu_count() or 4) // 2)
+            ),
+            "image_tokens": int(os.environ.get("GEMMA_LOCAL_IMAGE_TOKENS") or 280),
+        }
+        if os.environ.get("GEMMA_LOCAL") == "1" and os.environ.get("GEMMA_BASE_URL")
+        else None,
         "values": {
             key: hashlib.sha256(os.environ[key].encode()).hexdigest()
             for key in ["DATABASE_URL", "GEMMA_BASE_URL", "GEMMA_MODEL"]
@@ -314,13 +354,70 @@ def configure(python, args):
     return config
 
 
+def verify_ensemble(directory, *, required=False):
+    """Check the newest installed ensemble classifier folder, if any."""
+    from tools.ensemble_bundle import verify
+
+    for name in ["ensemble-20261113", "ensemble-20261111"]:
+        if (directory / name / "ensemble.json").is_file():
+            verify(directory / name)
+            return name
+    if required:
+        raise FileNotFoundError("No ensemble classifier folder is installed")
+    return None
+
+
+def configure_local_gemma(python, args):
+    """Point the application at the bundled CPU Gemma server, if it can run here."""
+    bundle = local_gemma()
+    if bundle is None or args.gemma_url or args.no_gemma:
+        return
+    if child(python, "_settings")["gemma"]:
+        return  # already configured; never overwrite
+    try:
+        subprocess.run(
+            [str(bundle[0]), "--version"],
+            env=gemma_environment(),
+            capture_output=True,
+            check=True,
+            timeout=30,
+        )
+    except (OSError, subprocess.SubprocessError):
+        print(
+            "The bundled Gemma server cannot run on this system (it needs x86_64 "
+            "Linux with glibc 2.38 or newer, e.g. Ubuntu 24.04). Continuing without "
+            "Gemma; screening is unaffected.",
+            flush=True,
+        )
+        return
+    alias = "gemma4-e4b"
+    receipt = GEMMA / "gemma.json"
+    if receipt.is_file():
+        alias = json.loads(receipt.read_text()).get("alias", alias)
+    for key, value in [
+        ("GEMMA_BASE_URL", LOCAL_GEMMA_URL),
+        ("GEMMA_MODEL", alias),
+        ("GEMMA_LOCAL", "1"),
+        # A CPU answer takes tens of seconds; allow for it.
+        ("GEMMA_TIMEOUT_S", "300"),
+        ("GEMMA_MAX_WAIT_S", "900"),
+    ]:
+        append_setting(python, key, value, preserve=True)
+    print("Bundled Gemma configured: " + alias + " on this machine's CPU", flush=True)
+
+
 def prepare_models(config, archive):
     from tools.import_models import import_models, verify_models
 
     directory = Path(config["models"])
     if directory.exists():
         verify_models(directory)
-        print("Existing model files verified; preserving them", flush=True)
+        name = verify_ensemble(directory)
+        print(
+            "Existing model files verified; preserving them"
+            + (f" (classifier: {name})" if name else ""),
+            flush=True,
+        )
     else:
         if archive is None:
             raise FileNotFoundError(
@@ -488,7 +585,7 @@ def gemma_check():
     }
 
 
-def check(python, *, camera=False, full_hashes=True):
+def check(python, *, camera=False, dashboard=False, full_hashes=True):
     if not python.is_file():
         raise FileNotFoundError(
             "Environment is missing; run python3.12 deploy.py setup --bundle ..."
@@ -500,11 +597,190 @@ def check(python, *, camera=False, full_hashes=True):
     from tools.import_models import verify_models
 
     verify_models(Path(config["models"]), hashes=full_hashes)
-    if camera:
-        if not shutil.which("ffmpeg"):
-            raise FileNotFoundError("Camera recording needs ffmpeg on PATH")
+    if full_hashes:
+        config["classifier"] = verify_ensemble(Path(config["models"]))
+    if camera and not shutil.which("ffmpeg"):
+        raise FileNotFoundError("Camera recording needs ffmpeg on PATH")
+    if camera or dashboard:
         child(python, "_database")
+    if dashboard and not (DASHBOARD / "index.html").is_file():
+        raise FileNotFoundError(
+            "The dashboard is not built; run `npm install && npm run build` in frontend/"
+        )
+    if config.get("gemma_local") and local_gemma() is None:
+        raise FileNotFoundError(
+            "GEMMA_LOCAL=1 but gemma/ has no server and weights; remove the GEMMA_* "
+            "lines from .env or restore the folder"
+        )
     return config
+
+
+def services(python, args, config):
+    """Processes to run for this start: (name, role, command, cwd, env, health URL).
+
+    role "helper" serves the others (Gemma); "server" runs until stopped; "job"
+    ends by itself (a video file through the camera backend).
+    """
+    planned = []
+    local = config.get("gemma_local")
+    uses_models = args.camera or not args.dashboard
+    if local and uses_models:
+        server, weights, projector = local_gemma()
+        planned.append(
+            (
+                "Gemma (CPU)",
+                "helper",
+                [
+                    server,
+                    "-m",
+                    weights,
+                    "--mmproj",
+                    projector,
+                    "--host",
+                    "127.0.0.1",
+                    "--port",
+                    local["port"],
+                    "--alias",
+                    local["model"],
+                    "--ctx-size",
+                    "8192",
+                    "--parallel",
+                    "1",
+                    "--threads",
+                    local["threads"],
+                    "--n-gpu-layers",
+                    "0",
+                    "--image-max-tokens",
+                    local["image_tokens"],
+                    "--reasoning",
+                    "off",
+                    "--no-webui",
+                ],
+                GEMMA,
+                gemma_environment(),
+                f"http://127.0.0.1:{local['port']}/health",
+            )
+        )
+    if args.dashboard:
+        env = environment()
+        env["DASHBOARD_DIR"] = str(DASHBOARD)
+        planned.append(
+            (
+                "Dashboard and API",
+                "server",
+                [
+                    python,
+                    "-m",
+                    "uvicorn",
+                    "data_pipeline.api.app:create_app",
+                    "--factory",
+                    "--host",
+                    args.host,
+                    "--port",
+                    args.api_port,
+                ],
+                ROOT / "data-pipeline",
+                env,
+                f"http://{args.host}:{args.api_port}/openapi.json",
+            )
+        )
+    if uses_models:
+        planned.append(
+            (
+                "Camera backend" if args.camera else "Upload interface",
+                "job" if args.camera and args.video else "server",
+                startup_command(python, args),
+                ROOT,
+                environment(),
+                None,
+            )
+        )
+    return planned
+
+
+def supervise(planned):
+    """Run the processes together and stop them in order.
+
+    Children get their own sessions so that Ctrl+C reaches this supervisor
+    only: the camera backend is interrupted first and may finish its queued
+    Gemma reviews before the Gemma server is stopped.
+    """
+    logs = ROOT / ".local/deploy/logs"
+    logs.mkdir(parents=True, exist_ok=True)
+    running, noted = [], False
+
+    def stop(signal_first=signal.SIGINT):
+        for role_group in (("job", "server"), ("helper",)):
+            group = [r for r in running if r[1] in role_group and r[2].poll() is None]
+            for _, _, process in group:
+                process.send_signal(signal_first)
+            deadline = time.monotonic() + 600
+            for name, _, process in group:
+                try:
+                    process.wait(max(1, deadline - time.monotonic()))
+                except subprocess.TimeoutExpired:
+                    print(f"{name} did not stop; terminating it", flush=True)
+                    process.kill()
+
+    def interrupted(*_):
+        raise KeyboardInterrupt
+
+    signal.signal(signal.SIGTERM, interrupted)
+    try:
+        for name, role, command, cwd, env, health in planned:
+            # Helpers are noisy; keep their output in a log file.
+            output = (
+                (logs / "gemma_server.log").open("ab") if role == "helper" else None
+            )
+            process = subprocess.Popen(
+                [str(c) for c in command],
+                cwd=cwd,
+                env=env,
+                stdout=output,
+                stderr=subprocess.STDOUT if output else None,
+                start_new_session=True,
+            )
+            running.append((name, role, process))
+            if health:
+                print(f"Starting {name} ...", flush=True)
+                deadline = time.monotonic() + 600
+                while True:
+                    if process.poll() is not None:
+                        raise RuntimeError(
+                            f"{name} exited during startup"
+                            + (f"; see {logs / 'gemma_server.log'}" if output else "")
+                        )
+                    try:
+                        with urllib.request.urlopen(health, timeout=2):
+                            break
+                    except OSError:
+                        if time.monotonic() > deadline:
+                            raise RuntimeError(f"{name} did not become ready") from None
+                        time.sleep(1)
+                print(f"{name} is ready", flush=True)
+        while True:
+            time.sleep(0.5)
+            for name, role, process in running:
+                code = process.poll()
+                if code is None:
+                    continue
+                if code != 0 or role != "job":
+                    raise RuntimeError(f"{name} stopped unexpectedly (exit {code})")
+            fronts = [r for r in running if r[1] != "helper"]
+            if all(r[2].poll() is not None for r in fronts):
+                print("Processing finished", flush=True)
+                return
+            finished = [r for r in fronts if r[1] == "job" and r[2].poll() is not None]
+            if finished and not noted:
+                noted = True
+                print(
+                    "Video finished. The dashboard keeps running; press Ctrl+C to stop.",
+                    flush=True,
+                )
+    except KeyboardInterrupt:
+        print("Stopping ...", flush=True)
+    finally:
+        stop()
 
 
 def startup_command(python, args):
@@ -585,8 +861,14 @@ def main():
             p.add_argument("--with-camera", action="store_true")
             p.add_argument("--gemma-url")
             p.add_argument("--gemma-model")
+            p.add_argument(
+                "--no-gemma",
+                action="store_true",
+                help="Do not configure the bundled CPU Gemma server",
+            )
         elif name == "check":
             p.add_argument("--camera", action="store_true")
+            p.add_argument("--dashboard", action="store_true")
             p.add_argument("--smoke", action="store_true")
             p.add_argument(
                 "--gemma",
@@ -595,6 +877,12 @@ def main():
             )
         else:
             p.add_argument("--camera", action="store_true")
+            p.add_argument(
+                "--dashboard",
+                action="store_true",
+                help="Serve the incidents API and the dashboard; combine with --camera",
+            )
+            p.add_argument("--api-port", type=int, default=8000)
             source = p.add_mutually_exclusive_group()
             source.add_argument("--rtsp-url")
             source.add_argument("--video", type=Path)
@@ -624,6 +912,7 @@ def main():
             python = install_dependencies(args.venv)
             config = configure(python, args)
             prepare_models(config, archive)
+            configure_local_gemma(python, args)
             run(
                 [python, ROOT / "deploy.py", "_smoke"],
                 "Testing real CPU inference and tracking",
@@ -636,7 +925,7 @@ def main():
                 + (" --venv " + str(args.venv) if args.venv != ROOT / ".venv" else "")
             )
     elif args.action == "check":
-        config = check(python, camera=args.camera)
+        config = check(python, camera=args.camera, dashboard=args.dashboard)
         if args.smoke:
             run(
                 [python, ROOT / "deploy.py", "_smoke"],
@@ -646,22 +935,39 @@ def main():
         if args.gemma:
             child(python, "_gemma")
         print(
-            "Ready: CPU application and verified model files; Gemma "
-            + ("configured" if config["gemma"] else "disabled")
+            "Ready: CPU application and verified model files; classifier "
+            + (config.get("classifier") or "mobileclip2-s2 (no ensemble installed)")
+            + "; Gemma "
+            + (
+                "bundled, on this machine's CPU"
+                if config.get("gemma_local")
+                else "configured"
+                if config["gemma"]
+                else "disabled"
+            )
         )
     else:
         if not 1 <= args.port <= 65535:
             raise ValueError("--port must be between 1 and 65535")
-        command = startup_command(python, args)
-        check(python, camera=args.camera, full_hashes=False)
-        print(
-            "Starting camera backend"
-            if args.camera
-            else f"Upload UI: http://{args.host}:{args.port}",
-            flush=True,
+        if not 1 <= args.api_port <= 65535:
+            raise ValueError("--api-port must be between 1 and 65535")
+        config = check(
+            python, camera=args.camera, dashboard=args.dashboard, full_hashes=False
         )
+        planned = services(python, args, config)
+        if args.dashboard:
+            print(
+                f"Dashboard: http://{args.host}:{args.api_port}/staff/home", flush=True
+            )
+        if args.camera:
+            print("Starting camera backend", flush=True)
+        elif not args.dashboard:
+            print(f"Upload UI: http://{args.host}:{args.port}", flush=True)
         os.chdir(ROOT)
-        os.execve(str(python), [str(c) for c in command], environment())
+        if len(planned) == 1:
+            # One process and nothing to coordinate: become it.
+            os.execve(str(python), [str(c) for c in planned[0][2]], planned[0][4])
+        supervise(planned)
 
 
 if __name__ == "__main__":

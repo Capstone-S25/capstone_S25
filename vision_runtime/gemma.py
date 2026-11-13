@@ -12,9 +12,11 @@ from PIL import Image, ImageOps
 
 from .evidence import (
     VIEW_FOR_TASK,
+    headline,
     history_problem,
     output_schema,
     parse_answer,
+    parse_summary,
     prompt,
     qualify,
     spread,
@@ -24,7 +26,9 @@ from .evidence import (
 
 
 class GemmaClient:
-    def __init__(self, url, model="gemma4-26b-a4b", timeout=110):
+    def __init__(self, url, model="gemma4-26b-a4b", timeout=None):
+        # GEMMA_TIMEOUT_S: read timeout per request; raise it for a CPU server.
+        timeout = float(timeout or os.environ.get("GEMMA_TIMEOUT_S") or 110)
         self.url = url.rstrip("/")
         if not self.url.startswith(("http://", "https://")):
             raise ValueError("Gemma URL must use HTTP or HTTPS")
@@ -45,7 +49,7 @@ class GemmaClient:
         # intentionally not put into Gemma's prompt as a claimed ground truth.
         with self.lock:
             started = time.perf_counter()
-            views, output, raw = validated_views(candidate), {}, []
+            views, output, raw, summaries = validated_views(candidate), {}, [], []
             for name in dict.fromkeys(VIEW_FOR_TASK[t] for t in candidate["tasks"]):
                 tasks = [t for t in candidate["tasks"] if VIEW_FOR_TASK[t] == name]
                 view = spread(views[name], 8 if name == "short" else 4)
@@ -83,7 +87,7 @@ class GemmaClient:
                             + [{"type": "text", "text": text}],
                         }
                     ],
-                    "max_tokens": 160,
+                    "max_tokens": 280,
                     "temperature": 0,
                     "seed": 42,
                     "cache_prompt": False,
@@ -108,6 +112,9 @@ class GemmaClient:
                 response.raise_for_status()
                 answer = response.json()["choices"][0]["message"].get("content") or ""
                 parsed = parse_answer(answer, active, len(view["paths"]))
+                summary = parse_summary(answer)
+                if summary:
+                    summaries.append(summary)
                 for task in active:
                     output[task] = qualify(task, parsed[task], candidate, view)
                 raw.append(
@@ -120,6 +127,8 @@ class GemmaClient:
                 )
             return {
                 "predictions": output,
+                "headline": headline(output),
+                "summary": " ".join(summaries) or None,
                 "raw_responses": raw,
                 "seconds": time.perf_counter() - started,
                 "model": self.model,

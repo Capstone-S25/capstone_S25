@@ -60,11 +60,16 @@ function describe(detail: ApiDetail): { description: string; confidence: number;
   // The screening classifier supplies the score; Gemma supplies the wording.
   const scored = [...history].reverse().find((v) => v.confidence !== null);
   const reviewer = [...history].reverse().find((v) => v.confidence === null && v.description);
+  const GEMMA_VERDICT = {
+    confirmed: 'Gemma confirmed this',
+    rejected: 'Gemma did not confirm this',
+    uncertain: 'Gemma could not tell',
+  };
   const verdict = !latest
     ? 'No model verdict yet'
     : latest.confidence === null
-      ? `Gemma ${latest.assessment} this (${latest.model_version})`
-      : 'Flagged by the screening classifier; Gemma has not confirmed it';
+      ? `${GEMMA_VERDICT[latest.assessment]} (${latest.model_version})`
+      : 'Flagged by the screening classifier; Gemma has not reviewed it yet';
   return {
     description: reviewer?.description ?? latest?.description ?? 'No description yet.',
     confidence: scored?.confidence ?? 0,

@@ -8,6 +8,7 @@ and are not automatically replayed after a process crash.
 import copy
 import json
 import logging
+import os
 import queue
 import threading
 import time
@@ -165,7 +166,10 @@ def consensus(provisional, reviewed):
 
 
 class ConfirmationQueue:
-    def __init__(self, backend, capacity=8, max_age=120):
+    def __init__(self, backend, capacity=8, max_age=None):
+        # A CPU-hosted model can take a minute per request; GEMMA_MAX_WAIT_S
+        # says how long a queued job may wait before it is marked not run.
+        max_age = float(max_age or os.environ.get("GEMMA_MAX_WAIT_S") or 120)
         if capacity < 1 or max_age <= 0:
             raise ValueError("Queue capacity and age must be positive")
         self.backend, self.max_age = backend, max_age
@@ -176,16 +180,26 @@ class ConfirmationQueue:
         )
         self.thread.start()
 
-    def submit(self, candidate, provisional, store):
+    def submit(self, candidate, provisional, store, tasks=None):
+        """Queue a review. `tasks` limits it to some of the screened tasks; the
+        journal keeps the screening predictions for all of them."""
         if self.closed:
             raise RuntimeError("Confirmation queue is closed")
+        screened = provisional["predictions"]
+        if tasks is not None:
+            candidate = {**candidate, "tasks": list(tasks)}
+            provisional = {
+                **provisional,
+                "predictions": {t: screened[t] for t in tasks},
+            }
         store.retain(candidate["event_id"])
         try:
             # Publish before the worker can finish and overwrite this transition.
             store.write(
                 candidate,
                 "confirmation_pending",
-                predictions=provisional["predictions"],
+                predictions=screened,
+                confirmation_tasks=list(candidate["tasks"]),
             )
             self.queue.put_nowait(
                 (copy.deepcopy(candidate), provisional, store, time.monotonic())
@@ -264,6 +278,13 @@ class ScreeningQueue:
     A full queue records new windows as not run (cameras), replaces the waiting
     window with the newest one (latest_only, live preview), or makes the
     producer wait for space (wait_for_space, uploads with no real-time deadline).
+
+    confirm="flagged" (default; GEMMA_CONFIRM overrides) sends a window to the
+    confirmation model only for the tasks screening called an anomaly, and at
+    most once per `confirm_interval` seconds of video for the same source and
+    task (GEMMA_CONFIRM_INTERVAL_S, default 60). A bag that stays for ten
+    minutes is then reviewed about ten times, not sixty. confirm="all" reviews
+    every window and task, which needs a fast (GPU) model server.
     """
 
     def __init__(
@@ -274,9 +295,20 @@ class ScreeningQueue:
         capacity=16,
         latest_only=False,
         wait_for_space=False,
+        confirm=None,
+        confirm_interval=None,
     ):
         if capacity < 1:
             raise ValueError("Queue capacity must be positive")
+        self.confirm = confirm or os.environ.get("GEMMA_CONFIRM") or "flagged"
+        if self.confirm not in {"flagged", "all"}:
+            raise ValueError("confirm must be 'flagged' or 'all'")
+        self.confirm_interval = float(
+            confirm_interval
+            if confirm_interval is not None
+            else os.environ.get("GEMMA_CONFIRM_INTERVAL_S") or 60
+        )
+        self.last_confirmed = {}
         if latest_only and wait_for_space:
             raise ValueError("Choose latest-only replacement or waiting, not both")
         self.classifier, self.store, self.confirmation = classifier, store, confirmation
@@ -348,6 +380,22 @@ class ScreeningQueue:
         else:
             self.queue.put_nowait(candidate)
 
+    def _tasks_to_confirm(self, candidate, predictions):
+        if self.confirm == "all":
+            return list(candidate["tasks"])
+        now = float(candidate["timestamp_s"])
+        chosen = []
+        for task in candidate["tasks"]:
+            if predictions[task].get("decision") != "anomaly":
+                continue
+            key = (candidate.get("source_id"), task)
+            last = self.last_confirmed.get(key)
+            # A restarted clock (new session) is treated as a new observation.
+            if last is None or now < last or now - last >= self.confirm_interval:
+                self.last_confirmed[key] = now
+                chosen.append(task)
+        return chosen
+
     def _consume(self):
         while True:
             candidate = self.queue.get()
@@ -368,7 +416,11 @@ class ScreeningQueue:
                     inference_seconds=result["seconds"],
                 )
                 if self.confirmation is not None:
-                    self.confirmation.submit(candidate, result, self.store)
+                    tasks = self._tasks_to_confirm(candidate, result["predictions"])
+                    if tasks:
+                        self.confirmation.submit(
+                            candidate, result, self.store, tasks=tasks
+                        )
             except Exception as exc:
                 logger.exception("Classifier failed")
                 try:

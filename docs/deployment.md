@@ -150,6 +150,39 @@ CPU MobileCLIP is the default. A working installation does not establish the
 two-second inference target or sufficient RAM for a locally served large Gemma
 variant. Existing model licenses and measured runtime limitations still apply.
 
+## Transfer bundle and full start (13 November 2026)
+
+`tools/build_deployment.py` assembles one folder with the application at the
+current commit, all models (including `ensemble-20261113`), the built
+dashboard, Python wheels for an offline install, and optionally Gemma 4 E4B
+(4-bit) with a CPU build of the llama.cpp server. Its `START_HERE.md`
+(`docs/START_HERE.md` here) is the operator guide.
+
+```bash
+python tools/build_deployment.py dist/capstone-cpu-deployment-20261113 \
+    --ensemble-export /path/to/bundle_v9 --hf-cache ~/.cache/huggingface/hub \
+    --gemma-weights /path/to/gemma-4-E4B-it-qat-q4_0 --llama /path/to/llama-b11925 \
+    --wheels --archive
+```
+
+What `deploy.py` does with such a folder:
+
+- `setup` installs from `wheels/` without internet access, verifies the
+  ensemble folder, and writes `GEMMA_BASE_URL`, `GEMMA_MODEL`, `GEMMA_LOCAL=1`
+  and longer Gemma timeouts when `gemma/` is present and its server runs here
+  (`--no-gemma` skips this; an existing Gemma setting is never overwritten).
+- `start --dashboard --camera --rtsp-url ...` (or `--video ...`) runs the
+  bundled Gemma server, the API with the dashboard on port 8000, and the
+  camera backend together. Ctrl+C stops the camera backend first so queued
+  Gemma reviews can finish, then the rest. The Gemma server's output goes to
+  `.local/deploy/logs/gemma_server.log`.
+- `start --dashboard` alone serves the API and dashboard; plain `start` is
+  still the Streamlit upload page.
+
+Gemma reviews only windows the screening classifier flags, and one behaviour
+on one camera at most once per `GEMMA_CONFIRM_INTERVAL_S` (60 s of video), so
+a CPU model that needs tens of seconds per answer keeps up.
+
 ## Validation on 10 November 2026
 
 A fresh Python 3.12 environment installed successfully with Torch 2.8.0+cpu

@@ -279,3 +279,70 @@ def test_gemma_healthcheck_lists_models_without_sending_evidence(monkeypatch):
             server.shutdown()
             thread.join(timeout=5)
     assert calls == [("/v1/models", "Bearer fixture-token")] * 2
+
+
+def start_args(**changes):
+    values = dict(
+        camera=False,
+        dashboard=False,
+        video=None,
+        rtsp_url=None,
+        source_id="camera_01",
+        host="127.0.0.1",
+        port=8501,
+        api_port=8000,
+    )
+    return SimpleNamespace(**{**values, **changes})
+
+
+def test_full_start_plans_gemma_api_and_camera_in_stop_order(tmp_path, monkeypatch):
+    video = tmp_path / "clip.mp4"
+    video.write_bytes(b"0")
+    monkeypatch.setattr(
+        deploy, "local_gemma", lambda: (Path("server"), Path("w.gguf"), Path("p.gguf"))
+    )
+    local = {"port": 8090, "model": "gemma4-e4b", "threads": 4, "image_tokens": 280}
+    planned = deploy.services(
+        Path("python"),
+        start_args(camera=True, dashboard=True, video=video),
+        {"gemma_local": local},
+    )
+    assert [(name, role) for name, role, *_ in planned] == [
+        ("Gemma (CPU)", "helper"),
+        ("Dashboard and API", "server"),
+        ("Camera backend", "job"),
+    ]
+    gemma = [str(part) for part in planned[0][2]]
+    assert gemma[gemma.index("--alias") + 1] == "gemma4-e4b"
+    assert gemma[gemma.index("--n-gpu-layers") + 1] == "0"
+    assert planned[1][4]["DASHBOARD_DIR"].endswith("frontend/dist")
+    # A live camera never ends by itself.
+    live = deploy.services(
+        Path("python"), start_args(camera=True, rtsp_url="rtsp://x/y"), {}
+    )
+    assert [(name, role) for name, role, *_ in live] == [("Camera backend", "server")]
+
+
+def test_dashboard_alone_starts_no_model_process(monkeypatch):
+    monkeypatch.setattr(
+        deploy, "local_gemma", lambda: (Path("s"), Path("w"), Path("p"))
+    )
+    planned = deploy.services(
+        Path("python"), start_args(dashboard=True), {"gemma_local": {"port": 8090}}
+    )
+    assert [name for name, *_ in planned] == ["Dashboard and API"]
+    upload = deploy.services(Path("python"), start_args(), {})
+    assert [name for name, *_ in upload] == ["Upload interface"]
+
+
+def test_bundled_gemma_needs_server_weights_and_projector(tmp_path, monkeypatch):
+    monkeypatch.setattr(deploy, "GEMMA", tmp_path)
+    assert deploy.local_gemma() is None
+    (tmp_path / "llama").mkdir()
+    (tmp_path / "models").mkdir()
+    (tmp_path / "llama/llama-server").write_bytes(b"")
+    (tmp_path / "models/gemma-it.gguf").write_bytes(b"")
+    assert deploy.local_gemma() is None
+    (tmp_path / "models/gemma-mmproj.gguf").write_bytes(b"")
+    server, weights, projector = deploy.local_gemma()
+    assert (weights.name, projector.name) == ("gemma-it.gguf", "gemma-mmproj.gguf")
