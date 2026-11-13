@@ -419,7 +419,8 @@ class ScreeningQueue:
                 continue
             last = self.last_confirmed.get(key)
             # A restarted clock (new session) is treated as a new observation.
-            if last is None or now < last or now - last >= self.confirm_interval:
+            # Half a second of slack: 10 s scans land at 40.2 s, 70.1 s, ...
+            if last is None or now < last or now - last >= self.confirm_interval - 0.5:
                 self.last_confirmed[key] = now
                 chosen.append(task)
         return chosen
