@@ -331,6 +331,8 @@ def test_dashboard_alone_starts_no_model_process(monkeypatch):
         Path("python"), start_args(dashboard=True), {"gemma_local": {"port": 8090}}
     )
     assert [name for name, *_ in planned] == ["Dashboard and API"]
+    # The API package lives in data-pipeline/, so it must start there.
+    assert planned[0][3] == deploy.ROOT / "data-pipeline"
     upload = deploy.services(Path("python"), start_args(), {})
     assert [name for name, *_ in upload] == ["Upload interface"]
 

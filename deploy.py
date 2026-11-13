@@ -1005,10 +1005,12 @@ def main():
             print("Starting camera backend", flush=True)
         elif not args.dashboard:
             print(f"Upload UI: http://{args.host}:{args.port}", flush=True)
-        os.chdir(ROOT)
         if len(planned) == 1:
-            # One process and nothing to coordinate: become it.
-            os.execve(str(python), [str(c) for c in planned[0][2]], planned[0][4])
+            # One process and nothing to coordinate: become it, in its folder.
+            _, _, command, cwd, env, _ = planned[0]
+            os.chdir(cwd)
+            os.execve(str(command[0]), [str(c) for c in command], env)
+        os.chdir(ROOT)
         supervise(planned)
 
 
