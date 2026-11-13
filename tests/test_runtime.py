@@ -254,6 +254,9 @@ def test_crop_delays_keep_trigger_frame_and_decision_availability(tmp_path):
     assert max(event["views"]["short"]["times_s"]) == 0
     with Image.open(event["context_frame_path"]) as image:
         assert image.getpixel((4, 4))[0] > 200
+    # The session's first frame is the camera reference for every candidate.
+    with Image.open(event["reference_frame_path"]) as image:
+        assert image.getpixel((4, 4))[0] > 200
     assert detector.finish()[-1]["event_type"] == "final_scene_review"
 
 
@@ -273,3 +276,115 @@ def test_release_and_journaling_failure_do_not_hang_worker(tmp_path, monkeypatch
 
     with pytest.raises(RuntimeError, match="journal failed"):
         worker.close()
+
+
+def test_upload_queue_waits_for_space_instead_of_dropping(tmp_path):
+    import pytest
+
+    with pytest.raises(ValueError):
+        ScreeningQueue(
+            Classifier(), EventStore(tmp_path), latest_only=True, wait_for_space=True
+        )
+    entered, finish = threading.Event(), threading.Event()
+
+    class Slow(Classifier):
+        def classify(self, event):
+            entered.set()
+            assert finish.wait(5)
+            return super().classify(event)
+
+    store = EventStore(tmp_path)
+    worker = ScreeningQueue(Slow(), store, capacity=1, wait_for_space=True)
+    accepted = []
+
+    def produce():
+        for i in range(4):
+            accepted.append(worker.submit(candidate(tmp_path, f"window{i}")))
+
+    producer = threading.Thread(target=produce)
+    try:
+        producer.start()
+        assert entered.wait(2)
+        producer.join(0.3)
+        # One window is screening and one waits in the queue; the producer waits
+        # for space rather than recording later windows as not run.
+        assert producer.is_alive()
+        assert not any(row["status"] == "not_run" for row in store.snapshot())
+    finally:
+        finish.set()
+        producer.join(5)
+        worker.close()
+    assert accepted == [True] * 4
+    assert [row["status"] for row in store.snapshot()] == ["screened"] * 4
+    assert store.pending == 0 and not store.active
+
+
+def test_uploads_wait_for_screening_space(monkeypatch, tmp_path):
+    import vision_runtime.review as review
+
+    monkeypatch.setenv("VISION_RUNTIME_DIR", str(tmp_path))
+    monkeypatch.delenv("GEMMA_BASE_URL", raising=False)
+    options = []
+
+    class Recording(ScreeningQueue):
+        def __init__(self, *args, **kwargs):
+            options.append(kwargs)
+            super().__init__(*args, **kwargs)
+
+    monkeypatch.setattr(review, "ScreeningQueue", Recording)
+    buffer = io.BytesIO()
+    Image.new("RGB", (64, 64)).save(buffer, "PNG")
+    reviewer = Reviewer(Classifier())
+    result = reviewer.analyze(buffer.getvalue(), "image.png")
+    reviewer.release(result["run_id"])
+    reviewer.close()
+    assert options == [{"wait_for_space": True}]
+
+
+def test_long_view_spans_twenty_seconds_with_two_fps_buffer(tmp_path):
+    """Drifting ~29.97 fps timestamps at a 2 fps buffer still give a full long view."""
+    from data_pipeline.detection.stage1 import Stage1Detector
+    from data_pipeline.video_ingestion.decoding.decoder import DecodedFrame
+
+    from vision_runtime.features import temporal_support
+    from vision_runtime.tracking.gate import HandoffWriter
+
+    class Perception:
+        def __init__(self, cfg):
+            pass
+
+        def reset(self, fps):
+            pass
+
+        def observe(self, frame, index, t):
+            return SimpleNamespace(t=t, index=index)
+
+    class Engine:
+        crop_check = None
+
+        def __init__(self, cfg, fps):
+            pass
+
+        def step(self, obs, frame):
+            return []
+
+        def flush(self):
+            return []
+
+    gate = SimpleNamespace(
+        Perception=Perception, RuleEngine=Engine, HandoffWriter=HandoffWriter
+    )
+    detector = Stage1Detector(
+        "camera", tmp_path, fps=5, cfg=object(), gate=gate, safety_scan_seconds=10
+    )
+    session, events = uuid4(), []
+    image = np.zeros((8, 8, 3), np.uint8)
+    for index in range(160):  # 32 s at 5 fps, 200.2 ms apart (29.97 fps source)
+        frame = DecodedFrame(0, "camera", session, index, round(index * 200.2), image)
+        events += detector.process(frame)
+    reviews = [e for e in events if e["timestamp_s"] >= 20]
+    assert reviews
+    for event in reviews:
+        long = event["views"]["long"]
+        assert long["times_s"][-1] - long["times_s"][0] >= 19.5
+        assert temporal_support("loitering", long["times_s"], len(long["paths"]))

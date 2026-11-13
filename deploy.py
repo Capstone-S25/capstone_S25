@@ -402,7 +402,8 @@ def smoke():
     import torch
     from PIL import Image
 
-    from vision_runtime.classifier import ClipStrategy
+    from vision_runtime.classifier import ENSEMBLE, load_classifier
+    from vision_runtime.config import models_root
 
     settings()
     sys.path.insert(0, str(ROOT / "data-pipeline"))
@@ -425,7 +426,14 @@ def smoke():
             "unattended_items",
         ]
         view = {"paths": [str(path)], "times_s": [0.0]}
-        result = ClipStrategy(device="cpu").classify(
+        # The ensemble is the default classifier when its folder is installed.
+        name = (
+            ENSEMBLE
+            if (models_root() / ENSEMBLE / "ensemble.json").is_file()
+            else "mobileclip2-s2"
+        )
+        print("Smoke classifier:", name, flush=True)
+        result = load_classifier(name, "cpu").classify(
             {"tasks": tasks, "timestamp_s": 0, "views": {"short": view, "long": view}}
         )
         for task in tasks:

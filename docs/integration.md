@@ -37,10 +37,17 @@ or local changes are removed from the original checkout/branches.
    reach verification, body/overlap/rider guards, and temporal crop checks are
    retained. Faster R-CNN supplies classifier contextual crop proposals; it
    is not the active camera tracker.
-3. A bounded **screening queue** (16 queued events) runs trained MobileCLIP.
-   Its results are journaled before optional confirmation. The classifier's
-   selected heads, backbone interpolation, task feature recipes and frozen
-   thresholds are preserved; this integration does not retrain them.
+3. A bounded **screening queue** (16 queued events) runs the screening
+   classifier. Its results are journaled before optional confirmation. The
+   default is the November **SigLIP2-B + MobileCLIP2-B ensemble**
+   (`ensemble-20261111`, `vision_runtime/ensemble.py`); its heads were fitted
+   with whole cameras held out and its thresholds set on those held-out scores.
+   Loitering and unattended windows are also compared with the session's
+   reference frame. See [the F1 study](f1_study.md) for results and limits.
+   The October MobileCLIP route stays available as `mobileclip2-s2`; it
+   computes only the features its selected heads read, and
+   `tests/test_classifier_parity.py` checks it against the original dense
+   computation.
 4. A separate bounded **confirmation queue** (8 queued events) calls the
    configured Gemma vision endpoint. Screening continues while this worker
    waits. Jobs waiting more than 120 seconds are marked not run. Requests have
@@ -80,8 +87,11 @@ Failure:    not_run / screening_error / confirmation_not_run / confirmation_erro
 
 The segment `processed` status covers decoding and frame callbacks, including
 admission attempts to the bounded AI queue; it does not certify that AI
-classification or confirmation finished. Queue overflow is explicit in the AI
-journal instead of silently fabricating a normal decision. A confirmation error
+classification or confirmation finished. Camera queue overflow is explicit in
+the AI journal instead of silently fabricating a normal decision; the live
+webcam view replaces a waiting window with the newest one. Uploads have no
+real-time deadline, so tracking waits for screening space instead of marking
+later windows of a long video as not run. A confirmation error
 preserves provisional results and records unknown confirmation.
 
 Camera evidence and append-only event transition journals live under

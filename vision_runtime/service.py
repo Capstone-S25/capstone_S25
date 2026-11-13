@@ -248,14 +248,30 @@ class ConfirmationQueue:
 
 
 class ScreeningQueue:
+    """Bounded screening work for one event store.
+
+    A full queue records new windows as not run (cameras), replaces the waiting
+    window with the newest one (latest_only, live preview), or makes the
+    producer wait for space (wait_for_space, uploads with no real-time deadline).
+    """
+
     def __init__(
-        self, classifier, store, confirmation=None, capacity=16, latest_only=False
+        self,
+        classifier,
+        store,
+        confirmation=None,
+        capacity=16,
+        latest_only=False,
+        wait_for_space=False,
     ):
         if capacity < 1:
             raise ValueError("Queue capacity must be positive")
+        if latest_only and wait_for_space:
+            raise ValueError("Choose latest-only replacement or waiting, not both")
         self.classifier, self.store, self.confirmation = classifier, store, confirmation
         self.queue = queue.Queue(maxsize=capacity)
         self.latest_only = latest_only
+        self.wait_for_space = wait_for_space
         self.closed = False
         self.fatal_error = None
         self.thread = threading.Thread(
@@ -314,7 +330,12 @@ class ScreeningQueue:
                 finally:
                     self.store.done(previous["event_id"])
                     self.queue.task_done()
-        self.queue.put_nowait(candidate)
+        if self.wait_for_space:
+            # The worker always drains (including after release or a journal
+            # failure), so this wait ends when the current window is screened.
+            self.queue.put(candidate)
+        else:
+            self.queue.put_nowait(candidate)
 
     def _consume(self):
         while True:
