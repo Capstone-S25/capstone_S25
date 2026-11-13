@@ -69,7 +69,7 @@ def test_confirmation_does_not_block_second_screening(tmp_path):
 
     review = ConfirmationQueue(SlowGemma())
     store = EventStore(tmp_path)
-    screening = ScreeningQueue(Classifier(), store, review)
+    screening = ScreeningQueue(Classifier(), store, review, confirm="all")
     try:
         screening.submit(candidate(tmp_path))
         assert entered.wait(2)
@@ -388,3 +388,75 @@ def test_long_view_spans_twenty_seconds_with_two_fps_buffer(tmp_path):
         long = event["views"]["long"]
         assert long["times_s"][-1] - long["times_s"][0] >= 19.5
         assert temporal_support("loitering", long["times_s"], len(long["paths"]))
+
+
+def test_only_flagged_tasks_are_confirmed_and_at_most_once_per_interval(tmp_path):
+    asked = []
+
+    class Flags:
+        def classify(self, event):
+            return {
+                "predictions": {
+                    "smoking": {"decision": "anomaly", "score": 1.0, "alert": False},
+                    "littering": {"decision": "normal", "score": -1.0, "alert": False},
+                },
+                "seconds": 0.0,
+            }
+
+    class Gemma:
+        def classify(self, event):
+            asked.append((event["timestamp_s"], tuple(event["tasks"])))
+            return {
+                "predictions": {
+                    "smoking": {
+                        "decision": "anomaly",
+                        "frame_refs": [1],
+                        "evidence": "Cigarette at mouth",
+                        "alert": True,
+                    }
+                },
+                "summary": "One person smokes by the door.",
+            }
+
+    review = ConfirmationQueue(Gemma())
+    store = EventStore(tmp_path)
+    screening = ScreeningQueue(Flags(), store, review, confirm_interval=60)
+    try:
+        for name, at in [("a", 10.0), ("b", 20.0), ("c", 75.0)]:
+            event = candidate(tmp_path, name)
+            event.update(tasks=["smoking", "littering"], timestamp_s=at)
+            screening.submit(event)
+    finally:
+        screening.close()
+        review.close()
+    # 20 s is inside the 60 s interval of the 10 s review; 75 s is outside it.
+    assert asked == [(10.0, ("smoking",)), (75.0, ("smoking",))]
+    rows = {row["timestamp_s"]: row for row in store.snapshot()}
+    assert rows[10.0]["status"] == "reviewed" and rows[20.0]["status"] == "screened"
+    # The journal keeps screening results for the task that was not reviewed.
+    assert set(rows[10.0]["predictions"]) == {"smoking", "littering"}
+    assert set(rows[10.0]["confirmation"]) == {"smoking"}
+    assert rows[10.0]["confirmation_details"]["summary"].startswith("One person")
+
+
+def test_gemma_answer_carries_a_scene_summary():
+    from vision_runtime.evidence import (
+        headline,
+        output_schema,
+        parse_answer,
+        parse_summary,
+    )
+
+    text = (
+        '{"smoking": {"decision": "anomaly", "frame_refs": [1], "evidence": "Cigarette lit"},'
+        ' "summary": "A man   smokes beside a door."}'
+    )
+    parsed = parse_answer(text, ["smoking"], 2)
+    assert parsed["smoking"]["decision"] == "anomaly"
+    assert parse_summary(text) == "A man smokes beside a door."
+    assert parse_summary("not json") is None
+    assert "summary" in output_schema(["smoking"], 2)["required"]
+    guarded = {"decision": "unknown", "model_decision_before_guard": "anomaly"}
+    assert headline(
+        {"unattended_items": guarded, "smoking": {"decision": "normal"}}
+    ) == ("confirmed unattended items; did not see smoking")

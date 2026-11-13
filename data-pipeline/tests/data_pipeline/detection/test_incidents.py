@@ -81,7 +81,10 @@ def test_anomaly_window_opens_extends_and_records_confirmation(
                 "unattended_items": {"decision": "anomaly", "evidence": "Bag left."},
                 "smoking": {"decision": "normal", "evidence": "No cigarette."},
             },
-            "confirmation_details": {"model": "gemma4-26b-a4b"},
+            "confirmation_details": {
+                "model": "gemma4-e4b",
+                "summary": "A bag sits on a table. Nobody is near it.",
+            },
         },
     )
 
@@ -102,10 +105,12 @@ def test_anomaly_window_opens_extends_and_records_confirmation(
     assert [v.model_version for v in verdicts] == [
         "ensemble-20261111",
         "ensemble-20261111",
-        "gemma4-26b-a4b",
+        "gemma4-e4b",
     ]
     assert verdicts[-1].assessment == VLMAssessment.CONFIRMED
-    assert verdicts[-1].description == "Bag left."
+    assert verdicts[-1].description == (
+        "Confirmed by gemma4-e4b: Bag left. A bag sits on a table. Nobody is near it."
+    )
     assert 0.5 < verdicts[0].confidence < 1
     box = incident.detections[0]
     assert (box.bbox_x1, box.bbox_y1) == pytest.approx((0.1, 0.1))
