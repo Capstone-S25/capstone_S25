@@ -173,7 +173,7 @@ the same.
 | Idea | Cross-validation | Held out | Decision |
 |---|---|---|---|
 | Smoking detector retrained with a second CCTV site (936 images, ~40 cameras) | Smoking out-of-fold AP 0.829 → 0.827 | CCTV AP 0.79 → 0.80 (one backbone) | No gain in cross-validation; not adopted |
-| SigLIP2-B/16 at 384 px as a third backbone (about 3.4× the per-image cost) | Out-of-fold AP: smoking 0.834 → 0.847, unattended 0.746 → 0.796 | Smoking improves (Stanford40 AP 0.95 → 0.97, HMDB 0.66 → 0.71) but loitering AP 0.75 → 0.65 and MEVA 0.79 → 0.74; macro AP 0.866 → 0.845 | Gain did not transfer and it costs CPU; not adopted |
+| SigLIP2-B/16 at 384 px as a third backbone (2.9× the CPU time per image: 149 ms against 51 ms on 8 threads) | Out-of-fold AP: smoking 0.834 → 0.847, unattended 0.746 → 0.796 | Smoking improves (Stanford40 AP 0.95 → 0.97, HMDB 0.66 → 0.71) but loitering AP 0.75 → 0.65 and MEVA 0.79 → 0.74; macro AP 0.866 → 0.845 | Gain did not transfer and it costs CPU; not adopted |
 | Other tasks' negatives for every head | Own-task out-of-fold AP falls slightly for 4 of 5 tasks | HMDB smoking AP 0.66 → 0.70–0.73; macro F1 0.73–0.74 | Kept as a per-task candidate; selected for loitering |
 | Synthetic "person lying down" images for sleeping | — | — | Generated images of people lying on roads/floors, not sleeping with bedding; not used |
 
