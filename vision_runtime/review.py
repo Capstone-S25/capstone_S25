@@ -127,9 +127,9 @@ class Reviewer:
     def __init__(self, classifier=None, gemma=None, model=None, device="cpu"):
         configure_runtime()
         if classifier is None:
-            from .classifier import ENSEMBLE, load_classifier
+            from .classifier import default_classifier, load_classifier
 
-            model = model or os.environ.get("VISION_CLASSIFIER", ENSEMBLE)
+            model = model or os.environ.get("VISION_CLASSIFIER") or default_classifier()
             classifier = load_classifier(model, device)
         self.classifier = LockedClassifier(classifier)
         url = os.environ.get("GEMMA_BASE_URL")

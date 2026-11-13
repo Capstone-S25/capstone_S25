@@ -1,4 +1,6 @@
-# November F1 study and the ensemble classifier — 11 November 2026
+# November F1 study and the ensemble classifier — 11 and 13 November 2026
+
+> Update 13 November: `ensemble-20261113` is the default. See [Round 2](#round-2--13-november-2026-ensemble-20261113-now-the-default) for what changed, the Gemma video test, and what was tried and not adopted.
 
 The screening classifier is now a **two-backbone ensemble** (SigLIP2-B/16 and
 MobileCLIP2-B) with heads cross-fitted on camera-held-out folds, plus a small
@@ -120,6 +122,94 @@ standardized-score differences ≤0.0001 for loitering/unattended and ≤0.055
 (mean 0.007) for the YOLO-box tasks, on a scale of about ±3. Seven real demo
 windows took 42.9 s on 8 threads (October route after the earlier speed-ups:
 26 s). Faster R-CNN on the long-view frames is still the largest part.
+
+## Round 2 — 13 November 2026 (`ensemble-20261113`, now the default)
+
+Further experiments did **not** raise benchmark F1: every variant tried lands
+between 0.70 and 0.75 macro F1, inside the bootstrap noise of this benchmark
+(about ±0.1). What changed is robustness to footage of *other* tasks, which the
+per-task benchmark does not measure.
+
+**Cross-task false alarms.** In deployment every head scores every window, so
+a loitering head also sees littering and unattended-item footage. Applying each
+`ensemble-20261111` head to the other tasks' held-out windows:
+
+| Head | Other-task windows flagged (held out) | Worst case |
+|---|---|---|
+| Smoking | 2.0% | 20% of sleeping photos |
+| Littering | 1.4% | 12% of loitering windows |
+| Loitering | 8.1% (25.6% out-of-fold) | 30% of littering clips |
+| Rough sleeping | 0.4% | 7% of littering clips |
+| Unattended items | 4.0% (11.7% out-of-fold) | 6% of littering clips |
+
+`ensemble-20261113` keeps the same encoders, recipes and CPU cost and changes
+two things, both chosen on out-of-fold data only:
+
+1. **Threshold cap.** A task's threshold is the out-of-fold max-F1 threshold,
+   raised if needed so that at most 5% of other tasks' out-of-fold windows are
+   flagged. It binds for unattended items (0.82 → 1.05).
+2. **Other tasks' windows as negatives**, as a candidate per task (10%, 25% or
+   40% of the negative weight, whole cameras still held out). Under the cap it
+   is selected for loitering only (40%); the other heads are unchanged.
+
+| | Macro F1 | Macro AP | Other-task windows flagged |
+|---|---|---|---|
+| `ensemble-20261111` | 0.723 | 0.866 | 3.2% |
+| `ensemble-20261113` | 0.716 | 0.863 | 0.9% |
+
+The F1 difference is the unattended-items cap: held-out-camera recall 0.66 →
+0.59 at 0% false alarms (F1 0.81 → 0.74). Cap sensitivity: 10% gives macro F1
+0.722 with 1.4% flagged; 2% gives 0.703 with 0.8%. Against the October route
+the gain is +0.127 macro F1 (95% interval +0.004 to +0.229). On ABODA video 9
+the earlier release opened a spurious loitering incident for two windows; this
+one opens only the unattended-item incident. Predictions also carry a
+`probability` (logistic calibration of the out-of-fold score, balanced classes)
+for display. Littering positives and unattended-item positives are never used
+as each other's negatives, because leaving a rubbish bag and leaving a bag look
+the same.
+
+### Measured in round 2 and not adopted
+
+| Idea | Cross-validation | Held out | Decision |
+|---|---|---|---|
+| Smoking detector retrained with a second CCTV site (936 images, ~40 cameras) | Smoking out-of-fold AP 0.829 → 0.827 | CCTV AP 0.79 → 0.80 (one backbone) | No gain in cross-validation; not adopted |
+| SigLIP2-B/16 at 384 px as a third backbone (about 3.4× the per-image cost) | Out-of-fold AP: smoking 0.834 → 0.847, unattended 0.746 → 0.796 | Smoking improves (Stanford40 AP 0.95 → 0.97, HMDB 0.66 → 0.71) but loitering AP 0.75 → 0.65 and MEVA 0.79 → 0.74; macro AP 0.866 → 0.845 | Gain did not transfer and it costs CPU; not adopted |
+| Other tasks' negatives for every head | Own-task out-of-fold AP falls slightly for 4 of 5 tasks | HMDB smoking AP 0.66 → 0.70–0.73; macro F1 0.73–0.74 | Kept as a per-task candidate; selected for loitering |
+| Synthetic "person lying down" images for sleeping | — | — | Generated images of people lying on roads/floors, not sleeping with bedding; not used |
+
+### Gemma: selected frames or continuous video?
+
+827 held-out windows whose source video is on disk (HMDB smoking, IWDD
+littering, ABODA and MEVA unattended items), Gemma 4 E4B, Yes/No answer margin,
+same prompt. "Dense" samples the same time span evenly from the video.
+
+| Input | Frames × tokens | Visual tokens | Seconds per window (GPU) | Macro AP | Change (95% interval) |
+|---|---|---|---|---|---|
+| Selected frames (current) | 4–8 × 280 | 1,797 | 0.58 | 0.772 | — |
+| Dense, same budget | 8 × 280 | 2,240 | 1.03 | 0.787 | +0.015 (−0.007, +0.045) |
+| Dense, same budget | 16 × 140 | 2,240 | 0.86 | 0.779 | +0.002 (−0.047, +0.052) |
+| Dense, same budget | 32 × 70 | 2,240 | 0.91 | 0.782 | +0.002 (−0.059, +0.058) |
+| Dense, 2× budget | 16 × 280 | 4,480 | 2.22 | 0.794 | +0.026 (−0.007, +0.073) |
+| Dense, 4× budget | 32 × 280 | 8,960 | 2.99 | 0.800 | +0.026 (−0.007, +0.063) |
+
+**Answer: not reliably.** At the same token budget the change is within noise;
+five times the tokens buys about +0.03 AP with an interval that includes zero
+and five times the latency. The exception is unattended items on nearby
+cameras: 32 small frames reach AP 0.99 against 0.78 for 4 large ones, while the
+same setting falls on distant 1080p MEVA footage (0.63 → 0.53). More frames
+help when the event is "something stays"; more pixels help when the object is
+small. Only E4B was available locally; the deployed 26B-A4B model was not
+re-measured.
+
+**Gemma as a veto would cost recall.** At its own Yes/No point E4B is liberal
+for smoking (recall 0.98, 17% false alarms on HMDB) and very conservative
+elsewhere (recall 0.04 on littering, 0.29 and 0.00 on unattended items).
+Requiring agreement with the screening classifier lifts HMDB smoking F1 0.53 →
+0.68 but drops littering F1 0.87 → 0.07 and held-out-camera unattended F1
+0.80 → 0.24. The dashboard integration therefore opens an incident on the
+screening result and attaches Gemma's verdict as a hint. Gemma ranks HMDB
+smoking better than the CPU classifier (AP 0.78 against 0.67 at full-set
+prevalence; 0.81 fused), so its score is useful evidence for that task.
 
 ## Limits
 

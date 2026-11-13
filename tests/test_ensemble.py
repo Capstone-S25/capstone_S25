@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 from PIL import Image
 
+from vision_runtime.classifier import ENSEMBLES, load_classifier
 from vision_runtime.config import models_root
 from vision_runtime.ensemble import LRU, EnsembleStrategy, crop_box, dwell, pool
 
@@ -70,7 +71,9 @@ def test_offset_is_window_minus_reference(tmp_path):
     assert np.allclose(shifted, plain - reference)
 
 
-installed = (models_root() / "ensemble-20261111" / "ensemble.json").is_file()
+installed = [
+    name for name in ENSEMBLES if (models_root() / name / "ensemble.json").is_file()
+]
 
 
 def frames(folder, count, seed):
@@ -84,8 +87,10 @@ def frames(folder, count, seed):
 
 
 @pytest.mark.skipif(not installed, reason="ensemble bundle is not installed")
-def test_installed_ensemble_scores_every_supported_task(tmp_path):
-    strategy = EnsembleStrategy(device="cpu")
+@pytest.mark.parametrize("name", installed)
+def test_installed_ensemble_scores_every_supported_task(tmp_path, name):
+    strategy = load_classifier(name)
+    assert strategy.metadata["model"] == name
     long_paths = frames(tmp_path, 21, 1)
     short_paths = frames(tmp_path, 8, 2)
     candidate = {
@@ -111,6 +116,13 @@ def test_installed_ensemble_scores_every_supported_task(tmp_path):
     for task, value in result.items():
         assert np.isfinite(value["score"]), task
         assert value["decision"] in {"normal", "anomaly"}
+        if "calibration" in strategy.tasks[task]:
+            assert 0 <= value["probability"] <= 1
+            # The calibration is monotone in the score.
+            assert (
+                strategy._probability(task, value["score"] + 1)["probability"]
+                > (value["probability"])
+            )
     short = dict(
         candidate,
         views={
