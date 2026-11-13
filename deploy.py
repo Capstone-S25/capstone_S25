@@ -432,10 +432,22 @@ def camera_setup(python):
     config = child(python, "_settings")
     if config["database"] == "unset":
         append_setting(python, "DATABASE_URL", LOCAL_DATABASE)
-    if config["database"] in {"unset", "compose"}:
+    if (
+        config["database"] in {"unset", "compose"}
+        and child(python, "_database_ping")["reachable"]
+    ):
+        # For example a PostgreSQL installed with the system package manager.
+        print("Using the PostgreSQL server already running on 127.0.0.1:5432")
+    elif config["database"] in {"unset", "compose"}:
         if not shutil.which("docker"):
             raise FileNotFoundError(
-                "Install Docker Compose for the local database, or configure an existing DATABASE_URL"
+                "No database found. Either install Docker Compose, or install "
+                "PostgreSQL and create the default account:\n"
+                "  sudo apt install postgresql\n"
+                "  sudo -u postgres psql -c \"CREATE USER capstone PASSWORD 'password'\" "
+                '-c "CREATE DATABASE capstone OWNER capstone"\n'
+                "or put DATABASE_URL=postgresql+psycopg://user:password@host:5432/name "
+                "in .env. Then rerun setup --with-camera."
             )
         run(["docker", "compose", "version"], "Checking Docker Compose")
         run(
@@ -489,6 +501,25 @@ def database_check():
     finally:
         engine.dispose()
     return {"database_ready": True}
+
+
+def database_ping():
+    """Whether the configured (or default local) database accepts a connection."""
+    from sqlalchemy import create_engine
+    from sqlalchemy.exc import SQLAlchemyError
+
+    settings()
+    engine = create_engine(
+        os.environ.get("DATABASE_URL") or LOCAL_DATABASE,
+        connect_args={"connect_timeout": 3},
+    )
+    try:
+        with engine.connect():
+            return {"reachable": True}
+    except SQLAlchemyError:
+        return {"reachable": False}
+    finally:
+        engine.dispose()
 
 
 def smoke():
@@ -654,6 +685,8 @@ def services(python, args, config):
                     local["image_tokens"],
                     "--reasoning",
                     "off",
+                    "--reasoning-budget",
+                    "0",
                     "--no-webui",
                 ],
                 GEMMA,
@@ -725,7 +758,14 @@ def supervise(planned):
     def interrupted(*_):
         raise KeyboardInterrupt
 
+    # A shell that starts this in the background (nohup, systemd wrappers)
+    # may leave SIGINT ignored, and children would inherit that.
+    signal.signal(signal.SIGINT, interrupted)
     signal.signal(signal.SIGTERM, interrupted)
+
+    def default_interrupt():
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
+
     try:
         for name, role, command, cwd, env, health in planned:
             # Helpers are noisy; keep their output in a log file.
@@ -739,6 +779,7 @@ def supervise(planned):
                 stdout=output,
                 stderr=subprocess.STDOUT if output else None,
                 start_new_session=True,
+                preexec_fn=default_interrupt,
             )
             running.append((name, role, process))
             if health:
@@ -827,6 +868,7 @@ def main():
             "_packages": packages,
             "_settings": settings,
             "_database": database_check,
+            "_database_ping": database_ping,
             "_gemma": gemma_check,
             "_smoke": smoke,
         }

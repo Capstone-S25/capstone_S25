@@ -346,3 +346,26 @@ def test_bundled_gemma_needs_server_weights_and_projector(tmp_path, monkeypatch)
     (tmp_path / "models/gemma-mmproj.gguf").write_bytes(b"")
     server, weights, projector = deploy.local_gemma()
     assert (weights.name, projector.name) == ("gemma-it.gguf", "gemma-mmproj.gguf")
+
+
+@pytest.mark.parametrize("reachable", [True, False])
+def test_local_database_is_used_when_running_else_instructions(
+    tmp_path, monkeypatch, reachable
+):
+    monkeypatch.setattr(deploy, "ROOT", tmp_path)
+    answers = {
+        "_settings": {"database": "compose"},
+        "_database_ping": {"reachable": reachable},
+        "_database": {"database_ready": True},
+    }
+    monkeypatch.setattr(deploy, "child", lambda _, action: answers[action])
+    monkeypatch.setattr(deploy.shutil, "which", lambda name: None)  # no Docker
+    calls = []
+    monkeypatch.setattr(deploy, "run", lambda command, *a, **kw: calls.append(command))
+    if reachable:
+        deploy.camera_setup(Path(sys.executable))
+        assert [c[1:] for c in calls] == [["-m", "alembic", "upgrade", "head"]]
+    else:
+        with pytest.raises(FileNotFoundError, match="sudo apt install postgresql"):
+            deploy.camera_setup(Path(sys.executable))
+        assert not calls

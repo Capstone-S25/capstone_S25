@@ -63,13 +63,18 @@ def sha256(path):
 
 
 def place(source, target):
-    """Hard-link large files when possible (same disk), else copy."""
+    """Copy a file; hard-link it instead when it is a large weight file on the
+    same disk. Small files are always copied so that editing a bundle can
+    never change the checkout it was built from."""
     source = Path(source).resolve(strict=True)
     target.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        os.link(source, target)
-    except OSError:
-        shutil.copyfile(source, target)
+    if source.stat().st_size >= 32 * 1024**2:
+        try:
+            os.link(source, target)
+            return
+        except OSError:
+            pass
+    shutil.copyfile(source, target)
     shutil.copymode(source, target)
 
 

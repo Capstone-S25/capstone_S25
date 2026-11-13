@@ -180,8 +180,9 @@ What `deploy.py` does with such a folder:
   still the Streamlit upload page.
 
 Gemma reviews only windows the screening classifier flags, and one behaviour
-on one camera at most once per `GEMMA_CONFIRM_INTERVAL_S` (60 s of video), so
-a CPU model that needs tens of seconds per answer keeps up.
+on one camera at most once per `GEMMA_CONFIRM_INTERVAL_S` (30 s of video) and
+never while its previous review is still running, so a CPU model that needs
+tens of seconds per answer keeps up.
 
 ## Validation on 10 November 2026
 
