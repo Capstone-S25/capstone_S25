@@ -124,14 +124,13 @@ class LockedClassifier:
 
 
 class Reviewer:
-    def __init__(
-        self, classifier=None, gemma=None, model="mobileclip2-s2", device="cpu"
-    ):
+    def __init__(self, classifier=None, gemma=None, model=None, device="cpu"):
         configure_runtime()
         if classifier is None:
-            from .classifier import ClipStrategy
+            from .classifier import ENSEMBLE, load_classifier
 
-            classifier = ClipStrategy(model, device)
+            model = model or os.environ.get("VISION_CLASSIFIER", ENSEMBLE)
+            classifier = load_classifier(model, device)
         self.classifier = LockedClassifier(classifier)
         url = os.environ.get("GEMMA_BASE_URL")
         if gemma is None and url:
@@ -156,7 +155,11 @@ class Reviewer:
             temp = tempfile.TemporaryDirectory(prefix="review-", dir=parent)
             folder = Path(temp.name)
             store = EventStore(folder, cleanup=temp.cleanup)
-            worker = ScreeningQueue(self.classifier, store, self.confirmation)
+            # Uploads have no real-time deadline: wait for the classifier instead
+            # of marking later windows of a long video as not run.
+            worker = ScreeningQueue(
+                self.classifier, store, self.confirmation, wait_for_space=True
+            )
             run_id = uuid4().hex
             started = time.perf_counter()
             with self.runs_lock:

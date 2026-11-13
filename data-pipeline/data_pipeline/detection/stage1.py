@@ -102,6 +102,10 @@ class Stage1Detector:
             buffer_s=max(*VIEW_WINDOWS_S.values(), safety_scan_seconds) + 5.0,
         )
         self.stream = SimpleNamespace(seq_id=source_id, source=source_id, paths=None)
+        # The first frame after each (re)start is the camera's reference scene;
+        # the ensemble classifier compares loitering/unattended windows with it.
+        self.reference_dir = Path(out_dir) / source_id / "reference"
+        self.reference_path: str | None = None
         self.session_id: UUID | None = None
         self.last_timestamp_ms: int | None = None
         self.continuity_epoch = 0
@@ -120,6 +124,19 @@ class Stage1Detector:
         self.index = previous_index if same_session else 0
         self.last_timestamp_ms = None
         self.next_review_s = None
+        self.reference_path = None
+
+    def _save_reference(self, frame: DecodedFrame) -> None:
+        import cv2
+
+        self.reference_dir.mkdir(parents=True, exist_ok=True)
+        path = (
+            self.reference_dir
+            / f"{frame.session_id.hex[:8]}_e{self.continuity_epoch}.jpg"
+        )
+        if not cv2.imwrite(str(path), frame.image):
+            raise OSError(f"Could not write reference frame {path}")
+        self.reference_path = str(path)
 
     def process(self, frame: DecodedFrame) -> list[dict]:
         """Observe one selected frame and return the candidates it triggers.
@@ -144,6 +161,8 @@ class Stage1Detector:
         if self.start_ms is None:
             self.start_ms = frame.timestamp_ms
         t = (frame.timestamp_ms - self.start_ms) / 1000
+        if self.reference_path is None:
+            self._save_reference(frame)
         obs = self.perception.observe(frame.image, self.index, t)
         self.writer.observe(frame.image, t, self.index)
         candidates = []
@@ -194,6 +213,7 @@ class Stage1Detector:
                 segment_id=frame.segment_id,
                 timestamp_ms=self.start_ms + round(event_t * 1000),
                 continuity_epoch=self.continuity_epoch,
+                reference_frame_path=self.reference_path,
                 timestamp_origin="decoder-estimated media time; decision availability recorded separately",
             )
             self.writer.save(event, image, self.stream, t=event_t)
@@ -204,6 +224,12 @@ class Stage1Detector:
                     "final_scene_review",
                 }:
                     span = max(span, self.safety_scan_seconds)
+                if name == "long":
+                    # Buffered frames are 1/buffer_fps apart, so the first one
+                    # inside [t - 20, t] can be up to that much late and the
+                    # view then misses the 19.5 s the classifier requires.
+                    # Reach back one step (at most 0.5 s, the trained bound).
+                    span += min(0.5, 1.0 / self.writer.buffer_fps)
                 paths, times = self.writer.window_frames(
                     event, image, self.stream, event_t - span, event_t, tag="_" + name
                 )

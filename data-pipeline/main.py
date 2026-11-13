@@ -51,8 +51,8 @@ def _parse_args(project_dir: Path) -> argparse.Namespace:
     )
     parser.add_argument(
         "--model",
-        choices=["mobileclip2-s2", "siglip2-b16-224"],
-        default="mobileclip2-s2",
+        choices=["ensemble-20261111", "mobileclip2-s2", "siglip2-b16-224"],
+        default="ensemble-20261111",
     )
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--source-id", default="camera_01")
@@ -131,7 +131,7 @@ def main() -> None:
         cleanup.callback(engine.dispose)
         on_frame = None
         if not args.record_only:
-            from vision_runtime.classifier import ClipStrategy
+            from vision_runtime.classifier import load_classifier
             from vision_runtime.config import configure_runtime, runtime_root
             from vision_runtime.gemma import GemmaClient
             from vision_runtime.service import ConfirmationQueue
@@ -139,7 +139,7 @@ def main() -> None:
             from data_pipeline.detection.integration import VisionPipeline
 
             configure_runtime()
-            classifier = ClipStrategy(args.model, args.device)
+            classifier = load_classifier(args.model, args.device)
             confirmation = None
             if args.gemma_url:
                 confirmation = ConfirmationQueue(
