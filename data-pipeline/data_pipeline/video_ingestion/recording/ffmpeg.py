@@ -21,6 +21,10 @@ def _build_recording_input_args(source: VideoSource) -> list[str]:
 
     if source.source_type == SourceType.FILE:
         return [
+            # Some containers (e.g. AVI) carry packets without timestamps; with
+            # stream copy the segmenter then never finishes a segment.
+            "-fflags",
+            "+genpts",
             "-re",  # Read the file at its original speed, simulating a live stream
             "-i",
             source.location,

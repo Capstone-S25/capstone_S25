@@ -9,9 +9,16 @@ from .stage1 import Stage1Detector, default_config, load_gate
 
 class VisionPipeline:
     def __init__(
-        self, source_id, out_dir, classifier, confirmation=None, fps=5, device="cpu"
+        self,
+        source_id,
+        out_dir,
+        classifier,
+        confirmation=None,
+        fps=5,
+        device="cpu",
+        on_event=None,
     ):
-        self.store = EventStore(Path(out_dir))
+        self.store = EventStore(Path(out_dir), on_write=on_event)
         gate = load_gate()
         self.detector = Stage1Detector(
             source_id,

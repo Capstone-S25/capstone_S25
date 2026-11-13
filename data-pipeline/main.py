@@ -71,6 +71,11 @@ def _parse_args(project_dir: Path) -> argparse.Namespace:
     parser.add_argument(
         "--recordings-dir", type=Path, help="Backend recordings directory"
     )
+    parser.add_argument(
+        "--no-incidents",
+        action="store_true",
+        help="Journal AI events only; do not write incidents to the database",
+    )
     args = parser.parse_args()
     if args.source == "file" and args.video is None:
         parser.error("Provide --video for a file source")
@@ -149,6 +154,11 @@ def main() -> None:
             output = (
                 args.out or runtime_root() / "cameras" / args.source_id / uuid4().hex
             )
+            recorder = None
+            if not args.no_incidents:
+                from data_pipeline.detection.incidents import IncidentRecorder
+
+                recorder = IncidentRecorder(session_factory, storage_root)
             vision = VisionPipeline(
                 source.source_id,
                 output,
@@ -156,6 +166,7 @@ def main() -> None:
                 confirmation,
                 fps=args.target_fps,
                 device=args.device,
+                on_event=recorder,
             )
             cleanup.callback(vision.close)
             on_frame = vision.on_frame

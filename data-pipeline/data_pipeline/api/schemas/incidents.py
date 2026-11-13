@@ -139,6 +139,9 @@ class IncidentDetail(BaseModel):
     created_at: datetime
     detections: list[Detection]
     vlm_verdict: VLMVerdict | None
+    # Every model verdict, oldest first: the screening classifier's, then
+    # Gemma's confirmation when it ran. vlm_verdict is the last of these.
+    vlm_history: list[VLMVerdict] = Field(default_factory=list)
     review: Review | None
     # TODO: Fill in with the settle (#25) and audit trail work.
     settlement: None = None

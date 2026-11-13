@@ -132,16 +132,29 @@ export default function ClipDetailDrawer({ inc, onClose }: ClipDetailDrawerProps
               marginBottom: '20px',
             }}
           >
-            <div
-              style={{
-                width: '52px', height: '52px', borderRadius: '26px',
-                backgroundColor: 'rgba(31,41,55,0.8)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer',
-              }}
-            >
-              <Play size={22} color="#ffffff" style={{ marginLeft: '3px' }} />
-            </div>
+            {inc.clipUrl ? (
+              <video
+                key={inc.clipUrl}
+                src={inc.clipUrl}
+                poster={inc.thumbnailUrl}
+                controls
+                loop
+                muted
+                playsInline
+                style={{ width: '100%', height: '100%', objectFit: 'contain', backgroundColor: '#111827' }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: '52px', height: '52px', borderRadius: '26px',
+                  backgroundColor: 'rgba(31,41,55,0.8)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
+              >
+                <Play size={22} color="#ffffff" style={{ marginLeft: '3px' }} />
+              </div>
+            )}
           </div>
 
           {/* Facts row */}

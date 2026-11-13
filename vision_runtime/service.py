@@ -20,7 +20,13 @@ logger = logging.getLogger(__name__)
 
 
 class EventStore:
-    def __init__(self, directory, cleanup=None):
+    def __init__(self, directory, cleanup=None, on_write=None):
+        """on_write(candidate, row) runs after each journaled transition.
+
+        It lets an application mirror events elsewhere (for example into the
+        incidents database). Its failures are logged and never stop screening.
+        """
+        self.on_write = on_write
         self.directory = Path(directory)
         self.directory.mkdir(parents=True, exist_ok=True)
         self.lock = threading.RLock()
@@ -59,6 +65,11 @@ class EventStore:
                 self.error = exc
                 raise
             self.records[ident] = row
+        if self.on_write is not None:
+            try:
+                self.on_write(candidate, copy.deepcopy(row))
+            except Exception:
+                logger.exception("Event listener failed for %s", ident)
 
     def snapshot(self):
         with self.lock:

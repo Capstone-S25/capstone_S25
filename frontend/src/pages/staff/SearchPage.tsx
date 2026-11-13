@@ -3,10 +3,9 @@ import { Search } from 'lucide-react';
 import { AppLayout } from '../../components/layout/AppLayout';
 import { OutcomeBadge } from '../../components/ui/Badge';
 import ClipDetailsModal from '../../components/modals/ClipDetailsModal';
-import { MOCK_INCIDENTS } from '../../data/mock';
+import { useIncidents } from '../../data/useIncidents';
 import type { Incident } from '../../types';
 
-const ALL_RESULTS = MOCK_INCIDENTS;
 
 function formatCardTime(iso: string) {
   const d = new Date(iso);
@@ -19,6 +18,7 @@ function formatCardTime(iso: string) {
 const PLACEHOLDER_GRAYS = ['bg-gray-200', 'bg-gray-300', 'bg-gray-200', 'bg-slate-200', 'bg-gray-300', 'bg-zinc-200'];
 
 export default function SearchPage() {
+  const { incidents: ALL_RESULTS } = useIncidents();
   const [query, setQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [locationFilter, setLocationFilter] = useState('all');
@@ -119,6 +119,9 @@ export default function SearchPage() {
               >
                 {/* Thumbnail */}
                 <div className={`relative w-full ${PLACEHOLDER_GRAYS[idx % PLACEHOLDER_GRAYS.length]}`} style={{ aspectRatio: '16/9' }}>
+                  {inc.thumbnailUrl && (
+                    <img src={inc.thumbnailUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                  )}
                   <span className="absolute top-2 left-2 text-xs font-semibold text-white bg-black/60 px-2 py-0.5 rounded">
                     {camLabel}
                   </span>

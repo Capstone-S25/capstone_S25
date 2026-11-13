@@ -15,6 +15,9 @@ def test_file_input_args(make_source):
     input_index = result.index("-i")
     assert result[input_index + 1] == source.location
     assert result.index("-re") < input_index
+    # Timestamps are generated for containers that lack them (e.g. AVI).
+    assert result[result.index("-fflags") + 1] == "+genpts"
+    assert result.index("-fflags") < input_index
 
 
 def test_rtsp_input_args(make_source):
