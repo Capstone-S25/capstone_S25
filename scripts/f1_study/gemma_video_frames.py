@@ -51,9 +51,12 @@ def choose(rows):
     random.seed(0)
     by = defaultdict(list)
     for row in rows:
-        if row["split"] == "test" and video_for(row) is not None:
-            if index(row["views"][-1]) > index(row["views"][0]):
-                by[(row["source"], row["target"])].append(row)
+        if (
+            row["split"] == "test"
+            and video_for(row) is not None
+            and index(row["views"][-1]) > index(row["views"][0])
+        ):
+            by[(row["source"], row["target"])].append(row)
     limits = {
         ("hmdb51_action_transfer", 0): 291,
         ("unattended_reviewed", 0): 150,
