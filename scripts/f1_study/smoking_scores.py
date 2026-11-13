@@ -21,10 +21,18 @@ RUNS = OUT / "smoking_detector/runs"
 
 
 def main():
-    rows = [r for r in load_rows() if r["task"] == "smoking"]
-    paths = sorted({p for r in rows for p in r["views"]})
-    result = {}
-    for fold in ["c4", "c2", "all"]:
+    target = OUT / "smoking_detector_scores.json"
+    if "--other-tasks" in sys.argv:
+        # Other tasks' images (cross-task negatives) only need the full detector.
+        result = json.loads(target.read_text())
+        rows = [r for r in load_rows() if r["task"] != "smoking"]
+        paths = sorted({p for r in rows for p in r["views"]} - set(result["all"]))
+        folds = ["all"]
+    else:
+        rows = [r for r in load_rows() if r["task"] == "smoking"]
+        paths = sorted({p for r in rows for p in r["views"]})
+        result, folds = {}, ["c4", "c2", "all"]
+    for fold in folds:
         model = YOLO(str(RUNS / fold / "weights/last.pt"))
         values = {}
         for start in range(0, len(paths), 64):
@@ -49,9 +57,9 @@ def main():
                     float(other.max()) if len(other) else 0.0,
                     float((smoke >= 0.25).sum()),
                 ]
-        result[fold] = values
+        result.setdefault(fold, {}).update(values)
         print(fold, "done", flush=True)
-    (OUT / "smoking_detector_scores.json").write_text(json.dumps(result))
+    target.write_text(json.dumps(result))
 
 
 if __name__ == "__main__":

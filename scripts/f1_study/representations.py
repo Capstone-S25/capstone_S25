@@ -14,6 +14,9 @@ from anomaly_eval.training.strategies import geometry
 
 OCTOBER = {"mobileclip2-s2", "siglip2-b16-224"}
 TAGS = ["main", "historical", "hmdb", "meva", "rough"]
+# "" = detectors trained on the two non-test cameras; "x" = the same plus the
+# second CCTV site (smoking_detector.py --extra).
+DETECTOR_SUFFIX = ""
 
 
 @cache
@@ -64,7 +67,8 @@ def smoking_detector_features(row):
     fold = {"smoking_camera:c4": "c2", "smoking_camera:c2": "c4"}.get(
         row["group_id"], "all"
     )
-    values = np.array([smoking_detector_scores()[fold][p] for p in row["views"]])
+    scores = smoking_detector_scores()[fold + DETECTOR_SUFFIX]
+    values = np.array([scores[p] for p in row["views"]])
     return np.array(
         [values[:, 0].max(), values[:, 1].max(), min(values[:, 2].max(), 4) / 4],
         np.float32,
