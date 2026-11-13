@@ -56,22 +56,27 @@ function duration(startIso: string, endIso: string): string {
 
 function describe(detail: ApiDetail): { description: string; confidence: number; verdict: string } {
   const history = detail.vlm_history ?? (detail.vlm_verdict ? [detail.vlm_verdict] : []);
-  const latest = history[history.length - 1];
-  // The screening classifier supplies the score; Gemma supplies the wording.
+  // The screening classifier supplies the score (confidence set); Gemma
+  // supplies a verdict and description (confidence null). An incident can be
+  // reviewed by Gemma several times as it continues, with screening results
+  // in between, so look at all of Gemma's reviews rather than the last entry.
   const scored = [...history].reverse().find((v) => v.confidence !== null);
-  const reviewer = [...history].reverse().find((v) => v.confidence === null && v.description);
-  const GEMMA_VERDICT = {
-    confirmed: 'Gemma confirmed this',
-    rejected: 'Gemma did not confirm this',
-    uncertain: 'Gemma could not tell',
-  };
-  const verdict = !latest
-    ? 'No model verdict yet'
-    : latest.confidence === null
-      ? `${GEMMA_VERDICT[latest.assessment]} (${latest.model_version})`
-      : 'Flagged by the screening classifier; Gemma has not reviewed it yet';
+  const reviews = history.filter((v) => v.confidence === null);
+  const confirming = [...reviews].reverse().find((v) => v.assessment === 'confirmed');
+  const shown = confirming ?? reviews[reviews.length - 1];
+  const times = reviews.length === 1 ? '1 review' : `${reviews.length} reviews`;
+  let verdict = 'No model verdict yet';
+  if (confirming) {
+    const count = reviews.filter((v) => v.assessment === 'confirmed').length;
+    verdict = `Gemma confirmed this in ${count} of ${times} (${confirming.model_version})`;
+  } else if (shown) {
+    const text = shown.assessment === 'rejected' ? 'Gemma did not confirm this' : 'Gemma could not tell';
+    verdict = `${text} (${times}, ${shown.model_version})`;
+  } else if (scored) {
+    verdict = 'Flagged by the screening classifier; Gemma has not reviewed it yet';
+  }
   return {
-    description: reviewer?.description ?? latest?.description ?? 'No description yet.',
+    description: shown?.description ?? scored?.description ?? 'No description yet.',
     confidence: scored?.confidence ?? 0,
     verdict,
   };
