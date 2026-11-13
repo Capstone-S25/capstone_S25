@@ -3,6 +3,7 @@ import { Play } from 'lucide-react';
 import { AppLayout } from '../../components/layout/AppLayout';
 import { SeverityBadge } from '../../components/ui/Badge';
 import { MOCK_INCIDENTS } from '../../data/mock';
+import { useIncidents } from '../../data/useIncidents';
 
 const NOTIFICATIONS = [
   { id: 1, bold: 'New alert: ',       text: 'Smoking · Carpark B2',                               time: '2 min ago', unread: true  },
@@ -31,8 +32,33 @@ const SEVERITY_DOT: Record<string, string> = {
 
 export default function StaffHomePage() {
   const [outcome, setOutcome] = useState<'none' | 'accepted' | 'dismissed' | 'escalated'>('none');
-  const [selectedQueueId, setSelectedQueueId] = useState<string>(QUEUE_ITEMS[0].id);
-  const featured = MOCK_INCIDENTS[0];
+  const [selectedQueueId, setSelectedQueueId] = useState<string>('');
+  // Live incidents from the API replace the demo queue once it answers.
+  const { incidents, source } = useIncidents();
+  const live = source === 'live';
+  const pending = incidents.filter((i) => i.outcome === 'Pending');
+  const queueItems = live
+    ? pending.map((i) => ({
+        id: i.id,
+        severity: i.severity,
+        title: `${i.type} · ${i.location}`,
+        subtitle: `${camLabel(i.camId)} · ${timeLabel(i.dateTime)}`,
+        confidence: Math.round(i.confidence * 100),
+      }))
+    : QUEUE_ITEMS;
+  const featured = live
+    ? pending.find((i) => i.id === selectedQueueId) ?? pending[0] ?? incidents[0]
+    : MOCK_INCIDENTS[0];
+
+  if (!featured) {
+    return (
+      <AppLayout role="staff" activePath="/staff/home">
+        <div style={{ padding: '40px', color: '#4b5563', fontSize: '15px' }}>
+          No incidents yet. New detections appear here as cameras are processed.
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout role="staff" activePath="/staff/home">
@@ -67,7 +93,7 @@ export default function StaffHomePage() {
           <div style={{ width: '1px', backgroundColor: '#e0e3e8', flexShrink: 0 }} />
           <KpiCard label="Escalated today" value="0"                  deltaColor="#14803d" deltaChar="▼" deltaLabel="2 fewer than yesterday" />
           <div style={{ width: '1px', backgroundColor: '#e0e3e8', flexShrink: 0 }} />
-          <KpiCard label="To review"       value="4"                  deltaColor="#b82e24" deltaChar="▲" deltaLabel="1 more than this time yesterday" />
+          <KpiCard label="To review"       value={String(queueItems.length)}                  deltaColor="#b82e24" deltaChar="▲" deltaLabel="1 more than this time yesterday" />
         </div>
 
         {/* ── Two-column section (fills remaining height) ───────── */}
@@ -140,20 +166,35 @@ export default function StaffHomePage() {
                 justifyContent: 'center',
               }}
             >
-              <div style={{
-                width: '64px', height: '64px', borderRadius: '32px',
-                backgroundColor: 'rgba(31,41,55,0.85)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-              }}>
-                <Play size={26} color="#ffffff" style={{ marginLeft: '3px' }} />
-              </div>
-              <p style={{ position: 'absolute', top: '16px', left: '18px', color: '#fff', fontSize: '13px', margin: 0 }}>
-                CAM 04 · 23:18:06
-              </p>
-              {/* Scrubber */}
-              <div style={{ position: 'absolute', bottom: '14px', left: '18px', right: '38px', height: '6px', backgroundColor: '#1f2937', borderRadius: '3px' }}>
-                <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: '19%', backgroundColor: '#1f4fd1', borderRadius: '3px' }} />
-              </div>
+              {featured.clipUrl ? (
+                <video
+                  key={featured.clipUrl}
+                  src={featured.clipUrl}
+                  poster={featured.thumbnailUrl}
+                  controls
+                  loop
+                  muted
+                  playsInline
+                  style={{ width: '100%', height: '100%', objectFit: 'contain', backgroundColor: '#111827' }}
+                />
+              ) : (
+                <>
+                <div style={{
+                  width: '64px', height: '64px', borderRadius: '32px',
+                  backgroundColor: 'rgba(31,41,55,0.85)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                }}>
+                  <Play size={26} color="#ffffff" style={{ marginLeft: '3px' }} />
+                </div>
+                <p style={{ position: 'absolute', top: '16px', left: '18px', color: '#fff', fontSize: '13px', margin: 0 }}>
+                  {live ? `${camLabel(featured.camId).toUpperCase()} · ${timeLabel(featured.dateTime)}` : 'CAM 04 · 23:18:06'}
+                </p>
+                {/* Scrubber */}
+                <div style={{ position: 'absolute', bottom: '14px', left: '18px', right: '38px', height: '6px', backgroundColor: '#1f2937', borderRadius: '3px' }}>
+                  <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: '19%', backgroundColor: '#1f4fd1', borderRadius: '3px' }} />
+                </div>
+                </>
+              )}
             </div>
 
             {/* Description + reason — compact */}
@@ -165,9 +206,9 @@ export default function StaffHomePage() {
                 </p>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <p style={{ margin: 0, fontSize: '12px', color: '#6b7280', flexShrink: 0 }}>Matched rule</p>
+                <p style={{ margin: 0, fontSize: '12px', color: '#6b7280', flexShrink: 0 }}>{live ? 'Model verdict' : 'Matched rule'}</p>
                 <p style={{ margin: 0, fontSize: '13px', color: '#1f4fd1', fontWeight: 600 }}>
-                  Carpark B2 · No Smoking · 10 PM – 6 AM
+                  {live ? featured.verdict : 'Carpark B2 · No Smoking · 10 PM – 6 AM'}
                 </p>
                 <span style={{ marginLeft: 'auto', fontSize: '13px', color: '#6b7380', fontWeight: 600, flexShrink: 0 }}>
                   {Math.round(featured.confidence * 100)}% confidence
@@ -177,9 +218,19 @@ export default function StaffHomePage() {
 
             {/* Fact cards */}
             <div style={{ flexShrink: 0, display: 'flex', gap: '12px' }}>
-              <FactCard label="Location"        value="Carpark B2, by the stair door" sub="Cam 04" />
-              <FactCard label="Duration"        value="3 min 32 s"                   sub="11:18 PM – 11:21 PM" />
-              <FactCard label="People involved" value="1 adult"                       sub="Grey hoodie, dark cap" />
+              {live ? (
+                <>
+                  <FactCard label="Location" value={featured.location} sub={camLabel(featured.camId)} />
+                  <FactCard label="Duration" value={featured.duration ?? '—'} sub={`From ${timeLabel(featured.dateTime)}`} />
+                  <FactCard label="Detected" value={featured.type} sub={new Date(featured.dateTime).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })} />
+                </>
+              ) : (
+                <>
+                  <FactCard label="Location"        value="Carpark B2, by the stair door" sub="Cam 04" />
+                  <FactCard label="Duration"        value="3 min 32 s"                   sub="11:18 PM – 11:21 PM" />
+                  <FactCard label="People involved" value="1 adult"                       sub="Grey hoodie, dark cap" />
+                </>
+              )}
             </div>
           </div>
 
@@ -226,13 +277,13 @@ export default function StaffHomePage() {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px 12px' }}>
                 <p style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#111827' }}>Review queue</p>
                 <div style={{ display: 'flex', gap: '4px' }}>
-                  <p style={{ margin: 0, fontSize: '13px', color: '#4b5563' }}>4</p>
+                  <p style={{ margin: 0, fontSize: '13px', color: '#4b5563' }}>{queueItems.length}</p>
                   <p style={{ margin: 0, fontSize: '13px', color: '#4b5563' }}>pending</p>
                 </div>
               </div>
               <div>
-              {QUEUE_ITEMS.map((item) => {
-                const isSelected = item.id === selectedQueueId;
+              {queueItems.map((item) => {
+                const isSelected = item.id === (live ? featured.id : selectedQueueId || QUEUE_ITEMS[0].id);
                 return (
                   <button
                     key={item.id}
@@ -299,6 +350,14 @@ export default function StaffHomePage() {
       </div>
     </AppLayout>
   );
+}
+
+function camLabel(camId: string) {
+  return 'Cam ' + camId.replace('cam-', '').padStart(2, '0');
+}
+
+function timeLabel(iso: string) {
+  return new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 }
 
 // ── Shared button style ────────────────────────────────────────────────────────

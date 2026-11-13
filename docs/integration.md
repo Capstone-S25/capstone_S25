@@ -142,3 +142,48 @@ not a camera dashboard or existing external business application API. Next work
 should add durable AI jobs/outbox/recovery, a camera event subscription API,
 measured sustained CPU throughput, retention cleanup, and deployment-specific
 authentication before exposing these local tools to other users.
+
+## Dashboard integration (13 November 2026)
+
+`feat/frontend` (React dashboard) and the incidents API from `ym-backend`
+(commit `2414048`) are merged here and connected to the vision runtime.
+
+```text
+camera / file → FFmpeg segments → PostgreSQL jobs → decode → tracking
+  → screening classifier → EventStore journal ──► IncidentRecorder
+                         → optional Gemma     ──►   (PostgreSQL + evidence files)
+React dashboard ◄── /api/v1/incidents, /{id}, /{id}/clip, /{id}/thumbnail ◄──┘
+```
+
+| Piece | What it does |
+|---|---|
+| `vision_runtime/service.py` | `EventStore(on_write=...)` calls a listener after every journaled transition. A listener failure is logged and never stops screening. |
+| `data_pipeline/detection/incidents.py` | `IncidentRecorder`: a screened anomaly opens an incident, or extends the open one of the same camera and event type when it is within 30 s (the planned `t_quiet`). It saves the window's frames as an H.264 clip plus a thumbnail, and stores the screening result and any later Gemma confirmation as `vlm_results` rows. Rule-triggered events also store their region as a flagged detection. |
+| `data_pipeline/api/routers/evidence.py` | `GET /api/v1/incidents/{id}/clip` (API List #17) and `/thumbnail`. Files are served only from inside the recordings root. |
+| `IncidentDetail.vlm_history` | All model verdicts, oldest first. `vlm_verdict` stays the latest one. |
+| `frontend/src/data/` | `api.ts` maps API incidents to the dashboard's `Incident` type; `useIncidents` polls every 5 s and falls back to demo data when the API is down; `mock.ts` recreates the demo data module the pages import (it was not committed with them). |
+
+Decisions and limits:
+
+- **Screening is the gate.** An incident exists only when the screening
+  classifier says anomaly. Gemma's result is attached as a hint; a human still
+  reviews every incident. If Gemma alone says anomaly, no incident is opened.
+- **Severity** comes from a fixed default per event type until monitoring
+  rules exist (unattended items critical; smoking and rough sleeping moderate;
+  littering and loitering minor).
+- **Confidence** shown in the dashboard is a logistic of the screening margin
+  over its threshold (or the classifier's calibrated probability when it
+  provides one). It is a ranking aid, not a measured precision.
+- **Evidence clip** is the classifier's own input window (4 s or 20 s at the
+  sampled frame rate), not the full-rate recording.
+- **Recorder fix:** file inputs are read with `-fflags +genpts`. Without it an
+  AVI whose packets lack timestamps never completed a segment, so nothing
+  downstream ran.
+- The dashboard's Accept/Dismiss/Escalate buttons, login, cameras, rules,
+  hotspots and reports are not connected (their endpoints do not exist yet).
+
+Checked on 13 November 2026: ABODA video 9 (held out, 83 s) through
+`main.py` on CPU opened one unattended-item incident from the 40 s window
+onward (label: unattended from 44 s) and one loitering incident (two windows);
+both appeared in the dashboard with playable clips. 155 backend tests pass
+against PostgreSQL 16, including the recorder and evidence endpoints.

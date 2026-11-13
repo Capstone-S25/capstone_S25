@@ -106,6 +106,9 @@ def get_incident(db: DbSession, incident_id: int) -> IncidentDetail:
             for detection in incident.detections
         ],
         vlm_verdict=VLMVerdict.model_validate(latest_vlm) if latest_vlm else None,
+        vlm_history=[
+            VLMVerdict.model_validate(result) for result in incident.vlm_results
+        ],
         review=Review.model_validate(incident.review) if incident.review else None,
     )
 

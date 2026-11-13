@@ -194,12 +194,44 @@ python data-pipeline/main.py --source rtsp --rtsp-url rtsp://camera-address/stre
 `DATABASE_URL` may be in root `.env`, backend `.env`, or the environment.
 The backend supports `--record-only`, `--model`, `--device`, `--target-fps`,
 `--segment-seconds`, `--recordings-dir`, `--out`, `--gemma-url`, and
-`--gemma-model`. Defaults are MobileCLIP on CPU, 5 selected frames/second,
+`--gemma-model`. Defaults are the November ensemble classifier on CPU, 5 selected frames/second,
 2-second target segments, and a 10-second periodic scene scan in addition to
 rule-triggered events. FFmpeg keyframes can make actual segments longer.
 The CLI writes camera evidence and `events.jsonl` under `runtime/cameras/`.
-Streamlit's local webcam view is independent of this backend; it does not
-display a shared RTSP/backend camera dashboard.
+Every window the screening classifier calls an anomaly also becomes an
+**incident** in PostgreSQL, with a short evidence clip and thumbnail under
+`<recordings>/evidence/`; `--no-incidents` turns this off.
+Streamlit's local webcam view is independent of this backend.
+
+### Dashboard (React) and incidents API
+
+The React dashboard in `frontend/` reads those incidents through the API in
+`data-pipeline/data_pipeline/api`. With the database running and migrated:
+
+```bash
+# Terminal 1: API on http://127.0.0.1:8000 (docs at /docs)
+cd data-pipeline
+python -m uvicorn data_pipeline.api.app:create_app --factory --port 8000
+
+# Terminal 2: dashboard on http://localhost:5173
+cd frontend
+npm install
+npm run dev
+
+# Terminal 3: process a video or camera; incidents appear as they are found
+python data-pipeline/main.py --video /path/to/video.mp4 --source-id camera_01
+```
+
+Open `http://localhost:5173/staff/home`. The review queue, review history and
+search pages show live incidents, their evidence clip, the screening score
+and, when a Gemma endpoint is configured, Gemma's verdict and description.
+The dev server proxies `/api` to the API (`VITE_API_PROXY` overrides the
+address). Set `RECORDINGS_DIR` for the API if `--recordings-dir` was used.
+While the API is not running, the pages fall back to built-in demo data.
+
+Not connected yet: login, Accept/Dismiss/Escalate (the review endpoint is not
+implemented), cameras, rules, hotspots and reports still show demo data. See
+[the integration notes](docs/integration.md#dashboard-integration-13-november-2026).
 
 See [backend operations](data-pipeline/README.md) and the
 [integration audit, state transitions, and validation](docs/integration.md).

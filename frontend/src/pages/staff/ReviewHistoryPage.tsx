@@ -3,7 +3,8 @@ import type { CSSProperties } from 'react';
 import { Search, Download, ChevronDown } from 'lucide-react';
 import { AppLayout } from '../../components/layout/AppLayout';
 import { SeverityBadge, OutcomeDot, OutcomeTabs } from '../../components/ui/Badge';
-import { MOCK_INCIDENTS, MOCK_STAFF } from '../../data/mock';
+import { MOCK_STAFF } from '../../data/mock';
+import { useIncidents } from '../../data/useIncidents';
 import type { Incident, IncidentOutcome } from '../../types';
 import ClipDetailDrawer from '../../components/drawers/ClipDetailDrawer';
 
@@ -66,7 +67,11 @@ function IncidentRow({ inc, date, time, assignee, onSelect }: IncidentRowProps) 
       {/* Clip thumbnail */}
       <div style={colStyle(112)}>
         <div style={{ position: 'relative', width: '96px', height: '54px' }}>
-          <div style={{ width: '96px', height: '54px', backgroundColor: '#d1d5db', borderRadius: '4px' }} />
+          {inc.thumbnailUrl ? (
+            <img src={inc.thumbnailUrl} alt="" style={{ width: '96px', height: '54px', objectFit: 'cover', borderRadius: '4px', backgroundColor: '#d1d5db' }} />
+          ) : (
+            <div style={{ width: '96px', height: '54px', backgroundColor: '#d1d5db', borderRadius: '4px' }} />
+          )}
           <span
             style={{
               position: 'absolute',
@@ -163,6 +168,7 @@ function FilterDropdown({ label, value, onChange, children }: FilterDropdownProp
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function ReviewHistoryPage() {
+  const { incidents } = useIncidents();
   const [activeTab, setActiveTab] = useState<Tab>('All');
   const [severity, setSeverity] = useState('all');
   const [location, setLocation] = useState('all');
@@ -171,13 +177,13 @@ export default function ReviewHistoryPage() {
   const [selectedInc, setSelectedInc] = useState<Incident | null>(null);
 
   const tabCounts: Partial<Record<Tab, number>> = {
-    All: MOCK_INCIDENTS.length,
-    Accepted: MOCK_INCIDENTS.filter((i) => i.outcome === 'Accepted').length,
-    Dismissed: MOCK_INCIDENTS.filter((i) => i.outcome === 'Dismissed').length,
-    Escalated: MOCK_INCIDENTS.filter((i) => i.outcome === 'Escalated').length,
+    All: incidents.length,
+    Accepted: incidents.filter((i) => i.outcome === 'Accepted').length,
+    Dismissed: incidents.filter((i) => i.outcome === 'Dismissed').length,
+    Escalated: incidents.filter((i) => i.outcome === 'Escalated').length,
   };
 
-  const filtered = MOCK_INCIDENTS.filter((inc) => {
+  const filtered = incidents.filter((inc) => {
     if (activeTab !== 'All' && inc.outcome !== activeTab) return false;
     if (severity !== 'all' && inc.severity !== severity) return false;
     if (location !== 'all' && inc.location !== location) return false;

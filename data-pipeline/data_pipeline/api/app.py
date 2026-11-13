@@ -11,16 +11,21 @@ from pathlib import Path
 from dotenv import load_dotenv
 from fastapi import FastAPI
 
-from data_pipeline.api.routers import incidents
+from data_pipeline.api.routers import evidence, incidents
 from data_pipeline.database.session import create_engine_and_session_factory
 
 
-def create_app(database_url: str | None = None) -> FastAPI:
+def create_app(
+    database_url: str | None = None, storage_root: Path | None = None
+) -> FastAPI:
     """Create the API app with its own database engine.
 
     Args:
         database_url: SQLAlchemy connection URL. Defaults to DATABASE_URL
             from the environment or data-pipeline/.env.
+        storage_root: Recordings root that incident evidence paths are
+            relative to. Defaults to RECORDINGS_DIR, then
+            data-pipeline/recordings.
 
     Returns:
         The app. Its engine is disposed when the app shuts down.
@@ -41,5 +46,11 @@ def create_app(database_url: str | None = None) -> FastAPI:
 
     app = FastAPI(title="CCTV Incident Platform API", lifespan=lifespan)
     app.state.session_factory = session_factory
+    app.state.storage_root = Path(
+        storage_root
+        or os.environ.get("RECORDINGS_DIR")
+        or Path(__file__).resolve().parents[2] / "recordings"
+    )
     app.include_router(incidents.router)
+    app.include_router(evidence.router)
     return app

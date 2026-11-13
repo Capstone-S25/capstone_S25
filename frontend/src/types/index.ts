@@ -2,7 +2,7 @@ export type UserRole = 'staff' | 'admin';
 
 export type Severity = 'Critical' | 'Moderate' | 'Minor';
 
-export type IncidentType = 'Smoking' | 'Littering' | 'Loitering' | 'Unattended item';
+export type IncidentType = 'Smoking' | 'Littering' | 'Loitering' | 'Unattended item' | 'Rough sleeping';
 
 export type IncidentOutcome = 'Accepted' | 'Dismissed' | 'Escalated' | 'Pending';
 
@@ -20,6 +20,12 @@ export interface Incident {
   remark?: string;
   thumbnailUrl?: string;
   duration?: string;
+  /** Evidence clip URL, set for incidents that come from the API. */
+  clipUrl?: string;
+  /** One line on which model flagged or confirmed the incident. */
+  verdict?: string;
+  /** True for incidents from the API, absent for demo data. */
+  live?: boolean;
 }
 
 export interface Camera {
