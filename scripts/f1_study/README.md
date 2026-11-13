@@ -38,3 +38,34 @@ unattended items from `v3_*` (both box sources, reference offsets).
 `smoking_detector.py` keeps camera c1 (the test camera) out of every detector.
 The `alpha 1` October features are excluded from cross-validation because that
 backbone was fine-tuned on the training split.
+
+## Round 2 (13 November 2026) — `ensemble-20261113`
+
+```bash
+../../.venv-stage1/bin/python smoking_scores.py --other-tasks      # detector on other tasks' images
+$P round2.py --tag r2c_base  --aux-share 0                        # released recipes + cross-task false alarms
+$P round2.py --tag r2c_aux10 --aux-share 0.1                      # other tasks' windows as negatives (also 0.25, 0.4)
+$P select_round2.py --runs r2c_base r2c_aux10 r2c_aux25 r2c_aux40 --cap 0.05 --tag s2_cap05
+$P export_round2.py --selection s2_cap05 --shares r2c_base=0 r2c_aux10=0.1 r2c_aux25=0.25 r2c_aux40=0.4 \
+   --output ../../results/f1_study_20261111/bundle_v9
+$P bootstrap.py e8_sb_top3:november s2_cap05:november
+
+# Gemma: selected frames or denser video (needs .venv-gemma4 and the E4B weights)
+../../.venv-stage1/bin/python gemma_video_frames.py
+../../.venv-gemma4/bin/python gemma_video.py
+$P gemma_video_report.py
+$P cascade.py --run r2c_base                                      # screening, Gemma, agreement
+```
+
+| File | Purpose |
+|---|---|
+| `round2.py` | Refit the released recipes, optionally with other tasks' windows as negatives; measure cross-task false alarms |
+| `select_round2.py` | Per-task choice on out-of-fold F1 under a cross-task false-alarm cap |
+| `export_round2.py` | Runtime bundle for that choice, with the capped thresholds and a probability calibration |
+| `gemma_video_frames.py`, `gemma_video.py`, `gemma_video_report.py` | Selected frames against evenly sampled video for Gemma 4 E4B |
+| `cascade.py` | Screening classifier, Gemma, and requiring both, on the same windows |
+
+Measured and not adopted (see `docs/f1_study.md` on the integration branch):
+`smoking_detector.py --extra` (second CCTV site) with `--detector x`, and a
+384 px SigLIP2 member (`extract.py --model siglip:google/siglip2-base-patch16-384
+--name siglip2-b384`, then `round2.py --members ... v9_siglip2-b384`).

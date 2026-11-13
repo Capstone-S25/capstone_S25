@@ -7,6 +7,7 @@ import pickle
 
 import heads
 import numpy as np
+import representations
 from common import (
     OUT,
     REFERENCE_TASKS,
@@ -86,7 +87,11 @@ def main():
         action="store_true",
         help="Only pretrained features (no train-split fine-tuned backbone)",
     )
+    parser.add_argument(
+        "--detector", default="", help="Smoking detector fold suffix, e.g. x"
+    )
     args = parser.parse_args()
+    representations.DETECTOR_SUFFIX = args.detector
     global FROZEN_ONLY, SMOKE_DETECTOR
     FROZEN_ONLY = args.frozen_only
     SMOKE_DETECTOR = args.smoke_detector

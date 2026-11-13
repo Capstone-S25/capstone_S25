@@ -21,18 +21,21 @@ RUNS = OUT / "smoking_detector/runs"
 
 
 def main():
+    """--suffix x scores the detectors trained with the second CCTV site;
+    --other-tasks adds the other tasks' images for the full detector only."""
     target = OUT / "smoking_detector_scores.json"
-    if "--other-tasks" in sys.argv:
-        # Other tasks' images (cross-task negatives) only need the full detector.
-        result = json.loads(target.read_text())
-        rows = [r for r in load_rows() if r["task"] != "smoking"]
-        paths = sorted({p for r in rows for p in r["views"]} - set(result["all"]))
-        folds = ["all"]
-    else:
-        rows = [r for r in load_rows() if r["task"] == "smoking"]
-        paths = sorted({p for r in rows for p in r["views"]})
-        result, folds = {}, ["c4", "c2", "all"]
-    for fold in folds:
+    suffix = sys.argv[sys.argv.index("--suffix") + 1] if "--suffix" in sys.argv else ""
+    result = json.loads(target.read_text()) if target.exists() else {}
+    rows = load_rows()
+    smoking = sorted({p for r in rows if r["task"] == "smoking" for p in r["views"]})
+    others = sorted({p for r in rows for p in r["views"]} - set(smoking))
+    plan = {"all" + suffix: smoking + others}
+    if "--other-tasks" not in sys.argv:
+        plan = {"c4" + suffix: smoking, "c2" + suffix: smoking, **plan}
+    for fold, wanted in plan.items():
+        paths = [p for p in wanted if p not in result.get(fold, {})]
+        if not paths:
+            continue
         model = YOLO(str(RUNS / fold / "weights/last.pt"))
         values = {}
         for start in range(0, len(paths), 64):

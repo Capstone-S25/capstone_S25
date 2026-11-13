@@ -165,12 +165,23 @@ def fit_task(rows, task, recipes_by_member, share, n_jobs=20):
     def apply(fitted, x):
         return np.mean([heads.score(h, x) for h in fitted], 0)
 
-    member_scores, chosen = [], {}
+    member_scores, chosen, detail = [], {}, []
     for member, recipes in recipes_by_member.items():
-        parts = []
-        for name, _ in recipes:
+        parts, exported = [], []
+        for name, recipe in recipes:
             b = best[member, name]
             mu, sd = b["oof"][:n].mean(), b["oof"][:n].std() + 1e-9
+            exported.append(
+                {
+                    "name": name,
+                    "recipe": recipe,
+                    "C": b["C"],
+                    "mean": float(mu),
+                    "std": float(sd),
+                    "oof_ap": b["ap"],
+                    "heads": b["heads"],
+                }
+            )
             aux_pool = (
                 b["oof"][n:]
                 if share > 0
@@ -192,6 +203,9 @@ def fit_task(rows, task, recipes_by_member, share, n_jobs=20):
         mean = [np.mean([p[i] for p in parts], 0) for i in range(4)]
         mu, sd = mean[0].mean(), mean[0].std() + 1e-9
         member_scores.append([(m - mu) / sd for m in mean])
+        detail.append(
+            {"tag": member, "mean": float(mu), "std": float(sd), "recipes": exported}
+        )
     scores = [np.mean([m[i] for m in member_scores], 0) for i in range(4)]
     return {
         "own": own,
@@ -203,6 +217,7 @@ def fit_task(rows, task, recipes_by_member, share, n_jobs=20):
         "test_scores": scores[2],
         "aux_test_scores": scores[3],
         "chosen": chosen,
+        "detail": detail,
     }
 
 
