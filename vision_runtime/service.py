@@ -175,6 +175,9 @@ class ConfirmationQueue:
         self.backend, self.max_age = backend, max_age
         self.queue = queue.Queue(maxsize=capacity)
         self.closed = False
+        # (source, task) pairs with a review queued or running.
+        self.in_flight = Counter()
+        self.flight_lock = threading.Lock()
         self.thread = threading.Thread(
             target=self._consume, daemon=True, name="gemma-review"
         )
@@ -192,6 +195,8 @@ class ConfirmationQueue:
                 **provisional,
                 "predictions": {t: screened[t] for t in tasks},
             }
+        keys = [(candidate.get("source_id"), t) for t in candidate["tasks"]]
+        self._flight(keys, +1)
         store.retain(candidate["event_id"])
         try:
             # Publish before the worker can finish and overwrite this transition.
@@ -210,12 +215,26 @@ class ConfirmationQueue:
                     candidate, "confirmation_not_run", reason="confirmation_queue_full"
                 )
             finally:
+                self._flight(keys, -1)
                 store.done(candidate["event_id"])
             return False
         except BaseException:
+            self._flight(keys, -1)
             store.done(candidate["event_id"])
             raise
         return True
+
+    def _flight(self, keys, change):
+        with self.flight_lock:
+            for key in keys:
+                self.in_flight[key] += change
+                if self.in_flight[key] <= 0:
+                    del self.in_flight[key]
+
+    def busy(self, source_id, task):
+        """True while a review of this task for this source is queued or running."""
+        with self.flight_lock:
+            return (source_id, task) in self.in_flight
 
     def _consume(self):
         while True:
@@ -258,6 +277,10 @@ class ConfirmationQueue:
                         },
                     )
                 finally:
+                    self._flight(
+                        [(candidate.get("source_id"), t) for t in candidate["tasks"]],
+                        -1,
+                    )
                     store.done(candidate["event_id"])
             except BaseException:
                 logger.exception("Could not journal confirmation state")
@@ -282,9 +305,12 @@ class ScreeningQueue:
     confirm="flagged" (default; GEMMA_CONFIRM overrides) sends a window to the
     confirmation model only for the tasks screening called an anomaly, and at
     most once per `confirm_interval` seconds of video for the same source and
-    task (GEMMA_CONFIRM_INTERVAL_S, default 60). A bag that stays for ten
-    minutes is then reviewed about ten times, not sixty. confirm="all" reviews
-    every window and task, which needs a fast (GPU) model server.
+    task (GEMMA_CONFIRM_INTERVAL_S, default 30), and never while an earlier
+    review of that source and task is still queued or running. A slow CPU
+    model is therefore asked as often as it can answer and no faster, and an
+    incident that starts on a weak window is looked at again on later ones.
+    confirm="all" reviews every window and task, which needs a fast (GPU)
+    model server.
     """
 
     def __init__(
@@ -306,7 +332,7 @@ class ScreeningQueue:
         self.confirm_interval = float(
             confirm_interval
             if confirm_interval is not None
-            else os.environ.get("GEMMA_CONFIRM_INTERVAL_S") or 60
+            else os.environ.get("GEMMA_CONFIRM_INTERVAL_S") or 30
         )
         self.last_confirmed = {}
         if latest_only and wait_for_space:
@@ -389,6 +415,8 @@ class ScreeningQueue:
             if predictions[task].get("decision") != "anomaly":
                 continue
             key = (candidate.get("source_id"), task)
+            if self.confirmation.busy(*key):
+                continue
             last = self.last_confirmed.get(key)
             # A restarted clock (new session) is treated as a new observation.
             if last is None or now < last or now - last >= self.confirm_interval:

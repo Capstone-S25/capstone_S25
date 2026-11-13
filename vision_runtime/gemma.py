@@ -18,6 +18,7 @@ from .evidence import (
     parse_answer,
     parse_summary,
     prompt,
+    prompt_style,
     qualify,
     spread,
     unknown,
@@ -71,7 +72,10 @@ class GemmaClient:
                 )
                 if has_crop:
                     paths.append(crop)
-                text = prompt(candidate, active, view, has_crop, object_output=True)
+                style = prompt_style(view=name)
+                text = prompt(
+                    candidate, active, view, has_crop, object_output=True, style=style
+                )
                 body = {
                     "model": self.model,
                     "messages": [
@@ -92,12 +96,16 @@ class GemmaClient:
                     "seed": 42,
                     "cache_prompt": False,
                     "chat_template_kwargs": {"enable_thinking": False},
+                    # With a JSON grammar, llama.cpp can still let Gemma reason
+                    # silently first and spend the whole answer budget on it;
+                    # the visible JSON is then cut off. This turns that off.
+                    "thinking_budget_tokens": 0,
                     "response_format": {
                         "type": "json_schema",
                         "json_schema": {
                             "name": "candidate_evidence",
                             "strict": True,
-                            "schema": output_schema(active, len(view["paths"])),
+                            "schema": output_schema(active, len(view["paths"]), style),
                         },
                     },
                 }
@@ -122,6 +130,7 @@ class GemmaClient:
                         "tasks": active,
                         "text": answer,
                         "frame_times_s": view["times_s"],
+                        "prompt_style": style,
                         "crop_used": has_crop,
                     }
                 )

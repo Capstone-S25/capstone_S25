@@ -222,9 +222,23 @@ npm run dev
 python data-pipeline/main.py --video /path/to/video.mp4 --source-id camera_01
 ```
 
-Open `http://localhost:5173/staff/home`. The review queue, review history and
+One command does the same without Node.js once the dashboard is built
+(`npm run build` in `frontend/`, already done in a transfer bundle). It serves
+the API and dashboard on port 8000, runs the camera backend, and starts the
+bundled CPU Gemma server when one is configured:
+
+```bash
+python3.12 deploy.py start --dashboard --camera --video /path/to/video.mp4 --source-id camera_01
+```
+
+Then open `http://localhost:8000/staff/home`. For a self-contained folder to
+copy to another machine, see
+[the transfer bundle](docs/deployment.md#transfer-bundle-and-full-start-13-november-2026).
+
+With the development servers above, open `http://localhost:5173/staff/home`. The review queue, review history and
 search pages show live incidents, their evidence clip, the screening score
-and, when a Gemma endpoint is configured, Gemma's verdict and description.
+and, when Gemma is configured, its verdict and a short description of the
+scene. Gemma reviews only windows the screening classifier flagged.
 The dev server proxies `/api` to the API (`VITE_API_PROXY` overrides the
 address). Set `RECORDINGS_DIR` for the API if `--recordings-dir` was used.
 While the API is not running, the pages fall back to built-in demo data.

@@ -13,7 +13,7 @@ needs to be copied or downloaded.
 | x86_64 Linux, Python 3.12 with `venv` | everything | Validated on Ubuntu 24.04. |
 | About 12 GB free disk beyond this folder | everything | The Python environment takes about 3 GB; recordings need the rest. |
 | FFmpeg on `PATH` | cameras and video files | `sudo apt install ffmpeg` |
-| PostgreSQL | cameras and the dashboard | Docker Compose (setup starts it), or an existing server: put `DATABASE_URL=postgresql+psycopg://user:password@host:5432/dbname` in `.env` before setup. |
+| PostgreSQL | cameras and the dashboard | Any one of: Docker Compose (setup starts a database); or `sudo apt install postgresql` followed by `sudo -u postgres psql -c "CREATE USER capstone PASSWORD 'password'" -c "CREATE DATABASE capstone OWNER capstone"`; or an existing server, with `DATABASE_URL=postgresql+psycopg://user:password@host:5432/dbname` in `.env` before setup. |
 | glibc 2.38 or newer, `libgomp1`, `libssl3` | bundled Gemma only | Ubuntu 24.04 has them. On an older system setup says so and continues without Gemma. |
 | RAM | everything | Screening about 2.5 GB, Gemma about 9 GB; 32 GB is ample. |
 
@@ -83,12 +83,19 @@ Use one `--source-id` per camera and one camera backend process per camera.
 4. Gemma reviews that window: it answers per behaviour and writes one or two
    sentences describing the scene. Its verdict and description are attached
    to the incident. It reviews flagged windows only, and the same behaviour on
-   the same camera at most once a minute (`GEMMA_CONFIRM_INTERVAL_S`).
+   the same camera at most every 30 s, and never while its previous review is
+   still running (`GEMMA_CONFIRM_INTERVAL_S`).
 
-Gemma does not decide whether an incident exists. Measured on held-out data,
-Gemma 4 E4B is too cautious for littering and unattended items to act as a
-veto, so its verdict is a second opinion for the reviewer. Expect roughly 15
-to 40 s per review on CPU, depending on the processor.
+Gemma does not decide whether an incident exists; its verdict and description
+are a second opinion for the reviewer. Expect roughly 15 to 40 s per review on
+CPU, depending on the processor. How much weight its verdict deserves, from
+592 held-out windows:
+
+| Behaviour | When Gemma confirms | When Gemma does not confirm |
+|---|---|---|
+| Smoking in close view, rough sleeping | Usually right | Usually right |
+| Unattended item on a nearby camera, littering | Trust it (it was right 8–10 times in 10) | It often just missed it: it confirmed 1 in 3 real unattended items and 1 in 5 littering events |
+| Loitering, smoking at CCTV distance, small distant items | It never confirmed these | Carries no information; rely on the clip |
 
 ## Settings worth knowing (`.env`)
 
@@ -96,7 +103,7 @@ to 40 s per review on CPU, depending on the processor.
 |---|---|---|
 | `GEMMA_LOCAL_THREADS` | half the cores | CPU threads for Gemma. Screening uses the rest. |
 | `GEMMA_CONFIRM` | `flagged` | `all` reviews every window; only sensible with a GPU server. |
-| `GEMMA_CONFIRM_INTERVAL_S` | `60` | Minimum video seconds between reviews of one behaviour on one camera. |
+| `GEMMA_CONFIRM_INTERVAL_S` | `30` | Minimum video seconds between reviews of one behaviour on one camera. A review is also skipped while the previous one is still running. |
 | `GEMMA_BASE_URL` | bundled server | Point it at another OpenAI-compatible server and remove `GEMMA_LOCAL=1` to use a GPU machine instead. |
 | `VISION_CLASSIFIER` | newest installed | `ensemble-20261111` or `mobileclip2-s2` select earlier classifiers. |
 

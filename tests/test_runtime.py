@@ -426,6 +426,9 @@ def test_only_flagged_tasks_are_confirmed_and_at_most_once_per_interval(tmp_path
             event = candidate(tmp_path, name)
             event.update(tasks=["smoking", "littering"], timestamp_s=at)
             screening.submit(event)
+            # Let each review finish, so only the interval decides.
+            screening.queue.join()
+            review.queue.join()
     finally:
         screening.close()
         review.close()
@@ -445,6 +448,7 @@ def test_gemma_answer_carries_a_scene_summary():
         output_schema,
         parse_answer,
         parse_summary,
+        prompt_style,
     )
 
     text = (
@@ -455,8 +459,59 @@ def test_gemma_answer_carries_a_scene_summary():
     assert parsed["smoking"]["decision"] == "anomaly"
     assert parse_summary(text) == "A man smokes beside a door."
     assert parse_summary("not json") is None
-    assert "summary" in output_schema(["smoking"], 2)["required"]
+    # The summary is written first for long-view tasks, last for littering.
+    assert output_schema(["smoking"], 2)["required"] == ["summary", "smoking"]
+    assert output_schema(["littering"], 8, prompt_style(view="short"))["required"] == [
+        "littering",
+        "summary",
+    ]
     guarded = {"decision": "unknown", "model_decision_before_guard": "anomaly"}
     assert headline(
         {"unattended_items": guarded, "smoking": {"decision": "normal"}}
     ) == ("confirmed unattended items; did not see smoking")
+
+
+def test_no_second_review_while_the_first_is_still_running(tmp_path):
+    entered, finish, asked = threading.Event(), threading.Event(), []
+
+    class Flags:
+        def classify(self, event):
+            return {
+                "predictions": {"smoking": {"decision": "anomaly", "alert": False}},
+                "seconds": 0.0,
+            }
+
+    class SlowGemma:
+        def classify(self, event):
+            asked.append(event["timestamp_s"])
+            entered.set()
+            assert finish.wait(5)
+            return {
+                "predictions": {
+                    "smoking": {
+                        "decision": "anomaly",
+                        "frame_refs": [1],
+                        "evidence": "Cigarette at mouth",
+                        "alert": True,
+                    }
+                }
+            }
+
+    review = ConfirmationQueue(SlowGemma())
+    store = EventStore(tmp_path)
+    screening = ScreeningQueue(Flags(), store, review, confirm_interval=1)
+    try:
+        for name, at in [("a", 10.0), ("b", 50.0)]:
+            event = candidate(tmp_path, name)
+            event["timestamp_s"] = at
+            screening.submit(event)
+            screening.queue.join()
+            assert entered.wait(2)
+        assert review.busy("camera", "smoking")
+    finally:
+        finish.set()
+        screening.close()
+        review.close()
+    # 50 s is past the interval, but the 10 s review had not finished.
+    assert asked == [10.0]
+    assert not review.busy("camera", "smoking")

@@ -211,6 +211,62 @@ screening result and attaches Gemma's verdict as a hint. Gemma ranks HMDB
 smoking better than the CPU classifier (AP 0.78 against 0.67 at full-set
 prevalence; 0.81 fused), so its score is useful evidence for that task.
 
+### Gemma on the CPU machine: verdicts and descriptions (13 November, later)
+
+The transfer bundle carries Gemma 4 E4B (Google's 4-bit QAT build, 5.7 GB) and
+a CPU build of the llama.cpp server. Measured through the application's own
+client on this workstation limited to 8 threads: about 8.5 GB of memory and
+13–14 s per four-frame review (8.5 s to read the frames, 5 s to write the
+answer). To make that affordable, Gemma reviews only windows the screening
+classifier flagged, one behaviour per camera at most every 30 s of video and
+never while its previous review is still running. Each answer now includes a
+one- or two-sentence scene description that is stored with the incident.
+
+Two faults found on the way:
+
+- With the JSON grammar on, llama.cpp let Gemma reason silently first and
+  spend the whole answer budget on it, so many answers were cut off and came
+  back `unknown` (all 150 single-image smoking windows in the first run). The
+  request now sets `thinking_budget_tokens: 0`. This affected the earlier
+  confirmation path too.
+- The original prompt was written for a gatekeeper ("an isolated bag does not
+  establish abandonment") and made Gemma answer normal for most real
+  incidents.
+
+Three prompt wordings were compared on 341 development windows and then on 592
+held-out windows (up to 40 per class and source; `gemma_confirm_eval.py`).
+"Balanced" states what to look for per behaviour and asks for `unknown` only
+when the scene cannot be seen; "describe first" also writes the scene summary
+before the verdicts.
+
+| Held-out source | Strict (old): P / R / F1 | Balanced | Describe first |
+|---|---|---|---|
+| Smoking: photo holdout | 0.97 / 0.90 / 0.94 | 0.90 / 0.93 / 0.91 | 0.86 / 0.93 / 0.89 |
+| Smoking: Stanford40 | 0.80 / 0.60 / 0.69 | 0.57 / 0.78 / 0.66 | 0.63 / 0.80 / 0.70 |
+| Smoking: HMDB clips | 0.88 / 0.57 / 0.70 | 0.81 / 0.72 / 0.76 | 0.81 / 0.55 / 0.66 |
+| Smoking: CCTV camera c1 | 0 / 0 / 0 | 0 / 0 / 0 | 0 / 0 / 0 |
+| Littering: IWDD | 0.33 / 0.03 / 0.05 | 0.62 / 0.20 / 0.30 | 0.80 / 0.20 / 0.32 |
+| Loitering: Street Scene | 0 / 0 / 0 | 0 / 0 / 0 | 0 / 0 / 0 |
+| Sleeping: old photos | 1.00 / 1.00 / 1.00 | 0.75 / 1.00 / 0.86 | 0.86 / 1.00 / 0.92 |
+| Sleeping: new authors | 0.88 / 0.82 / 0.85 | 0.88 / 0.88 / 0.88 | 0.88 / 0.88 / 0.88 |
+| Unattended: held-out cameras | 0 / 0 / 0 | 1.00 / 0.03 / 0.05 | 1.00 / 0.33 / 0.49 |
+| Unattended: MEVA | 0 / 0 / 0 | 0 / 0 / 0 | 0 / 0 / 0 |
+| **Macro F1** | **0.310** | **0.356** | **0.406** |
+
+On development data describe-first won overall (0.393, balanced 0.386, strict
+0.320) but littering did better with the verdict first (recall 0.24 against
+0.04), so the runtime uses describe-first for the long-view tasks and
+balanced for littering's short view. Held out, the two were equal for
+littering.
+
+How to read Gemma's verdict, then: for smoking in close view and for sleeping
+it is a useful second opinion in both directions. For unattended items and
+littering, a confirmation is trustworthy (precision 0.8–1.0) but "not
+confirmed" mostly means it did not see the event. For loitering, smoking at
+CCTV distance and small distant objects it never confirms, so "not confirmed"
+carries no information there. The description is useful to the reviewer in
+every case.
+
 ## Limits
 
 - The held-out sets were inspected during the October work and during this
