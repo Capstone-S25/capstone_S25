@@ -86,6 +86,12 @@ def write_report(root):
     production = _direct_camera_services(results)
     profile = environment["input"]
     first = results[0]
+    queue_size = first.get("queue_size", 0)
+    queue_description = (
+        f"bounded drop-oldest, {queue_size} waiting frames per camera"
+        if queue_size
+        else "historical unbounded FIFO"
+    )
     local_time = datetime.now(UTC).astimezone(timezone(timedelta(hours=8)))
     lines = [
         "# Pipeline memory benchmark report",
@@ -103,7 +109,7 @@ def write_report(root):
         "- Reported means are medians of per-run steady-window means. Peaks are the highest sampled value across complete runs, including startup and draining.",
         "- Process RSS/USS is sampled approximately every 0.2s, host memory every 1s, Docker statistics approximately every 5–8s.",
         "- RSS is resident memory; USS is private resident memory. Summed RSS may count shared pages more than once. Short peaks between samples may be missed.",
-        "- The benchmark invokes the production worker and runner helpers. Queue instrumentation counts image bytes without changing FIFO/unbounded behavior.",
+        f"- Queue policy: {queue_description}. Instrumentation counts image bytes and drops without changing the configured policy.",
         "- Existing services and the mock publisher remain running. Baseline means no camera workers, not an otherwise empty machine or Docker-off measurement.",
         "- Whole-host measurements also include the benchmark coordinator and its monitoring commands; component application measurements exclude that separate coordinator.",
         "- The in-process sampler retains measurements until the run ends. Small long-run application memory growth can include sample-storage overhead; queue-image growth is reported separately.",
@@ -238,8 +244,8 @@ def write_report(root):
             "",
             "## Sustained operation and slower consumer",
             "",
-            "| Case | Input cameras | Measurement s | Total including drain s | App peak RSS MiB | Peak queued frames | Peak queued image MiB | Late RSS slope MiB/min | Late queue slope MiB/min |",
-            "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+            "| Case | Input cameras | Measurement s | Total including drain s | App peak RSS MiB | Peak queued frames | Peak queued image MiB | Late RSS slope MiB/min | Late queue slope MiB/min | Dropped frames |",
+            "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
         ]
     )
     private_increment = two["app_uss_mean_mib"] - one["app_uss_mean_mib"]
@@ -251,15 +257,20 @@ def write_report(root):
     for run in results:
         if "_soak" in run["case"] or run["consumer_delay_seconds"]:
             m = run["metrics"]
+            dropped = sum(c.get("dropped_frames", 0) for c in run["cameras_detail"])
             lines.append(
-                f"| {run['case']} | {run['cameras']} | {run['measurement_seconds']:g} | {run['elapsed_seconds_including_drain']:.1f} | {m['app_rss_peak_mib']:.1f} | {m['queued_frames_peak']} | {m['queued_image_bytes_peak_mib']:.1f} | {m.get('app_rss_late_slope_mib_per_minute', 0):.2f} | {m.get('queued_image_late_slope_mib_per_minute', 0):.2f} |"
+                f"| {run['case']} | {run['cameras']} | {run['measurement_seconds']:g} | {run['elapsed_seconds_including_drain']:.1f} | {m['app_rss_peak_mib']:.1f} | {m['queued_frames_peak']} | {m['queued_image_bytes_peak_mib']:.1f} | {m.get('app_rss_late_slope_mib_per_minute', 0):.2f} | {m.get('queued_image_late_slope_mib_per_minute', 0):.2f} | {dropped} |"
             )
     image_mib = profile["width"] * profile["height"] * 3 / 1024**2
     lines.extend(
         [
             "",
             f"Each queued BGR image in this workload uses {image_mib:.3f} MiB, excluding frame/Python metadata and decoder reference buffers. The slow case sleeps 0.75s per consumed frame per camera, intentionally slower than selected input.",
-            "A positive queue-growth rate means memory has no fixed long-term bound. Finishing a finite stress test is not evidence that an unbounded queue is safe indefinitely. Near-zero growth during the soak establishes behavior only for that measured interval.",
+            (
+                "The bounded queue limits waiting frames by dropping the oldest on overflow. Drop counts must be considered alongside memory and consumed frames; lower memory does not imply every selected frame was processed."
+                if queue_size
+                else "A positive queue-growth rate means memory has no fixed long-term bound. Finishing a finite stress test is not evidence that an unbounded queue is safe indefinitely. Near-zero growth during the soak establishes behavior only for that measured interval."
+            ),
             "",
             "## Limits and deployment interpretation",
             "",
@@ -310,8 +321,16 @@ def write_report(root):
     slow_runs = [run for run in results if run["consumer_delay_seconds"]]
     if slow_runs:
         slow = slow_runs[-1]["metrics"]
+        dropped = sum(
+            c.get("dropped_frames", 0) for c in slow_runs[-1]["cameras_detail"]
+        )
+        conclusion = (
+            f"The bounded queues discarded {dropped} oldest frames on overflow."
+            if queue_size
+            else "An unbounded queue therefore has no fixed memory ceiling if this imbalance continues."
+        )
         findings.append(
-            f"- With deliberately slow consumers, queued image data grew by **{slow['queued_image_late_slope_mib_per_minute']:.1f} MiB/min**, reached **{slow['queued_frames_peak']} frames**, and application RSS peaked at **{slow['app_rss_peak_mib']:.1f} MiB**. An unbounded queue therefore has no fixed memory ceiling if this imbalance continues."
+            f"- With deliberately slow consumers, queued image data grew by **{slow['queued_image_late_slope_mib_per_minute']:.1f} MiB/min**, reached **{slow['queued_frames_peak']} frames**, and application RSS peaked at **{slow['app_rss_peak_mib']:.1f} MiB**. {conclusion}"
         )
     findings.extend(
         [

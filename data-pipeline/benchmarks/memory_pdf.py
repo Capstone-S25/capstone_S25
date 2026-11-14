@@ -295,6 +295,18 @@ def write_pdf(root, output):
     production = _direct_camera_services(results)
     soak = next(run for run in results if "_soak" in run["case"])
     slow = next(run for run in results if run["consumer_delay_seconds"])
+    queue_size = results[0].get("queue_size", 0)
+    queue_description = (
+        f"bounded drop-oldest queue with {queue_size} waiting frames"
+        if queue_size
+        else "historical unbounded FIFO queue"
+    )
+    slow_dropped = sum(c.get("dropped_frames", 0) for c in slow["cameras_detail"])
+    queue_conclusion = (
+        f"The bounded queues dropped {slow_dropped} oldest frames on overflow."
+        if queue_size
+        else "A continuously growing unbounded queue has no fixed memory ceiling."
+    )
     fast_peak = max(
         run["metrics"]["app_rss_peak_mib"]
         for run in results
@@ -309,7 +321,7 @@ def write_pdf(root, output):
     ]
     story.append(
         _p(
-            "Component costs, camera-count scaling, Docker overhead and unbounded-queue behavior on one Windows machine.",
+            "Component costs, camera-count scaling, Docker overhead and frame-queue behavior on one Windows machine.",
             styles,
         )
     )
@@ -365,7 +377,7 @@ def write_pdf(root, output):
     )
     story.append(
         _p(
-            f"Deliberately slow consumers reached <b>{slow['metrics']['app_rss_peak_mib']:.1f} MiB</b> and <b>{slow['metrics']['queued_frames_peak']} queued frames</b>. A continuously growing unbounded queue has no fixed memory ceiling.",
+            f"Deliberately slow consumers reached <b>{slow['metrics']['app_rss_peak_mib']:.1f} MiB</b> and <b>{slow['metrics']['queued_frames_peak']} queued frames</b>. {queue_conclusion}",
             styles,
         )
     )
@@ -404,7 +416,7 @@ def write_pdf(root, output):
                 ],
                 [
                     "Topology",
-                    "One shared Python process; recording + streaming workers and a separate unbounded queue per camera; one FFmpeg recording process per camera",
+                    f"One shared Python process; recording + streaming workers and a separate {queue_description} per camera; one FFmpeg recording process per camera",
                 ],
                 [
                     "Consumer",
@@ -700,7 +712,7 @@ def write_pdf(root, output):
     story.append(_time_chart(root, soak, slow=False))
     story.append(
         _p(
-            f"All {sum(c['consumed_frames'] for c in soak['cameras_detail']):,} selected frames were consumed. Peak RSS was {soak['metrics']['app_rss_peak_mib']:.1f} MiB; at most {soak['metrics']['queued_frames_peak']} frames were queued. Late queue-image growth was {soak['metrics']['queued_image_late_slope_mib_per_minute']:.2f} MiB/min. Late RSS growth was {soak['metrics']['app_rss_late_slope_mib_per_minute']:.2f} MiB/min and includes profiling overhead; this is not a proof of leak-free behavior indefinitely.",
+            f"Consumed {sum(c['consumed_frames'] for c in soak['cameras_detail']):,} selected frames; dropped {sum(c.get('dropped_frames', 0) for c in soak['cameras_detail'])} on overflow. Peak RSS was {soak['metrics']['app_rss_peak_mib']:.1f} MiB; at most {soak['metrics']['queued_frames_peak']} frames were queued. Late queue-image growth was {soak['metrics']['queued_image_late_slope_mib_per_minute']:.2f} MiB/min. Late RSS growth was {soak['metrics']['app_rss_late_slope_mib_per_minute']:.2f} MiB/min and includes profiling overhead; this is not a proof of leak-free behavior indefinitely.",
             styles,
             "SmallCopy",
         )
@@ -725,6 +737,7 @@ def write_pdf(root, output):
                     "Late queued-image growth",
                     f"{slow['metrics']['queued_image_late_slope_mib_per_minute']:.1f} MiB per minute",
                 ],
+                ["Dropped frames on overflow", str(slow_dropped)],
                 [
                     "Run time including drain",
                     f"{slow['elapsed_seconds_including_drain']:.1f} s for {slow['warmup_seconds']:g} s warm-up + {slow['measurement_seconds']:g} s measurement",
@@ -736,7 +749,7 @@ def write_pdf(root, output):
     )
     story.append(
         _p(
-            "A single 640 x 360 BGR image uses 0.659 MiB before metadata and decoder buffers. If production consistently outruns consumption, an unbounded queue has no fixed memory ceiling. A completed finite stress run does not establish safety for indefinite operation.",
+            f"A single 640 x 360 BGR image uses 0.659 MiB before metadata and decoder buffers. {queue_conclusion} A completed finite stress run does not establish safety or detection coverage for indefinite operation.",
             styles,
             "SmallCopy",
         )

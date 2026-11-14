@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from data_pipeline.database.session import create_engine_and_session_factory
 from data_pipeline.pipeline.runner import run_pipeline
 from data_pipeline.video_ingestion.sources import SourceType, VideoSource
+from data_pipeline.video_ingestion.streaming.frame_queue import DEFAULT_FRAME_QUEUE_SIZE
 
 
 def _parse_args(project_dir: Path) -> argparse.Namespace:
@@ -39,6 +40,12 @@ def _parse_args(project_dir: Path) -> argparse.Namespace:
         help="Maximum selected frames per second of video time (default: 2).",
     )
     parser.add_argument(
+        "--queue-size",
+        type=int,
+        default=DEFAULT_FRAME_QUEUE_SIZE,
+        help=f"Maximum waiting frames per source; drops oldest when full (default: {DEFAULT_FRAME_QUEUE_SIZE}).",
+    )
+    parser.add_argument(
         "--verbose",
         action="store_true",
         help="Show detailed recording and streaming messages.",
@@ -46,6 +53,8 @@ def _parse_args(project_dir: Path) -> argparse.Namespace:
     args = parser.parse_args()
     if not math.isfinite(args.target_fps) or args.target_fps <= 0:
         parser.error("--target-fps must be positive and finite")
+    if args.queue_size <= 0:
+        parser.error("--queue-size must be a positive integer")
     return args
 
 
@@ -100,6 +109,7 @@ def main() -> None:
             storage_root,
             session_factory=session_factory,
             target_fps=args.target_fps,
+            queue_size=args.queue_size,
         )
     finally:
         engine.dispose()

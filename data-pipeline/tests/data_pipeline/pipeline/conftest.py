@@ -66,6 +66,8 @@ def pipeline(tmp_path, monkeypatch):
     monkeypatch.setattr(runner, "FRAME_QUEUE_TIMEOUT_SECONDS", 0.005)
 
     def run(handler, **kwargs):
+        # Lifecycle scenarios keep their finite backlog within queue capacity.
+        kwargs.setdefault("queue_size", len(context.frames))
         runner.run_pipeline(
             context.source,
             tmp_path / "recordings",

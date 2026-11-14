@@ -23,7 +23,7 @@ def test_consumes_fifo_backlog_before_recording_finishes_and_waits_for_both_work
             # Hold the consumer until the producer has built a complete backlog.
             assert pipeline.done.wait(pipeline.wait_seconds)
             assert not pipeline.recording_finished.is_set()
-            assert pipeline.queue.maxsize == 0
+            assert pipeline.queue.maxsize == len(pipeline.frames)
             assert pipeline.queue.qsize() == len(pipeline.frames) - 1
         received.append(frame.frame_index)
         if len(received) == len(pipeline.frames):

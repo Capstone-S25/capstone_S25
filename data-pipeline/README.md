@@ -166,14 +166,15 @@ you run `npm run db:down`.
 
 Pass arguments after `npm start --`:
 
-| Argument       | Options / value         | Default                           | Description                                                            |
-| -------------- | ----------------------- | --------------------------------- | ---------------------------------------------------------------------- |
-| `--source`     | `file` or `rtsp`        | `file`                            | Choose a local video or CCTV stream.                                   |
-| `--video`      | File path               | `samples/videos/loitering.avi`    | Video to read when `--source file`.                                    |
-| `--rtsp-url`   | RTSP URL                | `rtsp://localhost:8554/camera_01` | Stream to read when `--source rtsp`.                                   |
-| `--target-fps` | Positive, finite number | `2`                               | Maximum frames selected per second of video time for each camera/file. |
-| `--verbose`    | Flag                    | Off                               | Show detailed recording and streaming messages.                        |
-| `-h`, `--help` | Flag                    | —                                 | Show available arguments and exit.                                     |
+| Argument       | Options / value         | Default                           | Description                                                                       |
+| -------------- | ----------------------- | --------------------------------- | --------------------------------------------------------------------------------- |
+| `--source`     | `file` or `rtsp`        | `file`                            | Choose a local video or CCTV stream.                                              |
+| `--video`      | File path               | `samples/videos/loitering.avi`    | Video to read when `--source file`.                                               |
+| `--rtsp-url`   | RTSP URL                | `rtsp://localhost:8554/camera_01` | Stream to read when `--source rtsp`.                                              |
+| `--target-fps` | Positive, finite number | `2`                               | Maximum frames selected per second of video time for each camera/file.            |
+| `--queue-size` | Positive integer        | `8`                               | Maximum waiting frames per camera/file; drops the oldest waiting frame when full. |
+| `--verbose`    | Flag                    | Off                               | Show detailed recording and streaming messages.                                   |
+| `-h`, `--help` | Flag                    | —                                 | Show available arguments and exit.                                                |
 
 ## Mock RTSP camera
 
@@ -216,7 +217,7 @@ video segments and database metadata under a separate benchmark source ID.
 Memory is reported in MiB. PostgreSQL, Docker, and YOLO are excluded; the consumer
 only counts frames. Summed RSS can count shared memory pages more than once.
 
-The benchmark accepts `--source`, `--video`, `--rtsp-url`, and `--target-fps` as
+The benchmark accepts `--source`, `--video`, `--rtsp-url`, `--target-fps`, and `--queue-size` as
 above, plus `--duration` (seconds, default 30) and `--consumer-delay` (seconds per
 frame, default 0). For example, simulate a consumer slower than the 2 FPS input:
 
@@ -245,10 +246,14 @@ opens independent connections to the same RTSP stream. By default, the suite
 starts and stops its own publisher on a separate path, normalizing timestamps
 and using one-second H.264 keyframes. Existing camera streams are left untouched.
 
-Suite options: `--warmup`, `--duration`, `--repeats`, `--soak-duration` (0 to skip),
+Suite options: `--warmup`, `--duration`, `--repeats`, `--queue-size` (default 8), `--soak-duration` (0 to skip),
 `--skip-stress`, `--output`, and `--rtsp-url` (repeat for distinct camera URLs;
 otherwise the dedicated benchmark feed is used). Docker and WSL figures overlap host RAM and
 must not be added to whole-machine measurements.
+
+New benchmark runs use the bounded drop-oldest queue and record dropped frames.
+The checked-in November 14 report describes the earlier unbounded-queue runs;
+those historical measurements have not been rerun or rewritten.
 
 To export a suite run to PDF with charts (reporting packages are temporary):
 

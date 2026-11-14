@@ -2,7 +2,6 @@ import logging
 import time
 from dataclasses import dataclass
 from fractions import Fraction
-from queue import Queue
 from threading import Event
 from typing import cast
 
@@ -15,6 +14,7 @@ from numpy.typing import NDArray
 
 from data_pipeline.video_ingestion.decoding.selection import FrameSelector
 from data_pipeline.video_ingestion.sources import SourceType, VideoSource
+from data_pipeline.video_ingestion.streaming.frame_queue import DropOldestQueue
 
 logger = logging.getLogger(__name__)
 
@@ -75,8 +75,8 @@ def _pace_file_frame(
     """Slow down file reading to match the video's original playback speed.
 
     Wait until this frame's playback time so the file behaves like a live camera.
-    This helps avoid filling the single shared queue faster than the consumer
-    can process frames, which could use too much memory and disrupt the system.
+    This avoids flooding the queue and dropping frames just because a local
+    file can be read faster than real time.
 
     Args:
         source           : Video input; only local files need this playback delay
@@ -96,7 +96,7 @@ def _pace_file_frame(
 def _enqueue_frames(
     video: InputContainer,
     source: VideoSource,
-    frame_queue: Queue[StreamFrame],
+    frame_queue: DropOldestQueue[StreamFrame],
     selector: FrameSelector,
     stop_event: Event,
 ) -> None:
@@ -141,7 +141,7 @@ def _enqueue_frames(
 
 def run_streaming_worker(
     source: VideoSource,
-    frame_queue: Queue[StreamFrame],
+    frame_queue: DropOldestQueue[StreamFrame],
     *,
     target_fps: float = 2,
     stop_event: Event,
@@ -151,7 +151,7 @@ def run_streaming_worker(
 
     Args:
         source        : Enabled file or RTSP source to decode independently of recording
-        frame_queue   : Unbounded FIFO queue receiving selected live frames
+        frame_queue   : Bounded queue; drops its oldest waiting frame when full
         target_fps    : Maximum selected frames per second of video; defaults to 2
         stop_event    : Shared signal requesting input to stop
         producer_done : Completion signal set on exit, including on failure

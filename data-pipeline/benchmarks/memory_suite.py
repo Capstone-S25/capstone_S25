@@ -17,6 +17,8 @@ from uuid import uuid4
 
 import psutil
 
+from data_pipeline.video_ingestion.streaming.frame_queue import DEFAULT_FRAME_QUEUE_SIZE
+
 PROJECT_DIR = Path(__file__).resolve().parents[1]
 MIB = 1024 * 1024
 DEFAULT_RTSP_URL = "rtsp://localhost:8554/camera_01"
@@ -170,6 +172,8 @@ def _run_case(args, root, mode, cameras, repeat, *, duration=None, delay=0):
         str(measure_duration),
         "--consumer-delay",
         str(delay),
+        "--queue-size",
+        str(args.queue_size),
         "--output",
         str(output),
     ]
@@ -375,11 +379,14 @@ def main():
     parser.add_argument("--warmup", type=float, default=10)
     parser.add_argument("--duration", type=float, default=60)
     parser.add_argument("--repeats", type=int, default=3)
+    parser.add_argument("--queue-size", type=int, default=DEFAULT_FRAME_QUEUE_SIZE)
     parser.add_argument("--soak-duration", type=float, default=600)
     parser.add_argument("--rtsp-url", action="append", default=[])
     parser.add_argument("--skip-stress", action="store_true")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
+    if args.queue_size <= 0:
+        parser.error("--queue-size must be a positive integer")
     if (
         args.warmup < 0
         or args.duration <= 0

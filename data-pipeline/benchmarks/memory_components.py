@@ -7,7 +7,6 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
-from queue import Queue
 from statistics import mean
 from threading import Event, Lock, Thread, Timer
 from time import perf_counter, sleep
@@ -18,6 +17,10 @@ from data_pipeline.database.session import create_engine_and_session_factory
 from data_pipeline.pipeline import runner
 from data_pipeline.video_ingestion.recording.worker import run_recording_worker
 from data_pipeline.video_ingestion.sources import SourceType, VideoSource
+from data_pipeline.video_ingestion.streaming.frame_queue import (
+    DEFAULT_FRAME_QUEUE_SIZE,
+    DropOldestQueue,
+)
 from data_pipeline.video_ingestion.streaming.worker import (
     StreamFrame,
     run_streaming_worker,
@@ -53,11 +56,11 @@ class QueueTotals:
             }
 
 
-class MeasuredQueue(Queue):
-    """An ordinary unbounded FIFO queue that also counts queued image bytes."""
+class MeasuredQueue(DropOldestQueue):
+    """The production drop-oldest queue with queued-image memory accounting."""
 
-    def __init__(self, totals=None):
-        super().__init__(maxsize=0)
+    def __init__(self, totals=None, maxsize=DEFAULT_FRAME_QUEUE_SIZE):
+        super().__init__(maxsize=maxsize)
         self.totals = totals if totals is not None else QueueTotals()
         self.image_bytes = 0
         self.peak_image_bytes = 0
@@ -87,6 +90,7 @@ class MeasuredQueue(Queue):
                 "peak_queued_frames": self.peak_frames,
                 "peak_queued_image_bytes": self.peak_image_bytes,
                 "produced_frames": self.produced,
+                "dropped_frames": self._dropped_count,
             }
 
 
@@ -184,6 +188,7 @@ def _sample(process, started, metrics):
         "ffmpeg_process_count": len(children),
         **queues,
         "consumed_frames": sum(camera.consumed_frames for camera in metrics),
+        "dropped_frames": sum(camera.queue.dropped_count for camera in metrics),
     }
 
 
@@ -224,6 +229,7 @@ def _summarize(rows, args):
         max(r["queued_image_bytes_peak"] for r in rows) / MIB
     )
     summary["ffmpeg_process_count_peak"] = max(r["ffmpeg_process_count"] for r in rows)
+    summary["dropped_frames_total"] = rows[-1]["dropped_frames"]
     # Fit a simple slope to the latter half of the steady measurement window.
     late = [
         r for r in active if r["elapsed_seconds"] >= args.warmup + args.duration / 2
@@ -251,11 +257,14 @@ def main():
     parser.add_argument("--cameras", type=int, choices=[0, 1, 2, 4], required=True)
     parser.add_argument("--rtsp-url", action="append", default=[])
     parser.add_argument("--target-fps", type=float, default=2)
+    parser.add_argument("--queue-size", type=int, default=DEFAULT_FRAME_QUEUE_SIZE)
     parser.add_argument("--warmup", type=float, default=10)
     parser.add_argument("--duration", type=float, default=60)
     parser.add_argument("--consumer-delay", type=float, default=0)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    if args.queue_size <= 0:
+        parser.error("--queue-size must be a positive integer")
     if (args.mode == "baseline") != (args.cameras == 0):
         parser.error("Only baseline mode uses zero cameras")
     urls = args.rtsp_url or ["rtsp://localhost:8554/camera_01"]
@@ -265,7 +274,10 @@ def main():
     args.output.mkdir(parents=True, exist_ok=True)
     engine, factory = create_engine_and_session_factory(_load_database_url(PROJECT_DIR))
     queue_totals = QueueTotals()
-    metrics = [CameraMetrics(MeasuredQueue(queue_totals)) for _ in range(args.cameras)]
+    metrics = [
+        CameraMetrics(MeasuredQueue(queue_totals, maxsize=args.queue_size))
+        for _ in range(args.cameras)
+    ]
     stop, monitor_stop = Event(), Event()
     started = perf_counter()
     rows = [_sample(psutil.Process(), started, metrics)]
@@ -327,6 +339,8 @@ def main():
         "mode": args.mode,
         "cameras": args.cameras,
         "target_fps": args.target_fps,
+        "queue_size": args.queue_size,
+        "queue_policy": "drop_oldest",
         "warmup_seconds": args.warmup,
         "measurement_seconds": args.duration,
         "consumer_delay_seconds": args.consumer_delay,

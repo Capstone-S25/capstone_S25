@@ -17,6 +17,7 @@ import psutil
 
 from data_pipeline.database.session import create_engine_and_session_factory
 from data_pipeline.pipeline.runner import run_pipeline
+from data_pipeline.video_ingestion.streaming.frame_queue import DEFAULT_FRAME_QUEUE_SIZE
 from data_pipeline.video_ingestion.streaming.worker import StreamFrame
 from main import _build_video_source, _load_database_url
 
@@ -44,6 +45,7 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--rtsp-url", default="rtsp://localhost:8554/camera_01")
     parser.add_argument("--target-fps", type=float, default=2)
+    parser.add_argument("--queue-size", type=int, default=DEFAULT_FRAME_QUEUE_SIZE)
     parser.add_argument(
         "--duration",
         type=float,
@@ -57,6 +59,8 @@ def _parse_args() -> argparse.Namespace:
         help="Seconds spent on each frame to simulate a slower consumer (default: 0).",
     )
     args = parser.parse_args()
+    if args.queue_size <= 0:
+        parser.error("--queue-size must be a positive integer")
     for name in ("target_fps", "duration", "consumer_delay"):
         value = getattr(args, name)
         if (
@@ -193,6 +197,7 @@ def main() -> None:
             PROJECT_DIR / "recordings",
             session_factory=session_factory,
             target_fps=args.target_fps,
+            queue_size=args.queue_size,
             frame_handler=consume,
         )
     except BaseException as error:
@@ -209,6 +214,8 @@ def main() -> None:
         "source_id": source.source_id,
         "frame_shape": frame_shape,
         "target_fps": args.target_fps,
+        "queue_size": args.queue_size,
+        "queue_policy": "drop_oldest",
         "requested_duration_seconds": args.duration,
         "elapsed_seconds_including_drain": round(perf_counter() - started, 3),
         "consumer_delay_seconds": args.consumer_delay,
