@@ -77,7 +77,7 @@ Use one `--source-id` per camera and one camera backend process per camera.
 ## What happens to a window
 
 1. YOLO26s tracking and rules, plus a scan every 10 s, propose windows.
-2. The screening classifier (`ensemble-20261113`, CPU) scores each window for
+2. The screening classifier (`ensemble-20261114`, CPU) scores each window for
    smoking, littering, loitering, rough sleeping and unattended items.
 3. A window scored as an anomaly opens an incident with a short clip.
 4. Gemma reviews that window: it answers per behaviour and writes one or two
@@ -105,7 +105,28 @@ CPU, depending on the processor. How much weight its verdict deserves, from
 | `GEMMA_CONFIRM` | `flagged` | `all` reviews every window; only sensible with a GPU server. |
 | `GEMMA_CONFIRM_INTERVAL_S` | `30` | Minimum video seconds between reviews of one behaviour on one camera. A review is also skipped while the previous one is still running. |
 | `GEMMA_BASE_URL` | bundled server | Point it at another OpenAI-compatible server and remove `GEMMA_LOCAL=1` to use a GPU machine instead. |
-| `VISION_CLASSIFIER` | newest installed | `ensemble-20261111` or `mobileclip2-s2` select earlier classifiers. |
+| `VISION_CLASSIFIER` | newest installed | `ensemble-20261113`, `ensemble-20261111` or `mobileclip2-s2` select earlier classifiers. |
+| `VISION_OPERATING_POINT` | `balanced` | `low_false_alarm` flags fewer ordinary windows and misses more unattended items. |
+
+## If one camera keeps raising the same false alarm
+
+The classifier's thresholds were set on other people's cameras. When a camera
+has something in view that scores high all day, calibrate it on its own
+footage. Let it run on footage in which the behaviour does **not** happen
+(five minutes or more; a recorded file through `--video` counts), stop it,
+then:
+
+```bash
+python3.12 deploy.py calibrate --source-id camera_01
+```
+
+It reads the scores already journaled for that camera and raises its
+threshold for each behaviour until at most 2% of those windows would have
+been flagged. It prints what changed; nothing is lowered, no labels are
+needed, and nothing leaves the machine. Start the system again to apply it.
+`--clear` removes the calibration. A stricter threshold also misses weaker
+real events on that camera, so use it for cameras with a false-alarm problem,
+not everywhere.
 
 ## Limits
 

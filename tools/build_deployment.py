@@ -1,7 +1,7 @@
 """Assemble one self-contained transfer folder (and optionally a .tar of it).
 
     python tools/build_deployment.py dist/capstone-cpu-deployment-YYYYMMDD \
-        --ensemble-export results/.../bundle_v9 \
+        --ensemble-export results/.../bundle_v10 \
         --hf-cache ~/.cache/huggingface/hub \
         --gemma-weights data/models/gemma4_gguf/gemma-4-E4B-it-qat-q4_0 \
         --llama data/tools/llama_gemma4/b11925/llama-b11925 \
@@ -92,6 +92,12 @@ def main():
     parser.add_argument("--gemma-weights", type=Path)
     parser.add_argument("--llama", type=Path)
     parser.add_argument("--wheels", action="store_true")
+    parser.add_argument(
+        "--wheels-from",
+        type=Path,
+        help="Reuse the wheels folder of an earlier bundle (same pinned "
+        "requirements) instead of downloading them again",
+    )
     parser.add_argument("--archive", action="store_true")
     parser.add_argument("--allow-dirty", action="store_true")
     args = parser.parse_args()
@@ -125,11 +131,11 @@ def main():
     for item in models["files"]:
         place(ROOT / "models" / item["path"], out / "models" / item["path"])
     ensemble_bundle.build(
-        args.ensemble_export, args.hf_cache, out / "models/ensemble-20261113"
+        args.ensemble_export, args.hf_cache, out / "models/ensemble-20261114"
     )
-    ensemble_bundle.verify(out / "models/ensemble-20261113")
+    ensemble_bundle.verify(out / "models/ensemble-20261114")
     components["models"] = (
-        f"{len(models['files'])} detector/October files and ensemble-20261113"
+        f"{len(models['files'])} detector/October files and ensemble-20261114"
     )
 
     if args.gemma_weights:
@@ -165,7 +171,17 @@ def main():
     else:
         components["gemma"] = "not included; configure a server with --gemma-url"
 
-    if args.wheels:
+    if args.wheels_from:
+        wheels = sorted(args.wheels_from.glob("*.whl"))
+        if not wheels:
+            raise SystemExit(f"No wheels in {args.wheels_from}")
+        for source in wheels:
+            place(source, out / "wheels" / source.name)
+        components["wheels"] = (
+            f"{len(wheels)} wheels for Python {sys.version_info.major}.{sys.version_info.minor} "
+            "x86_64 Linux; setup installs offline"
+        )
+    elif args.wheels:
         pip = [sys.executable, "-m", "pip", "download", "--only-binary=:all:"]
         pip += ["--dest", str(out / "wheels"), "--disable-pip-version-check"]
         subprocess.run(

@@ -239,6 +239,9 @@ With the development servers above, open `http://localhost:5173/staff/home`. The
 search pages show live incidents, their evidence clip, the screening score
 and, when Gemma is configured, its verdict and a short description of the
 scene. Gemma reviews only windows the screening classifier flagged.
+`python deploy.py calibrate --source-id <camera>` raises one camera's
+screening thresholds on its own ordinary footage when it keeps raising the
+same false alarm ([how and when](docs/START_HERE.md)).
 The dev server proxies `/api` to the API (`VITE_API_PROXY` overrides the
 address). Set `RECORDINGS_DIR` for the API if `--recordings-dir` was used.
 While the API is not running, the pages fall back to built-in demo data.

@@ -8,7 +8,14 @@ from PIL import Image
 
 from vision_runtime.classifier import ENSEMBLES, load_classifier
 from vision_runtime.config import models_root
-from vision_runtime.ensemble import LRU, EnsembleStrategy, crop_box, dwell, pool
+from vision_runtime.ensemble import (
+    LRU,
+    EnsembleStrategy,
+    crop_box,
+    dwell,
+    operating_point,
+    pool,
+)
 
 
 def person(x, y, w=0.1, h=0.3, label=1, confidence=0.9):
@@ -69,6 +76,123 @@ def test_offset_is_window_minus_reference(tmp_path):
     reference = strategy._vector(recipe, ["ref"] * 4, "ref", {})
     shifted = strategy._vector({**recipe, "offset": True}, views, "ref", {})
     assert np.allclose(shifted, plain - reference)
+
+
+def bare_strategy(tasks, vectors=None, smoking=0.0):
+    """An EnsembleStrategy with stand-in encoders, for the scoring rules."""
+    strategy = object.__new__(EnsembleStrategy)
+    strategy.cache = LRU(64)
+    strategy.tasks = tasks
+    strategy.site = {}
+    strategy._key = lambda path: path
+    strategy._embed = lambda backbone, stage, paths, keys: {
+        p: np.asarray(vectors[stage, p], np.float32) for p in paths
+    }
+    strategy._smoking = lambda paths, keys: np.array([[smoking, 0.0, 0.0]] * len(paths))
+    return strategy
+
+
+def text_member(**changes):
+    return {
+        "kind": "zeroshot",
+        "backbone": "b",
+        "stages": ["full"],
+        "positive": np.array([[1.0, 0.0], [0.6, 0.8]], np.float32),
+        "negative": np.array([[0.0, 1.0]], np.float32),
+        "mean": 0.0,
+        "std": 1.0,
+    } | changes
+
+
+def test_text_member_is_behaviour_minus_ordinary_similarity():
+    vectors = {("full", "smoker"): [1.0, 0.0], ("full", "walker"): [0.0, 1.0]}
+    strategy = bare_strategy({}, vectors)
+    member = text_member()
+    # Best behaviour description minus best ordinary description.
+    assert strategy._member(member, ["smoker"], "smoker", {}) == pytest.approx(1.0)
+    assert strategy._member(member, ["walker"], "walker", {}) == pytest.approx(-0.2)
+    # Views are averaged, then the stored mean and spread standardize.
+    both = strategy._member(
+        text_member(mean=0.4, std=2.0), ["smoker", "walker"], "walker", {}
+    )
+    assert both == pytest.approx(0.0, abs=1e-6)
+
+
+def test_channels_flag_when_any_passes_its_own_threshold():
+    tasks = {
+        "smoking": {
+            "threshold": 0.0,
+            "channels": [
+                {
+                    "name": "scene and person views",
+                    "threshold": 0.5,
+                    "members": [text_member()],
+                },
+                {
+                    "name": "smoking detector",
+                    "threshold": 0.3,
+                    "members": [{"kind": "detector", "mean": 0.1, "std": 0.5}],
+                },
+            ],
+        }
+    }
+    vectors = {("full", "walker"): [0.0, 1.0], ("full", "smoker"): [1.0, 0.0]}
+    # Only the detector sees it: (0.6 - 0.1) / 0.5 = 1.0, margin 0.7.
+    strategy = bare_strategy(tasks, vectors, smoking=0.6)
+    score, channel = strategy.score_detail("smoking", ["walker"], None)
+    assert channel == "smoking detector" and score == pytest.approx(0.7)
+    # Only the views see it: margin 1.0 - 0.5.
+    strategy = bare_strategy(tasks, vectors, smoking=0.0)
+    score, channel = strategy.score_detail("smoking", ["smoker"], None)
+    assert channel == "scene and person views" and score == pytest.approx(0.5)
+    # Neither: the score is negative, so the window is not flagged at 0.
+    assert strategy.score("smoking", ["walker"], None) < 0
+
+
+def test_operating_point_selects_thresholds_and_calibration(monkeypatch):
+    def tasks():
+        return {
+            "smoking": {
+                "threshold": 0.0,
+                "thresholds": {"balanced": 0.0, "low_false_alarm": 0.0},
+                "calibrations": {
+                    "balanced": {"slope": 1.0, "intercept": 0.0},
+                    "low_false_alarm": {"slope": 2.0, "intercept": 0.5},
+                },
+                "channels": [
+                    {
+                        "threshold": 9,
+                        "thresholds": {"balanced": 0.2, "low_false_alarm": 0.6},
+                    }
+                ],
+            },
+            "littering": {
+                "threshold": 9,
+                "thresholds": {"balanced": -0.1, "low_false_alarm": 0.4},
+            },
+        }
+
+    bundle = {
+        "operating_points": ["balanced", "low_false_alarm"],
+        "default_operating_point": "low_false_alarm",
+    }
+    monkeypatch.delenv("VISION_OPERATING_POINT", raising=False)
+    chosen = tasks()
+    assert operating_point(bundle, chosen) == "low_false_alarm"
+    assert chosen["littering"]["threshold"] == 0.4
+    assert chosen["smoking"]["channels"][0]["threshold"] == 0.6
+    assert chosen["smoking"]["calibration"]["slope"] == 2.0
+    monkeypatch.setenv("VISION_OPERATING_POINT", "balanced")
+    chosen = tasks()
+    assert operating_point(bundle, chosen) == "balanced"
+    assert chosen["littering"]["threshold"] == -0.1
+    assert chosen["smoking"]["channels"][0]["threshold"] == 0.2
+    monkeypatch.setenv("VISION_OPERATING_POINT", "strict")
+    with pytest.raises(ValueError, match="VISION_OPERATING_POINT"):
+        operating_point(bundle, tasks())
+    # Bundles before 20261114 have one threshold and ignore the setting.
+    old = {"littering": {"threshold": 0.3}}
+    assert operating_point({}, old) is None and old["littering"]["threshold"] == 0.3
 
 
 installed = [

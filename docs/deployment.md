@@ -153,14 +153,14 @@ variant. Existing model licenses and measured runtime limitations still apply.
 ## Transfer bundle and full start (13 November 2026)
 
 `tools/build_deployment.py` assembles one folder with the application at the
-current commit, all models (including `ensemble-20261113`), the built
+current commit, all models (including `ensemble-20261114`), the built
 dashboard, Python wheels for an offline install, and optionally Gemma 4 E4B
 (4-bit) with a CPU build of the llama.cpp server. Its `START_HERE.md`
 (`docs/START_HERE.md` here) is the operator guide.
 
 ```bash
-python tools/build_deployment.py dist/capstone-cpu-deployment-20261113 \
-    --ensemble-export /path/to/bundle_v9 --hf-cache ~/.cache/huggingface/hub \
+python tools/build_deployment.py dist/capstone-cpu-deployment-20261114 \
+    --ensemble-export /path/to/bundle_v10 --hf-cache ~/.cache/huggingface/hub \
     --gemma-weights /path/to/gemma-4-E4B-it-qat-q4_0 --llama /path/to/llama-b11925 \
     --wheels --archive
 ```

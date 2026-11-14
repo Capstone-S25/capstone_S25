@@ -212,6 +212,9 @@ class IncidentRecorder:
                     incident.last_anomaly_at = max(incident.last_anomaly_at, at)
                     incident.evidence_end_at = max(incident.evidence_end_at, at)
                 score = confidence(prediction)
+                # Which evidence fired, when the classifier says (for smoking:
+                # the cigarette detector or the scene and person views).
+                channel = prediction.get("evidence_channel")
                 db.add(
                     VLMResult(
                         incident_id=incident.id,
@@ -222,8 +225,9 @@ class IncidentRecorder:
                             f"Screening classifier flagged {task.replace('_', ' ')} "
                             f"in the {times[-1] - times[0]:.0f} s window ending "
                             f"{at:%H:%M:%S} UTC (score {prediction.get('score', 0):.2f}, "
-                            f"threshold {prediction.get('threshold', 0):.2f}). "
-                            "Awaiting review."
+                            f"threshold {prediction.get('threshold', 0):.2f}"
+                            + (f", from the {channel}" if channel else "")
+                            + "). Awaiting review."
                         ),
                         model_version=str(prediction.get("strategy", "screening")),
                         processed_at=datetime.now(UTC),

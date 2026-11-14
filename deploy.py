@@ -358,7 +358,7 @@ def verify_ensemble(directory, *, required=False):
     """Check the newest installed ensemble classifier folder, if any."""
     from tools.ensemble_bundle import verify
 
-    for name in ["ensemble-20261113", "ensemble-20261111"]:
+    for name in ["ensemble-20261114", "ensemble-20261113", "ensemble-20261111"]:
         if (directory / name / "ensemble.json").is_file():
             verify(directory / name)
             return name
@@ -886,7 +886,7 @@ def main():
         return
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="action", required=True)
-    for name in ["setup", "check", "start"]:
+    for name in ["setup", "check", "start", "calibrate"]:
         p = sub.add_parser(name)
         p.add_argument(
             "--venv",
@@ -917,6 +917,13 @@ def main():
                 action="store_true",
                 help="Probe configured /models endpoint; does not send images",
             )
+        elif name == "calibrate":
+            # Raise one camera's thresholds using footage it already scored in
+            # which the behaviours did not happen (tools/calibrate_site.py).
+            p.add_argument("--source-id", default="camera_01")
+            p.add_argument("--share", type=float, default=0.02)
+            p.add_argument("--journal", type=Path, nargs="*")
+            p.add_argument("--clear", action="store_true")
         else:
             p.add_argument("--camera", action="store_true")
             p.add_argument(
@@ -966,6 +973,21 @@ def main():
                 "Setup complete. Start with: python deploy.py start"
                 + (" --venv " + str(args.venv) if args.venv != ROOT / ".venv" else "")
             )
+    elif args.action == "calibrate":
+        command = [
+            python,
+            ROOT / "tools/calibrate_site.py",
+            "--camera",
+            args.source_id,
+            "--share",
+            str(args.share),
+        ]
+        if args.journal:
+            command += ["--journal", *args.journal]
+        if args.clear:
+            command.append("--clear")
+        os.chdir(ROOT)
+        os.execv(str(command[0]), [str(c) for c in command])
     elif args.action == "check":
         config = check(python, camera=args.camera, dashboard=args.dashboard)
         if args.smoke:
