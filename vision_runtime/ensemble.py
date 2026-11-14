@@ -6,6 +6,11 @@ mean of 15 fold heads fitted with whole cameras/recordings held out. The task
 threshold was set on those held-out (out-of-fold) scores, which is the
 situation a new camera is in. See docs/f1_study.md.
 
+From `ensemble-20261114` a member can also be a zero-shot text head (the
+similarity of the frames to descriptions of the behaviour, nothing fitted) or
+the smoking detector's confidence, and smoking is decided by channels: each
+has its own threshold and the window is flagged when any channel passes.
+
 Inputs per task follow the trained protocol (endpoint frame, 8 short-view
 frames for littering, 4 long-view frames for loitering/unattended items).
 Loitering and unattended items also compare the window with the camera's
@@ -17,12 +22,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import time
 from collections import OrderedDict
 from pathlib import Path
 
 import numpy as np
 
+from . import site
 from .config import models_root
 from .evidence import VIEW_FOR_TASK, history_problem, unknown, validated_views
 from .features import geometry, temporal_indices, temporal_support
@@ -220,6 +227,36 @@ class LRU(OrderedDict):
             self.popitem(last=False)
 
 
+def operating_point(bundle, tasks, requested=None):
+    """Apply the bundle's thresholds for one operating point and return its name.
+
+    Bundles from 20261114 carry two sets of thresholds for the same heads:
+    "balanced" (default; at most 5% of ordinary footage from unseen cameras
+    flagged per task when fitted) and "low_false_alarm" (2%).
+    VISION_OPERATING_POINT picks one; older bundles have a single threshold
+    and ignore the setting.
+    """
+    points = bundle.get("operating_points")
+    if not points:
+        return None
+    name = (
+        requested
+        or os.environ.get("VISION_OPERATING_POINT")
+        or bundle.get("default_operating_point", points[0])
+    )
+    if name not in points:
+        raise ValueError(
+            f"VISION_OPERATING_POINT must be one of {', '.join(points)}, not {name!r}"
+        )
+    for task in tasks.values():
+        for unit in [task, *task.get("channels", [])]:
+            if "thresholds" in unit:
+                unit["threshold"] = unit["thresholds"][name]
+        if "calibrations" in task:
+            task["calibration"] = task["calibrations"][name]
+    return name
+
+
 class EnsembleStrategy:
     """Resident two-backbone ensemble with cross-fitted heads."""
 
@@ -231,7 +268,7 @@ class EnsembleStrategy:
         if threads:
             torch.set_num_threads(int(threads))
         self.torch, self.device = torch, resolve_device(device)
-        self.directory = Path(directory or models_root() / "ensemble-20261113")
+        self.directory = Path(directory or models_root() / "ensemble-20261114")
         self.name = self.directory.name
         bundle = json.loads((self.directory / "ensemble.json").read_text())
         heads_path = self.directory / "heads.npz"
@@ -240,16 +277,30 @@ class EnsembleStrategy:
             raise ValueError("Ensemble heads changed since export")
         arrays = np.load(heads_path)
         self.tasks = bundle["tasks"]
+        self.operating_point = operating_point(bundle, self.tasks)
         for task in self.tasks.values():
-            for member in task["members"]:
-                for recipe in member["recipes"]:
+            groups = [c["members"] for c in task.get("channels", [])] or [
+                task["members"]
+            ]
+            for member in (m for members in groups for m in members):
+                for recipe in member.get("recipes", []):
                     recipe["weight"] = arrays[recipe["arrays"] + "/weight"]
                     recipe["bias"] = arrays[recipe["arrays"] + "/bias"]
+                if member.get("kind") == "zeroshot":
+                    # Text vectors of the behaviour and of ordinary scenes,
+                    # from the encoder's own text tower (not needed at run time).
+                    member["positive"] = arrays[member["arrays"] + "/positive"]
+                    member["negative"] = arrays[member["arrays"] + "/negative"]
         self.backbones = {
             name: Backbone(spec["kind"], self.directory / name, self.device, torch)
             for name, spec in bundle["backbones"].items()
         }
+        # Per-camera thresholds measured on the site's own ordinary footage.
+        self.site = site.load(self.name, self.operating_point)
         self.frcnn = self.yolo = self.smoking = None
+        self.square_padding = bool(
+            bundle.get("smoking_detector", {}).get("square_padding")
+        )
         self.cache = LRU(cache_size)
         self.metadata = {
             "model": self.name,
@@ -262,9 +313,21 @@ class EnsembleStrategy:
                 f", raised until at most {bundle['cross_task_cap']:.0%} of other tasks' out-of-fold windows are flagged"
                 if "cross_task_cap" in bundle
                 else ""
+            )
+            + (
+                f" and at most {bundle['ordinary_footage_caps'][self.operating_point]:.0%} of ordinary footage from cameras outside the fit"
+                if self.operating_point and "ordinary_footage_caps" in bundle
+                else ""
             ),
             "heads_sha256": digest,
-            "held_out_macro_f1": bundle["held_out"]["macro_f1"],
+            **(
+                {"operating_point_name": self.operating_point}
+                if self.operating_point
+                else {}
+            ),
+            "held_out_macro_f1": bundle["held_out"]
+            .get("by_operating_point", {})
+            .get(self.operating_point, bundle["held_out"])["macro_f1"],
             "scope": "Scene/window classifier; entity and ownership not independently verified.",
         }
 
@@ -379,7 +442,15 @@ class EnsembleStrategy:
                         ]
                     )
             results = self.smoking.predict(
-                images, imgsz=640, conf=0.05, verbose=False, device=self.device
+                images,
+                imgsz=640,
+                conf=0.05,
+                verbose=False,
+                device=self.device,
+                # From 20261114 the detector has its own threshold, so its
+                # padding is fixed (square) instead of depending on whether
+                # the frames of a call share one size.
+                rect=not self.square_padding,
             )
             for name, r in zip(need, results):
                 cls = r.boxes.cls.cpu().numpy().astype(int)
@@ -462,20 +533,65 @@ class EnsembleStrategy:
             )
         return normalize(np.concatenate(parts)) if len(parts) > 1 else parts[0]
 
-    def score(self, task, views, reference):
-        """Standardized ensemble score for one window (threshold in self.tasks)."""
-        paths = [*views, reference] if reference else list(views)
-        keys = {p: self._key(p) for p in paths}
-        reference = reference or views[0]
-        members = []
-        for member in self.tasks[task]["members"]:
+    def _member(self, member, views, reference, keys):
+        """One member's standardized score: fitted heads, a zero-shot text
+        head, or the smoking detector's confidence."""
+        kind = member.get("kind")
+        if kind == "zeroshot":
+            # Similarity to descriptions of the behaviour minus similarity to
+            # descriptions of ordinary scenes; nothing here was fitted.
+            values = []
+            for stage in member["stages"]:
+                found = self._embed(member["backbone"], stage, list(views), keys)
+                x = np.stack([found[p] for p in views])
+                values.append(
+                    np.mean(
+                        (x @ member["positive"].T).max(1)
+                        - (x @ member["negative"].T).max(1)
+                    )
+                )
+            raw = float(np.mean(values))
+        elif kind == "detector":
+            raw = float(self._smoking(list(views), keys)[:, 0].max())
+        else:
             zs = []
             for r in member["recipes"]:
                 x = self._vector(r["recipe"], list(views), reference, keys)
-                raw = float(np.mean(r["weight"] @ x + r["bias"]))
-                zs.append((raw - r["mean"]) / r["std"])
-            members.append((np.mean(zs) - member["mean"]) / member["std"])
-        return float(np.mean(members))
+                value = float(np.mean(r["weight"] @ x + r["bias"]))
+                zs.append((value - r["mean"]) / r["std"])
+            raw = float(np.mean(zs))
+        return (raw - member["mean"]) / member["std"]
+
+    def score_detail(self, task, views, reference):
+        """(score, channel). With channels, each has its own threshold and the
+        score is the largest margin over one, to be compared with 0; the
+        channel names the evidence that produced it."""
+        paths = [*views, reference] if reference else list(views)
+        keys = {p: self._key(p) for p in paths}
+        reference = reference or views[0]
+
+        def ensemble(members):
+            return float(
+                np.mean([self._member(m, views, reference, keys) for m in members])
+            )
+
+        spec = self.tasks[task]
+        if "channels" not in spec:
+            return ensemble(spec["members"]), None
+        return max(
+            (ensemble(c["members"]) - float(c["threshold"]), c["name"])
+            for c in spec["channels"]
+        )
+
+    def score(self, task, views, reference):
+        """Standardized ensemble score for one window (threshold in self.tasks)."""
+        return self.score_detail(task, views, reference)[0]
+
+    def threshold(self, task, source_id=None):
+        """(threshold in force, the model's own threshold). A camera that was
+        calibrated on its own ordinary footage can only have a higher one."""
+        base = float(self.tasks[task]["threshold"])
+        return max(base, self.site.get(source_id, {}).get(task, base)), base
 
     def _probability(self, task, score):
         """Out-of-fold logistic calibration of the score, when the bundle has one.
@@ -513,12 +629,14 @@ class EnsembleStrategy:
                     else temporal_indices(view["times_s"], n)
                 )
                 paths = [view["paths"][i] for i in indices]
-                score = self.score(task, paths, reference)
-                threshold = float(self.tasks[task]["threshold"])
+                score, channel = self.score_detail(task, paths, reference)
+                threshold, base = self.threshold(task, candidate.get("source_id"))
                 out[task] = {
                     "decision": "anomaly" if score >= threshold else "normal",
                     "score": score,
                     "threshold": threshold,
+                    **({"model_threshold": base} if threshold > base else {}),
+                    **({"evidence_channel": channel} if channel else {}),
                     **self._probability(task, score),
                     "strategy": self.name,
                     "reference_frame": bool(reference),

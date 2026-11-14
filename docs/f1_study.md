@@ -1,6 +1,6 @@
-# November F1 study and the ensemble classifier — 11 and 13 November 2026
+# November F1 study and the ensemble classifier — 11 to 14 November 2026
 
-> Update 13 November: `ensemble-20261113` is the default. See [Round 2](#round-2--13-november-2026-ensemble-20261113-now-the-default) for what changed, the Gemma video test, and what was tried and not adopted.
+> Update 14 November: `ensemble-20261114` is the default. See [Round 3](#round-3--14-november-2026-ensemble-20261114-now-the-default) for the new-site test, what was adopted and what was not, and per-camera calibration. [Round 2](#round-2--13-november-2026-ensemble-20261113) covers `ensemble-20261113` and the Gemma video test.
 
 The screening classifier is now a **two-backbone ensemble** (SigLIP2-B/16 and
 MobileCLIP2-B) with heads cross-fitted on camera-held-out folds, plus a small
@@ -123,7 +123,7 @@ standardized-score differences ≤0.0001 for loitering/unattended and ≤0.055
 windows took 42.9 s on 8 threads (October route after the earlier speed-ups:
 26 s). Faster R-CNN on the long-view frames is still the largest part.
 
-## Round 2 — 13 November 2026 (`ensemble-20261113`, now the default)
+## Round 2 — 13 November 2026 (`ensemble-20261113`)
 
 Further experiments did **not** raise benchmark F1: every variant tried lands
 between 0.70 and 0.75 macro F1, inside the bootstrap noise of this benchmark
@@ -266,6 +266,202 @@ confirmed" mostly means it did not see the event. For loitering, smoking at
 CCTV distance and small distant objects it never confirms, so "not confirmed"
 carries no information there. The description is useful to the reviewer in
 every case.
+
+## Round 3 — 14 November 2026 (`ensemble-20261114`, now the default)
+
+A field test of `ensemble-20261113` on a new camera flagged a man standing by
+a car as littering and missed that he was smoking. Round 3 therefore measures
+what the benchmark could not, **behaviour on sites no head has seen**, and
+keeps only changes that hold up there.
+
+| | Released (`20261113`) | `20261114`, balanced (default) | `20261114`, low false alarm |
+|---|---|---|---|
+| Benchmark macro F1 | 0.716 | **0.732** | 0.694 |
+| Benchmark macro AP | 0.863 | 0.861 | 0.861 |
+| Other behaviours' held-out windows flagged | 0.9% | **0.2%** | 0.2% |
+| Ordinary footage flagged, cameras outside the fit | 8.6% | **0.6%** | 0.3% |
+| Smokers found, unseen cameras of a second CCTV estate | 37% (with 38–41% of ordinary walkway and MEVA frames flagged) | 43% (with 0% flagged) | 43% |
+
+Paired bootstraps against the released model: ordinary footage flagged −8.0
+points (95% interval −10.6 to −4.3, cameras resampled); benchmark macro F1
++0.02 (−0.01 to +0.10), which is not a reliable gain on its own. CPU cost is
+unchanged (no new encoder passes; the 83 s test video still takes 72 s on 8
+threads).
+
+**It does not fix the field case.** The frame from that report still scores
+above the littering threshold with the new heads (margin +0.94; with extra
+negatives +0.55 to +0.79) and smoking is still not seen. The littering head
+knows two sites, and a person standing on a paved area resembles their
+positives. The remedy for a camera-specific false alarm is the per-camera
+calibration below, or labelled footage from the site.
+
+### The new-site test
+
+`round3_sources.py` builds it from footage on disk that no head had used.
+Whole cameras are assigned to a **fit** side (may be used for fitting and for
+thresholds) or a **shift** side (only ever scored).
+
+| Source | Used as | Fit side | Shift side |
+|---|---|---|---|
+| Second CCTV estate, alert snapshots (every image has a smoker) | Smoking positives | 492 images, 206 camera clusters | 444 images, 199 clusters |
+| Campus littering clips (30-frame clips rebuilt from a frame dump) | Littering positives | 96 clips | 138 clips from other views |
+| VIRAT car parks | Ordinary windows, all five heads | 191 windows, 1 scene | 96 windows, 2 scenes |
+| MEVA cameras | Ordinary windows: smoking, sleeping, littering | 174 windows, 3 cameras | 168 windows, 4 cameras |
+| Avenue walkway (normal training videos) | Ordinary windows, all five heads | — | 41 windows |
+| XRF55 indoor clips: phoning, drinking, eating | Hand-to-face negatives for smoking | 375 clips, 17 subjects | 180 clips, 3 subjects |
+
+Ordinary windows follow the runtime (frame at *t*; eight frames over 7 s;
+four frames over 20 s plus the first frame as reference), one every 10 s.
+XRF55's own "smoking" clips are mimed, with no cigarette in view, and are not
+used as positives. VIRAT has no labels here: it counts as ordinary for
+unattended items after looking at every window the released head flagged
+(groups standing, traffic, a patio; no left item), and stays unlabelled for
+loitering and littering.
+
+**Baseline.** The released heads flag 41% of Avenue and 38% of MEVA frames as
+smoking, find none of the campus littering clips, and flag 12% of VIRAT
+windows as unattended items. Thresholds and heads fitted on a handful of
+sources do not carry over, which is what the field test showed.
+
+### What was tried
+
+| Idea | Result | Decision |
+|---|---|---|
+| **Zero-shot text member**: similarity of the SigLIP2 frame (and crop) embedding to descriptions of the behaviour minus descriptions of ordinary scenes. Nothing is fitted; the text vectors are stored in the bundle, so there is no run-time cost | Alone, smoking AP on film clips 0.81–0.84 (fitted ensemble 0.66) and sleeping AP 0.95/1.00; useless on distant CCTV smoking (0.62 at a 0.61 base rate), loitering and unattended items | **Adopted** for smoking's view channel and for sleeping |
+| …for littering | Trained on one littering site and tested on the other, it lifts the ranking (campus against ordinary footage AUC 0.80 → 0.95) but not recall at the chosen threshold (0% → 5%), and lowers IWDD AP 0.92 → 0.87 | Not adopted |
+| **Ordinary footage as negatives** (VIRAT, MEVA, XRF55 fit side) and a cap on how much of it a threshold may flag | Smoking: Avenue 41% → 0%, MEVA 38% → 0% flagged. Unattended items: VIRAT 12% → 4%, held-out camera AP 0.908 → 0.919 | **Adopted** |
+| **A positive-only site in the heads** (second-estate smokers) | Shift recall 97%, but the head stops finding smokers on the first site (camera c1 F1 0.69 → 0.01): it learnt the site, not the cigarette | Rejected; positive-only sources go to the detector, with background frames |
+| **Smoking detector retrained**: first site + second-estate fit cameras + ordinary frames as label-free background | Without background it flags 17–26% of ordinary frames; with it, at confidence 0.4: 41% of shift smokers, 0% of Avenue/MEVA/VIRAT frames, but 17% of XRF55 hand-to-face clips | Superseded by the next row |
+| …plus **hand-to-face clips as hard negatives** (`allg`) | Same recall (42%), XRF55 17% → 4% | **Adopted** as `smoking_detector.pt` |
+| **Does the detector transfer between CCTV sites?** | Trained on site 1 only: 1–3% of site-2 smokers. Trained on site 2 only: camera c1 AP 0.58 at a 0.61 base rate. It does not, in either direction | A detector needs footage of the site it watches |
+| **Smoking as two channels** instead of one averaged score: views (heads without detector features + zero-shot) and detector, each with its own threshold, flagged when either passes | With the old detector already: Stanford40 F1 0.80 → 0.88, film clips 0.54 → 0.64, false alarms 10–12% → 0.3–2%. Averaging had let the photo-trained members outvote the detector on CCTV | **Adopted** |
+| Detector input 960 or 1280 px | No gain (site-2 recall 1–3% for the old detector at every size) | Not adopted |
+| Ignore detector boxes taller than 20% of the frame | Changes under 1% of images: its boxes are small even on close-ups | Not adopted |
+| **Person-level head**: one SigLIP2 embedding per detected person, highest person score | Cross-camera CCTV AP 0.51 at a 0.39 base rate; as a member, film clips AP 0.66 → 0.70 (zero-shot gives 0.78 for free) | Not adopted |
+| Littering trained on one site, tested on the other | IWDD → campus: 0% found. Campus → IWDD: AP 0.51 (chance). With both: every held-out campus view found, IWDD F1 0.87 → 0.89, false alarms 24% → 10% | Both sites are in the fit; expect a third site to need its own footage |
+| Other behaviours' footage as littering negatives (10–40%) | Fitting-side F1 0.848 → 0.866, cross-task 0.7% → 0.2%, field frame margin +0.94 → +0.55..+0.79 (still flagged) | Not in this release; small gain, measured after the selection |
+
+### Held-out results
+
+F1 and false alarms at each model's own thresholds; thresholds use fitting-side
+scores only.
+
+| Held-out evidence | n (positive) | Released: F1 / false alarms | New, balanced | New, low false alarm | Released AP | New AP |
+|---|---|---|---|---|---|---|
+| Smoking: photo holdout | 224 (112) | 0.98 / 4% | 0.97 / 4% | 0.97 / 4% | 1.00 | 1.00 |
+| Smoking: HMDB action clips | 906 (109) | 0.54 / 12% | 0.55 / 3% | 0.55 / 3% | 0.66 | 0.56 |
+| Smoking: CCTV camera c1 | 646 (393) | 0.69 / 27% | 0.53 / 9% | 0.53 / 9% | 0.79 | 0.81 |
+| Smoking: Stanford40 photos | 806 (140) | 0.80 / 10% | 0.86 / 3% | 0.86 / 3% | 0.95 | 0.94 |
+| Littering: IWDD official test | 100 (50) | 0.87 / 24% | 0.89 / 10% | 0.89 / 10% | 0.92 | 0.92 |
+| Loitering: Street Scene | 75 (11) | 0.64 / 12% | 0.64 / 12% | 0.64 / 12% | 0.74 | 0.74 |
+| Sleeping: old photos | 18 (6) | 0.91 / 0% | 1.00 / 0% | 1.00 / 0% | 1.00 | 1.00 |
+| Sleeping: new-author photos | 28 (17) | 0.64 / 0% | 0.74 / 0% | 0.74 / 0% | 0.92 | 0.92 |
+| Unattended: held-out cameras | 962 (242) | 0.74 / 0% | 0.73 / 0% | 0.68 / 0% | 0.91 | 0.92 |
+| Unattended: MEVA windows | 27 (15) | 0.33 / 0% | 0.33 / 0% | 0.00 / 0% | 0.79 | 0.79 |
+| **Macro** | | **0.716** | **0.732** | **0.694** | **0.863** | **0.861** |
+
+Two results go the wrong way and are kept visible. **CCTV camera c1** F1 falls
+0.69 → 0.53 (−0.16, interval −0.22 to −0.11): the released threshold there
+flagged 27% of non-smokers, close to flagging everything (which scores 0.76);
+the new one flags 9% and finds 38% of smokers instead of 62%. **Film-clip
+ranking** falls (AP 0.66 → 0.56) because the detector fires at chance on
+close-up film frames; F1 there is unchanged and false alarms drop 12% → 3%.
+
+| New-site evidence (shift side) | Windows | Released | New, balanced | New, low false alarm |
+|---|---|---|---|---|
+| Smoking: second CCTV estate, unseen cameras — smokers found | 444 | 37% | 43% | 43% |
+| Smoking: indoor phoning/drinking/eating clips — flagged | 180 | 0% | 3% | 3% |
+| Smoking: Avenue walkway — flagged | 41 | 41% | 0% | 0% |
+| Smoking: MEVA cameras — flagged | 168 | 38% | 0% | 0% |
+| Smoking: VIRAT car parks — flagged | 96 | 0% | 0% | 0% |
+| Littering: campus clips, unseen views — found | 138 | 0% | 100% | 100% |
+| Littering: Avenue, MEVA, VIRAT — flagged | 305 | 0% | 0% | 0% |
+| Loitering: Avenue walkway — flagged | 41 | 0% | 0% | 0% |
+| Loitering: VIRAT car parks (unlabelled) — flagged | 96 | 9% | 9% | 9% |
+| Sleeping: Avenue, MEVA, VIRAT — flagged | 305 | 0% | 0% | 0% |
+| Unattended: Avenue walkway — flagged | 41 | 2% | 0% | 0% |
+| Unattended: VIRAT car parks — flagged | 96 | 12% | 4% | 1% |
+
+Read the two "found" rows with care. The campus clips are other views of a
+campus whose remaining clips were fitted, so 100% is a same-site result. The
+second estate's shift cameras are unseen, but come from the same operator as
+the fit cameras; a third, unrelated site should expect the transfer result
+(1–3%) until it contributes footage. Loitering and VIRAT's nine loitering
+flags are unchanged: no new loitering evidence was available.
+
+### What is in `ensemble-20261114`
+
+- **Smoking**: two channels. *Scene and person views*: the released recipes
+  without detector features (SigLIP2-B and MobileCLIP2-B) plus a zero-shot
+  text member, fitted with ordinary and hand-to-face footage as negatives.
+  *Smoking detector*: the retrained YOLO26s head detector. The window is
+  flagged when either passes its own threshold; the prediction carries
+  `evidence_channel` and the incident description names it.
+- **Rough sleeping**: released recipes plus a zero-shot text member, with
+  ordinary footage as negatives.
+- **Littering**: released recipes, fitted on IWDD and the campus clips with
+  ordinary footage as negatives.
+- **Unattended items**: released recipes, with VIRAT windows as negatives.
+- **Loitering**: unchanged.
+- **Thresholds**: out-of-fold max-F1 over the fitting sources (single-class
+  sources pooled into one), raised until at most 5% of other behaviours'
+  windows are flagged, then until at most a share of the fit-side ordinary
+  footage is flagged: 5% (`balanced`, default) or 2% (`low_false_alarm`).
+  `VISION_OPERATING_POINT` selects one; only unattended items differs between
+  them in this release (recall on held-out cameras 57% against 51%, VIRAT
+  flagged 4% against 1%). A channel only counts fitting sources it can
+  separate (AUC ≥ 0.75), and the detector channel may flag none of the
+  fit-side ordinary footage.
+
+Runtime parity on CPU against the exported study scores (24 held-out windows
+per task): largest difference 0.06 for smoking, 0.10 littering, 0.0001
+loitering, 0.006 unattended items on a scale of about ±3; one sleeping window
+differs by 0.30 where YOLO's person box differs between GPU and CPU (mean
+0.02). The detector now pads every frame to a square: with the default, a
+frame's confidence depended on whether its batch neighbours had the same size
+(up to 0.14 on off-domain images).
+
+### Calibrating a camera on its own ordinary footage
+
+`python3.12 deploy.py calibrate --source-id camera_01` reads the scores the
+camera backend already journaled and raises that camera's threshold, per
+behaviour, until at most 2% of those windows would be flagged
+(`vision_runtime/site.py`, `tools/calibrate_site.py`). It needs no labels,
+only footage in which the behaviour did not happen; thresholds are never
+lowered, and a calibration applies only to the model and operating point it
+was measured with. `--clear` removes it.
+
+Simulated on every held-out fixed camera with at least 40 ordinary windows
+(half of them as calibration footage, the rest and all positives as the
+check):
+
+| Model | Ordinary windows flagged (16 task–camera pairs) | Recall (3 pairs with positives) |
+|---|---|---|
+| Released | 6.8% → 1.1% | 42% → 25% |
+| `20261114` | 0.8% → 0.3% | 33% → 26% |
+
+It removes what remains of a camera's own false alarms and costs recall where
+a head is weak (CCTV camera c1: non-smokers flagged 10% → 2%, smokers found
+38% → 16%). Through the real upload path, a VIRAT clip with two false
+unattended-item flags in 30 windows calibrated to none (threshold 1.70 →
+1.77).
+
+### Limits of round 3
+
+- The detector channel's calibration rule (no fit-side ordinary window
+  flagged) was introduced after the shift test showed the first rule flagging
+  30% of unseen MEVA frames, so the shift numbers for that channel are not an
+  untouched confirmation.
+- Selection between variants used fitting-side F1 under the ordinary-footage
+  cap, but several designs were first compared on held-out sources during the
+  round. Treat the benchmark gain as small and the false-alarm reduction as
+  the result.
+- Positive-only and negative-only sources come from different sites, so
+  "found" and "flagged" percentages cannot be combined into one precision.
+- The new-site ordinary footage has distant people. The field frame, with a
+  person at mid distance, behaves differently from all of it.
+- Gemma was not changed in this round. Asking it about every behaviour on a
+  flagged window, so that it can relabel an incident, was not built.
 
 ## Limits
 

@@ -267,8 +267,10 @@ class ClipStrategy:
 
 # Newest first. 20261113 keeps the 20261111 encoders and recipes; its loitering
 # heads also saw other tasks' windows as negatives and its thresholds are capped
-# so that at most 5% of other tasks' out-of-fold windows are flagged.
-ENSEMBLES = ("ensemble-20261113", "ensemble-20261111")
+# so that at most 5% of other tasks' out-of-fold windows are flagged. 20261114
+# adds text-described (zero-shot) members, footage from more sites, a smoking
+# detector with its own threshold, and a cap on ordinary footage flagged.
+ENSEMBLES = ("ensemble-20261114", "ensemble-20261113", "ensemble-20261111")
 ENSEMBLE = ENSEMBLES[0]
 CLASSIFIERS = (*ENSEMBLES, "mobileclip2-s2", "siglip2-b16-224")
 

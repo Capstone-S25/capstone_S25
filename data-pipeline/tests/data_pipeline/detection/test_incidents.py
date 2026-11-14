@@ -9,7 +9,12 @@ from sqlalchemy.orm import sessionmaker
 
 from data_pipeline.api.app import create_app
 from data_pipeline.api.database import get_db
-from data_pipeline.database.models import Incident, Severity, VLMAssessment
+from data_pipeline.database.models import (
+    Incident,
+    Severity,
+    VLMAssessment,
+    VLMResult,
+)
 from data_pipeline.detection.incidents import IncidentRecorder, confidence
 
 START_MS = int(datetime(2026, 11, 13, 9, 0, tzinfo=UTC).timestamp() * 1000)
@@ -112,6 +117,7 @@ def test_anomaly_window_opens_extends_and_records_confirmation(
         "Confirmed by gemma4-e4b: Bag left. A bag sits on a table. Nobody is near it."
     )
     assert 0.5 < verdicts[0].confidence < 1
+    assert "(score 1.40, threshold 0.40)" in verdicts[0].description
     box = incident.detections[0]
     assert (box.bbox_x1, box.bbox_y1) == pytest.approx((0.1, 0.1))
     assert (box.bbox_x2, box.bbox_y2) == pytest.approx((0.5, 0.5))
@@ -185,3 +191,21 @@ def test_guarded_confirmation_keeps_gemmas_own_evidence(
         "Confirmed by gemma4-e4b: Purple bag left on table. A bag sits alone. "
         "(Runtime note: Owner/item association is not established by this candidate.)"
     )
+
+
+def test_screening_description_names_the_evidence_channel(
+    postgres_session, recorder, tmp_path
+):
+    """Smoking can be flagged by the cigarette detector or by the views; the
+    reviewer is told which."""
+    row = screened("normal")
+    row["predictions"]["smoking"] = {
+        "decision": "anomaly",
+        "score": 0.3,
+        "threshold": 0.0,
+        "evidence_channel": "smoking detector",
+        "strategy": "ensemble-20261114",
+    }
+    recorder(candidate(tmp_path, "event_s", 40.0), row)
+    verdict = postgres_session.scalars(select(VLMResult)).one()
+    assert "threshold 0.00, from the smoking detector)" in verdict.description

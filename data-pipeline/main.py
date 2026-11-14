@@ -52,6 +52,7 @@ def _parse_args(project_dir: Path) -> argparse.Namespace:
     parser.add_argument(
         "--model",
         choices=[
+            "ensemble-20261114",
             "ensemble-20261113",
             "ensemble-20261111",
             "mobileclip2-s2",
