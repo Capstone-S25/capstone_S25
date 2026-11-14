@@ -4,13 +4,17 @@ from collections.abc import Callable
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
-from queue import Empty, Queue
+from queue import Empty
 from threading import Event
 
 from sqlalchemy.orm import Session, sessionmaker
 
 from data_pipeline.video_ingestion.recording.worker import run_recording_worker
 from data_pipeline.video_ingestion.sources import SourceType, VideoSource
+from data_pipeline.video_ingestion.streaming.frame_queue import (
+    DEFAULT_FRAME_QUEUE_SIZE,
+    DropOldestQueue,
+)
 from data_pipeline.video_ingestion.streaming.worker import (
     StreamFrame,
     run_streaming_worker,
@@ -28,7 +32,7 @@ class _PipelineState:
     Attributes:
         stop_event      : Shared signal requesting both workers to stop
         producer_done   : Set when streaming finishes, including on failure
-        frames          : Unbounded FIFO queue of selected live frames
+        frames          : Bounded frame queue; drops the oldest waiting frame when full
         workers         : Futures for successfully submitted recording and streaming workers
         handled_workers : Finished workers already checked, so the same error
                           is not reported again
@@ -37,7 +41,7 @@ class _PipelineState:
 
     stop_event: Event = field(default_factory=Event)
     producer_done: Event = field(default_factory=Event)
-    frames: Queue[StreamFrame] = field(default_factory=lambda: Queue(maxsize=0))
+    frames: DropOldestQueue[StreamFrame] = field(default_factory=DropOldestQueue)
     workers: list[Future[None]] = field(default_factory=list)
     handled_workers: set[Future[None]] = field(default_factory=set)
     first_error: BaseException | None = None
@@ -198,6 +202,7 @@ def run_pipeline(
     *,
     session_factory: sessionmaker[Session],
     target_fps: float = 2,
+    queue_size: int = DEFAULT_FRAME_QUEUE_SIZE,
     segment_seconds: int = 5,
     retention_hours: float = 24,
     frame_handler: Callable[[StreamFrame], None] | None = None,
@@ -209,6 +214,8 @@ def run_pipeline(
         storage_root: Base directory for recording sessions.
         session_factory: Factory for recording metadata transactions.
         target_fps: Maximum selected frames per second of video; defaults to 2.
+        queue_size: Maximum waiting frames per camera; defaults to 4. A full
+            queue drops its oldest waiting frame to accept the newest frame.
         segment_seconds: Target recording segment duration; defaults to 5.
         retention_hours: Segment retention period in hours; defaults to 24.
         frame_handler: Synchronous callback receiving each selected StreamFrame.
@@ -219,7 +226,8 @@ def run_pipeline(
         FileNotFoundError: If a file source does not refer to a regular file.
 
     Note:
-        Each invocation owns one recorder, one decoder and an unbounded FIFO queue.
+        Each invocation owns one recorder, one decoder and a bounded frame queue.
+        Overflow drops waiting frames; the frame being processed is not interrupted.
         Ctrl+C stops input and drains the queue.
         Worker failures stop the peer and drain the queue.
         Callback failures stop both workers without further callback calls.
@@ -232,13 +240,16 @@ def run_pipeline(
         segment_seconds=segment_seconds,
         retention_hours=retention_hours,
     )
+    state = _PipelineState(frames=DropOldestQueue(maxsize=queue_size))
     logger.info("Pipeline started | %s | source=%s", source.source_id, source.location)
     logger.info(
-        "Settings | target_fps=%g | segment_target=%gs", target_fps, segment_seconds
+        "Settings | target_fps=%g | segment_target=%gs | queue_size=%s",
+        target_fps,
+        segment_seconds,
+        queue_size,
     )
     logger.info("Recordings | %s", storage_root / source.source_id)
     logger.info("Consuming live frames. Press Ctrl+C to stop and drain the queue.")
-    state = _PipelineState()
     handler = frame_handler if frame_handler is not None else _log_frame
 
     with ThreadPoolExecutor(max_workers=2, thread_name_prefix="camera") as executor:
@@ -259,6 +270,11 @@ def run_pipeline(
         finally:
             _finish_workers(state)
 
+    logger.info(
+        "Frame queue | capacity=%s | dropped_frames=%s",
+        state.frames.maxsize,
+        state.frames.dropped_count,
+    )
     if state.first_error is not None:
         raise state.first_error
     logger.info("Pipeline stopped.")
