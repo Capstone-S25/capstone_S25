@@ -259,5 +259,6 @@ def run_recording_worker(
             segment.path.name,
         )
 
-    if process.returncode != 0 and not stopped_by_user:
+    stop_requested = stopped_by_user or (stop_event is not None and stop_event.is_set())
+    if process.returncode != 0 and not stop_requested:
         raise RuntimeError(f"FFmpeg exited with code {process.returncode}")

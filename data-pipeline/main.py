@@ -13,7 +13,7 @@ from data_pipeline.video_ingestion.sources import SourceType, VideoSource
 
 def _parse_args(project_dir: Path) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Record, schedule, and decode a local video or CCTV RTSP stream."
+        description="Record video while decoding live frames for a consumer hook."
     )
     parser.add_argument(
         "--source",
@@ -41,7 +41,7 @@ def _parse_args(project_dir: Path) -> argparse.Namespace:
     parser.add_argument(
         "--verbose",
         action="store_true",
-        help="Show detailed recording, scheduling, and decoding messages.",
+        help="Show detailed recording and streaming messages.",
     )
     args = parser.parse_args()
     if not math.isfinite(args.target_fps) or args.target_fps <= 0:

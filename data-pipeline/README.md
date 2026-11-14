@@ -160,8 +160,20 @@ npm start -- --source rtsp --rtsp-url "rtsp://camera-address/stream"
 ```
 
 This starts PostgreSQL and waits until healthy before launching the app.
-Migrations must already be applied. Press Ctrl+C to stop recording; PostgreSQL
-stays running until you run `npm run db:down`.
+Migrations must already be applied. Press Ctrl+C to stop both video workers,
+finish queued frames, and finalize the recording. PostgreSQL stays running until
+you run `npm run db:down`.
+
+Pass arguments after `npm start --`:
+
+| Argument       | Options / value         | Default                           | Description                                                            |
+| -------------- | ----------------------- | --------------------------------- | ---------------------------------------------------------------------- |
+| `--source`     | `file` or `rtsp`        | `file`                            | Choose a local video or CCTV stream.                                   |
+| `--video`      | File path               | `samples/videos/loitering.avi`    | Video to read when `--source file`.                                    |
+| `--rtsp-url`   | RTSP URL                | `rtsp://localhost:8554/camera_01` | Stream to read when `--source rtsp`.                                   |
+| `--target-fps` | Positive, finite number | `2`                               | Maximum frames selected per second of video time for each camera/file. |
+| `--verbose`    | Flag                    | Off                               | Show detailed recording and streaming messages.                        |
+| `-h`, `--help` | Flag                    | —                                 | Show available arguments and exit.                                     |
 
 ## Mock RTSP camera
 
