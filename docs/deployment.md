@@ -165,6 +165,13 @@ python tools/build_deployment.py dist/capstone-cpu-deployment-20261114 \
     --wheels --archive
 ```
 
+A machine that already has an earlier bundle does not need the whole folder
+again. `tools/build_update.py OLD_BUNDLE NEW_BUNDLE OUTPUT --zip` writes only
+the files whose content is new (23 MiB from `20261113` to `20261114`; the
+image encoders are copied on the target from the earlier classifier folder)
+with an `apply_update.py` that checks every file before changing anything and
+verifies the whole updated bundle afterwards.
+
 What `deploy.py` does with such a folder:
 
 - `setup` installs from `wheels/` without internet access, verifies the
