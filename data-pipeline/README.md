@@ -202,6 +202,60 @@ To stop the mock CCTV Docker server:
 npm run camera:stop
 ```
 
+## Memory benchmark
+
+With the database running and migrations applied, measure one source for 30 seconds:
+
+```bash
+npm run benchmark:memory
+```
+
+The benchmark samples Python and its FFmpeg child every 0.1 seconds and saves
+`summary.json` and `memory.csv` under `recordings/benchmarks/`. It records real
+video segments and database metadata under a separate benchmark source ID.
+Memory is reported in MiB. PostgreSQL, Docker, and YOLO are excluded; the consumer
+only counts frames. Summed RSS can count shared memory pages more than once.
+
+The benchmark accepts `--source`, `--video`, `--rtsp-url`, and `--target-fps` as
+above, plus `--duration` (seconds, default 30) and `--consumer-delay` (seconds per
+frame, default 0). For example, simulate a consumer slower than the 2 FPS input:
+
+```bash
+npm run benchmark:memory -- --duration 30 --consumer-delay 0.75
+```
+
+Input stops at the next callback after the duration limit, then the queue drains.
+The full run can therefore take longer than the requested duration. Compare
+runs using the same video resolution, FPS, and duration.
+
+For component measurements, 1/2/4 camera scaling, Docker/host RAM, and a generated
+Markdown report, start the mock RTSP server and database, then run:
+
+```bash
+npm run benchmark:memory:suite
+```
+
+This runs three repeats per scenario (10-second warm-up plus 60-second
+measurement), a 10-minute four-camera stability run, and a slower-consumer run.
+Allow about 35 minutes. Results include `report.md`, `aggregate.csv`, JSON
+summaries, and raw process/host/container samples under `recordings/benchmarks/`.
+It leaves existing Docker services running and records real video and metadata.
+The counting consumers do not load YOLO or VLM models. Each simulated camera
+opens independent connections to the same RTSP stream. By default, the suite
+starts and stops its own publisher on a separate path, normalizing timestamps
+and using one-second H.264 keyframes. Existing camera streams are left untouched.
+
+Suite options: `--warmup`, `--duration`, `--repeats`, `--soak-duration` (0 to skip),
+`--skip-stress`, `--output`, and `--rtsp-url` (repeat for distinct camera URLs;
+otherwise the dedicated benchmark feed is used). Docker and WSL figures overlap host RAM and
+must not be added to whole-machine measurements.
+
+To export a suite run to PDF with charts (reporting packages are temporary):
+
+```bash
+uv run --locked --with reportlab --with matplotlib python -m benchmarks.memory_pdf "<run-directory>" --output reports/memory-benchmark.pdf
+```
+
 ## Linting and formatting
 
 Linting and formatting are executed when save file is executed. To make changes from the terminal:

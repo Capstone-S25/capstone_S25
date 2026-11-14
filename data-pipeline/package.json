@@ -8,6 +8,8 @@
     "prestart": "npm run db:up",
     "start": "uv run --locked main.py",
     "test": "uv run --locked pytest",
+    "benchmark:memory": "uv run --locked benchmark_memory.py",
+    "benchmark:memory:suite": "uv run --locked python -m benchmarks.memory_suite",
     "lint": "uv run --locked ruff check --fix .",
     "format": "uv run --locked ruff format .",
     "db:up": "docker compose -f infra/compose.yaml up -d --wait --wait-timeout 60 postgres",
