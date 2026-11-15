@@ -1,292 +1,180 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, ChevronRight, AlertTriangle, Play } from 'lucide-react';
+import { CircleCheck, MapPin, Clock, UserRound, Play, ArrowRight, Sparkles, MessageSquareQuote, Inbox } from 'lucide-react';
 import { AppLayout } from '../../components/layout/AppLayout';
+import { StatusPill } from '../../components/ui/Badge';
+import { SEVERITY_TONE, SEVERITY_DOT } from '../../components/ui/tones';
+import { Button } from '../../components/ui/Button';
+import { BarMeter, ClipThumb, FieldLabel, Kpi, SectionTitle } from '../../components/ui/Primitives';
+import { INPUT_CLASS } from '../../components/ui/Modal';
 import { MOCK_INCIDENTS, MOCK_STAFF } from '../../data/mock';
 
-const INITIAL_NOTIFICATIONS = [
-  { id: 1, bold: 'Cam 08: ', text: 'Pantry L3 went offline since 9:21 AM', time: '9:21 AM', unread: true },
-  { id: 2, bold: 'Ben Lee ', text: 'received an escalation from Jane Tan', time: '10:03 AM', unread: true },
-  { id: 3, bold: '',         text: 'Weekly workload report is ready',         time: 'Yesterday', unread: false },
-];
+const STAFF_MAP: Record<string, string> = Object.fromEntries(MOCK_STAFF.map((s) => [s.id, s.name]));
+const camLabel = (camId: string) => 'Cam ' + camId.replace('cam-', '').padStart(2, '0');
+const fmtDate = (iso: string) => new Date(iso).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+const fmtTime = (iso: string) => new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
-const SEVERITY_COLOR: Record<string, string> = {
-  Critical: '#ef4444',
-  Moderate: '#f97316',
-  Minor:    '#eab308',
-};
+const REPORTS = [
+  { label: '5–11 Oct', dates: '5 Oct – 11 Oct 2026' },
+  { label: '1–4 Oct', dates: '1 Oct – 4 Oct 2026' },
+];
 
 export default function AdminHomePage() {
   const navigate = useNavigate();
-  const [assignedTo, setAssignedTo] = useState('');
-  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
+  const [open, setOpen] = useState(() => MOCK_INCIDENTS.filter((i) => i.outcome === 'Escalated'));
+  const [resolved, setResolved] = useState(() => MOCK_INCIDENTS.filter((i) => i.outcome === 'Accepted').slice(0, 2));
+  const [selectedId, setSelectedId] = useState(open[0]?.id ?? '');
+  const [assignments, setAssignments] = useState<Record<string, string>>({});
 
-  const escalated = MOCK_INCIDENTS.filter((i) => i.outcome === 'Escalated');
-  const resolved  = MOCK_INCIDENTS.filter((i) => i.outcome === 'Accepted').slice(0, 2);
-  const unreadCount = notifications.filter((n) => n.unread).length;
+  const current = open.find((i) => i.id === selectedId) ?? open[0] ?? null;
+
+  function resolveCurrent() {
+    if (!current) return;
+    const idx = open.findIndex((i) => i.id === current.id);
+    const next = open.filter((i) => i.id !== current.id);
+    setOpen(next);
+    setResolved((r) => [current, ...r].slice(0, 4));
+    setSelectedId(next[Math.min(idx, next.length - 1)]?.id ?? '');
+  }
 
   return (
-    <AppLayout role="admin" activePath="/admin/home">
-      <div
-        style={{
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          padding: '20px 28px 20px 20px',
-          gap: '16px',
-          overflow: 'hidden',
-          boxSizing: 'border-box',
-        }}
-      >
-        {/* ── KPI bar ───────────────────────────────────────────── */}
-        <div
-          style={{
-            backgroundColor: '#ffffff',
-            borderRadius: '16px',
-            paddingTop: '14px',
-            paddingBottom: '14px',
-            display: 'flex',
-            alignItems: 'stretch',
-            flexShrink: 0,
-          }}
-        >
-          <KpiCard label="Escalated to you"    value="3" deltaColor="#b82e24" deltaChar="▲" deltaLabel="1 more than yesterday" />
-          <div style={{ width: '1px', backgroundColor: '#e0e3e8', flexShrink: 0 }} />
-          <KpiCard label="Dismissed this week" value="9" deltaColor="#b82e24" deltaChar="▲" deltaLabel="+2 more than last week" />
-          <div style={{ width: '1px', backgroundColor: '#e0e3e8', flexShrink: 0 }} />
-          <KpiCard label="Cameras online"      value="6" valueExtra="/ 8" deltaColor="#14803d" deltaChar="▼" deltaLabel="1 offline since 9 AM" />
+    <AppLayout role="admin" activePath="/admin/home" variant="bare">
+      <section className="thin-scroll flex min-w-0 flex-1 flex-col gap-[16px] overflow-y-auto px-[28px] pt-[20px] pb-[24px]">
+        <div className="flex w-full shrink-0 items-start border-b border-line-soft pb-[16px]">
+          <Kpi first value={String(open.length)} label="Escalated to you" trend="up-bad" note="1 more than yesterday" />
+          <Kpi value="9" label="Dismissed this week" trend="up-bad" note="2 more than last week" />
+          <Kpi value="6" extra="/ 8" label="Cameras online" trend="down-bad" note="2 offline since 6:12 PM" />
         </div>
 
-        {/* ── Two-column section ────────────────────────────────── */}
-        <div style={{ flex: 1, minHeight: 0, display: 'flex', gap: '20px' }}>
+        {current ? (
+          <>
+            <div className="flex w-full shrink-0 items-center gap-[10px]">
+              <h1 className="m-0 truncate text-[22px] font-medium text-ink">{current.type} · {current.location}</h1>
+              <StatusPill tone={SEVERITY_TONE[current.severity]}>{current.severity}</StatusPill>
+              <StatusPill tone={assignments[current.id] ? 'blue' : 'neutral'}>
+                {assignments[current.id] ? `Assigned · ${STAFF_MAP[assignments[current.id]]}` : 'Unassigned'}
+              </StatusPill>
+              <div className="flex-1" />
+              <Button variant="primary" icon={<CircleCheck size={16} strokeWidth={1.75} />} onClick={resolveCurrent}>Mark resolved</Button>
+            </div>
 
-          {/* Left: incident detail */}
-          <div
-            style={{
-              flex: 1,
-              minWidth: 0,
-              overflowY: 'auto',
-              backgroundColor: '#ffffff',
-              borderRadius: '16px',
-              padding: '20px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '14px',
-            }}
-          >
-            {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', overflow: 'hidden' }}>
-              <span style={{ backgroundColor: '#f2c0ba', color: '#8c2a22', borderRadius: '6px', padding: '4px 10px', fontSize: '13px', fontWeight: 600, flexShrink: 0 }}>
-                Critical
+            <div className="flex w-full shrink-0 flex-wrap items-center gap-x-[20px] gap-y-[6px] text-[12px] text-brand-faded">
+              <span className="flex items-center gap-[6px]"><MapPin size={14} />{current.location} · {camLabel(current.camId)}</span>
+              <span className="flex items-center gap-[6px]"><Clock size={14} />{fmtDate(current.dateTime)}, {fmtTime(current.dateTime)} · {current.duration ?? '—'}</span>
+              <span className="flex items-center gap-[6px]"><UserRound size={14} />Escalated by {current.assignedTo ? STAFF_MAP[current.assignedTo] : 'staff'}</span>
+            </div>
+
+            <ClipThumb seed={current.id.length} className="aspect-[16/9] w-full shrink-0 rounded-[6px]" iconSize={0}>
+              <span className="absolute top-[12px] left-[12px] rounded-[4px] bg-[rgba(27,35,52,0.75)] px-[8px] py-[4px] text-[11px] font-medium text-white">
+                {camLabel(current.camId).toUpperCase()} · {fmtTime(current.dateTime)}
               </span>
-              <p style={{ flex: '1 0 0', minWidth: 0, margin: 0, fontSize: '20px', fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                Smoking · Carpark B2
-              </p>
-              <span style={{ fontSize: '13px', color: '#6b7280', backgroundColor: '#f3f4f6', borderRadius: '20px', padding: '4px 12px', flexShrink: 0, fontWeight: 500 }}>
-                Unassigned
-              </span>
-            </div>
+              <button type="button" aria-label="Play clip" className="flex size-[56px] cursor-pointer items-center justify-center rounded-full border-none bg-[rgba(27,35,52,0.8)] text-white transition-transform hover:scale-105">
+                <Play size={22} fill="currentColor" className="ml-[3px]" />
+              </button>
+            </ClipThumb>
 
-            {/* Video placeholder */}
-            <div
-              style={{
-                position: 'relative',
-                width: '100%',
-                aspectRatio: '16 / 9',
-                flexShrink: 0,
-                backgroundColor: '#d1d5db',
-                borderRadius: '4px',
-                overflow: 'hidden',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <div style={{ width: '64px', height: '64px', borderRadius: '32px', backgroundColor: 'rgba(31,41,55,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                <Play size={26} color="#ffffff" style={{ marginLeft: '3px' }} />
-              </div>
-              <p style={{ position: 'absolute', top: '16px', left: '18px', color: '#fff', fontSize: '13px', margin: 0 }}>
-                CAM 04 · 22:47:00
-              </p>
-              <div style={{ position: 'absolute', bottom: '14px', left: '18px', right: '38px', height: '6px', backgroundColor: '#1f2937', borderRadius: '3px' }}>
-                <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: '30%', backgroundColor: '#1f4fd1', borderRadius: '3px' }} />
-              </div>
-            </div>
-
-            {/* Metadata */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '13px', fontWeight: 600, color: '#374151' }}>Cam 04 · 10:47 PM</span>
-              <span style={{ fontSize: '13px', color: '#6b7280' }}>Mon 11 Oct</span>
-              <span style={{ fontSize: '13px', color: '#6b7280' }}>3 min 32 s</span>
-              <span style={{ fontSize: '13px', color: '#6b7280' }}>1 adult</span>
-              <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: '#6b7280' }}>
-                <AlertTriangle size={13} color="#f97316" />
-                AI confidence: <strong style={{ color: '#374151' }}>94%</strong>
-              </span>
-            </div>
-
-            {/* Description */}
-            <div style={{ padding: '0 4px' }}>
-              <p style={{ margin: '0 0 4px', fontSize: '12px', color: '#6b7280' }}>Description</p>
-              <p style={{ margin: 0, fontSize: '14px', color: '#111827', lineHeight: 1.5 }}>
-                Individual observed smoking near pillar P-04. Smoke clearly visible. Approx. 3 minutes duration before moving off.
-              </p>
-            </div>
-
-            {/* Assign */}
-            <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: '14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <span style={{ fontSize: '14px', fontWeight: 500, color: '#374151', flexShrink: 0 }}>Assign to staff:</span>
-              <select
-                value={assignedTo}
-                onChange={(e) => setAssignedTo(e.target.value)}
-                style={{
-                  appearance: 'none',
-                  border: '1px solid #d0d5dd',
-                  borderRadius: '8px',
-                  padding: '8px 32px 8px 12px',
-                  fontSize: '14px',
-                  color: '#101828',
-                  backgroundColor: '#ffffff',
-                  cursor: 'pointer',
-                  outline: 'none',
-                  boxShadow: '0px 1px 2px rgba(16,24,40,0.05)',
-                }}
-              >
-                <option value="">— Select staff —</option>
-                {MOCK_STAFF.map((s) => (
-                  <option key={s.id} value={s.id}>{s.name}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Right column */}
-          <div
-            style={{
-              width: '400px',
-              flexShrink: 0,
-              overflowY: 'auto',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '16px',
-            }}
-          >
-            {/* Notifications */}
-            <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '16px 20px 10px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <p style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#111827' }}>Notifications</p>
-                {unreadCount > 0 && (
-                  <div style={{ backgroundColor: '#e8f0ff', color: '#1f4fd1', fontSize: '11px', fontWeight: 600, padding: '2px 7px', borderRadius: '10px' }}>{unreadCount} new</div>
-                )}
-                <div style={{ flex: 1 }} />
-                <button
-                  type="button"
-                  style={{ color: '#1f4fd1', fontSize: '12px', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}
-                  onClick={() => setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })))}
-                >
-                  Mark all read
-                </button>
-              </div>
-              {notifications.map((n) => (
-                <div key={n.id} style={{ display: 'flex', gap: '10px', padding: '6px 0' }}>
-                  <div style={{ width: '7px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <div style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: n.unread ? '#1f4fd1' : 'transparent' }} />
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ margin: 0, fontSize: '13px', color: '#121726', lineHeight: 'normal' }}>
-                      <span style={{ fontWeight: 500 }}>{n.bold}</span>
-                      <span style={{ fontWeight: 400 }}>{n.text}</span>
-                    </p>
-                    <p style={{ margin: '1px 0 0', fontSize: '12px', color: '#6b7380' }}>{n.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Escalated cases */}
-            <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '16px 20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <p style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#111827' }}>Escalated cases</p>
-                  <div style={{ backgroundColor: '#fee2e2', color: '#dc2626', fontSize: '11px', fontWeight: 600, padding: '2px 7px', borderRadius: '10px' }}>{escalated.length} open</div>
-                </div>
-                <button type="button" onClick={() => navigate('/admin/workload')} style={{ color: '#1f4fd1', fontSize: '13px', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '2px' }}>
-                  View all <ChevronRight size={13} />
-                </button>
-              </div>
-              {escalated.map((inc) => (
-                <div key={inc.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 0', borderTop: '1px solid #f3f4f6' }}>
-                  <div style={{ width: '4px', height: '40px', borderRadius: '2px', backgroundColor: SEVERITY_COLOR[inc.severity], flexShrink: 0 }} />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ margin: 0, fontSize: '13px', fontWeight: 500, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{inc.type} · {inc.location}</p>
-                    <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6b7280' }}>{new Date(inc.dateTime).toLocaleDateString('en-SG', { day: 'numeric', month: 'short' })}</p>
-                  </div>
-                  <span style={{ fontSize: '12px', fontWeight: 600, color: '#1f4fd1', backgroundColor: '#dbe4fb', padding: '2px 8px', borderRadius: '20px', flexShrink: 0 }}>
-                    {Math.round(inc.confidence * 100)}%
+            <div className="flex w-full shrink-0 items-start gap-[32px] border-t border-line-soft pt-[16px]">
+              <div className="flex min-w-0 flex-1 flex-col gap-[6px]">
+                <div className="flex items-center gap-[6px]">
+                  <Sparkles size={12} className="shrink-0 text-brand" aria-hidden />
+                  <FieldLabel>Description</FieldLabel>
+                  <span className="ml-[4px] inline-flex items-center gap-[8px] rounded-full bg-brand-soft px-[10px] py-[4px]">
+                    <BarMeter pct={current.confidence * 100} tone="soft" className="w-[44px]" />
+                    <span className="text-[11px] font-semibold text-brand">{Math.round(current.confidence * 100)}% confidence</span>
                   </span>
                 </div>
-              ))}
+                <p className="m-0 text-[13px] text-ink">{current.description}</p>
+                {current.remark && (
+                  <p className="m-0 mt-[4px] flex items-start gap-[6px] text-[12px] text-ink-2">
+                    <MessageSquareQuote size={14} className="mt-[1px] shrink-0 text-muted" />“{current.remark}”
+                  </p>
+                )}
+              </div>
+              <div className="flex w-[260px] shrink-0 flex-col gap-[6px]">
+                <label htmlFor="assign-staff"><FieldLabel>Assign to staff</FieldLabel></label>
+                <select
+                  id="assign-staff"
+                  className={INPUT_CLASS}
+                  value={assignments[current.id] ?? ''}
+                  onChange={(e) => setAssignments((a) => ({ ...a, [current.id]: e.target.value }))}
+                >
+                  <option value="">Select staff…</option>
+                  {MOCK_STAFF.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                </select>
+              </div>
             </div>
-
-            {/* Recently resolved */}
-            <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '16px 20px' }}>
-              <p style={{ margin: '0 0 10px', fontSize: '16px', fontWeight: 600, color: '#111827' }}>Recently resolved</p>
-              {resolved.map((inc) => (
-                <div key={inc.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 0', borderTop: '1px solid #f3f4f6' }}>
-                  <CheckCircle size={15} color="#16a34a" style={{ flexShrink: 0 }} />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ margin: 0, fontSize: '13px', fontWeight: 500, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{inc.type} · {inc.location}</p>
-                    <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6b7280' }}>{new Date(inc.dateTime).toLocaleDateString('en-SG', { day: 'numeric', month: 'short' })}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Recent workload reports */}
-            <div style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '16px 20px' }}>
-              <p style={{ margin: '0 0 10px', fontSize: '16px', fontWeight: 600, color: '#111827' }}>Workload reports</p>
-              {[
-                { label: '5–11 Oct', dates: '5 Oct – 11 Oct 2026' },
-                { label: '1–4 Oct',  dates: '1 Oct – 4 Oct 2026'  },
-              ].map((r) => (
-                <div key={r.label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0', borderTop: '1px solid #f3f4f6' }}>
-                  <div>
-                    <p style={{ margin: 0, fontSize: '13px', fontWeight: 500, color: '#111827' }}>{r.label}</p>
-                    <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6b7280' }}>{r.dates}</p>
-                  </div>
-                  <button type="button" onClick={() => navigate('/admin/workload')} style={{ color: '#1f4fd1', fontSize: '13px', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '2px' }}>
-                    View <ChevronRight size={13} />
-                  </button>
-                </div>
-              ))}
-            </div>
+          </>
+        ) : (
+          <div className="flex flex-1 flex-col items-center justify-center gap-[8px] py-[80px] text-center">
+            <Inbox size={28} className="text-faint" />
+            <p className="m-0 text-[15px] font-medium text-ink">No open escalations</p>
+            <p className="m-0 text-[13px] text-muted">Cases your staff escalate will show here.</p>
           </div>
-        </div>
-      </div>
-    </AppLayout>
-  );
-}
+        )}
+      </section>
 
-// ── KpiCard ────────────────────────────────────────────────────────────────────
-interface KpiCardProps {
-  label: string;
-  value: string;
-  valueExtra?: string;
-  deltaChar: string;
-  deltaColor: string;
-  deltaLabel: string;
-}
-function KpiCard({ label, value, valueExtra, deltaChar, deltaColor, deltaLabel }: KpiCardProps) {
-  return (
-    <div style={{ flex: '1 0 0', minWidth: 0, paddingLeft: '24px', paddingRight: '24px', paddingTop: '2px', paddingBottom: '2px', display: 'flex', flexDirection: 'column', gap: '4px', overflow: 'hidden' }}>
-      <p style={{ margin: 0, fontSize: '13px', color: '#6b7380', fontWeight: 400 }}>{label}</p>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-        <span style={{ fontSize: '32px', fontWeight: 700, color: '#111827', lineHeight: 1 }}>{value}</span>
-        {valueExtra && <span style={{ fontSize: '14px', fontWeight: 400, color: '#374151' }}>{valueExtra}</span>}
-      </div>
-      <p style={{ margin: 0, fontSize: '12px', color: '#6b7380', fontWeight: 400, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-        <span style={{ color: deltaColor }}>{deltaChar}</span>{` ${deltaLabel}`}
-      </p>
-    </div>
+      <aside className="thin-scroll flex w-[340px] shrink-0 flex-col gap-[10px] overflow-y-auto border-l border-line bg-head p-[20px]">
+        <div className="pb-[4px]"><SectionTitle meta={`${open.length} open`}>Escalated cases</SectionTitle></div>
+        {open.length === 0 && <p className="m-0 py-[4px] text-[12px] text-muted">Nothing open.</p>}
+        {open.map((inc, i) => {
+          const selected = inc.id === current?.id;
+          return (
+            <button
+              key={inc.id}
+              type="button"
+              onClick={() => setSelectedId(inc.id)}
+              aria-current={selected ? 'true' : undefined}
+              className={`flex w-full cursor-pointer items-center gap-[10px] rounded-[8px] border p-[8px] text-left transition-colors ${selected ? 'border-brand bg-white' : 'border-transparent bg-transparent hover:bg-white'}`}
+            >
+              <ClipThumb seed={i} className="h-[42px] w-[60px] shrink-0 rounded-[4px]" iconSize={14} />
+              <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
+                <span className="truncate text-[12px] font-medium text-ink">{inc.type} · {inc.location}</span>
+                <span className="flex items-center gap-[6px] text-[11px] text-muted">
+                  <span className="size-[7px] shrink-0 rounded-full" style={{ backgroundColor: SEVERITY_DOT[inc.severity] }} />
+                  {camLabel(inc.camId)} · {fmtDate(inc.dateTime)} · {Math.round(inc.confidence * 100)}%
+                </span>
+              </span>
+            </button>
+          );
+        })}
+
+        <div className="mt-[4px] border-t border-line pt-[18px] pb-[4px]"><SectionTitle>Recently resolved</SectionTitle></div>
+        {resolved.map((inc) => (
+          <div key={inc.id} className="flex items-center gap-[10px] px-[8px] py-[2px]">
+            <CircleCheck size={15} className="shrink-0 text-success" />
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-[12px] font-medium text-ink">{inc.type} · {inc.location}</span>
+              <span className="block text-[11px] text-muted">{fmtDate(inc.dateTime)}</span>
+            </span>
+          </div>
+        ))}
+
+        <div className="mt-[4px] border-t border-line pt-[18px] pb-[4px]">
+          <SectionTitle
+            action={
+              <button type="button" onClick={() => navigate('/admin/workload')} className="flex cursor-pointer items-center gap-[4px] border-none bg-transparent p-0 text-[12px] font-medium text-brand hover:underline">
+                View all <ArrowRight size={14} />
+              </button>
+            }
+          >
+            Workload reports
+          </SectionTitle>
+        </div>
+        {REPORTS.map((r) => (
+          <button
+            key={r.label}
+            type="button"
+            onClick={() => navigate('/admin/workload')}
+            className="flex w-full cursor-pointer items-center gap-[10px] rounded-[6px] border-none bg-transparent px-[8px] py-[6px] text-left transition-colors hover:bg-white"
+          >
+            <span className="min-w-0 flex-1">
+              <span className="block text-[12px] font-medium text-ink">{r.label}</span>
+              <span className="block text-[11px] text-muted">{r.dates}</span>
+            </span>
+            <ArrowRight size={14} className="text-brand" />
+          </button>
+        ))}
+      </aside>
+    </AppLayout>
   );
 }

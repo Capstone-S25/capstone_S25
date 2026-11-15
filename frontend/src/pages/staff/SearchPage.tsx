@@ -1,37 +1,34 @@
 import { useState } from 'react';
-import { Search } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import { AppLayout } from '../../components/layout/AppLayout';
-import { OutcomeBadge } from '../../components/ui/Badge';
+import { OutcomeDot } from '../../components/ui/Badge';
+import { FilterSelect } from '../../components/ui/FilterSelect';
+import { ClipThumb, EmptyState, PageHeader } from '../../components/ui/Primitives';
 import ClipDetailsModal from '../../components/modals/ClipDetailsModal';
 import { MOCK_INCIDENTS } from '../../data/mock';
 import type { Incident } from '../../types';
 
-const ALL_RESULTS = MOCK_INCIDENTS;
+const LOCATIONS = ['Carpark B2', 'Lift Lobby 1', 'Corridor 2', 'Main entrance', 'Meeting Room 1', 'Staircase B', 'Pantry L3'];
 
-function formatCardTime(iso: string) {
-  const d = new Date(iso);
-  return {
-    time: d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
-    date: d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-  };
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
 }
 
-const PLACEHOLDER_GRAYS = ['bg-gray-200', 'bg-gray-300', 'bg-gray-200', 'bg-slate-200', 'bg-gray-300', 'bg-zinc-200'];
-
 export default function SearchPage() {
-  const [query, setQuery] = useState('');
+  const [params] = useSearchParams();
+  const query = params.get('q') ?? '';
   const [typeFilter, setTypeFilter] = useState('all');
   const [locationFilter, setLocationFilter] = useState('all');
-  const [dateFilter, setDateFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('7d');
   const [severityFilter, setSeverityFilter] = useState('all');
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
 
-  const results = ALL_RESULTS.filter((inc) => {
+  const q = query.trim().toLowerCase();
+  const results = MOCK_INCIDENTS.filter((inc) => {
     if (severityFilter !== 'all' && inc.severity !== severityFilter) return false;
     if (typeFilter !== 'all' && inc.type !== typeFilter) return false;
     if (locationFilter !== 'all' && inc.location !== locationFilter) return false;
-    if (query.trim()) {
-      const q = query.trim().toLowerCase();
+    if (q) {
       const matches =
         inc.type.toLowerCase().includes(q) ||
         inc.location.toLowerCase().includes(q) ||
@@ -42,135 +39,76 @@ export default function SearchPage() {
     return true;
   });
 
+  const count = `${results.length} clip${results.length === 1 ? '' : 's'}`;
+
   return (
     <AppLayout role="staff" activePath="/staff/search">
-      <div className="p-6">
-        {/* Page title */}
-        <h1 className="text-2xl font-bold text-gray-900 mb-5">Search</h1>
+      <PageHeader
+        title={query.trim() ? <>Results for “{query.trim()}”</> : 'All clips'}
+        subtitle={query.trim() ? `${count} match your search` : `${count} · use the search bar above to narrow down`}
+      />
 
-        {/* Search bar */}
-        <div className="flex gap-3 mb-4">
-          <div className="relative flex-1">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search incidents…"
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:border-transparent"
-              style={{ '--tw-ring-color': '#1f4fd1' } as React.CSSProperties}
-            />
-          </div>
-        </div>
-
-        {/* Filter bar */}
-        <div className="flex items-center gap-3 mb-6 flex-wrap">
-          <SearchFilter value={typeFilter} onChange={setTypeFilter}>
-            <option value="all">All types</option>
-            <option value="Smoking">Smoking</option>
-            <option value="Littering">Littering</option>
-            <option value="Loitering">Loitering</option>
-            <option value="Unattended item">Unattended item</option>
-          </SearchFilter>
-          <SearchFilter value={locationFilter} onChange={setLocationFilter}>
-            <option value="all">All locations</option>
-            <option value="Carpark B2">Carpark B2</option>
-            <option value="Lift Lobby 1">Lift Lobby 1</option>
-            <option value="Corridor 2">Corridor 2</option>
-            <option value="Main entrance">Main entrance</option>
-            <option value="Meeting Room 1">Meeting Room 1</option>
-            <option value="Staircase B">Staircase B</option>
-            <option value="Pantry L3">Pantry L3</option>
-          </SearchFilter>
-          <SearchFilter value={dateFilter} onChange={setDateFilter}>
-            <option value="all">Any date</option>
-            <option value="today">Today</option>
-            <option value="7d">Last 7 days</option>
-            <option value="30d">Last 30 days</option>
-          </SearchFilter>
-          <SearchFilter value={severityFilter} onChange={setSeverityFilter}>
-            <option value="all">All severities</option>
-            <option value="Critical">Critical</option>
-            <option value="Moderate">Moderate</option>
-            <option value="Minor">Minor</option>
-          </SearchFilter>
-        </div>
-
-        {/* Results header */}
-        <p className="text-sm text-gray-500 mb-4">
-          <span className="font-semibold text-gray-900">{results.length} results</span>
-          {query.trim() && (
-            <> for <span style={{ color: '#1f4fd1' }}>"{query.trim()}"</span></>
-          )}
-        </p>
-
-        {/* Results grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {results.map((inc, idx) => {
-            const { time, date } = formatCardTime(inc.dateTime);
-            const camNum = inc.camId.replace('cam-', '').padStart(2, '0');
-            const camLabel = `CAM ${camNum} · ${time}`;
-
-            return (
-              <div
-                key={inc.id}
-                onClick={() => setSelectedIncident(inc)}
-                className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-              >
-                {/* Thumbnail */}
-                <div className={`relative w-full ${PLACEHOLDER_GRAYS[idx % PLACEHOLDER_GRAYS.length]}`} style={{ aspectRatio: '16/9' }}>
-                  <span className="absolute top-2 left-2 text-xs font-semibold text-white bg-black/60 px-2 py-0.5 rounded">
-                    {camLabel}
-                  </span>
-                  {inc.duration && (
-                    <span className="absolute bottom-2 right-2 text-xs font-semibold text-white bg-black/60 px-2 py-0.5 rounded">
-                      {inc.duration}
-                    </span>
-                  )}
-                </div>
-
-                {/* Card body */}
-                <div className="p-3">
-                  <p className="font-semibold text-gray-900 text-sm leading-snug line-clamp-2">
-                    {inc.type} · {inc.location}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1 mb-2">
-                    {inc.location} · {date}
-                  </p>
-                  <OutcomeBadge outcome={inc.outcome} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {results.length === 0 && (
-          <div className="text-center py-16 text-gray-400 text-sm">
-            No incidents match your search.
-          </div>
-        )}
+      <div className="-mt-[4px] flex flex-wrap items-center gap-[8px]">
+        <FilterSelect
+          label="Type"
+          value={typeFilter}
+          onChange={setTypeFilter}
+          options={[{ value: 'all', label: 'All types' }, ...['Smoking', 'Littering', 'Loitering', 'Unattended item'].map((t) => ({ value: t, label: t }))]}
+        />
+        <FilterSelect
+          label="Location"
+          value={locationFilter}
+          onChange={setLocationFilter}
+          options={[{ value: 'all', label: 'All locations' }, ...LOCATIONS.map((l) => ({ value: l, label: l }))]}
+        />
+        <FilterSelect
+          label="Date"
+          value={dateFilter}
+          onChange={setDateFilter}
+          options={[{ value: 'today', label: 'Today' }, { value: '7d', label: 'Last 7 days' }, { value: '30d', label: 'Last 30 days' }, { value: 'all', label: 'Any date' }]}
+        />
+        <FilterSelect
+          label="Severity"
+          value={severityFilter}
+          onChange={setSeverityFilter}
+          options={[{ value: 'all', label: 'All' }, { value: 'Critical', label: 'Critical' }, { value: 'Moderate', label: 'Moderate' }, { value: 'Minor', label: 'Minor' }]}
+        />
       </div>
 
-      {/* Clip detail panel */}
-      <ClipDetailsModal
-        isOpen={selectedIncident !== null}
-        onClose={() => setSelectedIncident(null)}
-        incident={selectedIncident}
-      />
+      <div className="grid grid-cols-1 gap-x-[20px] gap-y-[20px] sm:grid-cols-2 lg:grid-cols-3">
+        {results.map((inc, idx) => (
+          <button
+            key={inc.id}
+            type="button"
+            onClick={() => setSelectedIncident(inc)}
+            className="group flex min-w-0 cursor-pointer flex-col gap-[10px] border-none bg-transparent p-0 text-left"
+          >
+            <ClipThumb
+              seed={idx}
+              className="aspect-[16/9] w-full rounded-[6px] outline-2 outline-offset-2 outline-transparent transition-[outline-color] group-hover:outline-brand-mid"
+              iconSize={28}
+            >
+              {inc.duration && (
+                <span className="absolute right-[8px] bottom-[8px] rounded-[4px] bg-[rgba(27,35,52,0.75)] px-[6px] py-[2px] text-[11px] font-medium text-white">
+                  {inc.duration}
+                </span>
+              )}
+            </ClipThumb>
+            <span className="flex w-full flex-col gap-[3px]">
+              <span className="truncate text-[13px] font-medium text-ink">{inc.description}</span>
+              <span className="flex w-full items-center gap-[8px]">
+                <span className="truncate text-[12px] text-muted">{formatDate(inc.dateTime)} · {inc.location}</span>
+                <span className="flex-1" />
+                <OutcomeDot outcome={inc.outcome} />
+              </span>
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {results.length === 0 && <EmptyState>No clips match your search. Try a different place or incident type.</EmptyState>}
+
+      <ClipDetailsModal isOpen={selectedIncident !== null} onClose={() => setSelectedIncident(null)} incident={selectedIncident} />
     </AppLayout>
-  );
-}
-
-// ── Sub-component ────────────────────────────────────────────────────────────
-
-function SearchFilter({ value, onChange, children }: { value: string; onChange: (v: string) => void; children: React.ReactNode }) {
-  return (
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-700 bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-    >
-      {children}
-    </select>
   );
 }
