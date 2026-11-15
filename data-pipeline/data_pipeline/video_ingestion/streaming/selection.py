@@ -1,8 +1,5 @@
 import math
-from collections.abc import Generator, Iterable
 from fractions import Fraction
-
-from data_pipeline.video_ingestion.decoding.decoder import DecodedFrame
 
 
 class FrameSelector:
@@ -43,23 +40,3 @@ class FrameSelector:
             self._last_selected_timestamp = timestamp_ms
             return True
         return False
-
-
-def select_frames(
-    frames: Iterable[DecodedFrame], *, target_fps: float
-) -> Generator[DecodedFrame, None, None]:
-    """Yield frames spaced by media timestamps
-
-    Args:
-        frames: Frames from one segment, ordered by timestamp_ms.
-        target_fps: Positive, finite maximum selection rate. At 2 FPS, selected
-            frames must be at least 500 milliseconds apart on the media timeline.
-
-    Yields:
-        The first frame, then the first available frame at least one interval
-        after the last selected frame.
-    """
-    selector = FrameSelector(target_fps=target_fps)
-    for frame in frames:
-        if selector.should_select(frame.timestamp_ms):
-            yield frame
