@@ -1,0 +1,1726 @@
+{
+  "date": "2026-11-15",
+  "started_at_singapore": "2026-11-15T16:14:57.926074+08:00",
+  "generated_at_singapore": "2026-11-15T16:56:53.214015+08:00",
+  "run_directory": "suite_20261115T081449Z_256f44",
+  "comparison": {
+    "date": "2026-11-15",
+    "started_at_singapore": "2026-11-15T02:54:25.109788+08:00",
+    "generated_at_singapore": "2026-11-15T03:29:50.220243+08:00",
+    "run_directory": "suite_20261114T185417Z_d76141",
+    "environment": {
+      "started_at_utc": "2026-11-14T18:54:25.109788+00:00",
+      "os": "Windows-11-10.0.22631-SP0",
+      "python": "3.12.3",
+      "host_ram_mib": 16333.51171875,
+      "docker": "Docker Desktop (containerized) | VM memory limit=8300392448 bytes",
+      "containers": [
+        "mock-cctv | bluenviron/mediamtx:1",
+        "capstone-postgres-dev | postgres:18"
+      ],
+      "input": {
+        "width": 640,
+        "height": 360,
+        "source_fps": "25/1",
+        "codec": "h264"
+      },
+      "dedicated_publisher": true
+    },
+    "settings": {
+      "target_fps": 2,
+      "queue_size": 8,
+      "queue_policy": "drop_oldest",
+      "warmup_seconds": 10.0,
+      "measurement_seconds": 60.0
+    },
+    "completed_runs": 20,
+    "excluded_runs": [],
+    "scenarios": [
+      {
+        "mode": "baseline",
+        "scenario": "Idle baseline",
+        "cameras": 0,
+        "repeats": 3,
+        "pipeline_mean_mib": 74.63481427935943,
+        "pipeline_peak_mib": 74.7734375,
+        "python_mean_mib": 74.63481427935943,
+        "ffmpeg_mean_mib": 0.0,
+        "host_used_mean_gib": 14.198554334969357,
+        "host_used_peak_gib": 15.692626953125,
+        "host_available_min_gib": 0.2580680847167969,
+        "wsl_mean_mib": 523.118130387931,
+        "docker_desktop_mean_mib": 346.4786503232759,
+        "mock_publisher_mean_mib": 82.7537042025862,
+        "peak_queued_frames": 0,
+        "peak_queued_image_mib": 0.0,
+        "produced_frames_total": 0,
+        "consumed_frames_total": 0,
+        "dropped_frames_total": 0,
+        "drain_and_cleanup_peak_seconds": 0.03754659998230636,
+        "dropped_frames_max": 0,
+        "host_change_from_idle_mib": 0.0
+      },
+      {
+        "mode": "recording",
+        "scenario": "Recording only",
+        "cameras": 1,
+        "repeats": 3,
+        "pipeline_mean_mib": 97.1179715501792,
+        "pipeline_peak_mib": 97.46875,
+        "python_mean_mib": 77.59757224462365,
+        "ffmpeg_mean_mib": 19.532496079749105,
+        "host_used_mean_gib": 14.157026290893555,
+        "host_used_peak_gib": 15.727336883544922,
+        "host_available_min_gib": 0.223358154296875,
+        "wsl_mean_mib": 523.8404498922414,
+        "docker_desktop_mean_mib": 338.21585398706895,
+        "mock_publisher_mean_mib": 76.39197198275862,
+        "peak_queued_frames": 0,
+        "peak_queued_image_mib": 0.0,
+        "produced_frames_total": 0,
+        "consumed_frames_total": 0,
+        "dropped_frames_total": 0,
+        "drain_and_cleanup_peak_seconds": 0.3070869999937713,
+        "dropped_frames_max": 0,
+        "host_change_from_idle_mib": -42.52471713362138
+      },
+      {
+        "mode": "streaming",
+        "scenario": "Streaming incl. decoding",
+        "cameras": 1,
+        "repeats": 3,
+        "pipeline_mean_mib": 84.91702008928571,
+        "pipeline_peak_mib": 86.046875,
+        "python_mean_mib": 84.91702008928571,
+        "ffmpeg_mean_mib": 0.0,
+        "host_used_mean_gib": 14.413584742052802,
+        "host_used_peak_gib": 14.823223114013672,
+        "host_available_min_gib": 1.127471923828125,
+        "wsl_mean_mib": 523.9715113146551,
+        "docker_desktop_mean_mib": 336.86274245689657,
+        "mock_publisher_mean_mib": 75.81532866379311,
+        "peak_queued_frames": 1,
+        "peak_queued_image_mib": 0.6591796875,
+        "produced_frames_total": 401,
+        "consumed_frames_total": 401,
+        "dropped_frames_total": 0,
+        "drain_and_cleanup_peak_seconds": 0.16272089999984019,
+        "dropped_frames_max": 0,
+        "host_change_from_idle_mib": 220.19113685344746
+      },
+      {
+        "mode": "full",
+        "scenario": "Recording + streaming",
+        "cameras": 1,
+        "repeats": 3,
+        "pipeline_mean_mib": 107.43474755338079,
+        "pipeline_peak_mib": 108.50390625,
+        "python_mean_mib": 87.79581850533808,
+        "ffmpeg_mean_mib": 19.628318212365592,
+        "host_used_mean_gib": 14.442030939562567,
+        "host_used_peak_gib": 14.945293426513672,
+        "host_available_min_gib": 1.005401611328125,
+        "wsl_mean_mib": 507.06095096982756,
+        "docker_desktop_mean_mib": 331.96410290948273,
+        "mock_publisher_mean_mib": 73.72265625,
+        "peak_queued_frames": 1,
+        "peak_queued_image_mib": 0.6591796875,
+        "produced_frames_total": 400,
+        "consumed_frames_total": 400,
+        "dropped_frames_total": 0,
+        "drain_and_cleanup_peak_seconds": 0.29322699998738244,
+        "dropped_frames_max": 0,
+        "host_change_from_idle_mib": 249.32004310344746
+      },
+      {
+        "mode": "full",
+        "scenario": "Recording + streaming",
+        "cameras": 2,
+        "repeats": 3,
+        "pipeline_mean_mib": 135.9728529676259,
+        "pipeline_peak_mib": 138.28515625,
+        "python_mean_mib": 96.75599988758992,
+        "ffmpeg_mean_mib": 39.1464491200361,
+        "host_used_mean_gib": 14.426179557011045,
+        "host_used_peak_gib": 15.013713836669922,
+        "host_available_min_gib": 0.936981201171875,
+        "wsl_mean_mib": 505.56667564655174,
+        "docker_desktop_mean_mib": 330.939453125,
+        "mock_publisher_mean_mib": 73.81741648706897,
+        "peak_queued_frames": 2,
+        "peak_queued_image_mib": 1.318359375,
+        "produced_frames_total": 802,
+        "consumed_frames_total": 802,
+        "dropped_frames_total": 0,
+        "drain_and_cleanup_peak_seconds": 0.43566590000409633,
+        "dropped_frames_max": 0,
+        "host_change_from_idle_mib": 233.0882273706884
+      },
+      {
+        "mode": "full",
+        "scenario": "Recording + streaming",
+        "cameras": 4,
+        "repeats": 3,
+        "pipeline_mean_mib": 190.37863831227438,
+        "pipeline_peak_mib": 195.25390625,
+        "python_mean_mib": 111.78859713447653,
+        "ffmpeg_mean_mib": 78.59337061600719,
+        "host_used_mean_gib": 14.432782140271417,
+        "host_used_peak_gib": 15.212471008300781,
+        "host_available_min_gib": 0.7382240295410156,
+        "wsl_mean_mib": 513.4451104525862,
+        "docker_desktop_mean_mib": 333.5233028017241,
+        "mock_publisher_mean_mib": 73.92638739224138,
+        "peak_queued_frames": 4,
+        "peak_queued_image_mib": 2.63671875,
+        "produced_frames_total": 1604,
+        "consumed_frames_total": 1604,
+        "dropped_frames_total": 0,
+        "drain_and_cleanup_peak_seconds": 0.364933300006669,
+        "dropped_frames_max": 0,
+        "host_change_from_idle_mib": 239.84927262930978
+      }
+    ],
+    "component_estimates": [
+      {
+        "component": "Recording only",
+        "additional_mean_mib": 22.483157270819774
+      },
+      {
+        "component": "Streaming incl. decoding",
+        "additional_mean_mib": 10.282205809926282
+      },
+      {
+        "component": "Recording + streaming",
+        "additional_mean_mib": 32.799933274021356
+      }
+    ],
+    "containers": [
+      {
+        "name": "capstone-postgres-dev",
+        "image": "postgres:18",
+        "test_only": false,
+        "four_camera_mean_mib": 62.0975,
+        "peak_mib": 67.36
+      },
+      {
+        "name": "mock-cctv",
+        "image": "bluenviron/mediamtx:1",
+        "test_only": true,
+        "four_camera_mean_mib": 27.7275,
+        "peak_mib": 29.11
+      }
+    ],
+    "production_container_reference_mib": 62.0975,
+    "excluded_test_container_reference_mib": 27.7275,
+    "estimated_wsl_remainder_mib": 423.6201104525862,
+    "estimated_production_ingestion_runtime_mib": 1035.0143507543103,
+    "four_camera_fast_peak_mib": 199.91015625,
+    "four_camera_observed_peak_mib": 215.7734375,
+    "host_available_min_mib": 228.71875,
+    "special_runs": [
+      {
+        "case": "full_4cam_r1_soak",
+        "label": "Stability",
+        "warmup_seconds": 10.0,
+        "measurement_seconds": 600.0,
+        "consumer_delay_seconds": 0.0,
+        "elapsed_seconds": 610.4779827000166,
+        "drain_and_cleanup_seconds": 0.4779827000165824,
+        "pipeline_peak_mib": 199.91015625,
+        "host_used_mean_gib": 14.863367443678701,
+        "host_used_peak_gib": 15.720233917236328,
+        "host_available_min_gib": 0.23046112060546875,
+        "host_change_from_idle_mib": 680.7686233183686,
+        "peak_queued_frames": 4,
+        "peak_queued_image_mib": 2.63671875,
+        "produced_frames": 4688,
+        "consumed_frames": 4688,
+        "dropped_frames": 0,
+        "late_queue_growth_mib_per_min": 6.295638581092935e-05,
+        "late_pipeline_growth_mib_per_min": 0.4386214130885922
+      },
+      {
+        "case": "full_4cam_r1_slow",
+        "label": "Slow consumer",
+        "warmup_seconds": 10.0,
+        "measurement_seconds": 60.0,
+        "consumer_delay_seconds": 0.75,
+        "elapsed_seconds": 76.68750240001827,
+        "drain_and_cleanup_seconds": 6.687502400018275,
+        "pipeline_peak_mib": 215.7734375,
+        "host_used_mean_gib": 15.119894356563174,
+        "host_used_peak_gib": 15.23776626586914,
+        "host_available_min_gib": 0.7129287719726562,
+        "host_change_from_idle_mib": 943.4521821120688,
+        "peak_queued_frames": 32,
+        "peak_queued_image_mib": 21.09375,
+        "produced_frames": 536,
+        "consumed_frames": 396,
+        "dropped_frames": 140,
+        "late_queue_growth_mib_per_min": -0.8918611392914992,
+        "late_pipeline_growth_mib_per_min": 0.5492817192434607
+      }
+    ],
+    "run_validation": [
+      {
+        "case": "baseline_0cam_r1",
+        "recording_processes_peak": 0,
+        "cameras": []
+      },
+      {
+        "case": "recording_1cam_r1",
+        "recording_processes_peak": 1,
+        "cameras": [
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 0,
+            "peak_queued_image_bytes": 0,
+            "produced_frames": 0,
+            "dropped_frames": 0,
+            "consumed_frames": 0,
+            "frame_shape": null
+          }
+        ]
+      },
+      {
+        "case": "streaming_1cam_r1",
+        "recording_processes_peak": 0,
+        "cameras": [
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 134,
+            "dropped_frames": 0,
+            "consumed_frames": 134,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "case": "full_1cam_r1",
+        "recording_processes_peak": 1,
+        "cameras": [
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 134,
+            "dropped_frames": 0,
+            "consumed_frames": 134,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "case": "full_2cam_r1",
+        "recording_processes_peak": 2,
+        "cameras": [
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 134,
+            "dropped_frames": 0,
+            "consumed_frames": 134,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          },
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 134,
+            "dropped_frames": 0,
+            "consumed_frames": 134,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "case": "full_4cam_r1",
+        "recording_processes_peak": 4,
+        "cameras": [
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 133,
+            "dropped_frames": 0,
+            "consumed_frames": 133,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          },
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 133,
+            "dropped_frames": 0,
+            "consumed_frames": 133,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          },
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 133,
+            "dropped_frames": 0,
+            "consumed_frames": 133,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          },
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 133,
+            "dropped_frames": 0,
+            "consumed_frames": 133,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "case": "baseline_0cam_r2",
+        "recording_processes_peak": 0,
+        "cameras": []
+      },
+      {
+        "case": "recording_1cam_r2",
+        "recording_processes_peak": 1,
+        "cameras": [
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 0,
+            "peak_queued_image_bytes": 0,
+            "produced_frames": 0,
+            "dropped_frames": 0,
+            "consumed_frames": 0,
+            "frame_shape": null
+          }
+        ]
+      },
+      {
+        "case": "streaming_1cam_r2",
+        "recording_processes_peak": 0,
+        "cameras": [
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 134,
+            "dropped_frames": 0,
+            "consumed_frames": 134,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "case": "full_1cam_r2",
+        "recording_processes_peak": 1,
+        "cameras": [
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 133,
+            "dropped_frames": 0,
+            "consumed_frames": 133,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "case": "full_2cam_r2",
+        "recording_processes_peak": 2,
+        "cameras": [
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 133,
+            "dropped_frames": 0,
+            "consumed_frames": 133,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          },
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 133,
+            "dropped_frames": 0,
+            "consumed_frames": 133,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "case": "full_4cam_r2",
+        "recording_processes_peak": 4,
+        "cameras": [
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 134,
+            "dropped_frames": 0,
+            "consumed_frames": 134,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          },
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 134,
+            "dropped_frames": 0,
+            "consumed_frames": 134,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          },
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 134,
+            "dropped_frames": 0,
+            "consumed_frames": 134,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          },
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 134,
+            "dropped_frames": 0,
+            "consumed_frames": 134,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "case": "baseline_0cam_r3",
+        "recording_processes_peak": 0,
+        "cameras": []
+      },
+      {
+        "case": "recording_1cam_r3",
+        "recording_processes_peak": 1,
+        "cameras": [
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 0,
+            "peak_queued_image_bytes": 0,
+            "produced_frames": 0,
+            "dropped_frames": 0,
+            "consumed_frames": 0,
+            "frame_shape": null
+          }
+        ]
+      },
+      {
+        "case": "streaming_1cam_r3",
+        "recording_processes_peak": 0,
+        "cameras": [
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 133,
+            "dropped_frames": 0,
+            "consumed_frames": 133,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "case": "full_1cam_r3",
+        "recording_processes_peak": 1,
+        "cameras": [
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 133,
+            "dropped_frames": 0,
+            "consumed_frames": 133,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "case": "full_2cam_r3",
+        "recording_processes_peak": 2,
+        "cameras": [
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 134,
+            "dropped_frames": 0,
+            "consumed_frames": 134,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          },
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 134,
+            "dropped_frames": 0,
+            "consumed_frames": 134,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "case": "full_4cam_r3",
+        "recording_processes_peak": 4,
+        "cameras": [
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 134,
+            "dropped_frames": 0,
+            "consumed_frames": 134,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          },
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 134,
+            "dropped_frames": 0,
+            "consumed_frames": 134,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          },
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 134,
+            "dropped_frames": 0,
+            "consumed_frames": 134,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          },
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 134,
+            "dropped_frames": 0,
+            "consumed_frames": 134,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "case": "full_4cam_r1_soak",
+        "recording_processes_peak": 4,
+        "cameras": [
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 1172,
+            "dropped_frames": 0,
+            "consumed_frames": 1172,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          },
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 1172,
+            "dropped_frames": 0,
+            "consumed_frames": 1172,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          },
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 1172,
+            "dropped_frames": 0,
+            "consumed_frames": 1172,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          },
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 1,
+            "peak_queued_image_bytes": 691200,
+            "produced_frames": 1172,
+            "dropped_frames": 0,
+            "consumed_frames": 1172,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          }
+        ]
+      },
+      {
+        "case": "full_4cam_r1_slow",
+        "recording_processes_peak": 4,
+        "cameras": [
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 8,
+            "peak_queued_image_bytes": 5529600,
+            "produced_frames": 134,
+            "dropped_frames": 35,
+            "consumed_frames": 99,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          },
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 8,
+            "peak_queued_image_bytes": 5529600,
+            "produced_frames": 134,
+            "dropped_frames": 35,
+            "consumed_frames": 99,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          },
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 8,
+            "peak_queued_image_bytes": 5529600,
+            "produced_frames": 134,
+            "dropped_frames": 35,
+            "consumed_frames": 99,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          },
+          {
+            "queued_frames": 0,
+            "queued_image_bytes": 0,
+            "peak_queued_frames": 8,
+            "peak_queued_image_bytes": 5529600,
+            "produced_frames": 134,
+            "dropped_frames": 35,
+            "consumed_frames": 99,
+            "frame_shape": [
+              360,
+              640,
+              3
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "measurement_notes": [
+    "Excluded attempts failed before the 10-second warm-up ended: the streaming worker rejected frame 0 because its presentation timestamp was missing or invalid. Full measurement windows from fresh replacement processes are used for estimates; failed-attempt logs are retained.",
+    "These were benchmark-level fresh-trial retries, not camera reconnects inside production workers. No timestamps were fabricated and timing validation was not weakened. The dedicated publisher was restarted once between trials after the first failed attempt, with the same video and encoder settings.",
+    "RAM results are conditional on successful stream startup. The observed first-frame failures remain a startup-reliability limitation to investigate separately; this benchmark does not establish production camera availability.",
+    "The machine experienced substantial memory pressure: minimum available host RAM was 2 MiB. The stability run's lower average resident RAM does not prove lower allocations; working-set drops are consistent with paging/trimming under pressure. Peak RSS and raw time series are retained, and these results are not a memory-leak or production-capacity certification."
+  ],
+  "environment": {
+    "started_at_utc": "2026-11-15T08:14:57.926074+00:00",
+    "os": "Windows-11-10.0.22631-SP0",
+    "python": "3.12.3",
+    "host_ram_mib": 16333.51171875,
+    "docker": "Docker Desktop (containerized) | VM memory limit=8300392448 bytes",
+    "containers": [
+      "mock-cctv | bluenviron/mediamtx:1",
+      "capstone-postgres-dev | postgres:18"
+    ],
+    "input": {
+      "width": 640,
+      "height": 360,
+      "source_fps": "25/1",
+      "codec": "h264"
+    },
+    "dedicated_publisher": true
+  },
+  "settings": {
+    "consumer_topology": "shared_round_robin",
+    "target_fps": 2,
+    "queue_size": 8,
+    "queue_policy": "drop_oldest",
+    "warmup_seconds": 10.0,
+    "measurement_seconds": 60.0
+  },
+  "completed_runs": 20,
+  "excluded_runs": [
+    "full_1cam_r1_failed_attempt1",
+    "full_1cam_r3_failed_attempt1",
+    "full_4cam_r3_failed_attempt1",
+    "full_4cam_r3_failed_attempt2"
+  ],
+  "scenarios": [
+    {
+      "mode": "baseline",
+      "scenario": "Idle baseline",
+      "cameras": 0,
+      "repeats": 3,
+      "pipeline_mean_mib": 74.57103170126354,
+      "pipeline_peak_mib": 74.81640625,
+      "python_mean_mib": 74.57103170126354,
+      "ffmpeg_mean_mib": 0.0,
+      "host_used_mean_gib": 14.223732389252762,
+      "host_used_peak_gib": 15.530292510986328,
+      "host_available_min_gib": 0.42040252685546875,
+      "wsl_mean_mib": 511.16136853448273,
+      "docker_desktop_mean_mib": 333.78960129310343,
+      "mock_publisher_mean_mib": 81.46470905172414,
+      "peak_queued_frames": 0,
+      "peak_queued_image_mib": 0.0,
+      "produced_frames_total": 0,
+      "consumed_frames_total": 0,
+      "dropped_frames_total": 0,
+      "drain_and_cleanup_peak_seconds": 0.04636670000036247,
+      "dropped_frames_max": 0,
+      "host_change_from_idle_mib": 0.0
+    },
+    {
+      "mode": "recording",
+      "scenario": "Recording only",
+      "cameras": 1,
+      "repeats": 3,
+      "pipeline_mean_mib": 97.16223583633094,
+      "pipeline_peak_mib": 97.6171875,
+      "python_mean_mib": 77.6107520233813,
+      "ffmpeg_mean_mib": 19.55498364169675,
+      "host_used_mean_gib": 14.001216888427734,
+      "host_used_peak_gib": 15.468017578125,
+      "host_available_min_gib": 0.4826774597167969,
+      "wsl_mean_mib": 511.99946120689657,
+      "docker_desktop_mean_mib": 336.3827451508621,
+      "mock_publisher_mean_mib": 81.64096174568965,
+      "peak_queued_frames": 0,
+      "peak_queued_image_mib": 0.0,
+      "produced_frames_total": 0,
+      "consumed_frames_total": 0,
+      "dropped_frames_total": 0,
+      "drain_and_cleanup_peak_seconds": 0.4013482999871485,
+      "dropped_frames_max": 0,
+      "host_change_from_idle_mib": -227.8558728448279
+    },
+    {
+      "mode": "streaming",
+      "scenario": "Streaming incl. decoding",
+      "cameras": 1,
+      "repeats": 3,
+      "pipeline_mean_mib": 84.95195453519855,
+      "pipeline_peak_mib": 85.984375,
+      "python_mean_mib": 84.95195453519855,
+      "ffmpeg_mean_mib": 0.0,
+      "host_used_mean_gib": 14.86879743609512,
+      "host_used_peak_gib": 15.457775115966797,
+      "host_available_min_gib": 0.492919921875,
+      "wsl_mean_mib": 512.5289601293103,
+      "docker_desktop_mean_mib": 333.70285560344826,
+      "mock_publisher_mean_mib": 81.76010237068965,
+      "peak_queued_frames": 3,
+      "peak_queued_image_mib": 1.9775390625,
+      "produced_frames_total": 402,
+      "consumed_frames_total": 402,
+      "dropped_frames_total": 0,
+      "drain_and_cleanup_peak_seconds": 0.1350984999735374,
+      "dropped_frames_max": 0,
+      "host_change_from_idle_mib": 660.5466079665748
+    },
+    {
+      "mode": "full",
+      "scenario": "Recording + streaming",
+      "cameras": 1,
+      "repeats": 3,
+      "pipeline_mean_mib": 106.83702335288808,
+      "pipeline_peak_mib": 108.2109375,
+      "python_mean_mib": 87.38571750902527,
+      "ffmpeg_mean_mib": 19.443585824275363,
+      "host_used_mean_gib": 14.145314907205515,
+      "host_used_peak_gib": 15.899063110351562,
+      "host_available_min_gib": 0.051631927490234375,
+      "wsl_mean_mib": 505.7540409482759,
+      "docker_desktop_mean_mib": 330.82388200431035,
+      "mock_publisher_mean_mib": 80.55576508620689,
+      "peak_queued_frames": 3,
+      "peak_queued_image_mib": 1.9775390625,
+      "produced_frames_total": 404,
+      "consumed_frames_total": 404,
+      "dropped_frames_total": 0,
+      "drain_and_cleanup_peak_seconds": 0.427875800000038,
+      "dropped_frames_max": 0,
+      "host_change_from_idle_mib": -80.29950161638044
+    },
+    {
+      "mode": "full",
+      "scenario": "Recording + streaming",
+      "cameras": 2,
+      "repeats": 3,
+      "pipeline_mean_mib": 135.9429403409091,
+      "pipeline_peak_mib": 138.78515625,
+      "python_mean_mib": 97.13317915162455,
+      "ffmpeg_mean_mib": 39.18963068181818,
+      "host_used_mean_gib": 14.248214458597117,
+      "host_used_peak_gib": 15.659133911132812,
+      "host_available_min_gib": 0.2915611267089844,
+      "wsl_mean_mib": 508.7823949353448,
+      "docker_desktop_mean_mib": 330.31734913793105,
+      "mock_publisher_mean_mib": 81.00666756465517,
+      "peak_queued_frames": 6,
+      "peak_queued_image_mib": 3.955078125,
+      "produced_frames_total": 804,
+      "consumed_frames_total": 804,
+      "dropped_frames_total": 0,
+      "drain_and_cleanup_peak_seconds": 0.5907525999937207,
+      "dropped_frames_max": 0,
+      "host_change_from_idle_mib": 25.06963900861956
+    },
+    {
+      "mode": "full",
+      "scenario": "Recording + streaming",
+      "cameras": 4,
+      "repeats": 3,
+      "pipeline_mean_mib": 189.85093976449275,
+      "pipeline_peak_mib": 193.51171875,
+      "python_mean_mib": 111.81189141757247,
+      "ffmpeg_mean_mib": 78.4164260643116,
+      "host_used_mean_gib": 14.318890487938596,
+      "host_used_peak_gib": 15.572555541992188,
+      "host_available_min_gib": 0.3781394958496094,
+      "wsl_mean_mib": 513.3940515350877,
+      "docker_desktop_mean_mib": 331.61218475877195,
+      "mock_publisher_mean_mib": 81.34594298245614,
+      "peak_queued_frames": 12,
+      "peak_queued_image_mib": 7.91015625,
+      "produced_frames_total": 1600,
+      "consumed_frames_total": 1600,
+      "dropped_frames_total": 0,
+      "drain_and_cleanup_peak_seconds": 1.350976699963212,
+      "dropped_frames_max": 0,
+      "host_change_from_idle_mib": 97.44189305429427
+    }
+  ],
+  "component_estimates": [
+    {
+      "component": "Recording only",
+      "additional_mean_mib": 22.5912041350674
+    },
+    {
+      "component": "Streaming incl. decoding",
+      "additional_mean_mib": 10.380922833935017
+    },
+    {
+      "component": "Recording + streaming",
+      "additional_mean_mib": 32.265991651624546
+    }
+  ],
+  "containers": [
+    {
+      "name": "capstone-postgres-dev",
+      "image": "postgres:18",
+      "test_only": false,
+      "four_camera_mean_mib": 63.7275,
+      "peak_mib": 66.42
+    },
+    {
+      "name": "mock-cctv",
+      "image": "bluenviron/mediamtx:1",
+      "test_only": true,
+      "four_camera_mean_mib": 27.7175,
+      "peak_mib": 29.21
+    }
+  ],
+  "production_container_reference_mib": 63.7275,
+  "excluded_test_container_reference_mib": 27.7175,
+  "estimated_wsl_remainder_mib": 421.9490515350876,
+  "estimated_production_ingestion_runtime_mib": 1025.0426425438595,
+  "four_camera_fast_peak_mib": 193.51171875,
+  "four_camera_observed_peak_mib": 207.75390625,
+  "host_available_min_mib": 2.2421875,
+  "special_runs": [
+    {
+      "case": "full_4cam_r1_soak",
+      "label": "Stability",
+      "warmup_seconds": 10.0,
+      "measurement_seconds": 600.0,
+      "consumer_delay_seconds": 0.0,
+      "elapsed_seconds": 610.5740921000252,
+      "drain_and_cleanup_seconds": 0.5740921000251547,
+      "pipeline_peak_mib": 188.03125,
+      "host_used_mean_gib": 15.209877273942407,
+      "host_used_peak_gib": 15.948505401611328,
+      "host_available_min_gib": 0.00218963623046875,
+      "host_change_from_idle_mib": 1009.8123619221969,
+      "peak_queued_frames": 12,
+      "peak_queued_image_mib": 7.91015625,
+      "produced_frames": 4688,
+      "consumed_frames": 4688,
+      "dropped_frames": 0,
+      "late_queue_growth_mib_per_min": -0.0007738709832864249,
+      "late_pipeline_growth_mib_per_min": -2.0434434561253276
+    },
+    {
+      "case": "full_4cam_r1_slow",
+      "label": "Slow consumer",
+      "warmup_seconds": 10.0,
+      "measurement_seconds": 60.0,
+      "consumer_delay_seconds": 0.75,
+      "elapsed_seconds": 94.1736196000129,
+      "drain_and_cleanup_seconds": 24.1736196000129,
+      "pipeline_peak_mib": 207.75390625,
+      "host_used_mean_gib": 15.494258880615234,
+      "host_used_peak_gib": 15.568412780761719,
+      "host_available_min_gib": 0.3822822570800781,
+      "host_change_from_idle_mib": 1301.019127155172,
+      "peak_queued_frames": 32,
+      "peak_queued_image_mib": 21.09375,
+      "produced_frames": 536,
+      "consumed_frames": 123,
+      "dropped_frames": 413,
+      "late_queue_growth_mib_per_min": -0.20744719161150094,
+      "late_pipeline_growth_mib_per_min": 2.2546178253615645
+    }
+  ],
+  "run_validation": [
+    {
+      "case": "baseline_0cam_r1",
+      "recording_processes_peak": 0,
+      "cameras": []
+    },
+    {
+      "case": "recording_1cam_r1",
+      "recording_processes_peak": 1,
+      "cameras": [
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 0,
+          "peak_queued_image_bytes": 0,
+          "produced_frames": 0,
+          "dropped_frames": 0,
+          "consumed_frames": 0,
+          "frame_shape": null
+        }
+      ]
+    },
+    {
+      "case": "streaming_1cam_r1",
+      "recording_processes_peak": 0,
+      "cameras": [
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 2,
+          "peak_queued_image_bytes": 1382400,
+          "produced_frames": 134,
+          "dropped_frames": 0,
+          "consumed_frames": 134,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "case": "full_1cam_r1",
+      "recording_processes_peak": 1,
+      "cameras": [
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 134,
+          "dropped_frames": 0,
+          "consumed_frames": 134,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "case": "full_2cam_r1",
+      "recording_processes_peak": 2,
+      "cameras": [
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 134,
+          "dropped_frames": 0,
+          "consumed_frames": 134,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        },
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 2,
+          "peak_queued_image_bytes": 1382400,
+          "produced_frames": 134,
+          "dropped_frames": 0,
+          "consumed_frames": 134,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "case": "full_4cam_r1",
+      "recording_processes_peak": 4,
+      "cameras": [
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 134,
+          "dropped_frames": 0,
+          "consumed_frames": 134,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        },
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 134,
+          "dropped_frames": 0,
+          "consumed_frames": 134,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        },
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 134,
+          "dropped_frames": 0,
+          "consumed_frames": 134,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        },
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 134,
+          "dropped_frames": 0,
+          "consumed_frames": 134,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "case": "baseline_0cam_r2",
+      "recording_processes_peak": 0,
+      "cameras": []
+    },
+    {
+      "case": "recording_1cam_r2",
+      "recording_processes_peak": 1,
+      "cameras": [
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 0,
+          "peak_queued_image_bytes": 0,
+          "produced_frames": 0,
+          "dropped_frames": 0,
+          "consumed_frames": 0,
+          "frame_shape": null
+        }
+      ]
+    },
+    {
+      "case": "streaming_1cam_r2",
+      "recording_processes_peak": 0,
+      "cameras": [
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 135,
+          "dropped_frames": 0,
+          "consumed_frames": 135,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "case": "full_1cam_r2",
+      "recording_processes_peak": 1,
+      "cameras": [
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 2,
+          "peak_queued_image_bytes": 1382400,
+          "produced_frames": 135,
+          "dropped_frames": 0,
+          "consumed_frames": 135,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "case": "full_2cam_r2",
+      "recording_processes_peak": 2,
+      "cameras": [
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 134,
+          "dropped_frames": 0,
+          "consumed_frames": 134,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        },
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 134,
+          "dropped_frames": 0,
+          "consumed_frames": 134,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "case": "full_4cam_r2",
+      "recording_processes_peak": 4,
+      "cameras": [
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 133,
+          "dropped_frames": 0,
+          "consumed_frames": 133,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        },
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 133,
+          "dropped_frames": 0,
+          "consumed_frames": 133,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        },
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 133,
+          "dropped_frames": 0,
+          "consumed_frames": 133,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        },
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 133,
+          "dropped_frames": 0,
+          "consumed_frames": 133,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "case": "baseline_0cam_r3",
+      "recording_processes_peak": 0,
+      "cameras": []
+    },
+    {
+      "case": "recording_1cam_r3",
+      "recording_processes_peak": 1,
+      "cameras": [
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 0,
+          "peak_queued_image_bytes": 0,
+          "produced_frames": 0,
+          "dropped_frames": 0,
+          "consumed_frames": 0,
+          "frame_shape": null
+        }
+      ]
+    },
+    {
+      "case": "streaming_1cam_r3",
+      "recording_processes_peak": 0,
+      "cameras": [
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 133,
+          "dropped_frames": 0,
+          "consumed_frames": 133,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "case": "full_1cam_r3",
+      "recording_processes_peak": 1,
+      "cameras": [
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 135,
+          "dropped_frames": 0,
+          "consumed_frames": 135,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "case": "full_2cam_r3",
+      "recording_processes_peak": 2,
+      "cameras": [
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 134,
+          "dropped_frames": 0,
+          "consumed_frames": 134,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        },
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 134,
+          "dropped_frames": 0,
+          "consumed_frames": 134,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "case": "full_4cam_r3",
+      "recording_processes_peak": 4,
+      "cameras": [
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 133,
+          "dropped_frames": 0,
+          "consumed_frames": 133,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        },
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 133,
+          "dropped_frames": 0,
+          "consumed_frames": 133,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        },
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 133,
+          "dropped_frames": 0,
+          "consumed_frames": 133,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        },
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 133,
+          "dropped_frames": 0,
+          "consumed_frames": 133,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "case": "full_4cam_r1_soak",
+      "recording_processes_peak": 4,
+      "cameras": [
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 1172,
+          "dropped_frames": 0,
+          "consumed_frames": 1172,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        },
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 1172,
+          "dropped_frames": 0,
+          "consumed_frames": 1172,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        },
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 1172,
+          "dropped_frames": 0,
+          "consumed_frames": 1172,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        },
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 3,
+          "peak_queued_image_bytes": 2073600,
+          "produced_frames": 1172,
+          "dropped_frames": 0,
+          "consumed_frames": 1172,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "case": "full_4cam_r1_slow",
+      "recording_processes_peak": 4,
+      "cameras": [
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 8,
+          "peak_queued_image_bytes": 5529600,
+          "produced_frames": 134,
+          "dropped_frames": 103,
+          "consumed_frames": 31,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        },
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 8,
+          "peak_queued_image_bytes": 5529600,
+          "produced_frames": 134,
+          "dropped_frames": 103,
+          "consumed_frames": 31,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        },
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 8,
+          "peak_queued_image_bytes": 5529600,
+          "produced_frames": 134,
+          "dropped_frames": 103,
+          "consumed_frames": 31,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        },
+        {
+          "queued_frames": 0,
+          "queued_image_bytes": 0,
+          "peak_queued_frames": 8,
+          "peak_queued_image_bytes": 5529600,
+          "produced_frames": 134,
+          "dropped_frames": 104,
+          "consumed_frames": 30,
+          "frame_shape": [
+            360,
+            640,
+            3
+          ]
+        }
+      ]
+    }
+  ]
+}

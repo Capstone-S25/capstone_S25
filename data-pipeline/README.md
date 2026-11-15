@@ -200,9 +200,13 @@ npm run camera:stop
 
 ## Memory benchmark
 
-The dated reports currently under `reports/` describe the older setup with one
-consumer per camera. Keep them as historical results; the updated shared-consumer
-pipeline needs a fresh suite run before publishing new measurements.
+The latest shared-consumer benchmark is available as a
+[PDF report](reports/memory-benchmark-shared-consumer-2026-11-15.pdf), with
+[Markdown](reports/memory-benchmark-shared-consumer-2026-11-15.md),
+[CSV](reports/memory-benchmark-shared-consumer-2026-11-15.csv), and
+[JSON](reports/memory-benchmark-shared-consumer-2026-11-15.json) data.
+It includes a comparison with the preserved historical reports, which used one
+consumer per camera. See the report's startup-failure and memory-pressure limits.
 
 With the database running and migrations applied, measure one source for 30 seconds:
 

@@ -238,6 +238,14 @@ def build_report_data(root):
         "started_at_singapore": started.isoformat(),
         "generated_at_singapore": datetime.now(UTC).astimezone(SINGAPORE).isoformat(),
         "run_directory": root.name,
+        "comparison": json.loads((root / "comparison.json").read_text(encoding="utf-8"))
+        if (root / "comparison.json").exists()
+        else None,
+        "measurement_notes": json.loads(
+            (root / "measurement_notes.json").read_text(encoding="utf-8")
+        )
+        if (root / "measurement_notes.json").exists()
+        else [],
         "environment": environment,
         "settings": {"consumer_topology": consumer_topology}
         | {
@@ -285,6 +293,76 @@ def _table(headers, rows):
     ]
 
 
+def _comparison_lines(data):
+    """Compare measured runs while making the different consumer arrangements explicit."""
+    previous = data["comparison"]
+    if previous is None:
+        return []
+    for key in ("width", "height", "source_fps", "codec"):
+        if previous["environment"]["input"][key] != data["environment"]["input"][key]:
+            raise ValueError(f"Comparison workload differs: {key}")
+    for key in ("target_fps", "queue_size", "queue_policy"):
+        if previous["settings"][key] != data["settings"][key]:
+            raise ValueError(f"Comparison settings differ: {key}")
+    old = {(r["mode"], r["cameras"]): r for r in previous["scenarios"]}
+    current = {(r["mode"], r["cameras"]): r for r in data["scenarios"]}
+    lines = [
+        "## Comparison with previous benchmark",
+        "",
+        f"Previous run started {previous['started_at_singapore']}; this run started {data['started_at_singapore']}. The input profile, selected FPS and queue capacity match. The previous implementation used one consumer per camera; this run uses one shared round-robin consumer.",
+        "",
+    ]
+    lines += _table(
+        [
+            "Cameras",
+            "Previous typical MiB",
+            "Shared typical MiB",
+            "Previous peak MiB",
+            "Shared peak MiB",
+        ],
+        [
+            [
+                cameras,
+                f"{old[('full', cameras)]['pipeline_mean_mib']:.1f}",
+                f"{current[('full', cameras)]['pipeline_mean_mib']:.1f}",
+                f"{old[('full', cameras)]['pipeline_peak_mib']:.1f}",
+                f"{current[('full', cameras)]['pipeline_peak_mib']:.1f}",
+            ]
+            for cameras in (1, 2, 4)
+        ],
+    )
+    old_stress = next(
+        r for r in previous["special_runs"] if r["consumer_delay_seconds"]
+    )
+    new_stress = next(r for r in data["special_runs"] if r["consumer_delay_seconds"])
+    lines += _table(
+        ["Four-camera stress metric", "Previous: 4 consumers", "Current: 1 consumer"],
+        [
+            [
+                label,
+                f"{old_stress[key]:,.1f}" if decimals else f"{old_stress[key]:,}",
+                f"{new_stress[key]:,.1f}" if decimals else f"{new_stress[key]:,}",
+            ]
+            for label, key, decimals in (
+                ("Pipeline peak MiB", "pipeline_peak_mib", True),
+                ("Produced frames", "produced_frames", False),
+                ("Consumed frames", "consumed_frames", False),
+                ("Dropped frames", "dropped_frames", False),
+                ("Peak waiting frames", "peak_queued_frames", False),
+                ("Peak queued image MiB", "peak_queued_image_mib", True),
+                ("Drain/cleanup seconds", "drain_and_cleanup_seconds", True),
+            )
+        ],
+    )
+    lines += [
+        f"The stress delay is {new_stress['consumer_delay_seconds']:g}s per frame. Previously four consumers could wait independently, giving a nominal combined capacity of {4 / old_stress['consumer_delay_seconds']:.2f} FPS before overhead. One shared consumer has a nominal capacity of {1 / new_stress['consumer_delay_seconds']:.2f} FPS against up to {4 * data['settings']['target_fps']:g} selected input FPS. Different drop counts and drain times therefore reflect a different processing bottleneck, not an equal-throughput algorithm comparison.",
+        "",
+        f"The shared Python baseline was {old[('baseline', 0)]['pipeline_mean_mib']:.1f} MiB previously and is {current[('baseline', 0)]['pipeline_mean_mib']:.1f} MiB now. Process/runtime changes and profiling affect RAM differences too. Whole-host results were collected at different times with other applications running; their differences cannot be attributed solely to round-robin scheduling. Neither run includes YOLO/VLM.",
+        "",
+    ]
+    return lines
+
+
 def write_report(root):
     root = Path(root)
     data = build_report_data(root)
@@ -305,7 +383,7 @@ def write_report(root):
     lines = [
         "# Bounded-queue pipeline RAM benchmark",
         "",
-        f"Benchmark date: {data['date']} (Singapore). Completed runs: {data['completed_runs']}.",
+        f"Benchmark date: {data['date']} (Singapore). Completed runs: {data['completed_runs']}. Excluded attempts: {len(data['excluded_runs'])}.",
         "",
         f"Consumer setup: {consumer_setup}.",
         "",
@@ -546,6 +624,9 @@ def write_report(root):
         "",
         f"Each selected BGR image uses {payload:.3f} MiB before metadata and decoder buffers. The configured bound is {settings['queue_size']} waiting frames per camera, or {4 * settings['queue_size']} across four cameras. The frame being processed and decoder/conversion buffers are outside that queue limit. On overflow, the oldest waiting frame is dropped; the active frame is not interrupted. Stable queue memory can therefore coexist with missed live frames. Recording preserves video independently, but does not automatically recover skipped detections.",
         "",
+    ]
+    lines += _comparison_lines(data)
+    lines += [
         "## Workload, method and limits",
         "",
         f"- Host: {data['environment']['os']}; {data['environment']['host_ram_mib'] / 1024:.2f} GiB physical RAM; Python {data['environment']['python']}.",
@@ -560,6 +641,7 @@ def write_report(root):
         "- Windows background applications, available-memory pressure, shared pages and Docker/WSL caching affect RAM. A fully containerized/Linux production deployment must be measured separately. Do not interpret the current host total or component reference subtotal as a final hardware recommendation.",
         f"- This host was already busy: idle-run used RAM peaked at {baseline['host_used_peak_gib']:.2f} GiB, and the lowest available RAM across all runs was {data['host_available_min_mib']:.0f} MiB. Memory pressure and unrelated activity limit causal interpretation of host deltas.",
         f"- Completed runs: {data['completed_runs']}; excluded runs: {len(data['excluded_runs'])}. Successful runs are checked for bounded queues, expected recording processes, complete draining and produced = consumed + dropped. No new test cases were added.",
+        *[f"- {note}" for note in data["measurement_notes"]],
         "",
         "## Reproduction and artifacts",
         "",

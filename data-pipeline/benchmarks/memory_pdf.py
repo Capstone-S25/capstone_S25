@@ -111,12 +111,14 @@ def _inline(text):
 def _table(rows, styles):
     weights = [1.0] * len(rows[0])
     weights[0] = 1.8
+    if rows[0][0] == "Cameras":
+        weights[0] = 0.55
     if rows[0][-1] in ("Accounting", "Production treatment"):
         weights[-1] = 3
     if rows[0][0] == "Component":
         weights = [2, 1]
     if rows[0][1] == "Cameras":
-        weights[1] = 0.55
+        weights[1] = 0.7
     cells = [
         [
             Paragraph(_inline(cell), styles["HeaderRAM" if index == 0 else "CellRAM"])
@@ -259,6 +261,7 @@ def write_pdf(root, output):
         "Production ingestion accounting estimate",
         "Queue stability and stress",
         "Workload, method and limits",
+        "Comparison with previous benchmark",
     }
     while index < len(lines):
         line = lines[index]
@@ -284,17 +287,21 @@ def write_pdf(root, output):
                 story.extend([_scaling_chart(data), Spacer(1, 8)])
             elif section == "Queue stability and stress" and rows[0][0] == "Case":
                 for run in data["special_runs"]:
-                    story.append(
-                        KeepTogether(
-                            [
-                                Paragraph(
-                                    f"Four cameras: {escape(run['label'].lower())}",
-                                    styles["HeadingRAM"],
-                                ),
-                                _time_chart(root, run),
-                            ]
+                    chart = [
+                        Paragraph(
+                            f"Four cameras: {escape(run['label'].lower())}",
+                            styles["HeadingRAM"],
+                        ),
+                        _time_chart(root, run),
+                    ]
+                    if run["host_available_min_gib"] < 0.125:
+                        chart.append(
+                            Paragraph(
+                                f"Available host RAM reached {run['host_available_min_gib'] * 1024:.0f} MiB during this run. Memory pressure can reduce resident working sets while allocations remain. Interpret downward RSS steps with this constraint.",
+                                styles["SmallRAM"],
+                            )
                         )
-                    )
+                    story.append(KeepTogether(chart))
             continue
         elif line.startswith("- "):
             story.append(
