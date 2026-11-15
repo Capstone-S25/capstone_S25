@@ -1,3 +1,4 @@
+from dataclasses import replace
 from threading import Event
 from types import SimpleNamespace
 from unittest.mock import Mock
@@ -78,4 +79,68 @@ def pipeline(tmp_path, monkeypatch):
 
     context.run = run
     context.wait_seconds = WORKER_WAIT_SECONDS
+    return context
+
+
+@pytest.fixture
+def multi_camera_pipeline(pipeline, tmp_path, monkeypatch):
+    """Run four cameras with real queues and threads, but controllable inputs."""
+    sources = [
+        replace(pipeline.source, source_id=f"camera_{index:02d}")
+        for index in range(1, 5)
+    ]
+    context = SimpleNamespace(
+        sources=sources,
+        frames={
+            source.source_id: [
+                replace(frame, source_id=source.source_id)
+                for frame in pipeline.frames[:3]
+            ]
+            for source in sources
+        },
+        queues={},
+        stop_events={},
+        recording=Mock(return_value=None),
+        recording_started={source.source_id: Event() for source in sources},
+        recording_finished={source.source_id: Event() for source in sources},
+        streaming_finished={source.source_id: Event() for source in sources},
+        wait_seconds=WORKER_WAIT_SECONDS,
+    )
+
+    def enqueue(source, queue, **_kwargs):
+        for frame in context.frames[source.source_id]:
+            queue.put_nowait(frame)
+
+    context.streaming = Mock(side_effect=enqueue)
+
+    def record(source, *args, **kwargs):
+        context.stop_events[("recording", source.source_id)] = kwargs["stop_event"]
+        context.recording_started[source.source_id].set()
+        try:
+            return context.recording(source, *args, **kwargs)
+        finally:
+            context.recording_finished[source.source_id].set()
+
+    def stream(source, queue, **kwargs):
+        context.queues[source.source_id] = queue
+        context.stop_events[("streaming", source.source_id)] = kwargs["stop_event"]
+        try:
+            return context.streaming(source, queue, **kwargs)
+        finally:
+            kwargs["producer_done"].set()
+            context.streaming_finished[source.source_id].set()
+
+    monkeypatch.setattr(runner, "run_recording_worker", record)
+    monkeypatch.setattr(runner, "run_streaming_worker", stream)
+
+    def run(handler, **kwargs):
+        runner.run_pipeline(
+            context.sources,
+            tmp_path / "recordings",
+            session_factory=pipeline.session_factory,
+            frame_handler=handler,
+            **kwargs,
+        )
+
+    context.run = run
     return context
