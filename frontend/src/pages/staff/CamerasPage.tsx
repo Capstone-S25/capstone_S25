@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { WifiOff, Camera as CameraIcon } from 'lucide-react';
 import { AppLayout } from '../../components/layout/AppLayout';
-import { MOCK_CAMERAS } from '../../data/mock';
+import { FilterSelect } from '../../components/ui/FilterSelect';
+import { ClipThumb, EmptyState, PageHeader } from '../../components/ui/Primitives';
+import { MOCK_CAMERAS, MOCK_INCIDENTS } from '../../data/mock';
 import type { Camera } from '../../types';
 import CameraDetailDrawer from '../../components/drawers/CameraDetailDrawer';
 
@@ -17,125 +18,76 @@ const CAMERA_RULE_LABELS: Record<string, string[]> = {
   'cam-09': ['Unattended item', 'Smoking'],
 };
 
-// Gray shades for thumbnail variety
-const THUMB_SHADES = [
-  'bg-gray-200',
-  'bg-gray-300',
-  'bg-slate-200',
-  'bg-zinc-200',
-  'bg-gray-200',
-  'bg-neutral-200',
-  'bg-gray-300',
-  'bg-slate-300',
-];
-
-// Show 8 cameras (use all MOCK_CAMERAS which has 8 entries)
 const DISPLAY_CAMERAS = MOCK_CAMERAS.slice(0, 8);
+
+function formatTime(iso?: string) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+}
+
+export function CameraCard({ cam, seed, onSelect }: { cam: Camera; seed: number; onSelect: (c: Camera) => void }) {
+  const isOffline = cam.status === 'offline';
+  const rules = CAMERA_RULE_LABELS[cam.id] ?? [];
+  const today = MOCK_INCIDENTS.filter((i) => i.camId === cam.id).length;
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(cam)}
+      className="group flex min-w-0 cursor-pointer flex-col gap-[10px] border-none bg-transparent p-0 text-left"
+    >
+      <ClipThumb
+        seed={seed}
+        offline={isOffline}
+        offlineLabel={isOffline ? `No signal since ${formatTime(cam.lastSeen) || 'earlier'}` : undefined}
+        className="h-[180px] w-full rounded-[6px] outline-2 outline-offset-2 outline-transparent transition-[outline-color] group-hover:outline-brand-mid"
+        iconSize={28}
+      />
+      <span className="flex w-full flex-col gap-[3px]">
+        <span className="flex w-full items-center gap-[8px]">
+          <span className="size-[7px] shrink-0 rounded-full" style={{ backgroundColor: isOffline ? 'var(--color-line)' : 'var(--color-success)' }} />
+          <span className="truncate text-[13px] font-medium text-ink">{cam.name} · {cam.location}</span>
+          <span className="flex-1" />
+          <span className="shrink-0 text-[12px] text-muted">{isOffline ? 'Offline' : `${today} today`}</span>
+        </span>
+        <span className="truncate text-[12px] text-muted">
+          {rules.length ? `Looks for: ${rules.join(', ')}` : 'No active rules'}
+        </span>
+      </span>
+    </button>
+  );
+}
 
 export default function CamerasPage() {
   const [locationFilter, setLocationFilter] = useState('all');
   const [selectedCam, setSelectedCam] = useState<Camera | null>(null);
 
-  const filtered = DISPLAY_CAMERAS.filter((cam) => {
-    if (locationFilter !== 'all' && cam.location !== locationFilter) return false;
-    return true;
-  });
-
+  const filtered = DISPLAY_CAMERAS.filter((cam) => locationFilter === 'all' || cam.location === locationFilter);
   const uniqueLocations = Array.from(new Set(DISPLAY_CAMERAS.map((c) => c.location)));
+  const online = DISPLAY_CAMERAS.filter((c) => c.status === 'online').length;
+  const offline = DISPLAY_CAMERAS.length - online;
 
   return (
     <AppLayout role="staff" activePath="/staff/cameras">
-      <div className="p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Cameras</h1>
-          <select
+      <PageHeader
+        title="Cameras"
+        subtitle={`${online} of ${DISPLAY_CAMERAS.length} online${offline ? ` · ${offline} offline` : ''}`}
+        actions={
+          <FilterSelect
+            label="Location"
             value={locationFilter}
-            onChange={(e) => setLocationFilter(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm text-gray-700 bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-          >
-            <option value="all">Locations: All locations</option>
-            {uniqueLocations.map((loc) => (
-              <option key={loc} value={loc}>
-                {loc}
-              </option>
-            ))}
-          </select>
-        </div>
+            onChange={setLocationFilter}
+            options={[{ value: 'all', label: 'All locations' }, ...uniqueLocations.map((l) => ({ value: l, label: l }))]}
+          />
+        }
+      />
 
-        {/* Camera grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {filtered.map((cam, idx) => {
-            const isOffline = cam.status === 'offline';
-            const ruleLabels = CAMERA_RULE_LABELS[cam.id] ?? [];
-
-            return (
-              <div
-                key={cam.id}
-                className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => setSelectedCam(cam)}
-              >
-                {/* Thumbnail */}
-                <div
-                  className={`relative w-full ${THUMB_SHADES[idx % THUMB_SHADES.length]}`}
-                  style={{ aspectRatio: '16/9' }}
-                >
-                  {/* Offline overlay */}
-                  {isOffline && (
-                    <div className="absolute inset-0 bg-gray-900/40 flex items-center justify-center">
-                      <WifiOff size={24} className="text-white/80" />
-                    </div>
-                  )}
-
-                  {/* Camera name badge — top left */}
-                  <span className="absolute top-2 left-2 text-xs font-semibold text-white bg-black/60 px-2 py-0.5 rounded whitespace-nowrap max-w-[calc(100%-16px)] truncate">
-                    {cam.name} · {cam.location}
-                  </span>
-
-                  {/* Status badge — top right */}
-                  {isOffline ? (
-                    <span className="absolute top-2 right-2 text-xs font-semibold text-white bg-red-500 px-2 py-0.5 rounded">
-                      Offline
-                    </span>
-                  ) : (
-                    <span className="absolute top-2 right-2 text-xs font-semibold text-white bg-green-500/90 px-2 py-0.5 rounded">
-                      Today
-                    </span>
-                  )}
-                </div>
-
-                {/* Card body */}
-                <div className="p-3">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <CameraIcon size={12} className="text-gray-400 flex-shrink-0" />
-                    <p className="text-sm font-semibold text-gray-900 truncate">
-                      {cam.name} · {cam.location}
-                    </p>
-                  </div>
-                  {ruleLabels.length > 0 ? (
-                    <p className="text-xs text-gray-500 leading-snug">
-                      Looks for: {ruleLabels.join(', ')}
-                    </p>
-                  ) : (
-                    <p className="text-xs text-gray-400 italic">No active rules</p>
-                  )}
-                  {isOffline && cam.lastSeen && (
-                    <p className="text-xs text-red-500 mt-1">
-                      Last seen: {new Date(cam.lastSeen).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} {new Date(cam.lastSeen).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
-                    </p>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {filtered.length === 0 && (
-          <div className="text-center py-16 text-gray-400 text-sm">
-            No cameras found for the selected location.
-          </div>
-        )}
+      <div className="grid grid-cols-1 gap-[20px] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {filtered.map((cam, idx) => (
+          <CameraCard key={cam.id} cam={cam} seed={idx} onSelect={setSelectedCam} />
+        ))}
       </div>
+
+      {filtered.length === 0 && <EmptyState>No cameras found for the selected location.</EmptyState>}
 
       <CameraDetailDrawer cam={selectedCam} onClose={() => setSelectedCam(null)} />
     </AppLayout>

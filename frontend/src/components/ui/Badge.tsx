@@ -1,87 +1,68 @@
+import type { ReactNode } from 'react';
 import { Severity, IncidentOutcome } from '../../types';
+import { SEVERITY_TONE, OUTCOME_DOT, type PillTone } from './tones';
 
-// ── SeverityBadge ─────────────────────────────────────────────────────────
-// Rounded pill: rounded-[6px] px-[10px] py-[4px] text-[13px] semibold
-// Critical: bg #f2c0ba text #8c2a22
-// Moderate: bg #f6d2b4 text #8f4413
-// Minor:    bg #fbf2d3 text #7a6414
+// ── StatusPill (Figma: v2/Status pill) ─────────────────────────────────────
+// Rounded pill, 6px dot + 11px medium label.
+// Tones: Blue (info), Red (critical), Amber (moderate / pending),
+//        Yellow (minor), Green (accepted / live), Neutral.
 
-interface SeverityBadgeProps {
-  severity: Severity;
-  className?: string;
-}
 
-const SEVERITY_PILL: Record<Severity, { bg: string; color: string }> = {
-  Critical: { bg: '#f2c0ba', color: '#8c2a22' },
-  Moderate: { bg: '#f6d2b4', color: '#8f4413' },
-  Minor:    { bg: '#fbf2d3', color: '#7a6414' },
+const TONE: Record<PillTone, { bg: string; fg: string; dot: string }> = {
+  blue:    { bg: 'var(--color-brand-soft)',   fg: 'var(--color-brand)',   dot: 'var(--color-brand)' },
+  red:     { bg: 'var(--color-danger-soft)',  fg: 'var(--color-danger)',  dot: 'var(--color-danger)' },
+  amber:   { bg: 'var(--color-warning-soft)', fg: 'var(--color-warning)', dot: 'var(--color-warning-bar)' },
+  yellow:  { bg: 'var(--color-caution-soft)', fg: 'var(--color-caution)', dot: 'var(--color-caution-dot)' },
+  green:   { bg: 'var(--color-success-soft)', fg: 'var(--color-success)', dot: 'var(--color-success)' },
+  neutral: { bg: 'var(--color-neutral-soft)', fg: 'var(--color-neutral)', dot: 'var(--color-neutral)' },
 };
 
-export function SeverityBadge({ severity, className = '' }: SeverityBadgeProps) {
-  const cfg = SEVERITY_PILL[severity];
+interface StatusPillProps {
+  tone?: PillTone;
+  children: ReactNode;
+  className?: string;
+  dot?: boolean;
+}
+
+export function StatusPill({ tone = 'blue', children, className = '', dot = true }: StatusPillProps) {
+  const t = TONE[tone];
   return (
     <span
-      className={`inline-flex items-center font-semibold ${className}`}
-      style={{
-        backgroundColor: cfg.bg,
-        color: cfg.color,
-        borderRadius: '6px',
-        padding: '4px 10px',
-        fontSize: '13px',
-        lineHeight: 1.4,
-      }}
+      className={`inline-flex items-center gap-[6px] rounded-full py-[4px] pr-[10px] text-[11px] font-medium leading-none whitespace-nowrap ${dot ? 'pl-[8px]' : 'pl-[10px]'} ${className}`}
+      style={{ backgroundColor: t.bg, color: t.fg }}
     >
-      {severity}
+      {dot && <span className="size-[6px] shrink-0 rounded-full" style={{ backgroundColor: t.dot }} />}
+      {children}
     </span>
   );
 }
 
-// ── OutcomeDot ────────────────────────────────────────────────────────────
-// 8px colored circle + text #111827 medium text-[14px]
-// Escalated: #ef4444 dot
-// Accepted:  #22c55e dot
-// Dismissed: #9ca3af dot
-// Pending:   #3b82f6 dot
+// ── Severity ────────────────────────────────────────────────────────────────
 
-interface OutcomeDotProps {
-  outcome: IncidentOutcome;
-  className?: string;
+
+
+export function SeverityBadge({ severity, className = '' }: { severity: Severity; className?: string }) {
+  return <StatusPill tone={SEVERITY_TONE[severity]} className={className}>{severity}</StatusPill>;
 }
 
-const OUTCOME_DOT: Record<IncidentOutcome, string> = {
-  Escalated: '#ef4444',
-  Accepted:  '#22c55e',
-  Dismissed: '#9ca3af',
-  Pending:   '#3b82f6',
-};
+// ── Outcome ─────────────────────────────────────────────────────────────────
+// 7px dot + 12px regular ink-2 label (Figma: History table "status" cell)
 
-export function OutcomeDot({ outcome, className = '' }: OutcomeDotProps) {
-  const dotColor = OUTCOME_DOT[outcome];
+
+export function OutcomeDot({ outcome, className = '' }: { outcome: IncidentOutcome; className?: string }) {
   return (
-    <span className={`inline-flex items-center gap-[6px] ${className}`}>
-      <span
-        style={{
-          width: 8,
-          height: 8,
-          borderRadius: '50%',
-          backgroundColor: dotColor,
-          flexShrink: 0,
-          display: 'inline-block',
-        }}
-      />
-      <span style={{ fontSize: '14px', fontWeight: 500, color: '#111827' }}>{outcome}</span>
+    <span className={`inline-flex items-center gap-[6px] text-[12px] text-ink-2 whitespace-nowrap ${className}`}>
+      <span className="size-[7px] shrink-0 rounded-full" style={{ backgroundColor: OUTCOME_DOT[outcome] }} />
+      {outcome}
     </span>
   );
 }
 
-// Keep OutcomeBadge as an alias to OutcomeDot for backward compat
+// Backward-compatible alias
 export const OutcomeBadge = OutcomeDot;
 
-// ── OutcomeTabs ───────────────────────────────────────────────────────────
-// White bg card with pill buttons
-// Container: bg-white p-[4px] rounded-[10px] gap-[2px]
-// Active:   bg-[#1f4fd1] px-[14px] py-[8px] rounded-[8px] white semibold, count in #dbe4fb
-// Inactive: no bg, px-[14px] py-[8px] rounded-[8px] text #374151 medium, count in #6b7280
+// ── OutcomeTabs (Figma: "Outcome tabs") ─────────────────────────────────────
+// Underline tabs: 13px medium label + 12px muted count; active = brand + 2px underline.
 
 interface OutcomeTabsProps<T extends string> {
   tabs: T[];
@@ -92,15 +73,7 @@ interface OutcomeTabsProps<T extends string> {
 
 export function OutcomeTabs<T extends string>({ tabs, active, counts, onChange }: OutcomeTabsProps<T>) {
   return (
-    <div
-      className="inline-flex"
-      style={{
-        backgroundColor: '#ffffff',
-        padding: '4px',
-        borderRadius: '10px',
-        gap: '2px',
-      }}
-    >
+    <div className="flex items-center gap-[20px]" role="tablist">
       {tabs.map((tab) => {
         const isActive = tab === active;
         const count = counts?.[tab];
@@ -108,34 +81,15 @@ export function OutcomeTabs<T extends string>({ tabs, active, counts, onChange }
           <button
             key={tab}
             type="button"
+            role="tab"
+            aria-selected={isActive}
             onClick={() => onChange(tab)}
-            style={{
-              backgroundColor: isActive ? '#1f4fd1' : 'transparent',
-              color: isActive ? '#ffffff' : '#374151',
-              padding: '8px 14px',
-              borderRadius: '8px',
-              fontWeight: isActive ? 600 : 500,
-              fontSize: '14px',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              whiteSpace: 'nowrap',
-            }}
+            className={`-mb-px flex cursor-pointer items-center gap-[6px] border-b-2 bg-transparent py-[8px] text-[13px] font-medium whitespace-nowrap transition-colors ${
+              isActive ? 'border-brand text-brand' : 'border-transparent text-ink-2 hover:text-ink'
+            }`}
           >
             {tab}
-            {count !== undefined && (
-              <span
-                style={{
-                  color: isActive ? '#dbe4fb' : '#6b7280',
-                  fontSize: '13px',
-                  fontWeight: isActive ? 600 : 400,
-                }}
-              >
-                {count}
-              </span>
-            )}
+            {count !== undefined && <span className="text-[12px] font-normal text-muted">{count}</span>}
           </button>
         );
       })}

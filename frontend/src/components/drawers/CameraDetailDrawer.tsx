@@ -1,8 +1,11 @@
-import { createPortal } from 'react-dom';
-import { X, Wifi, WifiOff, AlertTriangle, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Pencil, Clapperboard } from 'lucide-react';
 import type { Camera } from '../../types';
 import { MOCK_INCIDENTS, MOCK_RULES } from '../../data/mock';
-import { SeverityBadge, OutcomeDot } from '../ui/Badge';
+import { SeverityBadge, OutcomeDot, StatusPill } from '../ui/Badge';
+import { Button } from '../ui/Button';
+import { Drawer } from '../ui/Drawer';
+import { ClipThumb } from '../ui/Primitives';
 
 interface CameraDetailDrawerProps {
   cam: Camera | null;
@@ -10,307 +13,115 @@ interface CameraDetailDrawerProps {
 }
 
 function formatLastSeen(iso?: string): string {
-  if (!iso) return 'Unknown';
+  if (!iso) return 'Now';
   const d = new Date(iso);
-  return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) +
-    ', ' + d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  return `${d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}, ${d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`;
 }
 
-function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-}
+const formatTime = (iso: string) => new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
 export default function CameraDetailDrawer({ cam, onClose }: CameraDetailDrawerProps) {
+  const navigate = useNavigate();
   if (!cam) return null;
 
   const online = cam.status === 'online';
-
-  // Incidents for this camera (most recent first, cap at 5)
   const camIncidents = MOCK_INCIDENTS
     .filter((i) => i.camId === cam.id)
     .sort((a, b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime())
     .slice(0, 5);
-
-  // Rules applied to this camera
   const camRules = MOCK_RULES.filter((r) => cam.rules.includes(r.id));
 
-  return createPortal(
-    <>
-      {/* ── Backdrop ──────────────────────────────────────────────── */}
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundColor: 'rgba(0,0,0,0.35)',
-          zIndex: 199,
-        }}
-        onClick={onClose}
-      />
-
-      {/* ── Drawer panel ──────────────────────────────────────────── */}
-      <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          width: '520px',
-          backgroundColor: '#ffffff',
-          zIndex: 200,
-          display: 'flex',
-          flexDirection: 'column',
-          boxShadow: '-4px 0 32px rgba(0,0,0,0.14)',
-        }}
-      >
-        <div style={{ flex: 1, overflowY: 'auto', padding: '24px 28px' }}>
-
-          {/* ── Header ───────────────────────────────────────────── */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-            {/* Status dot */}
-            <span
-              style={{
-                width: 8, height: 8, borderRadius: '50%',
-                backgroundColor: online ? '#22c55e' : '#ef4444',
-                display: 'inline-block', flexShrink: 0,
-              }}
-            />
-            <p style={{
-              flex: 1, margin: 0,
-              fontSize: '20px', fontWeight: 600, color: '#111827',
-              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-            }}>
-              {cam.name} · {cam.location}
-            </p>
-            <button
-              type="button"
-              onClick={onClose}
-              style={{
-                width: '32px', height: '32px', borderRadius: '8px',
-                border: 'none', backgroundColor: '#f3f4f6',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', flexShrink: 0,
-              }}
-            >
-              <X size={16} color="#374151" />
-            </button>
-          </div>
-
-          {/* ── Video feed placeholder ────────────────────────────── */}
-          <div
-            style={{
-              position: 'relative',
-              width: '100%',
-              aspectRatio: '16 / 9',
-              borderRadius: '10px',
-              overflow: 'hidden',
-              backgroundColor: online ? '#1f2937' : '#374151',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: '20px',
-            }}
+  return (
+    <Drawer
+      isOpen
+      onClose={onClose}
+      title={`${cam.name} · ${cam.location}`}
+      titleAdornment={<StatusPill tone={online ? 'green' : 'neutral'}>{online ? 'Live' : 'Offline'}</StatusPill>}
+      footer={
+        <>
+          <Button
+            variant="secondary"
+            className="flex-1"
+            icon={<Clapperboard size={16} strokeWidth={1.75} />}
+            onClick={() => { onClose(); navigate(`/staff/search?q=${encodeURIComponent(cam.location)}`); }}
           >
-            {online ? (
-              <>
-                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>Live feed</span>
-                {/* Overlay label */}
-                <div
-                  style={{
-                    position: 'absolute', top: '10px', left: '12px',
-                    backgroundColor: 'rgba(0,0,0,0.55)',
-                    borderRadius: '4px', padding: '2px 8px',
-                  }}
-                >
-                  <span style={{ fontSize: '12px', color: '#ffffff', fontWeight: 500 }}>
-                    {cam.name} · LIVE
-                  </span>
-                </div>
-                {/* Green live indicator */}
-                <div
-                  style={{
-                    position: 'absolute', top: '12px', right: '12px',
-                    display: 'flex', alignItems: 'center', gap: '5px',
-                    backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: '20px', padding: '3px 8px',
-                  }}
-                >
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#22c55e', display: 'inline-block' }} />
-                  <span style={{ fontSize: '11px', color: '#ffffff', fontWeight: 600 }}>Online</span>
-                </div>
-              </>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                <WifiOff size={28} color="rgba(255,255,255,0.4)" />
-                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>Feed unavailable</span>
-              </div>
-            )}
-          </div>
+            View clips
+          </Button>
+          <Button variant="primary" className="flex-1" icon={<Pencil size={16} strokeWidth={1.75} />}>Edit camera</Button>
+        </>
+      }
+    >
+      <div className="flex flex-col gap-[20px]">
+        {/* Feed */}
+        <ClipThumb
+          seed={cam.id.length}
+          offline={!online}
+          offlineLabel={!online ? `No signal since ${formatLastSeen(cam.lastSeen)}` : undefined}
+          className="aspect-[16/9] w-full rounded-[6px]"
+          iconSize={32}
+        >
+          {online && (
+            <span className="absolute top-[10px] left-[10px] flex items-center gap-[6px] rounded-[4px] bg-[rgba(27,35,52,0.75)] px-[8px] py-[4px] text-[11px] font-medium text-white">
+              <span className="size-[6px] rounded-full bg-[#4ade80]" /> {cam.name.toUpperCase()} · LIVE
+            </span>
+          )}
+        </ClipThumb>
 
-          {/* ── Status + last seen facts ──────────────────────────── */}
-          <div
-            style={{
-              display: 'flex',
-              border: '1px solid #e5e8ed',
-              borderRadius: '10px',
-              overflow: 'hidden',
-              marginBottom: '20px',
-            }}
-          >
-            <div style={{ flex: 1, padding: '10px 14px', borderRight: '1px solid #e5e8ed' }}>
-              <p style={{ margin: 0, fontSize: '12px', color: '#6b7280' }}>Status</p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3px' }}>
-                {online
-                  ? <Wifi size={13} color="#22c55e" />
-                  : <WifiOff size={13} color="#ef4444" />}
-                <span style={{ fontSize: '14px', fontWeight: 600, color: online ? '#16a34a' : '#dc2626' }}>
-                  {online ? 'Online' : 'Offline'}
-                </span>
-              </div>
-            </div>
-            <div style={{ flex: 1, padding: '10px 14px', borderRight: '1px solid #e5e8ed' }}>
-              <p style={{ margin: 0, fontSize: '12px', color: '#6b7280' }}>Last seen</p>
-              <p style={{ margin: '3px 0 0', fontSize: '14px', fontWeight: 600, color: '#111827' }}>
-                {formatLastSeen(cam.lastSeen)}
-              </p>
-            </div>
-            <div style={{ flex: 1, padding: '10px 14px' }}>
-              <p style={{ margin: 0, fontSize: '12px', color: '#6b7280' }}>Today's incidents</p>
-              <p style={{ margin: '3px 0 0', fontSize: '14px', fontWeight: 600, color: '#111827' }}>
-                {camIncidents.length}
-              </p>
-            </div>
-          </div>
-
-          {/* ── Active rules ──────────────────────────────────────── */}
-          <div style={{ marginBottom: '20px' }}>
-            <p style={{ margin: '0 0 10px', fontSize: '13px', fontWeight: 600, color: '#111827' }}>
-              Active rules
-            </p>
-            {camRules.length === 0 ? (
-              <p style={{ margin: 0, fontSize: '13px', color: '#9ca3af' }}>No rules assigned</p>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {camRules.map((rule) => (
-                  <div
-                    key={rule.id}
-                    style={{
-                      display: 'flex', alignItems: 'center',
-                      padding: '10px 14px',
-                      backgroundColor: rule.enabled ? '#f9fafb' : '#f3f4f6',
-                      borderRadius: '8px',
-                      gap: '10px',
-                    }}
-                  >
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{
-                        margin: 0, fontSize: '13px', fontWeight: 500,
-                        color: rule.enabled ? '#111827' : '#9ca3af',
-                      }}>
-                        {rule.detectType}
-                      </p>
-                      <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#6b7280' }}>
-                        {rule.activeFrom} – {rule.activeTo} · {rule.severity}
-                      </p>
-                    </div>
-                    <span
-                      style={{
-                        fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: '20px',
-                        backgroundColor: rule.enabled ? '#dcfce7' : '#f3f4f6',
-                        color: rule.enabled ? '#16a34a' : '#9ca3af',
-                        flexShrink: 0,
-                      }}
-                    >
-                      {rule.enabled ? 'Active' : 'Off'}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* ── Recent incidents ──────────────────────────────────── */}
-          <div>
-            <p style={{ margin: '0 0 10px', fontSize: '13px', fontWeight: 600, color: '#111827' }}>
-              Recent incidents
-            </p>
-            {camIncidents.length === 0 ? (
-              <p style={{ margin: 0, fontSize: '13px', color: '#9ca3af' }}>No incidents recorded</p>
-            ) : (
-              <div>
-                {camIncidents.map((inc, i) => (
-                  <div
-                    key={inc.id}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: '10px',
-                      padding: '8px 0',
-                      borderTop: i > 0 ? '1px solid #f3f4f6' : 'none',
-                    }}
-                  >
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-                        <SeverityBadge severity={inc.severity} />
-                        <p style={{
-                          margin: 0, fontSize: '13px', fontWeight: 500, color: '#111827',
-                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                        }}>
-                          {inc.type}
-                        </p>
-                      </div>
-                      <p style={{ margin: 0, fontSize: '12px', color: '#6b7280' }}>
-                        {formatTime(inc.dateTime)}
-                      </p>
-                    </div>
-                    <OutcomeDot outcome={inc.outcome} />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
+        {/* Facts */}
+        <div className="flex border-y border-line-soft py-[12px]">
+          <Fact label="Status" first>
+            <span className={online ? 'text-success' : 'text-ink-2'}>{online ? 'Online' : 'Offline'}</span>
+          </Fact>
+          <Fact label="Last seen">{online ? 'Now' : formatLastSeen(cam.lastSeen)}</Fact>
+          <Fact label="Incidents today">{camIncidents.length}</Fact>
         </div>
 
-        {/* ── Footer ───────────────────────────────────────────────── */}
-        <div
-          style={{
-            flexShrink: 0,
-            padding: '14px 28px',
-            borderTop: '1px solid #f3f4f6',
-            display: 'flex',
-            gap: '10px',
-          }}
-        >
-          <button
-            type="button"
-            style={{
-              flex: 1, height: '39px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-              backgroundColor: '#ffffff',
-              border: '1px solid #d0d5dd',
-              borderRadius: '8px',
-              fontSize: '14px', fontWeight: 500, color: '#374151',
-              cursor: 'pointer',
-            }}
-          >
-            <AlertTriangle size={14} color="#f97316" />
-            View incidents
-          </button>
-          <button
-            type="button"
-            style={{
-              flex: 1, height: '39px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-              backgroundColor: '#1f4fd1',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '14px', fontWeight: 500, color: '#ffffff',
-              cursor: 'pointer',
-            }}
-          >
-            Edit camera
-            <ChevronRight size={14} />
-          </button>
+        {/* Rules */}
+        <div className="flex flex-col gap-[8px]">
+          <p className="m-0 text-[13px] font-medium text-ink">Looks for</p>
+          {camRules.length === 0 ? (
+            <p className="m-0 text-[12px] text-muted">No rules assigned.</p>
+          ) : (
+            camRules.map((rule) => (
+              <div key={rule.id} className="flex items-center gap-[10px] rounded-[6px] border border-line px-[12px] py-[10px]">
+                <div className="min-w-0 flex-1">
+                  <p className={`m-0 text-[13px] font-medium ${rule.enabled ? 'text-ink' : 'text-faint'}`}>{rule.detectType}</p>
+                  <p className="m-0 mt-[2px] text-[12px] text-muted">{rule.activeFrom} – {rule.activeTo} · {rule.severity}</p>
+                </div>
+                <StatusPill tone={rule.enabled ? 'green' : 'neutral'}>{rule.enabled ? 'Active' : 'Off'}</StatusPill>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Recent incidents */}
+        <div className="flex flex-col">
+          <p className="m-0 mb-[6px] text-[13px] font-medium text-ink">Recent incidents</p>
+          {camIncidents.length === 0 ? (
+            <p className="m-0 text-[12px] text-muted">No incidents recorded.</p>
+          ) : (
+            camIncidents.map((inc) => (
+              <div key={inc.id} className="flex items-center gap-[10px] border-b border-line-soft py-[10px] last:border-b-0">
+                <div className="min-w-0 flex-1">
+                  <p className="m-0 truncate text-[13px] font-medium text-ink">{inc.type}</p>
+                  <p className="m-0 mt-[2px] text-[12px] text-muted">{formatTime(inc.dateTime)}</p>
+                </div>
+                <SeverityBadge severity={inc.severity} />
+                <OutcomeDot outcome={inc.outcome} className="w-[84px]" />
+              </div>
+            ))
+          )}
         </div>
       </div>
-    </>,
-    document.body
+    </Drawer>
+  );
+}
+
+function Fact({ label, children, first = false }: { label: string; children: React.ReactNode; first?: boolean }) {
+  return (
+    <div className={`flex min-w-0 flex-1 flex-col gap-[2px] ${first ? '' : 'border-l border-line-soft pl-[16px]'}`}>
+      <span className="text-[11px] font-medium text-muted">{label}</span>
+      <span className="truncate text-[13px] font-medium text-ink">{children}</span>
+    </div>
   );
 }
