@@ -244,6 +244,10 @@ def _validate_run(run):
     """Reject incomplete camera runs or inconsistent bounded-queue accounting."""
     if run["status"] != "completed" or run["monitoring_errors"]:
         raise RuntimeError(f"Incomplete measurements: {run['case']}")
+    if run.get("consumer_topology") == "shared_round_robin":
+        expected_consumers = 1 if run["mode"] in ("streaming", "full") else 0
+        if run.get("consumer_count") != expected_consumers:
+            raise RuntimeError(f"Unexpected consumer count: {run['case']}")
     expected_processes = run["cameras"] if run["mode"] in ("recording", "full") else 0
     if run["metrics"]["ffmpeg_process_count_peak"] != expected_processes:
         raise RuntimeError(f"Unexpected recording process count: {run['case']}")

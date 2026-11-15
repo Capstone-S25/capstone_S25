@@ -105,6 +105,10 @@ def build_report_data(root):
     runs = [
         r for r in all_runs if r["status"] == "completed" and not r["monitoring_errors"]
     ]
+    topologies = {r.get("consumer_topology", "per_camera") for r in runs}
+    if len(topologies) != 1:
+        raise ValueError("Do not combine results from different consumer topologies")
+    consumer_topology = topologies.pop()
     rows = _aggregate(runs)
     by_key = {(row["mode"], row["cameras"]): row for row in rows}
     required = [
@@ -235,7 +239,8 @@ def build_report_data(root):
         "generated_at_singapore": datetime.now(UTC).astimezone(SINGAPORE).isoformat(),
         "run_directory": root.name,
         "environment": environment,
-        "settings": {
+        "settings": {"consumer_topology": consumer_topology}
+        | {
             key: runs[0][key]
             for key in (
                 "target_fps",
@@ -287,6 +292,13 @@ def write_report(root):
     by_key = {(r["mode"], r["cameras"]): r for r in rows}
     baseline, four = by_key[("baseline", 0)], by_key[("full", 4)]
     profile, settings = data["environment"]["input"], data["settings"]
+    shared_consumer = settings["consumer_topology"] == "shared_round_robin"
+    consumer_setup = (
+        "one shared round-robin consumer across all camera queues"
+        if shared_consumer
+        else "independent consumers, one per camera (historical architecture)"
+    )
+    delay_scope = "across all cameras" if shared_consumer else "per camera"
     one, two = by_key[("full", 1)], by_key[("full", 2)]
     increment = two["pipeline_mean_mib"] - one["pipeline_mean_mib"]
     predicted = one["pipeline_mean_mib"] + 3 * increment
@@ -295,9 +307,11 @@ def write_report(root):
         "",
         f"Benchmark date: {data['date']} (Singapore). Completed runs: {data['completed_runs']}.",
         "",
+        f"Consumer setup: {consumer_setup}.",
+        "",
         "## Main results",
         "",
-        f"- Four cameras with fast consumers peaked at **{data['four_camera_fast_peak_mib']:.1f} MiB of application RAM**, including the stability run.",
+        f"- Four cameras with fast consumption peaked at **{data['four_camera_fast_peak_mib']:.1f} MiB of application RAM**, including the stability run.",
         f"- Shared Python baseline: **{baseline['pipeline_mean_mib']:.1f} MiB**. Recording adds **{data['component_estimates'][0]['additional_mean_mib']:.1f} MiB** and streaming, including decoding, adds **{data['component_estimates'][1]['additional_mean_mib']:.1f} MiB** in separate one-camera comparisons.",
         f"- Whole-machine RAM averaged **{four['host_used_mean_gib']:.2f} GiB** in the four-camera comparison runs. Minimum available RAM was **{four['host_available_min_gib']:.2f} GiB**. These host figures include the OS, other applications and test infrastructure.",
         f"- Production container reference: **{data['production_container_reference_mib']:.1f} MiB** working memory, excluding **{data['excluded_test_container_reference_mib']:.1f} MiB** from MediaMTX. Docker/OS overhead and future models still require their own allowance.",
@@ -536,13 +550,13 @@ def write_report(root):
         "",
         f"- Host: {data['environment']['os']}; {data['environment']['host_ram_mib'] / 1024:.2f} GiB physical RAM; Python {data['environment']['python']}.",
         f"- Input: {profile['codec']}, {profile['width']} x {profile['height']}, {profile['source_fps']} source FPS over RTSP/TCP; up to {settings['target_fps']:g} selected FPS per camera. Every incoming frame is still decoded.",
-        f"- Queue: {settings['queue_size']} waiting frames per camera, drop oldest on overflow. Cameras share one Python process and database engine, with independent worker pairs and counting consumers.",
-        f"- Normal trials: {settings['warmup_seconds']:g}s warm-up + {settings['measurement_seconds']:g}s measurement, {baseline['repeats']} fresh-process repeats per scenario. Stability and stress durations are shown above. The slow consumer sleeps {next((r['consumer_delay_seconds'] for r in data['special_runs'] if r['consumer_delay_seconds']), 0):g}s per frame per camera.",
+        f"- Queue: {settings['queue_size']} waiting frames per camera, drop oldest on overflow. Cameras share one Python process and database engine, with independent worker pairs and {consumer_setup}.",
+        f"- Normal trials: {settings['warmup_seconds']:g}s warm-up + {settings['measurement_seconds']:g}s measurement, {baseline['repeats']} fresh-process repeats per scenario. Stability and stress durations are shown above. The slow consumer sleeps {next((r['consumer_delay_seconds'] for r in data['special_runs'] if r['consumer_delay_seconds']), 0):g}s per frame {delay_scope}.",
         "- Process RAM is sampled approximately every 0.2s, host RAM every 1s, and Docker approximately every 5-8s. Short peaks between samples may be missed. Peak/minimum host figures cover each full observed run, while typical host figures exclude warm-up and draining.",
         "- The benchmark uses the production worker and runner helpers. The sampler retains timestamped rows in memory; small long-run growth may include profiling overhead. The coordinator and sampling commands are also included in host totals.",
         "- A dedicated timestamp-normalized publisher reads the sample video, uses one-second H.264 keyframes and no B-frames, and shares the existing mock server. Existing streams/services remain running. The idle baseline is services-running, not Docker-off or OS-only.",
         "- Simulated cameras read independent connections to one mock stream. Distinct physical camera scenes, source codecs and resolutions may alter memory. The current input is not a 1080p/4K hardware-sizing benchmark.",
-        "- No YOLO/VLM weights, inference workspaces or GPU memory are included. One future shared consumer would need to sustain the aggregate selected rate, not just the per-camera rate. Model and deployment-container changes require another measurement.",
+        "- No YOLO/VLM weights, inference workspaces or GPU memory are included. A shared consumer needs to sustain the aggregate selected rate, not just the per-camera rate. Model and deployment-container changes require another measurement.",
         "- Windows background applications, available-memory pressure, shared pages and Docker/WSL caching affect RAM. A fully containerized/Linux production deployment must be measured separately. Do not interpret the current host total or component reference subtotal as a final hardware recommendation.",
         f"- This host was already busy: idle-run used RAM peaked at {baseline['host_used_peak_gib']:.2f} GiB, and the lowest available RAM across all runs was {data['host_available_min_mib']:.0f} MiB. Memory pressure and unrelated activity limit causal interpretation of host deltas.",
         f"- Completed runs: {data['completed_runs']}; excluded runs: {len(data['excluded_runs'])}. Successful runs are checked for bounded queues, expected recording processes, complete draining and produced = consumed + dropped. No new test cases were added.",

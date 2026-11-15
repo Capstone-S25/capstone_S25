@@ -12,9 +12,9 @@ from av.error import FFmpegError
 from av.video.frame import VideoFrame
 from numpy.typing import NDArray
 
-from data_pipeline.video_ingestion.decoding.selection import FrameSelector
 from data_pipeline.video_ingestion.sources import SourceType, VideoSource
 from data_pipeline.video_ingestion.streaming.frame_queue import DropOldestQueue
+from data_pipeline.video_ingestion.streaming.selection import FrameSelector
 
 logger = logging.getLogger(__name__)
 

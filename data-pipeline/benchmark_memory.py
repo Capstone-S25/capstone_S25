@@ -19,7 +19,7 @@ from data_pipeline.database.session import create_engine_and_session_factory
 from data_pipeline.pipeline.runner import run_pipeline
 from data_pipeline.video_ingestion.streaming.frame_queue import DEFAULT_FRAME_QUEUE_SIZE
 from data_pipeline.video_ingestion.streaming.worker import StreamFrame
-from main import _build_video_source, _load_database_url
+from main import _build_video_sources, _load_database_url
 
 PROJECT_DIR = Path(__file__).resolve().parent
 SAMPLE_INTERVAL_SECONDS = 0.1
@@ -154,7 +154,12 @@ def main() -> None:
     args = _parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(message)s")
     run_id = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ") + "_" + uuid4().hex[:8]
-    source = replace(_build_video_source(args), source_id=f"benchmark_{run_id}")
+    source_args = argparse.Namespace(
+        source=args.source, video=args.video, rtsp_url=[args.rtsp_url]
+    )
+    source = replace(
+        _build_video_sources(source_args)[0], source_id=f"benchmark_{run_id}"
+    )
     engine, session_factory = create_engine_and_session_factory(
         _load_database_url(PROJECT_DIR)
     )
@@ -193,7 +198,7 @@ def main() -> None:
     sampler.start()
     try:
         run_pipeline(
-            source,
+            [source],
             PROJECT_DIR / "recordings",
             session_factory=session_factory,
             target_fps=args.target_fps,

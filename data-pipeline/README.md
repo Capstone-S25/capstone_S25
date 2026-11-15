@@ -156,25 +156,20 @@ npm start -- --source rtsp
 For a real CCTV camera, provide its stream URL:
 
 ```bash
-npm start -- --source rtsp --rtsp-url "rtsp://camera-address/stream"
+npm start -- --source rtsp --rtsp-url "rtsp://camera-address1/stream" --rtsp-url "rtsp://camera-address2/stream" ..
 ```
-
-This starts PostgreSQL and waits until healthy before launching the app.
-Migrations must already be applied. Press Ctrl+C to stop both video workers,
-finish queued frames, and finalize the recording. PostgreSQL stays running until
-you run `npm run db:down`.
 
 Pass arguments after `npm start --`:
 
-| Argument       | Options / value         | Default                           | Description                                                                       |
-| -------------- | ----------------------- | --------------------------------- | --------------------------------------------------------------------------------- |
-| `--source`     | `file` or `rtsp`        | `file`                            | Choose a local video or CCTV stream.                                              |
-| `--video`      | File path               | `samples/videos/loitering.avi`    | Video to read when `--source file`.                                               |
-| `--rtsp-url`   | RTSP URL                | `rtsp://localhost:8554/camera_01` | Stream to read when `--source rtsp`.                                              |
-| `--target-fps` | Positive, finite number | `2`                               | Maximum frames selected per second of video time for each camera/file.            |
-| `--queue-size` | Positive integer        | `8`                               | Maximum waiting frames per camera/file; drops the oldest waiting frame when full. |
-| `--verbose`    | Flag                    | Off                               | Show detailed recording and streaming messages.                                   |
-| `-h`, `--help` | Flag                    | —                                 | Show available arguments and exit.                                                |
+| Argument       | Options / value         | Default                           | Description                                                                                            |
+| -------------- | ----------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `--source`     | `file` or `rtsp`        | `file`                            | Choose a local video or CCTV stream.                                                                   |
+| `--video`      | File path               | `samples/videos/loitering.avi`    | Video to read when `--source file`.                                                                    |
+| `--rtsp-url`   | RTSP URL, repeatable    | `rtsp://localhost:8554/camera_01` | Repeat for up to four cameras when `--source rtsp`; order sets camera IDs and initial selection order. |
+| `--target-fps` | Positive, finite number | `2`                               | Maximum frames selected per second of video time for each camera/file.                                 |
+| `--queue-size` | Positive integer        | `8`                               | Maximum waiting frames per camera/file; drops the oldest waiting frame when full.                      |
+| `--verbose`    | Flag                    | Off                               | Show detailed recording and streaming messages.                                                        |
+| `-h`, `--help` | Flag                    | —                                 | Show available arguments and exit.                                                                     |
 
 ## Mock RTSP camera
 
@@ -204,6 +199,10 @@ npm run camera:stop
 ```
 
 ## Memory benchmark
+
+The dated reports currently under `reports/` describe the older setup with one
+consumer per camera. Keep them as historical results; the updated shared-consumer
+pipeline needs a fresh suite run before publishing new measurements.
 
 With the database running and migrations applied, measure one source for 30 seconds:
 
@@ -239,7 +238,7 @@ npm run benchmark:memory:suite
 This runs 20 fresh-process scenarios: three repeats each of idle, recording-only,
 streaming-only (including decoding), and recording + streaming at 1/2/4 cameras;
 then a 10-minute four-camera stability run and a four-camera stress run with
-0.75 seconds of processing per frame per camera. Normal runs use a 10-second
+0.75 seconds of processing per frame in the single shared consumer. Normal runs use a 10-second
 warm-up plus 60-second measurement. Allow about 35 minutes. Each camera selects
 2 FPS and has eight waiting frames, dropping the oldest on overflow.
 
@@ -250,7 +249,8 @@ RAM is measured separately as total minus available RAM, in MiB/GiB. Component
 estimates subtract a shared Python baseline; they are comparative estimates
 because threads share memory. No decoding-only scenario or USS sampling is used.
 It leaves existing Docker services running and records real video and metadata.
-The counting consumers do not load YOLO or VLM models. Each simulated camera
+One shared counting consumer reads camera queues in round-robin order; it does
+not load YOLO or VLM models. Each simulated camera
 opens independent connections to the same RTSP stream. By default, the suite
 starts and stops its own publisher on a separate path, normalizing timestamps
 and using one-second H.264 keyframes. Existing camera streams are left untouched.

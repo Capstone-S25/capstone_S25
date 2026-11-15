@@ -101,31 +101,50 @@ class CameraMetrics:
     frame_shape: tuple[int, ...] | None = None
 
 
-def _run_camera(args, source, session_factory, stop, metrics):
-    try:
-        if args.mode == "recording":
+def _run_workers(args, sources, session_factory, stop, metrics):
+    """Profile all cameras with one shared consumer using the production scheduler."""
+
+    def record(source):
+        try:
             run_recording_worker(
                 source,
                 PROJECT_DIR / "recordings",
                 session_factory=session_factory,
                 stop_event=stop,
             )
-            return
+        except BaseException:
+            stop.set()
+            raise
 
-        def consume(frame: StreamFrame):
-            metrics.frame_shape = frame.image.shape
-            if args.consumer_delay:
-                sleep(args.consumer_delay)
-            metrics.consumed_frames += 1
+    by_source = dict(
+        zip((source.source_id for source in sources), metrics, strict=True)
+    )
 
-        state = runner._PipelineState(stop_event=stop, frames=metrics.queue)
-        with ThreadPoolExecutor(max_workers=2) as executor:
+    def consume(frame: StreamFrame):
+        camera = by_source[frame.source_id]
+        camera.frame_shape = frame.image.shape
+        if args.consumer_delay:
+            sleep(args.consumer_delay)
+        camera.consumed_frames += 1
+
+    state = runner._PipelineState(
+        cameras=[
+            runner._CameraState(source, camera.queue)
+            for source, camera in zip(sources, metrics, strict=True)
+        ],
+        stop_event=stop,
+    )
+    with ThreadPoolExecutor(max_workers=2 * len(sources)) as executor:
+        if args.mode == "recording":
+            futures = [executor.submit(record, source) for source in sources]
+            for future in futures:
+                future.result()
+        else:
             try:
                 if args.mode == "full":
                     runner._start_workers(
                         executor,
                         state,
-                        source,
                         PROJECT_DIR / "recordings",
                         session_factory=session_factory,
                         target_fps=args.target_fps,
@@ -133,26 +152,24 @@ def _run_camera(args, source, session_factory, stop, metrics):
                         retention_hours=24,
                     )
                 else:
-                    state.workers.append(
-                        executor.submit(
-                            run_streaming_worker,
-                            source,
-                            metrics.queue,
-                            target_fps=args.target_fps,
-                            stop_event=stop,
-                            producer_done=state.producer_done,
+                    for camera in state.cameras:
+                        state.workers.append(
+                            executor.submit(
+                                run_streaming_worker,
+                                camera.source,
+                                camera.frames,
+                                target_fps=args.target_fps,
+                                stop_event=stop,
+                                producer_done=camera.producer_done,
+                            )
                         )
-                    )
                 runner._consume_frames(state, consume)
             except BaseException as error:
                 runner._remember_error(state, error)
             finally:
                 runner._finish_workers(state)
-        if state.first_error is not None:
-            raise state.first_error
-    except BaseException:
-        stop.set()
-        raise
+    if state.first_error is not None:
+        raise state.first_error
 
 
 def _sample(process, started, metrics):
@@ -252,7 +269,12 @@ def main():
     parser.add_argument("--queue-size", type=int, default=DEFAULT_FRAME_QUEUE_SIZE)
     parser.add_argument("--warmup", type=float, default=10)
     parser.add_argument("--duration", type=float, default=60)
-    parser.add_argument("--consumer-delay", type=float, default=0)
+    parser.add_argument(
+        "--consumer-delay",
+        type=float,
+        default=0,
+        help="Seconds per frame in the single consumer shared by all cameras.",
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if args.queue_size <= 0:
@@ -294,26 +316,20 @@ def main():
         if args.mode == "baseline":
             stop.wait()
         else:
-            with ThreadPoolExecutor(max_workers=args.cameras) as executor:
-                futures = []
-                for index in range(args.cameras):
-                    source = VideoSource(
-                        f"bench_{args.output.parent.name}_{args.output.name}_{index}",
-                        f"Benchmark camera {index + 1}",
-                        SourceType.RTSP,
-                        urls[0] if len(urls) == 1 else urls[index],
-                    )
-                    futures.append(
-                        executor.submit(
-                            _run_camera, args, source, factory, stop, metrics[index]
-                        )
-                    )
-                for future in futures:
-                    try:
-                        future.result()
-                    except BaseException as error:
-                        errors.append(error)
-                        stop.set()
+            sources = [
+                VideoSource(
+                    f"bench_{args.output.parent.name}_{args.output.name}_{index}",
+                    f"Benchmark camera {index + 1}",
+                    SourceType.RTSP,
+                    urls[0] if len(urls) == 1 else urls[index],
+                )
+                for index in range(args.cameras)
+            ]
+            try:
+                _run_workers(args, sources, factory, stop, metrics)
+            except BaseException as error:
+                errors.append(error)
+                stop.set()
     finally:
         stop.set()
         deadline.cancel()
@@ -336,6 +352,8 @@ def main():
         "warmup_seconds": args.warmup,
         "measurement_seconds": args.duration,
         "consumer_delay_seconds": args.consumer_delay,
+        "consumer_topology": "shared_round_robin",
+        "consumer_count": 1 if args.mode in ("streaming", "full") else 0,
         "elapsed_seconds_including_drain": perf_counter() - started,
         "samples": len(rows),
         "baseline_python_rss_mib": rows[0]["python_rss_bytes"] / MIB,

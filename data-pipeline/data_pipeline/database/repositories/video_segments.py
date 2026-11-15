@@ -2,11 +2,10 @@ from datetime import datetime
 from pathlib import Path
 from uuid import UUID
 
-from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
-from data_pipeline.database.models.video_segments import SegmentStatus, VideoSegment
+from data_pipeline.database.models.video_segments import VideoSegment
 
 
 def insert_video_segment_metadata(
@@ -56,62 +55,3 @@ def insert_video_segment_metadata(
     )
 
     return db.execute(statement).scalar_one_or_none() is not None
-
-
-def get_oldest_video_segment(
-    db: Session,
-    *,
-    source_id: str,
-    status: SegmentStatus,
-    for_update: bool = False,
-) -> VideoSegment | None:
-    """Read the oldest segment for a source and status, without committing.
-
-    Args:
-        db: Session whose transaction is managed by the caller.
-        source_id: Video source identifier.
-        status: Processing state to filter by, using SegmentStatus.
-        for_update: Lock the selected row and skip rows locked by other
-            transactions. Defaults to False for a read-only selection.
-
-    Returns:
-        The matching segment with the earliest start_at_ms, using row ID to
-        break ties, or None if no eligible row is available. When for_update
-        is True, locked rows are excluded from selection.
-    """
-    statement = (
-        select(VideoSegment)
-        .where(
-            VideoSegment.source_id == source_id,
-            VideoSegment.status == status,
-        )
-        .order_by(
-            VideoSegment.start_at_ms,
-            VideoSegment.id,
-        )
-        .limit(1)
-    )
-    if for_update:
-        statement = statement.with_for_update(skip_locked=True)
-
-    return db.scalar(statement)
-
-
-def update_video_segment_status(
-    db: Session,
-    segment: VideoSegment,
-    *,
-    status: SegmentStatus,
-) -> None:
-    """Update a segment's processing status without committing.
-
-    Args:
-        db: Session whose transaction is managed by the caller.
-        segment: VideoSegment attached to db.
-        status: New processing state, using SegmentStatus.
-
-    Note:
-        Flushes the change. The caller owns transition rules, locking, and commit.
-    """
-    segment.status = status
-    db.flush()
