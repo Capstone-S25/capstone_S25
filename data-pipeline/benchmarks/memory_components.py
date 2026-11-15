@@ -156,15 +156,13 @@ def _run_camera(args, source, session_factory, stop, metrics):
 
 
 def _sample(process, started, metrics):
-    own = process.memory_full_info()
-    rss, uss = own.rss, own.uss
-    ffmpeg_rss = ffmpeg_uss = 0
+    rss = process.memory_info().rss
+    ffmpeg_rss = 0
     children = process.children(recursive=True)
     for child in children:
         try:
-            memory = child.memory_full_info()
+            memory = child.memory_info()
             ffmpeg_rss += memory.rss
-            ffmpeg_uss += memory.uss
         except psutil.NoSuchProcess:
             continue
     queues = (
@@ -180,11 +178,8 @@ def _sample(process, started, metrics):
     return {
         "elapsed_seconds": perf_counter() - started,
         "python_rss_bytes": rss,
-        "python_uss_bytes": uss,
         "ffmpeg_rss_bytes": ffmpeg_rss,
-        "ffmpeg_uss_bytes": ffmpeg_uss,
         "app_rss_bytes": rss + ffmpeg_rss,
-        "app_uss_bytes": uss + ffmpeg_uss,
         "ffmpeg_process_count": len(children),
         **queues,
         "consumed_frames": sum(camera.consumed_frames for camera in metrics),
@@ -214,11 +209,8 @@ def _summarize(rows, args):
     summary = {}
     for field in (
         "python_rss_bytes",
-        "python_uss_bytes",
         "ffmpeg_rss_bytes",
-        "ffmpeg_uss_bytes",
         "app_rss_bytes",
-        "app_uss_bytes",
         "queued_image_bytes",
     ):
         name = field.removesuffix("_bytes")

@@ -229,17 +229,26 @@ Input stops at the next callback after the duration limit, then the queue drains
 The full run can therefore take longer than the requested duration. Compare
 runs using the same video resolution, FPS, and duration.
 
-For component measurements, 1/2/4 camera scaling, Docker/host RAM, and a generated
-Markdown report, start the mock RTSP server and database, then run:
+For component measurements, 1/2/4 camera scaling, and whole-machine RAM including
+PostgreSQL and Docker, start the mock RTSP server and database, then run:
 
 ```bash
 npm run benchmark:memory:suite
 ```
 
-This runs three repeats per scenario (10-second warm-up plus 60-second
-measurement), a 10-minute four-camera stability run, and a slower-consumer run.
-Allow about 35 minutes. Results include `report.md`, `aggregate.csv`, JSON
-summaries, and raw process/host/container samples under `recordings/benchmarks/`.
+This runs 20 fresh-process scenarios: three repeats each of idle, recording-only,
+streaming-only (including decoding), and recording + streaming at 1/2/4 cameras;
+then a 10-minute four-camera stability run and a four-camera stress run with
+0.75 seconds of processing per frame per camera. Normal runs use a 10-second
+warm-up plus 60-second measurement. Allow about 35 minutes. Each camera selects
+2 FPS and has eight waiting frames, dropping the oldest on overflow.
+
+Results include `report.md`, `report_data.json`, `aggregate.csv`, and raw
+process/host/container samples under `recordings/benchmarks/`. Application RAM
+uses RSS (resident process RAM) for Python plus recording FFmpeg. Whole-machine
+RAM is measured separately as total minus available RAM, in MiB/GiB. Component
+estimates subtract a shared Python baseline; they are comparative estimates
+because threads share memory. No decoding-only scenario or USS sampling is used.
 It leaves existing Docker services running and records real video and metadata.
 The counting consumers do not load YOLO or VLM models. Each simulated camera
 opens independent connections to the same RTSP stream. By default, the suite
@@ -248,18 +257,27 @@ and using one-second H.264 keyframes. Existing camera streams are left untouched
 
 Suite options: `--warmup`, `--duration`, `--repeats`, `--queue-size` (default 8), `--soak-duration` (0 to skip),
 `--skip-stress`, `--output`, and `--rtsp-url` (repeat for distinct camera URLs;
-otherwise the dedicated benchmark feed is used). Docker and WSL figures overlap host RAM and
-must not be added to whole-machine measurements.
+otherwise the dedicated benchmark feed is used). Docker and WSL figures overlap
+host RAM and must not be added to whole-machine measurements. Production
+accounting excludes MediaMTX and mock publishers while retaining PostgreSQL,
+recording FFmpeg, and Docker overhead. Raw host totals still include the test
+infrastructure; exact host RAM without MediaMTX has not been measured.
 
-New benchmark runs use the bounded drop-oldest queue and record dropped frames.
-The checked-in November 14 report describes the earlier unbounded-queue runs;
-those historical measurements have not been rerun or rewritten.
+The suite checks queue bounds, complete draining, produced = consumed + dropped,
+and recording process counts. Failed runs are excluded from estimates and their
+logs are retained. The sample workload is 640 x 360 without YOLO/VLM; these
+measurements do not establish complete production hardware requirements.
 
 To export a suite run to PDF with charts (reporting packages are temporary):
 
 ```bash
 uv run --locked --with reportlab --with matplotlib python -m benchmarks.memory_pdf "<run-directory>" --output reports/memory-benchmark.pdf
 ```
+
+The exporter regenerates the Markdown, CSV, and JSON summaries from the raw
+measurements and uses the recorded run date for the PDF. Published reports are
+named `reports/memory-benchmark-YYYY-MM-DD` with `.pdf`, `.md`, `.csv`, and `.json`
+extensions.
 
 ## Linting and formatting
 

@@ -1,4 +1,4 @@
-"""Generate a standalone Markdown report and aggregate CSV from measured runs."""
+"""Build RAM-focused JSON, CSV and Markdown reports from measured suite results."""
 
 import argparse
 import csv
@@ -8,343 +8,563 @@ from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
 from statistics import median
 
+SINGAPORE = timezone(timedelta(hours=8))
+LABELS = {
+    "baseline": "Idle baseline",
+    "recording": "Recording only",
+    "streaming": "Streaming incl. decoding",
+    "full": "Recording + streaming",
+}
 
-def _aggregate(results):
-    grouped = defaultdict(list)
-    for run in results:
+
+def _aggregate(runs):
+    groups = defaultdict(list)
+    for run in runs:
         if "_soak" not in run["case"] and not run["consumer_delay_seconds"]:
-            grouped[(run["mode"], run["cameras"])].append(run)
+            groups[(run["mode"], run["cameras"])].append(run)
     rows = []
-    for (mode, cameras), runs in grouped.items():
-        metrics = [run["metrics"] for run in runs]
+    for (mode, cameras), repeats in groups.items():
         rows.append(
             {
                 "mode": mode,
+                "scenario": LABELS[mode],
                 "cameras": cameras,
-                "repeats": len(runs),
-                "app_rss_mean_mib": median(m["app_rss_mean_mib"] for m in metrics),
-                "app_rss_peak_mib": max(m["app_rss_peak_mib"] for m in metrics),
-                "app_uss_mean_mib": median(m["app_uss_mean_mib"] for m in metrics),
-                "python_rss_mean_mib": median(
-                    m["python_rss_mean_mib"] for m in metrics
+                "repeats": len(repeats),
+                "pipeline_mean_mib": median(
+                    r["metrics"]["app_rss_mean_mib"] for r in repeats
                 ),
-                "ffmpeg_rss_mean_mib": median(
-                    m["ffmpeg_rss_mean_mib"] for m in metrics
+                "pipeline_peak_mib": max(
+                    r["metrics"]["app_rss_peak_mib"] for r in repeats
                 ),
-                "queue_frames_peak": max(m["queued_frames_peak"] for m in metrics),
+                "python_mean_mib": median(
+                    r["metrics"]["python_rss_mean_mib"] for r in repeats
+                ),
+                "ffmpeg_mean_mib": median(
+                    r["metrics"]["ffmpeg_rss_mean_mib"] for r in repeats
+                ),
                 "host_used_mean_gib": median(
-                    r["host"]["host_used_mean_mib"] / 1024 for r in runs
+                    r["host"]["host_used_mean_mib"] / 1024 for r in repeats
+                ),
+                "host_used_peak_gib": max(
+                    r["host"]["host_used_peak_mib"] / 1024 for r in repeats
                 ),
                 "host_available_min_gib": min(
-                    r["host"]["host_available_min_mib"] / 1024 for r in runs
+                    r["host"]["host_available_min_mib"] / 1024 for r in repeats
                 ),
-                "wsl_rss_mean_mib": median(
-                    r["host"]["wsl_vm_rss_mean_mib"] for r in runs
+                "wsl_mean_mib": median(
+                    r["host"]["wsl_vm_rss_mean_mib"] for r in repeats
                 ),
-                "desktop_rss_mean_mib": median(
-                    r["host"]["docker_desktop_rss_mean_mib"] for r in runs
+                "docker_desktop_mean_mib": median(
+                    r["host"]["docker_desktop_rss_mean_mib"] for r in repeats
                 ),
-                "mock_publisher_rss_mean_mib": median(
-                    r["host"]["mock_publisher_rss_mean_mib"] for r in runs
+                "mock_publisher_mean_mib": median(
+                    r["host"]["mock_publisher_rss_mean_mib"] for r in repeats
+                ),
+                "peak_queued_frames": max(
+                    r["metrics"]["queued_frames_peak"] for r in repeats
+                ),
+                "peak_queued_image_mib": max(
+                    r["metrics"]["queued_image_bytes_peak_mib"] for r in repeats
+                ),
+                "produced_frames_total": sum(
+                    c["produced_frames"] for r in repeats for c in r["cameras_detail"]
+                ),
+                "consumed_frames_total": sum(
+                    c["consumed_frames"] for r in repeats for c in r["cameras_detail"]
+                ),
+                "dropped_frames_total": sum(
+                    c["dropped_frames"] for r in repeats for c in r["cameras_detail"]
+                ),
+                "drain_and_cleanup_peak_seconds": max(
+                    max(
+                        0,
+                        r["elapsed_seconds_including_drain"]
+                        - r["warmup_seconds"]
+                        - r["measurement_seconds"],
+                    )
+                    for r in repeats
+                ),
+                "dropped_frames_max": max(
+                    sum(c["dropped_frames"] for c in r["cameras_detail"])
+                    for r in repeats
                 ),
             }
         )
+    baseline = next(row for row in rows if row["mode"] == "baseline")
+    for row in rows:
+        row["host_change_from_idle_mib"] = (
+            row["host_used_mean_gib"] - baseline["host_used_mean_gib"]
+        ) * 1024
     return rows
 
 
-def _direct_camera_services(results):
-    """Exclude mock-only services from a labelled direct-camera budget estimate."""
+def build_report_data(root):
+    root = Path(root)
+    all_runs = json.loads((root / "results.json").read_text(encoding="utf-8"))
+    environment = json.loads((root / "environment.json").read_text(encoding="utf-8"))
     runs = [
-        run
-        for run in results
-        if run["mode"] == "full"
-        and run["cameras"] == 4
-        and "_soak" not in run["case"]
-        and not run["consumer_delay_seconds"]
+        r for r in all_runs if r["status"] == "completed" and not r["monitoring_errors"]
     ]
-    postgres = median(
-        run["containers"]["capstone-postgres-dev"]["mean_mib"] for run in runs
-    )
-    mtx = median(run["containers"]["mock-cctv"]["mean_mib"] for run in runs)
-    return {
-        "postgres_mib": postgres,
-        "excluded_mtx_mib": mtx,
-        "test_container_total_mib": postgres + mtx,
-        "production_known_container_estimate_mib": postgres,
+    rows = _aggregate(runs)
+    by_key = {(row["mode"], row["cameras"]): row for row in rows}
+    required = [
+        ("baseline", 0),
+        ("recording", 1),
+        ("streaming", 1),
+        ("full", 1),
+        ("full", 2),
+        ("full", 4),
+    ]
+    if any(key not in by_key for key in required):
+        raise ValueError("Completed results are missing a required comparison scenario")
+    baseline = by_key[("baseline", 0)]
+    component_rows = [
+        {
+            "component": LABELS[mode],
+            "additional_mean_mib": by_key[(mode, 1)]["pipeline_mean_mib"]
+            - baseline["pipeline_mean_mib"],
+        }
+        for mode in ("recording", "streaming", "full")
+    ]
+    four_runs = [
+        r
+        for r in runs
+        if r["mode"] == "full"
+        and r["cameras"] == 4
+        and "_soak" not in r["case"]
+        and not r["consumer_delay_seconds"]
+    ]
+    images = {
+        entry.split("|", 1)[0].strip(): entry.split("|", 1)[1].strip()
+        for entry in environment["containers"]
     }
+    containers = []
+    for name in sorted({name for r in runs for name in r["containers"]}):
+        samples = [r["containers"][name] for r in four_runs if name in r["containers"]]
+        if not samples:
+            raise ValueError(f"No four-camera container measurements for {name}")
+        test_only = "mediamtx" in images.get(name, "").lower() or name == "mock-cctv"
+        containers.append(
+            {
+                "name": name,
+                "image": images.get(name, "unknown"),
+                "test_only": test_only,
+                "four_camera_mean_mib": median(s["mean_mib"] for s in samples),
+                "peak_mib": max(
+                    r["containers"][name]["peak_mib"]
+                    for r in runs
+                    if name in r["containers"]
+                ),
+            }
+        )
+    special = []
+    for r in runs:
+        if "_soak" not in r["case"] and not r["consumer_delay_seconds"]:
+            continue
+        special.append(
+            {
+                "case": r["case"],
+                "label": "Slow consumer"
+                if r["consumer_delay_seconds"]
+                else "Stability",
+                "warmup_seconds": r["warmup_seconds"],
+                "measurement_seconds": r["measurement_seconds"],
+                "consumer_delay_seconds": r["consumer_delay_seconds"],
+                "elapsed_seconds": r["elapsed_seconds_including_drain"],
+                "drain_and_cleanup_seconds": max(
+                    0,
+                    r["elapsed_seconds_including_drain"]
+                    - r["warmup_seconds"]
+                    - r["measurement_seconds"],
+                ),
+                "pipeline_peak_mib": r["metrics"]["app_rss_peak_mib"],
+                "host_used_mean_gib": r["host"]["host_used_mean_mib"] / 1024,
+                "host_used_peak_gib": r["host"]["host_used_peak_mib"] / 1024,
+                "host_available_min_gib": r["host"]["host_available_min_mib"] / 1024,
+                "host_change_from_idle_mib": r["host"]["host_used_mean_mib"]
+                - baseline["host_used_mean_gib"] * 1024,
+                "peak_queued_frames": r["metrics"]["queued_frames_peak"],
+                "peak_queued_image_mib": r["metrics"]["queued_image_bytes_peak_mib"],
+                "produced_frames": sum(
+                    c["produced_frames"] for c in r["cameras_detail"]
+                ),
+                "consumed_frames": sum(
+                    c["consumed_frames"] for c in r["cameras_detail"]
+                ),
+                "dropped_frames": sum(c["dropped_frames"] for c in r["cameras_detail"]),
+                "late_queue_growth_mib_per_min": r["metrics"].get(
+                    "queued_image_late_slope_mib_per_minute", 0
+                ),
+                "late_pipeline_growth_mib_per_min": r["metrics"].get(
+                    "app_rss_late_slope_mib_per_minute", 0
+                ),
+            }
+        )
+    started = datetime.fromisoformat(environment["started_at_utc"]).astimezone(
+        SINGAPORE
+    )
+    peak = max(
+        r["metrics"]["app_rss_peak_mib"]
+        for r in runs
+        if r["mode"] == "full" and r["cameras"] == 4 and not r["consumer_delay_seconds"]
+    )
+    observed_peak = max(
+        r["metrics"]["app_rss_peak_mib"]
+        for r in runs
+        if r["mode"] == "full" and r["cameras"] == 4
+    )
+    production_containers = sum(
+        c["four_camera_mean_mib"] for c in containers if not c["test_only"]
+    )
+    test_containers = sum(
+        c["four_camera_mean_mib"] for c in containers if c["test_only"]
+    )
+    four = by_key[("full", 4)]
+    vm_remainder = four["wsl_mean_mib"] - production_containers - test_containers
+    production_reference = (
+        observed_peak
+        + production_containers
+        + four["docker_desktop_mean_mib"]
+        + vm_remainder
+        if vm_remainder >= 0
+        else None
+    )
+    return {
+        "date": started.date().isoformat(),
+        "started_at_singapore": started.isoformat(),
+        "generated_at_singapore": datetime.now(UTC).astimezone(SINGAPORE).isoformat(),
+        "run_directory": root.name,
+        "environment": environment,
+        "settings": {
+            key: runs[0][key]
+            for key in (
+                "target_fps",
+                "queue_size",
+                "queue_policy",
+                "warmup_seconds",
+                "measurement_seconds",
+            )
+        },
+        "completed_runs": len(runs),
+        "excluded_runs": [r["case"] for r in all_runs if r not in runs],
+        "scenarios": rows,
+        "component_estimates": component_rows,
+        "containers": containers,
+        "production_container_reference_mib": production_containers,
+        "excluded_test_container_reference_mib": test_containers,
+        "estimated_wsl_remainder_mib": vm_remainder,
+        "estimated_production_ingestion_runtime_mib": production_reference,
+        "four_camera_fast_peak_mib": peak,
+        "four_camera_observed_peak_mib": observed_peak,
+        "host_available_min_mib": min(
+            r["host"]["host_available_min_mib"] for r in runs
+        ),
+        "special_runs": special,
+        "run_validation": [
+            {
+                "case": r["case"],
+                "recording_processes_peak": r["metrics"]["ffmpeg_process_count_peak"],
+                "cameras": r["cameras_detail"],
+            }
+            for r in runs
+        ],
+    }
+
+
+def _table(headers, rows):
+    return [
+        "| " + " | ".join(headers) + " |",
+        "| " + " | ".join(["---"] * len(headers)) + " |",
+        *["| " + " | ".join(map(str, row)) + " |" for row in rows],
+        "",
+    ]
 
 
 def write_report(root):
     root = Path(root)
-    results = json.loads((root / "results.json").read_text(encoding="utf-8"))
-    environment = json.loads((root / "environment.json").read_text(encoding="utf-8"))
-    if any(run["status"] != "completed" for run in results):
-        raise ValueError("Cannot report failed scenarios as completed measurements")
-    rows = _aggregate(results)
-    by_key = {(row["mode"], row["cameras"]): row for row in rows}
-    baseline = by_key[("baseline", 0)]
-    production = _direct_camera_services(results)
-    profile = environment["input"]
-    first = results[0]
-    queue_size = first.get("queue_size", 0)
-    queue_description = (
-        f"bounded drop-oldest, {queue_size} waiting frames per camera"
-        if queue_size
-        else "historical unbounded FIFO"
-    )
-    local_time = datetime.now(UTC).astimezone(timezone(timedelta(hours=8)))
+    data = build_report_data(root)
+    rows = data["scenarios"]
+    by_key = {(r["mode"], r["cameras"]): r for r in rows}
+    baseline, four = by_key[("baseline", 0)], by_key[("full", 4)]
+    profile, settings = data["environment"]["input"], data["settings"]
+    one, two = by_key[("full", 1)], by_key[("full", 2)]
+    increment = two["pipeline_mean_mib"] - one["pipeline_mean_mib"]
+    predicted = one["pipeline_mean_mib"] + 3 * increment
     lines = [
-        "# Pipeline memory benchmark report",
+        "# Bounded-queue pipeline RAM benchmark",
         "",
-        f"Generated {local_time:%Y-%m-%d %H:%M} Singapore time.",
+        f"Benchmark date: {data['date']} (Singapore). Completed runs: {data['completed_runs']}.",
         "",
-        "## Workload and method",
+        "## Main results",
         "",
-        f"- Host: {environment['os']}; {environment['host_ram_mib'] / 1024:.2f} GiB physical RAM; Python {environment['python']}.",
-        f"- Input: {profile['codec']}, {profile['width']}×{profile['height']}, {profile['source_fps']} FPS, RTSP over TCP.",
-        f"- Selection rate: up to {first['target_fps']:g} FPS per camera; decoding still reads the full incoming stream.",
-        "- One mock stream supplies independent connections; each simulated camera owns its decoder, recording session, FFmpeg process and queue.",
-        "- Cameras share one Python process and database engine. Each camera has its own counting consumer; no YOLO or VLM model is loaded.",
-        f"- Normal cases: {first['warmup_seconds']:g}s warm-up then {first['measurement_seconds']:g}s measurement; {rows[0]['repeats']} fresh-process repeats per case.",
-        "- Reported means are medians of per-run steady-window means. Peaks are the highest sampled value across complete runs, including startup and draining.",
-        "- Process RSS/USS is sampled approximately every 0.2s, host memory every 1s, Docker statistics approximately every 5–8s.",
-        "- RSS is resident memory; USS is private resident memory. Summed RSS may count shared pages more than once. Short peaks between samples may be missed.",
-        f"- Queue policy: {queue_description}. Instrumentation counts image bytes and drops without changing the configured policy.",
-        "- Existing services and the mock publisher remain running. Baseline means no camera workers, not an otherwise empty machine or Docker-off measurement.",
-        "- Whole-host measurements also include the benchmark coordinator and its monitoring commands; component application measurements exclude that separate coordinator.",
-        "- The in-process sampler retains measurements until the run ends. Small long-run application memory growth can include sample-storage overhead; queue-image growth is reported separately.",
-        "- Decoder memory belongs to the streaming worker. The offline recorded-segment decoder is not running and is not counted again.",
-        "",
-        "## Component and camera measurements",
-        "",
-        "Application figures include Python plus recording FFmpeg processes; they exclude Docker services.",
-        "",
-        "| Scenario | Cameras | Python mean MiB | FFmpeg mean MiB | App mean RSS MiB | App peak RSS MiB | App mean USS MiB | Peak queued frames |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
-    ]
-    if environment.get("dedicated_publisher"):
-        lines.insert(
-            lines.index("## Component and camera measurements"),
-            "The suite owns a separate looping sample-video publisher with normalized timestamps, H.264 at 25 FPS, one-second keyframes and no B-frames. Its memory is test infrastructure and is included in host/publisher totals. Existing streams were not modified.\n",
-        )
-    for row in rows:
-        lines.append(
-            f"| {row['mode']} | {row['cameras']} | {row['python_rss_mean_mib']:.1f} | {row['ffmpeg_rss_mean_mib']:.1f} | {row['app_rss_mean_mib']:.1f} | {row['app_rss_peak_mib']:.1f} | {row['app_uss_mean_mib']:.1f} | {row['queue_frames_peak']} |"
-        )
-    lines.extend(
-        [
-            "",
-            "### Additional memory for one camera",
-            "",
-            "These are controlled-run differences from the same imported Python baseline, not exact ownership of shared thread allocations.",
-            "",
-            "| Component | Additional steady RSS MiB | Additional steady USS MiB |",
-            "| --- | ---: | ---: |",
-        ]
-    )
-    for mode in ("recording", "streaming", "full"):
-        row = by_key[(mode, 1)]
-        lines.append(
-            f"| {mode} | {row['app_rss_mean_mib'] - baseline['app_rss_mean_mib']:.1f} | {row['app_uss_mean_mib'] - baseline['app_uss_mean_mib']:.1f} |"
-        )
-    lines.extend(
-        [
-            "",
-            "## Docker and whole-machine memory",
-            "",
-            "Whole-machine used memory is total RAM minus available RAM. It already includes the application, Docker/WSL, OS, publisher and other open applications; do not add component numbers to it.",
-            "WSL figures include all visible vmmem processes, not necessarily Docker alone. Docker Desktop figures are the sum of its visible Windows processes and may share pages.",
-            "",
-            "| Scenario | Cameras | Host used mean GiB | Host available minimum GiB | WSL VM RSS mean MiB | Docker Desktop RSS mean MiB | Mock publisher RSS mean MiB |",
-            "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
-        ]
-    )
-    for row in rows:
-        lines.append(
-            f"| {row['mode']} | {row['cameras']} | {row['host_used_mean_gib']:.2f} | {row['host_available_min_gib']:.2f} | {row['wsl_rss_mean_mib']:.1f} | {row['desktop_rss_mean_mib']:.1f} | {row['mock_publisher_rss_mean_mib']:.1f} |"
-        )
-    lines.extend(
-        [
-            "",
-            "### Running containers",
-            "",
-            "Docker CLI statistics exclude reclaimable cache on Linux. These container figures overlap WSL/host totals and must not be added to them.",
-            "",
-            "| Container | Services-idle mean MiB | Four-camera mean MiB | Highest observed MiB |",
-            "| --- | ---: | ---: | ---: |",
-        ]
-    )
-    names = sorted({name for run in results for name in run["containers"]})
-    for name in names:
-        idle = [
-            r["containers"][name]["mean_mib"]
-            for r in results
-            if r["mode"] == "baseline" and name in r["containers"]
-        ]
-        four = [
-            r["containers"][name]["mean_mib"]
-            for r in results
-            if r["mode"] == "full"
-            and r["cameras"] == 4
-            and "_soak" not in r["case"]
-            and not r["consumer_delay_seconds"]
-            and name in r["containers"]
-        ]
-        peak = max(
-            r["containers"][name]["peak_mib"]
-            for r in results
-            if name in r["containers"]
-        )
-        idle_text = f"{median(idle):.1f}" if idle else "not sampled"
-        four_text = f"{median(four):.1f}" if four else "not sampled"
-        lines.append(f"| {name} | {idle_text} | {four_text} | {peak:.1f} |")
-    lines.extend(
-        [
-            "",
-            "## Direct-camera production estimate (MediaMTX excluded)",
-            "",
-            "For the intended production topology, real cameras provide the RTSP streams directly. The recording and streaming workers connect to each camera URL; MediaMTX is not required unless a relay is deliberately introduced.",
-            "This section is an accounting estimate using the four-camera measurements, not a new benchmark with MediaMTX stopped. Historical measurements above and raw CSV/JSON data remain unchanged.",
-            "",
-            "| Component | Observed in the test setup | Direct-camera production budget |",
-            "| --- | --- | --- |",
-            f"| PostgreSQL container | {production['postgres_mib']:.1f} MiB mean working memory | Retain {production['postgres_mib']:.1f} MiB as the measured reference |",
-            f"| MediaMTX mock relay | {production['excluded_mtx_mib']:.1f} MiB mean working memory | Exclude: 0 MiB allocated to this service |",
-            f"| Known container working-memory subtotal | {production['test_container_total_mib']:.1f} MiB (PostgreSQL + MediaMTX) | About {production['production_known_container_estimate_mib']:.1f} MiB (PostgreSQL only) |",
-            "| Local mock-video publishers | Test-only FFmpeg encoders | Exclude; encoding/stream publishing happens on the cameras |",
-            "| Recording FFmpeg processes | Included in application measurements | Keep; the server still needs to record the incoming streams |",
-            "| Docker runtime / VM overhead | Included in host observations | Keep an allowance while PostgreSQL or other production services use Docker |",
-            "",
-            f"Remove approximately {production['excluded_mtx_mib']:.1f} MiB from the known-container working-memory budget. This is not an exact physical host-RAM saving: container working memory, process RSS and WSL allocation are different, overlapping measurements. Do not subtract all of WSL/Docker Desktop or directly rewrite the measured whole-host totals.",
-            "The measured 200.0 MiB fast-consumer application peak and provisional 250 MiB application allowance already exclude MediaMTX, so neither is reduced again. A direct-camera deployment run is still needed to measure actual host savings and production-resolution behavior.",
-            "",
-        ]
-    )
-    one, two, four = [by_key[("full", n)] for n in (1, 2, 4)]
-    additional = two["app_rss_mean_mib"] - one["app_rss_mean_mib"]
-    prediction = one["app_rss_mean_mib"] + 3 * additional
-    fast_four_peak = max(
-        run["metrics"]["app_rss_peak_mib"]
-        for run in results
-        if run["mode"] == "full"
-        and run["cameras"] == 4
-        and not run["consumer_delay_seconds"]
-    )
-    error_percent = (
-        100 * (prediction - four["app_rss_mean_mib"]) / four["app_rss_mean_mib"]
-    )
-    lines.extend(
-        [
-            "",
-            "## Scaling estimate",
-            "",
-            f"The increase from one to two cameras was {additional:.1f} MiB steady RSS. Extrapolating that increment predicts {prediction:.1f} MiB for four cameras; the actual four-camera result was {four['app_rss_mean_mib']:.1f} MiB ({error_percent:+.1f}% prediction error).",
-            f"Across fast-consumer four-camera runs, including any stability run, the highest sampled application RSS was {fast_four_peak:.1f} MiB. A provisional application-only allowance with 25% headroom is {fast_four_peak * 1.25:.1f} MiB for this workload. This excludes extra queue backlog and models and is not a whole-machine RAM recommendation.",
-            "Shared Python overhead is counted once. Use measurements at the actual resolution/codec and include separate model memory, database growth, OS/services and queue capacity before sizing deployment hardware.",
-            "",
-            "## Sustained operation and slower consumer",
-            "",
-            "| Case | Input cameras | Measurement s | Total including drain s | App peak RSS MiB | Peak queued frames | Peak queued image MiB | Late RSS slope MiB/min | Late queue slope MiB/min | Dropped frames |",
-            "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
-        ]
-    )
-    private_increment = two["app_uss_mean_mib"] - one["app_uss_mean_mib"]
-    position = lines.index("## Sustained operation and slower consumer")
-    lines[position:position] = [
-        f"Private resident memory increased by approximately {private_increment:.1f} MiB from one to two cameras. Four cameras used {four['app_uss_mean_mib']:.1f} MiB private resident memory on average, versus {four['app_rss_mean_mib']:.1f} MiB summed RSS. Shared executable/library pages explain part of the difference; neither figure should be added to host used RAM.",
+        f"- Four cameras with fast consumers peaked at **{data['four_camera_fast_peak_mib']:.1f} MiB of application RAM**, including the stability run.",
+        f"- Shared Python baseline: **{baseline['pipeline_mean_mib']:.1f} MiB**. Recording adds **{data['component_estimates'][0]['additional_mean_mib']:.1f} MiB** and streaming, including decoding, adds **{data['component_estimates'][1]['additional_mean_mib']:.1f} MiB** in separate one-camera comparisons.",
+        f"- Whole-machine RAM averaged **{four['host_used_mean_gib']:.2f} GiB** in the four-camera comparison runs. Minimum available RAM was **{four['host_available_min_gib']:.2f} GiB**. These host figures include the OS, other applications and test infrastructure.",
+        f"- Production container reference: **{data['production_container_reference_mib']:.1f} MiB** working memory, excluding **{data['excluded_test_container_reference_mib']:.1f} MiB** from MediaMTX. Docker/OS overhead and future models still require their own allowance.",
         "",
     ]
-    for run in results:
-        if "_soak" in run["case"] or run["consumer_delay_seconds"]:
-            m = run["metrics"]
-            dropped = sum(c.get("dropped_frames", 0) for c in run["cameras_detail"])
-            lines.append(
-                f"| {run['case']} | {run['cameras']} | {run['measurement_seconds']:g} | {run['elapsed_seconds_including_drain']:.1f} | {m['app_rss_peak_mib']:.1f} | {m['queued_frames_peak']} | {m['queued_image_bytes_peak_mib']:.1f} | {m.get('app_rss_late_slope_mib_per_minute', 0):.2f} | {m.get('queued_image_late_slope_mib_per_minute', 0):.2f} | {dropped} |"
-            )
-    image_mib = profile["width"] * profile["height"] * 3 / 1024**2
-    lines.extend(
+    lines += _table(
+        ["Recording + streaming", "Typical pipeline MiB", "Peak pipeline MiB"],
         [
-            "",
-            f"Each queued BGR image in this workload uses {image_mib:.3f} MiB, excluding frame/Python metadata and decoder reference buffers. The slow case sleeps 0.75s per consumed frame per camera, intentionally slower than selected input.",
-            (
-                "The bounded queue limits waiting frames by dropping the oldest on overflow. Drop counts must be considered alongside memory and consumed frames; lower memory does not imply every selected frame was processed."
-                if queue_size
-                else "A positive queue-growth rate means memory has no fixed long-term bound. Finishing a finite stress test is not evidence that an unbounded queue is safe indefinitely. Near-zero growth during the soak establishes behavior only for that measured interval."
-            ),
-            "",
-            "## Limits and deployment interpretation",
-            "",
-            "- All simulated cameras read the same mock stream through independent connections. Distinct scenes and codecs may change memory behavior.",
-            "- The current stream is 640×360. These numbers are not a 1080p/4K capacity estimate; frame payload scales with pixel count, but total decoder memory is not reliably extrapolated that way.",
-            "- Multiple independent consumers are used. A future single shared YOLO consumer must sustain the aggregate selected FPS; its queue behavior requires a new benchmark.",
-            f"- At four cameras and {first['target_fps']:g} selected FPS each, a shared consumer would need to handle up to {4 * first['target_fps']:g} FPS (about {1000 / (4 * first['target_fps']):.0f}ms per frame on average, including processing overhead) to avoid sustained backlog.",
-            "- YOLO/VLM model weights, inference workspace and GPU memory are absent. They can dominate the eventual memory budget.",
-            "- The Python pipeline runs on the Windows host, while PostgreSQL and MediaMTX run in Docker. A fully containerized/Linux deployment must be measured again.",
-            "- The mock CCTV container and local FFmpeg publisher are test infrastructure; real cameras may remove them. Their cost is included in host measurements here.",
-            "- Background Windows applications and Docker VM caching can move host totals independently of the pipeline. Host delta is not exact application attribution.",
-            "- Services were not stopped, so OS-only and Docker-off baselines were not measured. PostgreSQL contains the existing development data plus real benchmark segment metadata.",
-            "",
-            "## Artifacts",
-            "",
-            f"Raw runs: `recordings/benchmarks/{root.name}/`. Each case includes process, host and Docker CSV samples, a JSON summary and worker log. `results.json` contains all run summaries; `aggregate.csv` contains the table aggregates.",
-            "",
-        ]
-    )
-    if environment.get("excluded_attempt"):
-        attempt = environment["excluded_attempt"]
-        position = lines.index("## Artifacts")
-        lines[position:position] = [
-            "## Input timing finding",
-            "",
-            f"An earlier four-camera attempt against the pre-existing mock feed stopped after {attempt['elapsed_seconds']:.1f}s with `{attempt['reason']}`. No memory figures from that attempt are included in this report. Evidence is retained in `recordings/benchmarks/{attempt['directory']}/full_4cam_r1/worker.log`.",
-            "All reported comparisons use the separate timestamp-normalized feed. The earlier timing failure warrants a separate ingestion-reliability investigation; changing benchmark input is not a production fix.",
-            "",
-        ]
-    monitoring_errors = [error for run in results for error in run["monitoring_errors"]]
-    if monitoring_errors:
-        lines.extend(
             [
-                "### Monitoring limitations",
-                "",
-                *[f"- {error}" for error in monitoring_errors],
-                "",
+                f"{r['cameras']} camera(s)",
+                f"{r['pipeline_mean_mib']:.1f}",
+                f"{r['pipeline_peak_mib']:.1f}",
             ]
-        )
-    findings = [
-        "## Findings",
+            for r in (one, two, four)
+        ],
+    )
+    lines += [
+        "These comparison values summarize the three short repeats per camera count. The headline four-camera peak also includes the longer stability run. All application figures include the shared Python runtime once and the recording FFmpeg children.",
         "",
-        f"- Four cameras with fast counting consumers peaked at **{fast_four_peak:.1f} MiB summed application RSS**, including the stability run. This covers Python and recording FFmpeg processes, not Docker services or model inference.",
-        f"- Above the {baseline['app_rss_mean_mib']:.1f} MiB shared Python baseline, one camera added approximately **{by_key[('recording', 1)]['app_rss_mean_mib'] - baseline['app_rss_mean_mib']:.1f} MiB for recording** and **{by_key[('streaming', 1)]['app_rss_mean_mib'] - baseline['app_rss_mean_mib']:.1f} MiB for streaming including decoding**.",
-        f"- Whole-host memory averaged **{four['host_used_mean_gib']:.2f} GiB** during the four-camera comparison windows. It includes Docker, OS and unrelated applications and is not the project's standalone RAM requirement.",
-        f"- Direct-camera production **excludes MediaMTX and mock publishers**. Removing MediaMTX's {production['excluded_mtx_mib']:.1f} MiB mean working memory reduces the known-container reference budget from {production['test_container_total_mib']:.1f} to **{production['production_known_container_estimate_mib']:.1f} MiB** (PostgreSQL only). This is an estimate; application-only figures are unchanged.",
+        "## Pipeline RAM and camera scaling",
+        "",
+        "Application RAM is the sampled resident RAM (RSS) of Python plus its recording FFmpeg children. Shared library pages may be counted more than once when process RSS values are summed. Application figures are supporting measurements, not values to add to host RAM.",
+        "",
     ]
-    slow_runs = [run for run in results if run["consumer_delay_seconds"]]
-    if slow_runs:
-        slow = slow_runs[-1]["metrics"]
-        dropped = sum(
-            c.get("dropped_frames", 0) for c in slow_runs[-1]["cameras_detail"]
-        )
-        conclusion = (
-            f"The bounded queues discarded {dropped} oldest frames on overflow."
-            if queue_size
-            else "An unbounded queue therefore has no fixed memory ceiling if this imbalance continues."
-        )
-        findings.append(
-            f"- With deliberately slow consumers, queued image data grew by **{slow['queued_image_late_slope_mib_per_minute']:.1f} MiB/min**, reached **{slow['queued_frames_peak']} frames**, and application RSS peaked at **{slow['app_rss_peak_mib']:.1f} MiB**. {conclusion}"
-        )
-    findings.extend(
+    lines += _table(
         [
-            "- These are **640×360, H.264, 2 selected FPS per camera** measurements. YOLO/VLM and production-resolution capacity remain unmeasured.",
+            "Scenario",
+            "Cameras",
+            "Typical RAM MiB",
+            "Peak RAM MiB",
+            "Max dropped frames/run",
+        ],
+        [
+            [
+                r["scenario"],
+                r["cameras"],
+                f"{r['pipeline_mean_mib']:.1f}",
+                f"{r['pipeline_peak_mib']:.1f}",
+                r["dropped_frames_max"],
+            ]
+            for r in rows
+        ],
+    )
+    lines += [
+        "Typical values are medians of per-run steady-window means; peaks include startup and draining. The idle Python baseline is shared and counted once, not multiplied by camera count.",
+        "",
+        "## Component estimates for one camera",
+        "",
+    ]
+    lines += _table(
+        ["Component", "Additional RAM above Python baseline (MiB)"],
+        [
+            [r["component"], f"{r['additional_mean_mib']:.1f}"]
+            for r in data["component_estimates"]
+        ],
+    )
+    lines += [
+        "Recording includes FFmpeg and metadata registration. Streaming includes PyAV decoding, selection, BGR conversion, the bounded queue and a counting consumer. Decoding is not a third production worker and is not added again. Threads share Python memory, so these are comparative estimates rather than exact per-thread ownership; their increments need not add exactly to the combined result.",
+        "",
+        f"The observed one-to-two-camera increase was {increment:.1f} MiB. That increment predicts {predicted:.1f} MiB at four cameras, versus {four['pipeline_mean_mib']:.1f} MiB measured ({100 * (predicted / four['pipeline_mean_mib'] - 1):+.1f}% prediction error). This interpolation applies only to this workload and topology.",
+        "",
+        "## Whole-system RAM",
+        "",
+        "Host used RAM is total physical RAM minus available RAM. It already includes the pipeline, Docker/WSL, PostgreSQL, MediaMTX, publishers, profiling and unrelated applications. Do not sum process or container values into these totals. A host change from idle is an observed difference, not exact application attribution; background activity can make it negative.",
+        "",
+    ]
+    lines += _table(
+        [
+            "Scenario",
+            "Cameras",
+            "Typical used GiB",
+            "Peak used GiB",
+            "Min available GiB",
+            "Change from idle MiB",
+        ],
+        [
+            [
+                r["scenario"],
+                r["cameras"],
+                f"{r['host_used_mean_gib']:.2f}",
+                f"{r['host_used_peak_gib']:.2f}",
+                f"{r['host_available_min_gib']:.2f}",
+                f"{r['host_change_from_idle_mib']:+.1f}",
+            ]
+            for r in rows
+        ]
+        + [
+            [
+                r["label"],
+                4,
+                f"{r['host_used_mean_gib']:.2f}",
+                f"{r['host_used_peak_gib']:.2f}",
+                f"{r['host_available_min_gib']:.2f}",
+                f"{r['host_change_from_idle_mib']:+.1f}",
+            ]
+            for r in data["special_runs"]
+        ],
+    )
+    lines += [
+        "## PostgreSQL, Docker and production accounting",
+        "",
+        "The container table uses four-camera steady working-memory measurements. Docker CLI statistics on Linux exclude reclaimable cache. Container values overlap Docker/WSL and host measurements.",
+        "",
+    ]
+    lines += _table(
+        ["Container", "Typical MiB", "Peak MiB", "Production treatment"],
+        [
+            [
+                c["name"],
+                f"{c['four_camera_mean_mib']:.1f}",
+                f"{c['peak_mib']:.1f}",
+                "Exclude: mock relay" if c["test_only"] else "Include",
+            ]
+            for c in data["containers"]
+        ],
+    )
+    lines += _table(
+        ["Additional layer", "Four-camera typical MiB", "Accounting"],
+        [
+            [
+                "WSL VM",
+                f"{four['wsl_mean_mib']:.1f}",
+                "Includes container allocations and VM overhead; do not add to host",
+            ],
+            [
+                "Docker Desktop processes",
+                f"{four['docker_desktop_mean_mib']:.1f}",
+                "Runtime overhead remains while production services use Docker",
+            ],
+            [
+                "Local mock publishers",
+                f"{four['mock_publisher_mean_mib']:.1f}",
+                "Test-only; real cameras encode and publish their own streams",
+            ],
+        ],
+    )
+    lines += [
+        f"The estimated known production-container subtotal is {data['production_container_reference_mib']:.1f} MiB, excluding MediaMTX's {data['excluded_test_container_reference_mib']:.1f} MiB. It is not total server RAM and does not include models or Docker/OS overhead. Pipeline RAM already excludes MediaMTX and mock publishers, so those costs are not subtracted from application figures again. Recording FFmpeg processes remain necessary in production.",
+        "",
+        "Raw host totals remain as measured. Removing a container does not guarantee an identical immediate host-RAM reduction because WSL caching and shared memory behave differently. Exact whole-host RAM without MediaMTX has not been measured; it requires direct-camera input. All visible WSL processes are included, not necessarily Docker alone.",
+        "The WSL measurement includes containers, VM infrastructure and retained cache. It cannot isolate Docker-only VM overhead exactly; the full VM allocation is shown instead. Docker Desktop process RAM is measured separately.",
+        "",
+    ]
+    if data["estimated_production_ingestion_runtime_mib"] is not None:
+        reference = data["estimated_production_ingestion_runtime_mib"]
+        lines += ["## Production ingestion accounting estimate", ""]
+        lines += _table(
+            ["Four-camera production accounting estimate", "RAM MiB"],
+            [
+                [
+                    "Pipeline, including Python and recording FFmpeg (peak incl. stress)",
+                    f"{data['four_camera_observed_peak_mib']:.1f}",
+                ],
+                [
+                    "Retained production containers (typical)",
+                    f"{data['production_container_reference_mib']:.1f}",
+                ],
+                [
+                    "Docker Desktop processes (typical)",
+                    f"{four['docker_desktop_mean_mib']:.1f}",
+                ],
+                [
+                    "WSL remainder after all measured container working memory",
+                    f"{data['estimated_wsl_remainder_mib']:.1f}",
+                ],
+                ["Illustrative ingestion + runtime subtotal", f"{reference:.1f}"],
+            ],
+        )
+        lines += [
+            f"The illustrative subtotal is **{reference / 1024:.2f} GiB before Windows/host OS, unrelated applications and models**. It retains PostgreSQL and runtime overhead while omitting MediaMTX working memory and the publishers. The WSL remainder is VM resident RAM minus all container working-memory references; it includes VM infrastructure, retained cache and potentially other WSL workloads. These different counters do not isolate ownership exactly, and the subtotal mixes a pipeline peak with typical service values. It is a rough accounting estimate, not a measured production peak, an upper bound, or a server specification. It does not modify the measured host totals.",
             "",
         ]
+    lines += [
+        "## Queue stability and stress",
+        "",
+    ]
+    lines += _table(
+        [
+            "Normal scenario",
+            "Cameras",
+            "Peak waiting",
+            "Image MiB",
+            "Consumed / dropped",
+            "Max drain/cleanup s",
+        ],
+        [
+            [
+                r["scenario"],
+                r["cameras"],
+                r["peak_queued_frames"],
+                f"{r['peak_queued_image_mib']:.2f}",
+                f"{r['consumed_frames_total']:,} / {r['dropped_frames_total']:,}",
+                f"{r['drain_and_cleanup_peak_seconds']:.1f}",
+            ]
+            for r in rows
+            if r["mode"] in ("streaming", "full")
+        ],
     )
-    position = lines.index("## Workload and method")
-    lines[position:position] = findings
+    lines += [
+        "Normal-run frame counts sum all repeats, including warm-up. Queue peaks are simultaneous waiting frames across cameras, tracked on every enqueue/dequeue rather than inferred from sampling. Drain/cleanup is time after the planned producer deadline; it also includes recorder finalization and worker teardown, so it is an upper bound on queue-only draining.",
+        "",
+    ]
+    lines += _table(
+        [
+            "Case",
+            "Measured s",
+            "Total s",
+            "Peak RAM MiB",
+            "Peak queued",
+            "Dropped",
+            "Drain/cleanup s",
+        ],
+        [
+            [
+                r["label"],
+                f"{r['measurement_seconds']:g}",
+                f"{r['elapsed_seconds']:.1f}",
+                f"{r['pipeline_peak_mib']:.1f}",
+                r["peak_queued_frames"],
+                r["dropped_frames"],
+                f"{r['drain_and_cleanup_seconds']:.1f}",
+            ]
+            for r in data["special_runs"]
+        ],
+    )
+    for run in data["special_runs"]:
+        lines += [
+            f"- {run['label']}: produced {run['produced_frames']:,}, consumed {run['consumed_frames']:,}, dropped {run['dropped_frames']:,}; peak queued image data {run['peak_queued_image_mib']:.1f} MiB. Late queue-image trend: {run['late_queue_growth_mib_per_min']:.2f} MiB/min; late application trend: {run['late_pipeline_growth_mib_per_min']:.2f} MiB/min."
+        ]
+    payload = profile["width"] * profile["height"] * 3 / 1024**2
+    lines += [
+        "",
+        f"Each selected BGR image uses {payload:.3f} MiB before metadata and decoder buffers. The configured bound is {settings['queue_size']} waiting frames per camera, or {4 * settings['queue_size']} across four cameras. The frame being processed and decoder/conversion buffers are outside that queue limit. On overflow, the oldest waiting frame is dropped; the active frame is not interrupted. Stable queue memory can therefore coexist with missed live frames. Recording preserves video independently, but does not automatically recover skipped detections.",
+        "",
+        "## Workload, method and limits",
+        "",
+        f"- Host: {data['environment']['os']}; {data['environment']['host_ram_mib'] / 1024:.2f} GiB physical RAM; Python {data['environment']['python']}.",
+        f"- Input: {profile['codec']}, {profile['width']} x {profile['height']}, {profile['source_fps']} source FPS over RTSP/TCP; up to {settings['target_fps']:g} selected FPS per camera. Every incoming frame is still decoded.",
+        f"- Queue: {settings['queue_size']} waiting frames per camera, drop oldest on overflow. Cameras share one Python process and database engine, with independent worker pairs and counting consumers.",
+        f"- Normal trials: {settings['warmup_seconds']:g}s warm-up + {settings['measurement_seconds']:g}s measurement, {baseline['repeats']} fresh-process repeats per scenario. Stability and stress durations are shown above. The slow consumer sleeps {next((r['consumer_delay_seconds'] for r in data['special_runs'] if r['consumer_delay_seconds']), 0):g}s per frame per camera.",
+        "- Process RAM is sampled approximately every 0.2s, host RAM every 1s, and Docker approximately every 5-8s. Short peaks between samples may be missed. Peak/minimum host figures cover each full observed run, while typical host figures exclude warm-up and draining.",
+        "- The benchmark uses the production worker and runner helpers. The sampler retains timestamped rows in memory; small long-run growth may include profiling overhead. The coordinator and sampling commands are also included in host totals.",
+        "- A dedicated timestamp-normalized publisher reads the sample video, uses one-second H.264 keyframes and no B-frames, and shares the existing mock server. Existing streams/services remain running. The idle baseline is services-running, not Docker-off or OS-only.",
+        "- Simulated cameras read independent connections to one mock stream. Distinct physical camera scenes, source codecs and resolutions may alter memory. The current input is not a 1080p/4K hardware-sizing benchmark.",
+        "- No YOLO/VLM weights, inference workspaces or GPU memory are included. One future shared consumer would need to sustain the aggregate selected rate, not just the per-camera rate. Model and deployment-container changes require another measurement.",
+        "- Windows background applications, available-memory pressure, shared pages and Docker/WSL caching affect RAM. A fully containerized/Linux production deployment must be measured separately. Do not interpret the current host total or component reference subtotal as a final hardware recommendation.",
+        f"- This host was already busy: idle-run used RAM peaked at {baseline['host_used_peak_gib']:.2f} GiB, and the lowest available RAM across all runs was {data['host_available_min_mib']:.0f} MiB. Memory pressure and unrelated activity limit causal interpretation of host deltas.",
+        f"- Completed runs: {data['completed_runs']}; excluded runs: {len(data['excluded_runs'])}. Successful runs are checked for bounded queues, expected recording processes, complete draining and produced = consumed + dropped. No new test cases were added.",
+        "",
+        "## Reproduction and artifacts",
+        "",
+        "Run `npm run benchmark:memory:suite -- --queue-size 8` with PostgreSQL migrated and the mock RTSP server running. The suite owns only its separate publisher and camera workers; it leaves existing services and recordings intact.",
+        "",
+        f"Raw data: `recordings/benchmarks/{root.name}/`. Each case contains process.csv, host.csv, docker.csv, summary.json and worker.log. Suite files include environment.json, results.json, report_data.json, aggregate.csv and report.md. Benchmark date: {data['date']} Singapore time.",
+        "",
+    ]
+    if data["excluded_runs"]:
+        lines += ["Excluded cases: " + ", ".join(data["excluded_runs"]), ""]
     (root / "report.md").write_text("\n".join(lines), encoding="utf-8")
+    (root / "report_data.json").write_text(
+        json.dumps(data, indent=2) + "\n", encoding="utf-8"
+    )
     with (root / "aggregate.csv").open("w", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=list(rows[0]))
         writer.writeheader()
         writer.writerows(rows)
+    return data
 
 
 if __name__ == "__main__":

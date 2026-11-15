@@ -133,8 +133,8 @@ def _service_summary(host_rows, docker_rows, warmup, duration):
     ):
         name = field.removesuffix("_bytes")
         summary[f"{name}_mean_mib"] = mean(r[field] for r in host) / MIB
-        summary[f"{name}_peak_mib"] = max(r[field] for r in host) / MIB
-        summary[f"{name}_min_mib"] = min(r[field] for r in host) / MIB
+        summary[f"{name}_peak_mib"] = max(r[field] for r in host_rows) / MIB
+        summary[f"{name}_min_mib"] = min(r[field] for r in host_rows) / MIB
     containers = {}
     for name in sorted({r["name"] for r in docker_rows}):
         samples = [
@@ -145,7 +145,10 @@ def _service_summary(host_rows, docker_rows, warmup, duration):
         if samples:
             containers[name] = {
                 "mean_mib": mean(samples) / MIB,
-                "peak_mib": max(samples) / MIB,
+                "peak_mib": max(
+                    r["memory_bytes"] for r in docker_rows if r["name"] == name
+                )
+                / MIB,
                 "samples": len(samples),
             }
     return {"host": summary, "containers": containers}
@@ -226,6 +229,7 @@ def _run_case(args, root, mode, cameras, repeat, *, duration=None, delay=0):
     result.update(
         case=label, monitoring_errors=errors, host_clock_offset_seconds=offset
     )
+    _validate_run(result)
     (output / "summary.json").write_text(
         json.dumps(result, indent=2) + "\n", encoding="utf-8"
     )
@@ -234,6 +238,27 @@ def _run_case(args, root, mode, cameras, repeat, *, duration=None, delay=0):
         flush=True,
     )
     return result
+
+
+def _validate_run(run):
+    """Reject incomplete camera runs or inconsistent bounded-queue accounting."""
+    if run["status"] != "completed" or run["monitoring_errors"]:
+        raise RuntimeError(f"Incomplete measurements: {run['case']}")
+    expected_processes = run["cameras"] if run["mode"] in ("recording", "full") else 0
+    if run["metrics"]["ffmpeg_process_count_peak"] != expected_processes:
+        raise RuntimeError(f"Unexpected recording process count: {run['case']}")
+    for camera in run["cameras_detail"]:
+        if camera["queued_frames"] or camera["queued_image_bytes"]:
+            raise RuntimeError(f"Queue did not drain: {run['case']}")
+        if camera["peak_queued_frames"] > run["queue_size"]:
+            raise RuntimeError(f"Queue capacity exceeded: {run['case']}")
+        if (
+            camera["produced_frames"]
+            != camera["consumed_frames"] + camera["dropped_frames"]
+        ):
+            raise RuntimeError(f"Frame accounting mismatch: {run['case']}")
+        if run["mode"] in ("streaming", "full") and not camera["produced_frames"]:
+            raise RuntimeError(f"Camera produced no selected frames: {run['case']}")
 
 
 def _environment(url):
@@ -249,6 +274,7 @@ def _environment(url):
             "codec": stream.codec_context.name,
         }
     return {
+        "started_at_utc": datetime.now(UTC).isoformat(),
         "os": platform.platform(),
         "python": platform.python_version(),
         "host_ram_mib": psutil.virtual_memory().total / MIB,
@@ -363,6 +389,9 @@ def _run_suite(args, root):
             )
     if args.soak_duration:
         results.append(_run_case(args, root, "full", 4, 1, duration=args.soak_duration))
+        (root / "results.json").write_text(
+            json.dumps(results, indent=2) + "\n", encoding="utf-8"
+        )
     if not args.skip_stress:
         results.append(_run_case(args, root, "full", 4, 1, delay=0.75))
     (root / "results.json").write_text(
