@@ -12,20 +12,15 @@ import {
   Pause,
   Play,
   Sparkles,
-  PanelRightClose,
-  PanelRightOpen,
-  ArrowRight,
-  LayoutGrid,
   Inbox,
-  ChevronUp,
-  ChevronDown,
 } from 'lucide-react';
 import { AppLayout } from '../../components/layout/AppLayout';
 import { StatusPill } from '../../components/ui/Badge';
 import { SEVERITY_TONE, SEVERITY_DOT } from '../../components/ui/tones';
 import { Button } from '../../components/ui/Button';
 import { BarMeter, ClipThumb, FieldLabel, Kpi, SectionTitle } from '../../components/ui/Primitives';
-import { Toggle } from '../../components/ui/Toggle';
+import { EditWidgetsButton, PanelCloseButton, SidePanel, ViewAll, WidgetEditor, WidgetSection } from '../../components/ui/Widgets';
+import { useWidgetLayout, type WidgetConfig, type WidgetMeta } from '../../components/ui/useWidgetLayout';
 import { MOCK_CAMERAS } from '../../data/mock';
 import DismissModal from '../../components/modals/DismissModal';
 import EscalateModal from '../../components/modals/EscalateModal';
@@ -124,85 +119,20 @@ function fmt(sec: number) {
 // ── Side-panel widgets ───────────────────────────────────────────────────────
 
 type WidgetId = 'queue' | 'hotspots' | 'cameras';
-interface WidgetConfig { id: WidgetId; visible: boolean }
 
-const WIDGET_META: Record<WidgetId, { label: string; hint: string }> = {
+const WIDGET_META: WidgetMeta<WidgetId> = {
   queue:    { label: 'Review queue',  hint: 'Clips waiting for your decision' },
   hotspots: { label: 'Hotspots',      hint: 'Places with the most incidents' },
   cameras:  { label: 'Camera status', hint: 'Cameras that are offline' },
 };
 
-const DEFAULT_LAYOUT: WidgetConfig[] = [
+const DEFAULT_LAYOUT: WidgetConfig<WidgetId>[] = [
   { id: 'queue', visible: true },
   { id: 'hotspots', visible: true },
   { id: 'cameras', visible: false },
 ];
 
 const LAYOUT_KEY = 'insight.staffHomeWidgets';
-
-function readLayout(): WidgetConfig[] {
-  try {
-    const raw = localStorage.getItem(LAYOUT_KEY);
-    if (!raw) return DEFAULT_LAYOUT;
-    const saved = JSON.parse(raw) as WidgetConfig[];
-    const known = saved.filter((w) => w.id in WIDGET_META);
-    // append any widgets added since the layout was saved
-    const missing = DEFAULT_LAYOUT.filter((d) => !known.some((w) => w.id === d.id));
-    return [...known, ...missing];
-  } catch {
-    return DEFAULT_LAYOUT;
-  }
-}
-
-function WidgetEditor({ layout, onChange, onReset, onDone }: { layout: WidgetConfig[]; onChange: (l: WidgetConfig[]) => void; onReset: () => void; onDone: () => void }) {
-  const move = (i: number, dir: -1 | 1) => {
-    const j = i + dir;
-    if (j < 0 || j >= layout.length) return;
-    const next = [...layout];
-    [next[i], next[j]] = [next[j], next[i]];
-    onChange(next);
-  };
-  const toggle = (i: number, visible: boolean) => onChange(layout.map((w, k) => (k === i ? { ...w, visible } : w)));
-
-  return (
-    <div className="flex flex-col gap-[10px]">
-      <div className="pb-[4px]">
-        <SectionTitle meta="Show, hide and reorder">Edit widgets</SectionTitle>
-      </div>
-      <ul className="m-0 flex list-none flex-col gap-[8px] p-0">
-        {layout.map((w, i) => (
-          <li key={w.id} className="flex items-center gap-[10px] rounded-[8px] border border-line bg-white p-[10px]">
-            <span className="flex flex-col">
-              <button type="button" onClick={() => move(i, -1)} disabled={i === 0} aria-label={`Move ${WIDGET_META[w.id].label} up`} className="flex cursor-pointer border-none bg-transparent p-0 text-ink-2 hover:text-ink disabled:cursor-default disabled:text-line">
-                <ChevronUp size={16} />
-              </button>
-              <button type="button" onClick={() => move(i, 1)} disabled={i === layout.length - 1} aria-label={`Move ${WIDGET_META[w.id].label} down`} className="flex cursor-pointer border-none bg-transparent p-0 text-ink-2 hover:text-ink disabled:cursor-default disabled:text-line">
-                <ChevronDown size={16} />
-              </button>
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className={`block text-[13px] font-medium ${w.visible ? 'text-ink' : 'text-faint'}`}>{WIDGET_META[w.id].label}</span>
-              <span className="block text-[11px] text-muted">{WIDGET_META[w.id].hint}</span>
-            </span>
-            <Toggle checked={w.visible} onChange={(v) => toggle(i, v)} label={`Show ${WIDGET_META[w.id].label}`} />
-          </li>
-        ))}
-      </ul>
-      <div className="mt-[6px] flex gap-[8px]">
-        <Button variant="secondary" size="sm" className="flex-1" onClick={onReset}>Reset</Button>
-        <Button variant="primary" size="sm" className="flex-1" onClick={onDone}>Done</Button>
-      </div>
-    </div>
-  );
-}
-
-function ViewAll({ onClick }: { onClick: () => void }) {
-  return (
-    <button type="button" onClick={onClick} className="flex cursor-pointer items-center gap-[4px] border-none bg-transparent p-0 text-[12px] font-medium text-brand hover:underline">
-      View all <ArrowRight size={14} />
-    </button>
-  );
-}
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
@@ -217,11 +147,7 @@ export default function StaffHomePage() {
   const [toast, setToast] = useState<Toast>(null);
   const [escalatedToday, setEscalatedToday] = useState(0);
   const [editing, setEditing] = useState(false);
-  const [layout, setLayout] = useState<WidgetConfig[]>(readLayout);
-
-  useEffect(() => {
-    try { localStorage.setItem(LAYOUT_KEY, JSON.stringify(layout)); } catch { /* storage unavailable */ }
-  }, [layout]);
+  const [layout, setLayout] = useWidgetLayout(LAYOUT_KEY, DEFAULT_LAYOUT, WIDGET_META);
 
   const visibleWidgets = layout.filter((w) => w.visible);
   const offlineCams = MOCK_CAMERAS.filter((c) => c.status === 'offline');
@@ -258,11 +184,7 @@ export default function StaffHomePage() {
 
   const maxHotspot = Math.max(...HOTSPOTS.map((h) => h.count));
 
-  const closeBtn = (
-    <button type="button" onClick={() => setPanelOpen(false)} aria-label="Hide side panel" className="flex cursor-pointer border-none bg-transparent p-0 text-ink-2 hover:text-ink">
-      <PanelRightClose size={16} />
-    </button>
-  );
+  const closeBtn = <PanelCloseButton onClick={() => setPanelOpen(false)} />;
 
   return (
     <AppLayout role="staff" activePath="/staff/home" variant="bare">
@@ -329,11 +251,11 @@ export default function StaffHomePage() {
       </section>
 
       {/* ── Side panel ──────────────────────────────────────────────── */}
-      {panelOpen ? (
-        <aside className="thin-scroll flex w-[340px] shrink-0 flex-col gap-[10px] overflow-y-auto border-l border-line bg-head p-[20px]">
+      <SidePanel open={panelOpen} onOpenChange={setPanelOpen} badge={queue.length}>
           {editing ? (
             <WidgetEditor
               layout={layout}
+              meta={WIDGET_META}
               onChange={setLayout}
               onReset={() => setLayout(DEFAULT_LAYOUT)}
               onDone={() => setEditing(false)}
@@ -347,7 +269,7 @@ export default function StaffHomePage() {
                 </div>
               )}
               {visibleWidgets.map((w, i) => (
-                <div key={w.id} className={`flex flex-col gap-[10px] ${i > 0 ? 'mt-[4px] border-t border-line pt-[18px]' : ''}`}>
+                <WidgetSection key={w.id} index={i}>
                   {w.id === 'queue' && (
                     <>
                       <div className="pb-[4px]">
@@ -442,30 +364,13 @@ export default function StaffHomePage() {
                       )}
                     </>
                   )}
-                </div>
+                </WidgetSection>
               ))}
 
-              <div className="flex-1" />
-              <button
-                type="button"
-                onClick={() => setEditing(true)}
-                className="flex w-full cursor-pointer items-center justify-center gap-[6px] rounded-[6px] border-none bg-transparent py-[8px] text-[12px] font-medium text-ink-2 hover:bg-white"
-              >
-                <LayoutGrid size={14} /> Edit widgets
-              </button>
+              <EditWidgetsButton onClick={() => setEditing(true)} />
             </>
           )}
-        </aside>
-      ) : (
-        <aside className="flex w-[48px] shrink-0 flex-col items-center border-l border-line bg-head pt-[20px]">
-          <button type="button" onClick={() => setPanelOpen(true)} aria-label="Show side panel" className="relative flex cursor-pointer border-none bg-transparent p-0 text-ink-2 hover:text-ink">
-            <PanelRightOpen size={16} />
-            {queue.length > 0 && (
-              <span className="absolute -top-[8px] -right-[10px] flex size-[16px] items-center justify-center rounded-full bg-brand text-[10px] font-semibold text-white">{queue.length}</span>
-            )}
-          </button>
-        </aside>
-      )}
+      </SidePanel>
 
       {/* Toast */}
       {toast && (

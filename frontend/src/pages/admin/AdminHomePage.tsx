@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CircleCheck, MapPin, Clock, UserRound, Play, ArrowRight, Sparkles, MessageSquareQuote, Inbox } from 'lucide-react';
+import { CircleCheck, MapPin, Clock, UserRound, Play, ArrowRight, Sparkles, MessageSquareQuote, Inbox, Camera as CameraIcon } from 'lucide-react';
 import { AppLayout } from '../../components/layout/AppLayout';
 import { StatusPill } from '../../components/ui/Badge';
 import { SEVERITY_TONE, SEVERITY_DOT } from '../../components/ui/tones';
 import { Button } from '../../components/ui/Button';
 import { BarMeter, ClipThumb, FieldLabel, Kpi, SectionTitle } from '../../components/ui/Primitives';
 import { INPUT_CLASS } from '../../components/ui/Modal';
-import { MOCK_INCIDENTS, MOCK_STAFF } from '../../data/mock';
+import { MOCK_CAMERAS, MOCK_INCIDENTS, MOCK_STAFF } from '../../data/mock';
+import { EditWidgetsButton, PanelCloseButton, SidePanel, ViewAll, WidgetEditor, WidgetSection } from '../../components/ui/Widgets';
+import { useWidgetLayout, type WidgetConfig, type WidgetMeta } from '../../components/ui/useWidgetLayout';
 
 const STAFF_MAP: Record<string, string> = Object.fromEntries(MOCK_STAFF.map((s) => [s.id, s.name]));
 const camLabel = (camId: string) => 'Cam ' + camId.replace('cam-', '').padStart(2, '0');
@@ -19,12 +21,37 @@ const REPORTS = [
   { label: '1–4 Oct', dates: '1 Oct – 4 Oct 2026' },
 ];
 
+type WidgetId = 'escalated' | 'resolved' | 'reports' | 'cameras';
+
+const WIDGET_META: WidgetMeta<WidgetId> = {
+  escalated: { label: 'Escalated cases',   hint: 'Cases staff sent to you' },
+  resolved:  { label: 'Recently resolved', hint: 'Cases closed in the last day' },
+  reports:   { label: 'Workload reports',  hint: 'Weekly summaries for your team' },
+  cameras:   { label: 'Camera status',     hint: 'Cameras that are offline' },
+};
+
+const DEFAULT_LAYOUT: WidgetConfig<WidgetId>[] = [
+  { id: 'escalated', visible: true },
+  { id: 'resolved', visible: true },
+  { id: 'reports', visible: true },
+  { id: 'cameras', visible: false },
+];
+
+const LAYOUT_KEY = 'insight.adminHomeWidgets';
+
 export default function AdminHomePage() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(() => MOCK_INCIDENTS.filter((i) => i.outcome === 'Escalated'));
   const [resolved, setResolved] = useState(() => MOCK_INCIDENTS.filter((i) => i.outcome === 'Accepted').slice(0, 2));
   const [selectedId, setSelectedId] = useState(open[0]?.id ?? '');
   const [assignments, setAssignments] = useState<Record<string, string>>({});
+  const [panelOpen, setPanelOpen] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [layout, setLayout] = useWidgetLayout(LAYOUT_KEY, DEFAULT_LAYOUT, WIDGET_META);
+
+  const visibleWidgets = layout.filter((w) => w.visible);
+  const offlineCams = MOCK_CAMERAS.filter((c) => c.status === 'offline');
+  const closeBtn = <PanelCloseButton onClick={() => setPanelOpen(false)} />;
 
   const current = open.find((i) => i.id === selectedId) ?? open[0] ?? null;
 
@@ -113,68 +140,116 @@ export default function AdminHomePage() {
         )}
       </section>
 
-      <aside className="thin-scroll flex w-[340px] shrink-0 flex-col gap-[10px] overflow-y-auto border-l border-line bg-head p-[20px]">
-        <div className="pb-[4px]"><SectionTitle meta={`${open.length} open`}>Escalated cases</SectionTitle></div>
-        {open.length === 0 && <p className="m-0 py-[4px] text-[12px] text-muted">Nothing open.</p>}
-        {open.map((inc, i) => {
-          const selected = inc.id === current?.id;
-          return (
-            <button
-              key={inc.id}
-              type="button"
-              onClick={() => setSelectedId(inc.id)}
-              aria-current={selected ? 'true' : undefined}
-              className={`flex w-full cursor-pointer items-center gap-[10px] rounded-[8px] border p-[8px] text-left transition-colors ${selected ? 'border-brand bg-white' : 'border-transparent bg-transparent hover:bg-white'}`}
-            >
-              <ClipThumb seed={i} className="h-[42px] w-[60px] shrink-0 rounded-[4px]" iconSize={14} />
-              <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
-                <span className="truncate text-[12px] font-medium text-ink">{inc.type} · {inc.location}</span>
-                <span className="flex items-center gap-[6px] text-[11px] text-muted">
-                  <span className="size-[7px] shrink-0 rounded-full" style={{ backgroundColor: SEVERITY_DOT[inc.severity] }} />
-                  {camLabel(inc.camId)} · {fmtDate(inc.dateTime)} · {Math.round(inc.confidence * 100)}%
-                </span>
-              </span>
-            </button>
-          );
-        })}
+      <SidePanel open={panelOpen} onOpenChange={setPanelOpen} badge={open.length}>
+        {editing ? (
+          <WidgetEditor layout={layout} meta={WIDGET_META} onChange={setLayout} onReset={() => setLayout(DEFAULT_LAYOUT)} onDone={() => setEditing(false)} />
+        ) : (
+          <>
+            {visibleWidgets.length === 0 && (
+              <div className="flex items-center justify-between">
+                <p className="m-0 text-[12px] text-muted">No widgets shown.</p>
+                {closeBtn}
+              </div>
+            )}
+            {visibleWidgets.map((w, wi) => (
+              <WidgetSection key={w.id} index={wi}>
+                {w.id === 'escalated' && (
+                  <>
+                    <div className="pb-[4px]"><SectionTitle meta={`${open.length} open`} action={wi === 0 ? closeBtn : undefined}>Escalated cases</SectionTitle></div>
+                    {open.length === 0 && <p className="m-0 py-[4px] text-[12px] text-muted">Nothing open.</p>}
+                    {open.map((inc, i) => {
+                      const selected = inc.id === current?.id;
+                      return (
+                        <button
+                          key={inc.id}
+                          type="button"
+                          onClick={() => setSelectedId(inc.id)}
+                          aria-current={selected ? 'true' : undefined}
+                          className={`flex w-full cursor-pointer items-center gap-[10px] rounded-[8px] border p-[8px] text-left transition-colors ${selected ? 'border-brand bg-white' : 'border-transparent bg-transparent hover:bg-white'}`}
+                        >
+                          <ClipThumb seed={i} className="h-[42px] w-[60px] shrink-0 rounded-[4px]" iconSize={14} />
+                          <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
+                            <span className="truncate text-[12px] font-medium text-ink">{inc.type} · {inc.location}</span>
+                            <span className="flex items-center gap-[6px] text-[11px] text-muted">
+                              <span className="size-[7px] shrink-0 rounded-full" style={{ backgroundColor: SEVERITY_DOT[inc.severity] }} />
+                              {camLabel(inc.camId)} · {fmtDate(inc.dateTime)} · {Math.round(inc.confidence * 100)}%
+                            </span>
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </>
+                )}
 
-        <div className="mt-[4px] border-t border-line pt-[18px] pb-[4px]"><SectionTitle>Recently resolved</SectionTitle></div>
-        {resolved.map((inc) => (
-          <div key={inc.id} className="flex items-center gap-[10px] px-[8px] py-[2px]">
-            <CircleCheck size={15} className="shrink-0 text-success" />
-            <span className="min-w-0 flex-1">
-              <span className="block truncate text-[12px] font-medium text-ink">{inc.type} · {inc.location}</span>
-              <span className="block text-[11px] text-muted">{fmtDate(inc.dateTime)}</span>
-            </span>
-          </div>
-        ))}
+                {w.id === 'resolved' && (
+                  <>
+                    <div className="pb-[4px]"><SectionTitle action={wi === 0 ? closeBtn : undefined}>Recently resolved</SectionTitle></div>
+                    {resolved.map((inc) => (
+                      <div key={inc.id} className="flex items-center gap-[10px] px-[8px] py-[2px]">
+                        <CircleCheck size={15} className="shrink-0 text-success" />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-[12px] font-medium text-ink">{inc.type} · {inc.location}</span>
+                          <span className="block text-[11px] text-muted">{fmtDate(inc.dateTime)}</span>
+                        </span>
+                      </div>
+                    ))}
+                  </>
+                )}
 
-        <div className="mt-[4px] border-t border-line pt-[18px] pb-[4px]">
-          <SectionTitle
-            action={
-              <button type="button" onClick={() => navigate('/admin/workload')} className="flex cursor-pointer items-center gap-[4px] border-none bg-transparent p-0 text-[12px] font-medium text-brand hover:underline">
-                View all <ArrowRight size={14} />
-              </button>
-            }
-          >
-            Workload reports
-          </SectionTitle>
-        </div>
-        {REPORTS.map((r) => (
-          <button
-            key={r.label}
-            type="button"
-            onClick={() => navigate('/admin/workload')}
-            className="flex w-full cursor-pointer items-center gap-[10px] rounded-[6px] border-none bg-transparent px-[8px] py-[6px] text-left transition-colors hover:bg-white"
-          >
-            <span className="min-w-0 flex-1">
-              <span className="block text-[12px] font-medium text-ink">{r.label}</span>
-              <span className="block text-[11px] text-muted">{r.dates}</span>
-            </span>
-            <ArrowRight size={14} className="text-brand" />
-          </button>
-        ))}
-      </aside>
+                {w.id === 'reports' && (
+                  <>
+                    <div className="pb-[4px]">
+                      <SectionTitle action={<span className="flex items-center gap-[12px]"><ViewAll onClick={() => navigate('/admin/workload')} />{wi === 0 && closeBtn}</span>}>
+                        Workload reports
+                      </SectionTitle>
+                    </div>
+                    {REPORTS.map((r) => (
+                      <button
+                        key={r.label}
+                        type="button"
+                        onClick={() => navigate('/admin/workload')}
+                        className="flex w-full cursor-pointer items-center gap-[10px] rounded-[6px] border-none bg-transparent px-[8px] py-[6px] text-left transition-colors hover:bg-white"
+                      >
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-[12px] font-medium text-ink">{r.label}</span>
+                          <span className="block text-[11px] text-muted">{r.dates}</span>
+                        </span>
+                        <ArrowRight size={14} className="text-brand" />
+                      </button>
+                    ))}
+                  </>
+                )}
+
+                {w.id === 'cameras' && (
+                  <>
+                    <div className="pb-[4px]">
+                      <SectionTitle
+                        meta={`${MOCK_CAMERAS.length - offlineCams.length} of ${MOCK_CAMERAS.length} online`}
+                        action={<span className="flex items-center gap-[12px]"><ViewAll onClick={() => navigate('/admin/cameras')} />{wi === 0 && closeBtn}</span>}
+                      >
+                        Camera status
+                      </SectionTitle>
+                    </div>
+                    {offlineCams.length === 0 ? (
+                      <p className="m-0 text-[12px] text-muted">All cameras are online.</p>
+                    ) : (
+                      offlineCams.map((c) => (
+                        <button key={c.id} type="button" onClick={() => navigate('/admin/cameras')} className="flex w-full cursor-pointer items-center gap-[8px] border-none bg-transparent px-[8px] py-[2px] text-left">
+                          <CameraIcon size={14} className="shrink-0 text-danger" />
+                          <span className="min-w-0 flex-1 truncate text-[12px] text-ink">{c.name} · {c.location}</span>
+                          <span className="shrink-0 text-[11px] text-muted">Offline</span>
+                        </button>
+                      ))
+                    )}
+                  </>
+                )}
+              </WidgetSection>
+            ))}
+
+            <EditWidgetsButton onClick={() => setEditing(true)} />
+          </>
+        )}
+      </SidePanel>
     </AppLayout>
   );
 }
