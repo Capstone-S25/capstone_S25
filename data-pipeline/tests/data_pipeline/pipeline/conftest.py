@@ -69,7 +69,7 @@ def pipeline(tmp_path, monkeypatch):
         # Lifecycle scenarios keep their finite backlog within queue capacity.
         kwargs.setdefault("queue_size", len(context.frames))
         runner.run_pipeline(
-            context.source,
+            [context.source],
             tmp_path / "recordings",
             session_factory=context.session_factory,
             frame_handler=handler,
