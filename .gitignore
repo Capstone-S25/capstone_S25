@@ -104,3 +104,10 @@ notebooks/plswork.ipynb
 notebooks/yolo_poc.ipynb
 notebooks/yolo_poc_v2.ipynb
 notebooks/new.py
+
+# Secrets: VLM endpoint and keys. Never commit.
+litellm_config.yaml
+
+# Large review media, rebuilt by the scripts that made them
+notebooks/exp/eval/iitb_review/
+notebooks/exp/eval/*.mp4
