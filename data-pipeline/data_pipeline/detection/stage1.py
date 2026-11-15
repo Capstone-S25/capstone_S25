@@ -31,7 +31,9 @@ TASKS_BY_EVENT = {
     "sustained_presence": ("loitering", "smoking", "rough_sleeping"),
     "long_presence": ("loitering", "rough_sleeping"),
     "near_camera": ("loitering",),
-    "hand_to_face": ("smoking",),
+    # Littering too: the person dedup can let a smoking alert stand in for a reach-down one on the same person
+    # (8 ICVL held-out littering incidents caught only this way, 2026-11-10).
+    "hand_to_face": ("smoking", "littering"),
     "periodic_review": (
         "smoking",
         "littering",
@@ -56,8 +58,11 @@ def load_gate() -> ModuleType:
     return stage1_gate
 
 
-def default_config(gate: ModuleType, device: str = "cpu"):
-    """The Stage 1 settings chosen in the notebooks/ experiments (see notebooks/README.md)."""
+def default_config(gate: ModuleType, device: str = "cpu", imgsz: int = 640):
+    """The Stage 1 settings chosen in the notebooks/ experiments (see notebooks/README.md).
+
+    imgsz 1280 for wide shots where people are small: far lying people are only
+    detected at 1280, at roughly 3x the CPU cost."""
     return gate.GateConfig(
         det_weights=str(
             Path(
@@ -75,8 +80,43 @@ def default_config(gate: ModuleType, device: str = "cpu"):
             )
             / "yolo26s-pose.pt"
         ),
-        rules=gate.DEFAULT_RULES + ("pose_action",),
+        rules=gate.DEFAULT_RULES + ("pose_action", "smoking"),
         inview_s=60.0,
+        # Calibrated on the camera-disjoint split (notebooks/exp/eval/calib_chosen.json,
+        # CALIB_LOG.md experiments 1-31): 90.3 % of events on the tuned cameras, 94.8 % on
+        # cameras never tuned on, at 98.5 alerts/h on footage with no incident. Every change was
+        # priced at an equal alert rate; the cheapest buy on the front is 7.7 alerts/h per point.
+        loiter_s=30.0,
+        loiter_radius_h=0.45,
+        # Guards: a reach or pose cue needs a person at least 0.12 of frame height whose hand has
+        # been tracked 1.5 s. Both were unset, which let tiny and half-second detections fire.
+        reach_min_h=0.12,
+        hand_min_age_s=1.5,
+        # Crop checks are stricter than the thresholds stored with the weights (0.2).
+        pose_action_thr=0.4,
+        crop_check_thr=0.3,
+        # Stillness rules re-report a person still present after 45 s. Previously never repeated.
+        loiter_repeat_s=45.0,
+        inview_repeat_s=45.0,
+        # KEPT AGAINST THE CALIBRATION, deliberately. calib_chosen says None; left at 1.0 because
+        # the sweep optimises 983 incidents of which only 5 are left items, so it trades a bag for
+        # a litter catch without noticing. Measured both ways: 1.0 takes unattended items from 5/6
+        # to 6/6 on the held-out cameras (+5 littering on fit) for +4.6 alerts/h on fit, 9.2 per
+        # recall point - above the 7.7 bar, accepted for bag coverage.
+        reach_refire_move_h=1.0,
+        pose_action_cooldown_s=15.0,
+        # Smoking: count hand raises to the face (3 in 10 s), then its own crop check.
+        smoke_count_raises=True,
+        smoke_min_hits=3,
+        crop_check_rules=("reach_down", "pose_action", "hand_to_face"),
+        item_rule_skip=("umbrella",),  # cafe parasols, not left items
+        still_lying_wh=1.1,  # people lying down are short boxes: skip the height guard
+        # Stillness rules measure body size by the box's longer side (lying people in any
+        # pose), and a person pass at 1280 px once a second feeds them far / lying people
+        # the 640 px pass misses (CHAD lying 1/4 -> 3/4, other targets unchanged, ~+30 % CPU).
+        still_size_longer_side=True,
+        hires_every_s=1.0,
+        imgsz=imgsz,
         device=device,
         # Crop check encoder: open_clip id or "local-dir:<MobileCLIP2-S2 folder>" for
         # offline machines; unset = timm/MobileCLIP2-S2-OpenCLIP from the HF hub/cache.

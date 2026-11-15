@@ -105,7 +105,7 @@ def _build_stage1_hook(
         source.source_id,
         out_dir,
         fps=args.target_fps,
-        cfg=default_config(gate, args.stage1_device),
+        cfg=default_config(gate, args.stage1_device, args.stage1_imgsz),
         gate=gate,
         safety_scan_seconds=args.safety_scan_seconds,
     )
