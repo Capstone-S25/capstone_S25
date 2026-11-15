@@ -402,6 +402,12 @@ def add_arguments(parser, repo_root):
     parser.add_argument("--vlm-device", default="cuda:0")
     parser.add_argument("--stage1-device", default="cpu")
     parser.add_argument(
+        "--stage1-imgsz",
+        type=int,
+        default=640,
+        help="YOLO input size; 1280 for wide shots with small people (~3x CPU)",
+    )
+    parser.add_argument(
         "--safety-scan-seconds",
         type=float,
         default=10,
