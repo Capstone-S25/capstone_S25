@@ -1,0 +1,37 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16      # Postgres + pgvector, as in the deck
+    environment:
+      POSTGRES_USER: cctv
+      POSTGRES_PASSWORD: cctv
+      POSTGRES_DB: cctv
+      TZ: Asia/Singapore
+    ports: ["5433:5432"]               # 5433 on your Mac, so it never clashes with another Postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Runs the migrations automatically the FIRST time the volume is created.
+      - ./db/migrations:/docker-entrypoint-initdb.d:ro
+
+  api:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://cctv:cctv@db:5432/cctv
+      COOKIE_SECURE: "false"
+      SITE_TZ: Asia/Singapore
+      # Emails go to Mailpit (below) while developing: open http://localhost:8025 to read them.
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+      SMTP_STARTTLS: "false"
+      APP_URL: http://localhost:8000/docs   # change to the dashboard's login page once it exists
+      # Where the dashboard runs (comma-separated). Add its real address when it's deployed.    
+      FRONTEND_ORIGINS: http://localhost:3000,http://localhost:5173    
+    ports: ["8000:8000"]
+    depends_on: [db, mailpit]
+
+  mailpit:
+    image: axllent/mailpit           # fake mail server: catches every email, sends none
+    ports:
+      - "8025:8025"                   # inbox in your browser
+
+volumes:
+  pgdata:
