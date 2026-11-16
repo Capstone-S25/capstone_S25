@@ -1,4 +1,5 @@
-"""Production gate extracted from Stage 1; benchmark/replay utilities excluded."""
+"""Production gate extracted from Stage 1 (feat/stage1-integration a51198d);
+benchmark/replay utilities excluded."""
 
 from __future__ import annotations
 
@@ -13,9 +14,7 @@ import cv2
 import numpy as np
 
 PERSON = 0
-
-TWO_WHEELERS = (1, 3)
-
+TWO_WHEELERS = (1, 3)  # COCO bicycle, motorcycle
 COCO_ITEMS = {
     24: "backpack",
     25: "umbrella",
@@ -24,24 +23,28 @@ COCO_ITEMS = {
     39: "bottle",
     41: "cup",
 }
-
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".bmp"}
-
 VIDEO_EXTS = {".avi", ".mp4", ".mov", ".mkv"}
 
-NOSE, L_EYE, R_EYE, L_EAR, R_EAR = (0, 1, 2, 3, 4)
-
-L_WRIST, R_WRIST = (9, 10)
-
-L_HIP, R_HIP = (11, 12)
-
-L_KNEE, R_KNEE = (13, 14)
-
+NOSE, L_EYE, R_EYE, L_EAR, R_EAR = 0, 1, 2, 3, 4
+L_WRIST, R_WRIST = 9, 10
+L_HIP, R_HIP = 11, 12
+L_KNEE, R_KNEE = 13, 14
 KP_CONF = 0.3
 
 ALL_RULES = ("loiter", "speed", "smoking", "reach_down", "litter", "unattended")
-
+# Off by default:
+#   "litter" (static-object detection): could not be validated (littering clips are ~3 s long) and
+#            fired ~15-130 times/min on normal footage.
+#   "smoking" (pose hand-to-face): near chance on low-resolution CCTV and the largest source of
+#            false alarms; smoking candidates come from sustained presence ("loiter") instead.
+#            Since 2026-11-10 the deployed config (data-pipeline default_config) turns it on with
+#            smoke_count_raises + its own crop check (exp/eval/proposed.json): ICVL held-out smoking 82 -> 84/116.
 DEFAULT_RULES = ("loiter", "in_view", "reach_down", "unattended")
+# "speed" (fast_motion) is off by default since 2026-11-04: it catches running, which is not one of the project's
+# events, is at chance for dumping and is the largest alert source at dump sites (exp/newcam/fast_motion_sweep.py).
+# Optional: "pose_action" (learned littering-action cue on 1 s of keypoints, stage1_pose_action.py). Raises
+# littering recall a lot; its threshold was calibrated on Avenue-style normal footage, so recalibrate per camera.
 
 
 @dataclass
@@ -49,80 +52,195 @@ class GateConfig:
     det_weights: str = "yolo26n.pt"
     pose_weights: str | None = "yolo26n-pose.pt"
     imgsz: int = 640
-    device: str = "cpu"
-    det_conf: float = 0.1
-    person_conf: float = 0.4
+    # Slow high-resolution pass (None = off): every hires_every_s, run the person detector at hires_imgsz and feed
+    # the people the main pass is not tracking to a stays-put check of their own. Far / lying people (CHAD) are only
+    # detected at 1280; they stay put for minutes, so a look every second or two is enough. It never touches the main
+    # tracker or the other rules, and its alerts are added after the person dedup, so they cannot block any other.
+    hires_every_s: float | None = None
+    hires_imgsz: int = 1280
+    device: str = (
+        "cpu"  # "cpu" for deployment timing; "mps"/"cuda" only to speed up offline runs
+    )
+    det_conf: float = (
+        0.10  # detections below new_track_conf only extend existing tracks
+    )
+    person_conf: float = (
+        0.40  # needed once to confirm a person track, not on every frame
+    )
     item_classes: tuple[int, ...] = tuple(COCO_ITEMS)
     rules: tuple[str, ...] = DEFAULT_RULES
     pose_every_n: int = 1
-    tracker: str = "bytetrack"
+
+    tracker: str = "bytetrack"  # "bytetrack" | "botsort" | "botsort_reid"
     track_buffer_s: float = 4.0
     new_track_conf: float = 0.25
+
     stitch: bool = True
     stitch_max_gap_s: float = 8.0
     stitch_base_dist_h: float = 0.75
     stitch_walk_h_per_s: float = 1.0
     stitch_min_similarity: float = 0.55
+
     clip_pad_s: float = 2.5
+
     loiter_s: float = 20.0
     loiter_radius_h: float = 0.6
     loiter_release_h: float = 0.9
-    loiter_repeat_s: float = float("inf")
+    loiter_repeat_s: float = float(
+        "inf"
+    )  # re-send while the person stays; inf = once per person. 60 s re-sends
+    # (with inview_repeat_s): ICVL even 243 -> 349 stillness alerts for 2 more
+    # of 81 still-20 s+ and 1 more of 17 still-60 s+ incidents
+    # 10% more walkway alerts for no gain (exp/newcam/alert_budget.py)
+
+    # In view for a long time (wandering / pacing), moving or not. Should exceed how long people normally take
+    # to pass through this camera: calibrate_inview() on its normal footage. Gaps up to the re-link window
+    # (stitch_max_gap_s) do not restart the timer.
     inview_s: float = 120.0
-    inview_area_h: float | None = 4.0
-    inview_repeat_s: float = float("inf")
+    inview_area_h: float | None = (
+        4.0  # only if they stayed within this many body heights of one area (None = anywhere)
+    )
+    inview_repeat_s: float = float(
+        "inf"
+    )  # once per person (was every 60 s; see loiter_repeat_s)
+
     speed_h_per_s: float = 1.2
     speed_window_s: float = 0.6
-    hand_face_h: float = 0.2
+
+    hand_face_h: float = 0.20
     smoke_window_s: float = 10.0
     smoke_min_hits: int = 2
     smoke_cooldown_s: float = 30.0
-    reach_margin_h: float = -0.15
+    smoke_count_raises: bool = False  # count hand raises to the face (away -> near), not frames near it: a smoker
+    # puffs repeatedly; a phone call or a hand resting on the chin is one raise
+    smoke_away_h: float = 0.35  # the hand counts as away again beyond this many body heights from the face
+
+    reach_margin_h: float = (
+        -0.15
+    )  # wrist within 0.15 body-heights above the knee counts
     reach_cooldown_s: float = 5.0
-    reach_min_hits: int = 1
-    reach_window_s: float = 0.6
-    pose_min_h_px: float = 0.0
-    reach_skip_border: bool = True
-    reach_border_margin: float = 0.01
-    still_border_margin: float | None = 0.05
+    reach_min_hits: int = 1  # low hand in at least this many frames ...
+    reach_window_s: float = (
+        0.6  # ... within this window (stretched to 2 frames at low fps)
+    )
+    pose_min_h_px: float = 0.0  # pose rules skip people smaller than this (0 = off; tested 40-60 px, no gain)
+    reach_skip_border: bool = (
+        True  # skip people cut off by the frame edge (their keypoints are unreliable)
+    )
+    reach_border_margin: float = 0.01  # ... within this share of the frame of an edge
+    # Person-rule guards (None = off), all at the alerting frame. border: skip people whose box is within this share of
+    # the frame of an edge (partly out of view); min_h: skip people shorter than this share of the frame height;
+    # min_age_s: the person must have been tracked this long (a box just entering or a fresh track jumps).
+    # ICVL even (held out): stays-put alerts touching an edge were 86-94 % false, people under 10 % of the frame 90 %.
+    # Stillness guards 0.05 / 0.1: false alerts 39.8 -> 38.2 %, normal people flagged 12.8 -> 12.0 %, still 20 s+
+    # 77 -> 76 / 81 (odd half 42 -> 43); walkway alerts 3.13 -> 2.55 / min, littering / throws / smoking clips unchanged.
+    still_border_margin: float | None = 0.05  # stays put / long in view
     still_min_h: float | None = 0.1
-    reach_min_h: float | None = None
-    hand_min_age_s: float | None = None
-    pose_border_margin: float | None = None
-    reach_kp_conf: float = 0.5
-    reach_bend_ratio: float | None = None
-    reach_hand_pad_h: float | None = 0.25
-    reach_refire_move_h: float | None = 1.0
-    reach_max_speed_h: float | None = 0.6
+    still_lying_wh: float | None = (
+        None  # exempt from still_min_h a box this many times wider than tall (a
+    )
+    # person lying down is short: CHAD far lying people are 4-7 % of the
+    # frame high, w/h 1.2-2.5; None = no exemption)
+    still_size_longer_side: bool = (
+        False  # stillness rules measure body size by the box's longer side, not its
+    )
+    # height (still_min_h and the stays-put radius): a lying person counts
+    # as big as when standing, in any pose or camera angle; upright people
+    # are unchanged (their longer side is the height)
+    reach_min_h: float | None = None  # reach down and pose cue
+    # 1 s: ICVL even false alerts -> 36.3 %, flagged 11.0 %, but smoking clips 50.6 -> 45.9 % and littering clips
+    # 97.8 -> 96.1 % (alerts early in short clips) -> off.
+    hand_min_age_s: float | None = None  # reach down and pose cue
+    pose_border_margin: float | None = None  # pose cue
+    reach_kp_conf: float = 0.5  # keypoint confidence needed for the wrist and knee (0.3 let walkers through)
+    reach_bend_ratio: float | None = (
+        None  # also require bending: box height <= this x the person's usual height
+    )
+    reach_hand_pad_h: float | None = (
+        0.25  # crop = person box + a square of this x body height around the low wrist,
+    )
+    # so what they put down is in the crop (None = person box only)
+    reach_refire_move_h: float | None = (
+        1.0  # re-fire before reach_cooldown_s if the person moved this many body
+    )
+    # heights since their last reach (None = cooldown only)
+    reach_max_speed_h: float | None = (
+        0.6  # skip people walking faster than this (body heights / s over the last
+    )
+    # reach_speed_window_s): a hanging arm with a bag looks low from above.
+    # 0.45 -> 0.6: ICVL even (held-out) littering 231 -> 245/267, quiet
+    # alerts 1.61 -> 1.70/min; tune sets unchanged (dump site 4.99 -> 5.22/min)
     reach_speed_window_s: float = 1.0
-    reach_skip_riders: bool = True
-    reach_rider_classes: tuple[int, ...] = (1, 3)
-    reach_rider_stopped_h: float | None = None
-    reach_rider_stop_check: tuple[int, ...] = (1,)
-    reach_skip_overlap: float | None = 0.5
-    reach_skip_seated_s: float | None = 5.0
-    reach_verifier: bool = True
-    reach_verifier_weights: str | None = None
-    reach_verifier_thr: float | None = None
-    reach_verifier_ahead_s: float = 0.0
+    reach_skip_riders: bool = (
+        True  # skip people riding (a seated rider's hands sit at knee height); the
+    )
+    # detector also reports the rider classes, at no extra cost
+    reach_rider_classes: tuple[int, ...] = (
+        1,
+        3,
+    )  # COCO 1 bicycle, 3 motorcycle. Bicycles were left out (cyclists
+    # stop to dump) until ICVL: cyclists were 287 of its reach_down
+    # false alerts; costs 1 of 100 IWDD train dumpers (a cyclist
+    # bending beside the bike)
+    reach_rider_stopped_h: float | None = (
+        None  # still check a rider on a reach_rider_stop_check vehicle whose foot
+    )
+    reach_rider_stop_check: tuple[int, ...] = (
+        1,
+    )  # speed is below this (body heights / s): they stopped, maybe to dump
+    reach_skip_overlap: float | None = (
+        0.5  # skip a person when another person's box covers this share of theirs
+    )
+    # (overlapping people get each other's keypoints)
+    reach_skip_seated_s: float | None = (
+        5.0  # skip a person who has been seated (thigh near horizontal: knee within
+    )
+    # 0.12 body heights of the hip) for this long; a dumper crouches briefly
+    reach_verifier: bool = (
+        True  # re-check each reach_down with a small keypoint MLP (pose_action's 1 s
+    )
+    # features; exp/icvl/reach_verifier_mixed.py) and drop it below
+    reach_verifier_weights: str | None = (
+        None  # reach_verifier_thr (None = weights/reach_verifier.npz)
+    )
+    reach_verifier_thr: float | None = (
+        None  # None = the threshold stored with the weights (0.05)
+    )
+    reach_verifier_ahead_s: float = (
+        0.0  # hold the alert this long and also score the pose that follows
+    )
+
     bg_width: int = 480
     bg_long_s: float = 30.0
     bg_short_s: float = 1.0
     litter_static_s: float = 1.0
-    litter_min_area: float = 0.0001
+    litter_min_area: float = 1e-4  # fractions of frame area
     litter_max_area: float = 0.01
     litter_owner_lookback_s: float = 4.0
     litter_owner_dist_h: float = 1.0
-    litter_person_margin: float = 0.25
+    litter_person_margin: float = (
+        0.25  # blobs inside a person box grown by this fraction are ignored
+    )
     litter_max_aspect: float = 4.0
-    litter_min_novelty: float = 15.0
-    litter_max_change: float = 8.0
+    litter_min_novelty: float = (
+        15.0  # mean grey-level difference from the long-term background
+    )
+    litter_max_change: float = (
+        8.0  # mean grey-level change since the blob became static
+    )
+
     unattended_s: float = 10.0
     owner_leave_h: float = 2.0
     object_grace_s: float = 10.0
-    item_warmup_s: float = 2.0
-    item_min_frames: int = 3
-    carry_margin: float = 0.3
+    item_warmup_s: float = (
+        2.0  # objects already there in the first seconds are part of the scene
+    )
+    item_min_frames: int = (
+        3  # an object must be detected this many times before it counts
+    )
+    carry_margin: float = (
+        0.3  # an item within a person's box widened by this fraction is being carried
+    )
     appear_min_conf: float = 0.35
     appear_classes: tuple[str, ...] = (
         "backpack",
@@ -130,7 +248,17 @@ class GateConfig:
         "suitcase",
         "bottle",
         "cup",
-    )
+    )  # umbrellas: railings look like them
+    item_rule_skip: tuple[
+        str, ...
+    ] = ()  # item classes the item rules ignore entirely, e.g. ("umbrella",): CHAD's
+    # cafe parasols flicker in and out of detection and were 665 of its 667
+    # "item left alone" alerts
+
+    # Optional open-vocabulary object pass (e.g. "yoloe-26s-seg.pt") for the bag rules. COCO knows only backpack /
+    # handbag / suitcase, and calls many bags a table or misses them; YOLOE matches the prompt words instead. It runs
+    # once per item_period_s (~200 ms on CPU, so ~0.2 core at 1 s) and its detections are that frame's items; people
+    # stay on det_weights every frame. Prompt words count as appear_classes. Off (None) by default.
     item_detector: str | None = None
     item_prompts: tuple[str, ...] = (
         "bag",
@@ -145,20 +273,59 @@ class GateConfig:
     )
     item_period_s: float = 1.0
     item_conf: float = 0.2
-    item_detector_min_passes: int = 2
-    item_scenery: bool = True
+    item_detector_min_passes: int = (
+        2  # replaces item_min_frames when item_detector is on (2 passes = 2 s)
+    )
+    item_scenery: bool = (
+        True  # a bag first seen with nobody carrying it or near it is scenery: it never
+    )
+    # adopts a passer-by as owner (unless it moves), so "owner left" cannot fire
+    # on it; a thrown / dropped bag is still caught by the ownerless path
+
+    # Per-camera prior: a person much taller (closer to the camera) than people usually are in this camera.
+    # Off until calibrated with calibrate_near_camera() on that camera's normal footage.
     near_camera_px: float | None = None
     near_camera_cooldown_s: float = 10.0
+
+    # One candidate per person: drop a new candidate if the same person (or an overlapping box, e.g. a split
+    # detection) was already sent this recently, whichever rule fired.
     person_dedup_s: float = 2.5
-    dedup_per_rule: bool = False
-    pose_action_weights: str | None = None
-    pose_action_thr: float | None = None
-    pose_action_cooldown_s: float = 5.0
+    dedup_per_rule: bool = (
+        False  # True: the dedup only drops repeats of the same rule (a pose_action
+    )
+    # candidate no longer blocks a reach_down one on the same person)
+    still_retry_after_dedup: bool = (
+        False  # True: a stays-put / long-in-view alert dropped by the dedup is not
+    )
+    # counted as sent, so the rule fires again on a later frame (once-per-
+    # person rules otherwise lose the person for good: IITB 000291)
+
+    pose_action_weights: str | None = None  # None = stage1_pose_action.DEFAULT_WEIGHTS
+    pose_action_thr: float | None = (
+        None  # None = the threshold stored with the weights (~1 false alarm/min)
+    )
+    pose_action_cooldown_s: float = (
+        5.0  # per track; 15 s: ICVL even (held-out) alerts -12 %, smoking 93 -> 89/116
+    )
+
+    # Crop check (stage1_crop_check.py): re-check these rules' alerts on the pixels (MobileCLIP2-S2 image embeddings of
+    # the person 1 s before, at and 1 s after the alert + logistic regression; the alert is held 1 s) and drop those
+    # scoring below the threshold, before the person dedup. Needs the frame (RuleEngine.step(obs, frame)); replays of
+    # cached runs use stage1_crop_check.SCORES. ICVL even (held-out): people with no incident flagged 32.7 -> 25.2 %,
+    # littering 245 -> 244/267, smoking 89 -> 89; tune sets unchanged or better (0.3: 21.9 %, but 1 of 6 Avenue throws
+    # lost). The pose cue's own check at 0.2 on top: 25.2 -> 23.9 %, lingering 81 -> 80/81, tune sets unchanged.
     crop_check: bool = True
     crop_check_rules: tuple[str, ...] = ("reach_down", "pose_action")
-    crop_check_thr: float | None = None
-    crop_check_weights: str | None = None
-    crop_check_encoder: str | None = None
+    crop_check_thr: float | None = (
+        None  # None = each rule's threshold stored with its weights (0.2 both)
+    )
+    crop_check_weights: str | None = (
+        None  # reach_down weights; None = weights/crop_check.npz (pose cue:
+    )
+    # weights/crop_check_pose_action.npz)
+    crop_check_encoder: str | None = (
+        None  # open_clip id or "local-dir:<folder>"; None = MobileCLIP2-S2 from the HF hub
+    )
 
     @property
     def uses_bg(self) -> bool:
@@ -169,6 +336,12 @@ class GateConfig:
         return bool(self.pose_weights) and bool(
             {"smoking", "reach_down", "pose_action"} & set(self.rules)
         )
+
+
+# --------------------------------------------------------------------------- sequences
+
+
+# --------------------------------------------------------------------------- geometry helpers
 
 
 def iou(a, b) -> float:
@@ -193,12 +366,12 @@ def touches_border(box, frame_hw, margin: float = 0.01) -> bool:
         box[0] <= margin * w
         or box[1] <= margin * h
         or box[2] >= (1 - margin) * w
-        or (box[3] >= (1 - margin) * h)
+        or box[3] >= (1 - margin) * h
     )
 
 
 def expand_box(b, frac):
-    px, py = ((b[2] - b[0]) * frac, (b[3] - b[1]) * frac)
+    px, py = (b[2] - b[0]) * frac, (b[3] - b[1]) * frac
     return [b[0] - px, b[1] - py, b[2] + px, b[3] + py]
 
 
@@ -219,8 +392,8 @@ def appearance_hist(frame, box):
     h, w = frame.shape[:2]
     x1, y1, x2, y2 = box
     bw = x2 - x1
-    x1, x2 = (int(max(0, x1 + 0.15 * bw)), int(min(w, x2 - 0.15 * bw)))
-    y1, y2 = (int(max(0, y1)), int(min(h, y2)))
+    x1, x2 = int(max(0, x1 + 0.15 * bw)), int(min(w, x2 - 0.15 * bw))
+    y1, y2 = int(max(0, y1)), int(min(h, y2))
     if x2 - x1 < 4 or y2 - y1 < 8:
         return None
     hsv = cv2.cvtColor(frame[y1:y2, x1:x2], cv2.COLOR_BGR2HSV)
@@ -237,6 +410,9 @@ def hist_similarity(a, b) -> float:
     return 1.0 - float(cv2.compareHist(a, b, cv2.HISTCMP_BHATTACHARYYA))
 
 
+# --------------------------------------------------------------------------- perception
+
+
 @dataclass
 class Observation:
     index: int
@@ -247,10 +423,18 @@ class Observation:
     blobs: list[dict]
     latency_ms: dict[str, float]
     path: str | None = None
-    two_wheelers: list[list[float]] | None = None
+    two_wheelers: list[list[float]] | None = (
+        None  # bicycle / motorcycle boxes (only when reach_skip_riders is on)
+    )
+    hires_persons: list[dict] | None = (
+        None  # slow high-resolution pass ({"box", "conf"}); None = no pass this frame
+    )
 
 
 def tracker_args(cfg: GateConfig, fps: float) -> dict:
+    # Older Ultralytics versions scale track_buffer by frame_rate/30; pinning frame_rate to 30
+    # makes track_buffer mean "frames" in every version (a 1 fps source would otherwise round
+    # frame_rate to 0 and disable the buffer).
     botsort = cfg.tracker.startswith("botsort")
     args = {
         "tracker_type": "botsort" if botsort else "bytetrack",
@@ -328,7 +512,7 @@ class StaticForeground:
         for i in range(1, n):
             x, y, bw, bh, area = stats[i]
             frac = area / total
-            if not self.min_area <= frac <= self.max_area:
+            if not (self.min_area <= frac <= self.max_area):
                 continue
             region = labels[y : y + bh, x : x + bw] == i
             age = float(self.age[y : y + bh, x : x + bw][region].max())
@@ -337,6 +521,9 @@ class StaticForeground:
                     self.long.getBackgroundImage(), cv2.COLOR_BGR2GRAY
                 ).astype(np.float32)
             now = gray[y : y + bh, x : x + bw][region]
+            # novelty: how different the blob is from the long-term background (a new object is)
+            # change: how much the blob's pixels changed since it first became static (an object
+            # lying on the ground does not change; a person's edge flickering in front of a door does)
             novelty = float(
                 np.mean(np.abs(now - background[y : y + bh, x : x + bw][region]))
             )
@@ -394,6 +581,7 @@ class Perception:
         self.item_tracks: list[dict] = []
         self.next_item_id = 0
         self.next_item_t = -math.inf
+        self.next_hires_t = -math.inf
 
     def observe(
         self, frame, index: int, t: float, path: str | None = None
@@ -425,12 +613,15 @@ class Perception:
             ]
             res = res[~np.isin(cls, list(cfg.reach_rider_classes))]
         self.tracker.update(res.boxes.cpu().numpy(), frame)
+        # model.track() only returns *confirmed* tracks, and ByteTrack confirms a new track on
+        # its second match. At low fps or on short clips most people never get confirmed, so
+        # every track updated in this frame is used, confirmed or not.
         live = [
             s
             for s in self.tracker.tracked_stracks
             if s.frame_id == self.tracker.frame_id
         ]
-        persons, items = ([], [])
+        persons, items = [], []
         for s in live:
             box, tid, cf, c = (
                 s.xyxy.tolist(),
@@ -452,24 +643,21 @@ class Perception:
                         "cls": COCO_ITEMS.get(c, res.names[c]),
                     }
                 )
+
         if self.item_model is not None:
             items = []
-            if t >= self.next_item_t - 1e-06:
+            if t >= self.next_item_t - 1e-6:
                 self.next_item_t = t + cfg.item_period_s
                 t3 = time.perf_counter()
                 items = self._item_pass(frame)
                 lat["item_ms"] = (time.perf_counter() - t3) * 1000
+
         for p in persons:
-            crowded = any(
-                (iou(p["box"], q["box"]) > 0.15 for q in persons if q is not p)
-            )
+            crowded = any(iou(p["box"], q["box"]) > 0.15 for q in persons if q is not p)
             p["hist"] = None if crowded else appearance_hist(frame, p["box"])
             p["kpts"] = None
-        if (
-            self.pose is not None
-            and persons
-            and (self.n % max(1, cfg.pose_every_n) == 0)
-        ):
+
+        if self.pose is not None and persons and self.n % max(1, cfg.pose_every_n) == 0:
             t1 = time.perf_counter()
             pr = self.pose.predict(
                 frame, imgsz=cfg.imgsz, conf=0.25, device=cfg.device, verbose=False
@@ -483,19 +671,50 @@ class Perception:
                     j = int(np.argmax(scores))
                     if scores[j] >= 0.4:
                         p["kpts"] = kpts[j]
+
         blobs = []
         if cfg.uses_bg:
             t2 = time.perf_counter()
             if self.bg is None:
                 self.bg = StaticForeground(cfg, self.fps, frame.shape[:2])
-            dt = t - self.last_t if self.last_t is not None else 1.0 / self.fps
+            dt = (t - self.last_t) if self.last_t is not None else 1.0 / self.fps
             blobs = self.bg.apply(frame, dt)
             lat["bg_ms"] = (time.perf_counter() - t2) * 1000
+
+        hires = None
+        if cfg.hires_every_s and t >= self.next_hires_t - 1e-6:
+            self.next_hires_t = t + cfg.hires_every_s
+            t4 = time.perf_counter()
+            hr = self.det.predict(
+                frame,
+                imgsz=cfg.hires_imgsz,
+                conf=cfg.det_conf,
+                device=cfg.device,
+                classes=[PERSON],
+                verbose=False,
+            )[0]
+            hires = [
+                {"box": b.tolist(), "conf": float(c)}
+                for b, c in zip(
+                    hr.boxes.xyxy.cpu().numpy(), hr.boxes.conf.cpu().numpy()
+                )
+            ]
+            lat["hires_ms"] = (time.perf_counter() - t4) * 1000
+
         lat["total_ms"] = (time.perf_counter() - t0) * 1000
         self.n += 1
         self.last_t = t
         return Observation(
-            index, t, frame.shape[:2], persons, items, blobs, lat, path, two_wheelers
+            index,
+            t,
+            frame.shape[:2],
+            persons,
+            items,
+            blobs,
+            lat,
+            path,
+            two_wheelers,
+            hires,
         )
 
     def _item_pass(self, frame) -> list[dict]:
@@ -526,6 +745,9 @@ class Perception:
                 }
             )
         return items
+
+
+# --------------------------------------------------------------------------- occlusion: track stitching
 
 
 class TrackStitcher:
@@ -579,14 +801,14 @@ class TrackStitcher:
             return None
         ph = max(1.0, p["box"][3] - p["box"][1])
         pf = foot(p["box"])
-        best, best_score = (None, -1000000000.0)
+        best, best_score = None, -1e9
         for c, tr in self.tracks.items():
             gap = t - tr["last_t"]
             if (
                 c in used
                 or gap <= 0
                 or gap > cfg.stitch_max_gap_s
-                or (tr["hist"] is None)
+                or tr["hist"] is None
             ):
                 continue
             ratio = ph / tr["h"]
@@ -602,9 +824,11 @@ class TrackStitcher:
                 continue
             score = sim - 0.05 * dist
             if score > best_score:
-                best, best_score = (c, score)
+                best, best_score = c, score
         return best
 
+
+# --------------------------------------------------------------------------- rule engine
 
 HINTS = {
     "sustained_presence": "Person stayed in a small area for a long time. Decide: loitering, rough sleeping, smoking, or normal waiting.",
@@ -642,6 +866,8 @@ class RuleEngine:
         self.item_min_seen = (
             cfg.item_detector_min_passes if cfg.item_detector else cfg.item_min_frames
         )
+        self.hires_tracks: list[dict] = []
+        self.hires_next_id = 0
         self.pose_action = None
         if "pose_action" in cfg.rules:
             from .pose import DEFAULT_WEIGHTS, PoseActionModel, TrackWindows
@@ -676,7 +902,9 @@ class RuleEngine:
                 "pending": [],
             }
         self.crop_check = None
-        self.seq_id: str | None = None
+        self.seq_id: str | None = (
+            None  # set by replay_rules, to look up precomputed crop-check scores
+        )
         if cfg.crop_check:
             from concurrent.futures import ThreadPoolExecutor
 
@@ -700,6 +928,7 @@ class RuleEngine:
                     for r, c in checks.items()
                 },
                 "keep_s": max((c.dt for c in checks.values()), default=0.0) + 0.5,
+                # one worker: the encoder runs beside the frame loop, jobs in arrival order
                 "pool": ThreadPoolExecutor(
                     max_workers=1, thread_name_prefix="crop_check"
                 ),
@@ -713,9 +942,11 @@ class RuleEngine:
         loop never waits for the encoder."""
         from .crop_check import SCORES, crop
 
-        cc, out = (self.crop_check, [])
+        cc, out = self.crop_check, []
         if frame is not None:
-            if not cc.get("warm"):
+            if not cc.get(
+                "warm"
+            ):  # load the encoder on the worker now, not at the first alert
                 cc["warm"] = [
                     cc["pool"].submit(c._load)
                     for c in cc["checks"].values()
@@ -726,7 +957,7 @@ class RuleEngine:
             while frames and frames[0][0] < obs.t - cc["keep_s"]:
                 frames.popleft()
             for x in cc["pending"]:
-                if "score" not in x and x["due"] <= obs.t + 1e-06:
+                if "score" not in x and x["due"] <= obs.t + 1e-6:
                     box = frames[-1][2].get(x["rid"])
                     after = (
                         None
@@ -796,14 +1027,14 @@ class RuleEngine:
     def _crop_release(self, ready):
         """Release the held alerts for which ready(x) holds, keeping those that score at or above the threshold
         (an encoder error keeps the alert)."""
-        cc, out, keep = (self.crop_check, [], [])
+        cc, out, keep = self.crop_check, [], []
         for x in cc["pending"]:
             if not ready(x):
                 keep.append(x)
                 continue
             try:
                 score = x["score"].result()
-            except Exception as exc:
+            except Exception as exc:  # e.g. open_clip or the encoder weights missing: keep the alert, say so once
                 score = None
                 if not cc.get("warned"):
                     cc["warned"] = True
@@ -814,7 +1045,8 @@ class RuleEngine:
                         RuntimeWarning,
                         stacklevel=2,
                     )
-            x["event"]["_frame"], x["event"]["_t"] = (x["frame"], x["t"])
+            # the handoff must crop the alert's own frame, not the release frame: callers pop these two keys
+            x["event"]["_frame"], x["event"]["_t"] = x["frame"], x["t"]
             self._crop_keep(x["event"], score, out)
         cc["pending"] = keep
         return out
@@ -830,7 +1062,7 @@ class RuleEngine:
                 x["score"] = cc["pool"].submit(
                     self._crop_score, x["check"], x["first"], None
                 )
-        t = max((x["t"] for x in cc["pending"]))
+        t = max(x["t"] for x in cc["pending"])
         return self._dedup(self._crop_release(lambda x: True), t)
 
     def _crop_keep(self, e, score, out):
@@ -843,7 +1075,7 @@ class RuleEngine:
         from .pose import window_features
 
         v = self.verifier
-        hist = [x for x in v["kp"].get(rid, ()) if t - 2.0 <= x[0] <= t + 1e-06]
+        hist = [x for x in v["kp"].get(rid, ()) if t - 2.0 <= x[0] <= t + 1e-6]
         if not hist:
             return None
         return window_features(
@@ -852,7 +1084,7 @@ class RuleEngine:
 
     def _verify(self, events, obs):
         """Hold each reach_down for reach_verifier_ahead_s, then keep it only if the verifier agrees."""
-        v, t, ahead = (self.verifier, obs.t, self.cfg.reach_verifier_ahead_s)
+        v, t, ahead = self.verifier, obs.t, self.cfg.reach_verifier_ahead_s
         for p in obs.persons:
             kp = v["kp"][p["raw_id"]]
             kp.append((t, p["box"], p.get("kpts")))
@@ -873,8 +1105,8 @@ class RuleEngine:
                 out.append(e)
             else:
                 v["pending"].append((t + ahead, e, rid, now))
-        due = [x for x in v["pending"] if x[0] <= t + 1e-06]
-        v["pending"] = [x for x in v["pending"] if x[0] > t + 1e-06]
+        due = [x for x in v["pending"] if x[0] <= t + 1e-6]
+        v["pending"] = [x for x in v["pending"] if x[0] > t + 1e-6]
         for _, e, rid, now in due:
             f = now
             if ahead:
@@ -891,7 +1123,7 @@ class RuleEngine:
         return out
 
     def step(self, obs: Observation, frame: np.ndarray | None = None) -> list[dict]:
-        cfg, t = (self.cfg, obs.t)
+        cfg, t = self.cfg, obs.t
         if self.t0 is None:
             self.t0 = t
         cids = self.stitcher.assign(obs.persons, t)
@@ -922,9 +1154,7 @@ class RuleEngine:
         if "litter" in cfg.rules:
             events += self._litter(obs, persons)
         if self.pose_action:
-            events += self._pose_action(
-                obs, dict(((p["raw_id"], c) for c, p in persons))
-            )
+            events += self._pose_action(obs, dict((p["raw_id"], c) for c, p in persons))
         horizon = (
             max(
                 cfg.loiter_s,
@@ -939,7 +1169,100 @@ class RuleEngine:
             events = self._verify(events, obs)
         if self.crop_check:
             events = self._crop_check(events, obs, frame)
-        return self._dedup(events, t)
+        events = self._dedup(events, t)
+        if getattr(obs, "hires_persons", None) is not None and "loiter" in cfg.rules:
+            events += self._hires_loiter(
+                obs
+            )  # after the dedup: never blocks another rule's alert
+        return events
+
+    def _hires_loiter(self, obs):
+        """Stays-put on the slow high-resolution pass, for people the main pass is not tracking (far, lying). Own
+        IoU tracker across passes; a track starts once seen at person_conf; same radius, guards and once-per-track
+        rule as _loiter."""
+        cfg, t = self.cfg, obs.t
+        cands = [
+            d
+            for d in obs.hires_persons
+            if not any(
+                iou(d["box"], p["box"]) >= 0.3
+                or intersection_over(d["box"], p["box"]) >= 0.5
+                for p in obs.persons
+            )
+        ]
+        gap = max(cfg.stitch_max_gap_s, 3 * cfg.hires_every_s)
+        self.hires_tracks = [tr for tr in self.hires_tracks if t - tr["last_t"] <= gap]
+        events = []
+        for d in sorted(cands, key=lambda d: -d["conf"]):
+            tr = max(
+                (tr for tr in self.hires_tracks if tr["last_t"] < t),
+                key=lambda tr: iou(tr["box"], d["box"]),
+                default=None,
+            )
+            if tr is None or iou(tr["box"], d["box"]) < 0.3:
+                tr = {
+                    "id": self.hires_next_id,
+                    "first_t": t,
+                    "pts": deque(),
+                    "confirmed": False,
+                    "flagged": None,
+                }
+                self.hires_next_id += 1
+                self.hires_tracks.append(tr)
+            b = d["box"]
+            tr.update(
+                last_t=t,
+                box=b,
+                confirmed=tr["confirmed"] or d["conf"] >= cfg.person_conf,
+            )
+            size = (
+                max(b[2] - b[0], b[3] - b[1])
+                if cfg.still_size_longer_side
+                else b[3] - b[1]
+            )
+            tr["pts"].append((t, *foot(b), max(1.0, size)))
+            while tr["pts"] and tr["pts"][0][0] < t - cfg.loiter_s - gap:
+                tr["pts"].popleft()
+            pts = [q for q in tr["pts"] if q[0] >= t - cfg.loiter_s]
+            if (
+                not tr["confirmed"]
+                or t - tr["first_t"] < cfg.loiter_s
+                or len(pts) < 3
+                or t - pts[0][0] < cfg.loiter_s - 2 * cfg.hires_every_s
+            ):
+                continue
+            xy = np.array([(q[1], q[2]) for q in pts])
+            radius = float(np.max(np.hypot(*(xy - xy.mean(axis=0)).T))) / float(
+                np.median([q[3] for q in pts])
+            )
+            if radius >= cfg.loiter_release_h:
+                tr["flagged"] = None
+            if (
+                radius < cfg.loiter_radius_h
+                and (tr["flagged"] is None or t - tr["flagged"] >= cfg.loiter_repeat_s)
+                and self._guard_ok(
+                    tr,
+                    {"box": b},
+                    obs,
+                    cfg.still_min_h,
+                    cfg.still_border_margin,
+                    None,
+                    cfg.still_lying_wh,
+                    cfg.still_size_longer_side,
+                )
+            ):
+                tr["flagged"] = t
+                events.append(
+                    self._event(
+                        "sustained_presence",
+                        f"hires{tr['id']}",
+                        obs,
+                        b,
+                        evidence_window_s=[round(t - cfg.loiter_s, 2), round(t, 2)],
+                        metrics={"norm_radius": round(radius, 3), "hires": True},
+                    )
+                )
+        return events
 
     def _dedup(self, events, t):
         """Drop an alert when the same person (or an overlapping box) already had one that happened up to
@@ -948,30 +1271,43 @@ class RuleEngine:
         dedup_s = self.cfg.person_dedup_s
         horizon = dedup_s + (
             self.crop_check["keep_s"] + 10.0 if self.crop_check else 0.0
-        )
-        if self.sent and t - min((x[4] for x in self.sent)) > horizon:
-            self.sent = deque((x for x in self.sent if t - x[4] <= horizon))
+        )  # held alerts arrive late
+        if self.sent and t - min(x[4] for x in self.sent) > horizon:
+            self.sent = deque(x for x in self.sent if t - x[4] <= horizon)
         kept = []
         for e in events:
-            box, ts_e = (e["roi_box"], e["timestamp_s"])
+            box, ts_e = e["roi_box"], e["timestamp_s"]
             kind = e["event_type"] if self.cfg.dedup_per_rule else None
             if any(
-                (
-                    k == kind
-                    and 0.0 <= ts_e - ts + 1e-06 <= dedup_s + 2e-06
-                    and (
-                        ent == e["entity_id"]
-                        or iou(box, b) >= 0.5
-                        or max(intersection_over(box, b), intersection_over(b, box))
-                        >= 0.7
-                    )
-                    for _, ent, b, k, ts in self.sent
+                k == kind
+                and 0.0 <= ts_e - ts + 1e-6 <= dedup_s + 2e-6
+                and (
+                    ent == e["entity_id"]
+                    or iou(box, b) >= 0.5
+                    or max(intersection_over(box, b), intersection_over(b, box)) >= 0.7
                 )
+                for _, ent, b, k, ts in self.sent
             ):
+                if self.cfg.still_retry_after_dedup:
+                    self._unflag(e)
                 continue
             self.sent.append((t, e["entity_id"], box, kind, ts_e))
             kept.append(e)
         return kept
+
+    def _unflag(self, e):
+        """A stays-put / long-in-view alert dropped by the dedup was never sent: let the rule fire again."""
+        key = {
+            "sustained_presence": "loiter_flagged",
+            "long_presence": "last_inview",
+        }.get(e["event_type"])
+        st = (
+            self.people.get(int(e["entity_id"][len("person") :]))
+            if key and e["entity_id"].startswith("person")
+            else None
+        )
+        if st is not None:
+            st[key] = None
 
     def _state(self, cid, p, t):
         st = self.people.get(cid)
@@ -982,9 +1318,9 @@ class RuleEngine:
                 "loiter_flagged": None,
                 "speed_armed": True,
                 "smoke_hits": deque(),
-                "last_smoke": -1000000000.0,
-                "last_reach": -1000000000.0,
-                "last_near": -1000000000.0,
+                "last_smoke": -1e9,
+                "last_reach": -1e9,
+                "last_near": -1e9,
                 "view_pts": deque(),
                 "last_inview": None,
             }
@@ -1006,7 +1342,7 @@ class RuleEngine:
         return st
 
     def _event(self, etype, entity, obs, roi, **extra):
-        t, pad = (obs.t, self.cfg.clip_pad_s)
+        t, pad = obs.t, self.cfg.clip_pad_s
         return {
             "event_id": f"{etype}_{entity}_f{obs.index}",
             "event_type": etype,
@@ -1020,18 +1356,24 @@ class RuleEngine:
         }
 
     @staticmethod
-    def _guard_ok(st, p, obs, min_h, border, min_age_s) -> bool:
+    def _guard_ok(
+        st, p, obs, min_h, border, min_age_s, lying_wh=None, longer_side=False
+    ) -> bool:
         """The person-rule guards (GateConfig still_* / reach_min_h / hand_min_age_s / pose_border_margin)."""
         b = p["box"]
-        if min_h is not None and b[3] - b[1] < min_h * obs.frame_hw[0]:
+        lying = lying_wh is not None and b[2] - b[0] >= lying_wh * (b[3] - b[1])
+        size = max(b[2] - b[0], b[3] - b[1]) if longer_side else b[3] - b[1]
+        if min_h is not None and not lying and size < min_h * obs.frame_hw[0]:
             return False
         if border is not None and touches_border(b, obs.frame_hw, border):
             return False
         return min_age_s is None or obs.t - st["first_t"] >= min_age_s
 
     def _loiter(self, cid, st, p, obs):
-        cfg, t = (self.cfg, obs.t)
+        cfg, t = self.cfg, obs.t
         pts = [h for h in st["hist"] if h[0] >= t - cfg.loiter_s]
+        # The window must be covered by observations, allowing for the frame spacing (a 1 fps
+        # source has no frame exactly loiter_s ago).
         slack = 1.5 / self.fps
         if (
             t - st["first_t"] < cfg.loiter_s
@@ -1040,8 +1382,13 @@ class RuleEngine:
         ):
             return []
         xy = np.array([(h[1], h[2]) for h in pts])
+        size = (
+            [max(h[3], h[4][2] - h[4][0]) for h in pts]
+            if cfg.still_size_longer_side
+            else [h[3] for h in pts]
+        )
         radius = float(np.max(np.hypot(*(xy - xy.mean(axis=0)).T))) / float(
-            np.median([h[3] for h in pts])
+            np.median(size)
         )
         if radius >= cfg.loiter_release_h:
             st["loiter_flagged"] = None
@@ -1052,7 +1399,14 @@ class RuleEngine:
                 or t - st["loiter_flagged"] >= cfg.loiter_repeat_s
             )
             and self._guard_ok(
-                st, p, obs, cfg.still_min_h, cfg.still_border_margin, None
+                st,
+                p,
+                obs,
+                cfg.still_min_h,
+                cfg.still_border_margin,
+                None,
+                cfg.still_lying_wh,
+                cfg.still_size_longer_side,
             )
         ):
             st["loiter_flagged"] = t
@@ -1069,8 +1423,10 @@ class RuleEngine:
         return []
 
     def _speed(self, cid, st, p, obs):
-        cfg, t = (self.cfg, obs.t)
+        cfg, t = self.cfg, obs.t
         window = max(cfg.speed_window_s, 3.0 / self.fps)
+        # Only the current tracker id's own, gap-free points: a re-link or an occlusion gap is a
+        # position jump, not motion.
         pts = []
         for h in reversed(st["hist"]):
             if (
@@ -1104,7 +1460,7 @@ class RuleEngine:
         return []
 
     def _smoking(self, cid, st, p, obs):
-        cfg, t, k = (self.cfg, obs.t, p["kpts"])
+        cfg, t, k = self.cfg, obs.t, p["kpts"]
         face_pts = [_kp(k, i) for i in (NOSE, L_EYE, R_EYE, L_EAR, R_EAR)]
         face = face_pts[0] or (
             tuple(np.mean([f for f in face_pts if f], axis=0))
@@ -1115,8 +1471,16 @@ class RuleEngine:
         if face is None or not wrists:
             return []
         h = max(1.0, p["box"][3] - p["box"][1])
-        d = min((math.hypot(w[0] - face[0], w[1] - face[1]) for w in wrists)) / h
-        if d <= cfg.hand_face_h:
+        d = min(math.hypot(w[0] - face[0], w[1] - face[1]) for w in wrists) / h
+        if (
+            cfg.smoke_count_raises
+        ):  # one hit per raise: the hand must have been away from the face in between
+            if d <= cfg.hand_face_h and st.get("smoke_away", True):
+                st["smoke_hits"].append(t)
+                st["smoke_away"] = False
+            elif d >= cfg.smoke_away_h:
+                st["smoke_away"] = True
+        elif d <= cfg.hand_face_h:
             st["smoke_hits"].append(t)
         while st["smoke_hits"] and st["smoke_hits"][0] < t - cfg.smoke_window_s:
             st["smoke_hits"].popleft()
@@ -1137,7 +1501,7 @@ class RuleEngine:
         return []
 
     def _reach(self, cid, st, p, obs):
-        cfg, t, k = (self.cfg, obs.t, p["kpts"])
+        cfg, t, k = self.cfg, obs.t, p["kpts"]
         kc = cfg.reach_kp_conf
         knees = [
             (float(k[i, 0]), float(k[i, 1])) for i in (L_KNEE, R_KNEE) if k[i, 2] >= kc
@@ -1161,14 +1525,14 @@ class RuleEngine:
             return []
         if not self._guard_ok(st, p, obs, cfg.reach_min_h, None, cfg.hand_min_age_s):
             return []
-        v = None
+        v = None  # foot speed in body heights / s over the last reach_speed_window_s (None = track too short)
         pts = [
             q
             for q in st["hist"]
             if q[0] >= t - cfg.reach_speed_window_s and q[5] == p["raw_id"]
         ]
         if len(pts) >= 2 and pts[-1][0] - pts[0][0] >= 0.5 * cfg.reach_speed_window_s:
-            a, b = (pts[0], pts[-1])
+            a, b = pts[0], pts[-1]
             v = (
                 math.hypot(b[1] - a[1], b[2] - a[2])
                 / (b[0] - a[0])
@@ -1179,31 +1543,27 @@ class RuleEngine:
             lower = [b[0], (b[1] + b[3]) / 2, b[2], b[3]]
             riding = [
                 int(w[4]) if len(w) >= 5 else -1
-                for w in getattr(obs, "two_wheelers", None) or []
+                for w in (getattr(obs, "two_wheelers", None) or [])
                 if (len(w) < 5 or int(w[4]) in cfg.reach_rider_classes)
                 and intersection_over(lower, w[:4]) >= 0.3
             ]
             stopped = (
                 cfg.reach_rider_stopped_h is not None
                 and v is not None
-                and (v < cfg.reach_rider_stopped_h)
+                and v < cfg.reach_rider_stopped_h
             )
-            if any(
-                (c not in cfg.reach_rider_stop_check or not stopped for c in riding)
-            ):
+            if any(c not in cfg.reach_rider_stop_check or not stopped for c in riding):
                 return []
         if cfg.reach_skip_overlap is not None and any(
-            (
-                intersection_over(p["box"], q["box"]) >= cfg.reach_skip_overlap
-                for q in obs.persons
-                if q is not p
-            )
+            intersection_over(p["box"], q["box"]) >= cfg.reach_skip_overlap
+            for q in obs.persons
+            if q is not p
         ):
             return []
         if (
             cfg.reach_max_speed_h is not None
             and v is not None
-            and (v > cfg.reach_max_speed_h)
+            and v > cfg.reach_max_speed_h
         ):
             return []
         if cfg.reach_skip_seated_s is not None:
@@ -1221,7 +1581,7 @@ class RuleEngine:
                 return []
         knee_y = float(np.mean([q[1] for q in knees]))
         hits = st.setdefault("reach_hits", deque())
-        if max((w[1] for w in wrists)) >= knee_y + cfg.reach_margin_h * h:
+        if max(w[1] for w in wrists) >= knee_y + cfg.reach_margin_h * h:
             hits.append(t)
         window = max(cfg.reach_window_s, 1.5 / self.fps)
         while hits and hits[0] < t - window:
@@ -1231,10 +1591,10 @@ class RuleEngine:
         if (
             not ready
             and cfg.reach_refire_move_h is not None
-            and (since >= 1.0)
-            and ("last_reach_foot" in st)
+            and since >= 1.0
+            and "last_reach_foot" in st
         ):
-            (fx, fy), (lx, ly) = (foot(p["box"]), st["last_reach_foot"])
+            (fx, fy), (lx, ly) = foot(p["box"]), st["last_reach_foot"]
             ready = math.hypot(fx - lx, fy - ly) >= cfg.reach_refire_move_h * h
         if len(hits) >= cfg.reach_min_hits and ready:
             st["last_reach"] = t
@@ -1257,7 +1617,7 @@ class RuleEngine:
         return []
 
     def _pose_action(self, obs, cid_of):
-        pa, out = (self.pose_action, [])
+        pa, out = self.pose_action, []
         ws = pa["windows"].step(obs)
         if not ws:
             return out
@@ -1265,21 +1625,18 @@ class RuleEngine:
         for w, prob in zip(ws, probs):
             rid = w["raw_id"]
             st = self.people.get(cid_of[rid])
-            if st is not None and (
-                not self._guard_ok(
-                    st,
-                    {"box": w["box"]},
-                    obs,
-                    self.cfg.reach_min_h,
-                    self.cfg.pose_border_margin,
-                    self.cfg.hand_min_age_s,
-                )
+            if st is not None and not self._guard_ok(
+                st,
+                {"box": w["box"]},
+                obs,
+                self.cfg.reach_min_h,
+                self.cfg.pose_border_margin,
+                self.cfg.hand_min_age_s,
             ):
                 continue
             if (
                 prob >= pa["thr"]
-                and obs.t - pa["last"].get(rid, -1000000000.0)
-                >= self.cfg.pose_action_cooldown_s
+                and obs.t - pa["last"].get(rid, -1e9) >= self.cfg.pose_action_cooldown_s
             ):
                 pa["last"][rid] = obs.t
                 out.append(
@@ -1294,7 +1651,7 @@ class RuleEngine:
         return out
 
     def _inview(self, cid, st, p, obs):
-        cfg, t = (self.cfg, obs.t)
+        cfg, t = self.cfg, obs.t
         pts = st["view_pts"]
         if not pts or t - pts[-1][0] >= 1.0:
             fx, fy = foot(p["box"])
@@ -1309,7 +1666,14 @@ class RuleEngine:
         ):
             return []
         if not self._guard_ok(
-            st, p, obs, cfg.still_min_h, cfg.still_border_margin, None
+            st,
+            p,
+            obs,
+            cfg.still_min_h,
+            cfg.still_border_margin,
+            None,
+            cfg.still_lying_wh,
+            cfg.still_size_longer_side,
         ):
             return []
         metrics = {"time_in_view_s": round(t - st["first_t"], 1)}
@@ -1344,36 +1708,36 @@ class RuleEngine:
 
     def _nearest_person(self, box, persons, max_h):
         c = center(box)
-        best, best_d = (None, 1000000000.0)
+        best, best_d = None, 1e9
         for cid, p in persons:
             h = max(1.0, p["box"][3] - p["box"][1])
             d = (
                 min(
-                    (
-                        math.hypot(c[0] - q[0], c[1] - q[1])
-                        for q in (foot(p["box"]), center(p["box"]))
-                    )
+                    math.hypot(c[0] - q[0], c[1] - q[1])
+                    for q in (foot(p["box"]), center(p["box"]))
                 )
                 / h
             )
             if d <= max_h and d < best_d:
-                best, best_d = (cid, d)
+                best, best_d = cid, d
         return best
 
     def _carrier(self, box, persons):
         """The person holding or wearing an item: the one whose box contains most of the item's box."""
-        best, best_cover = (None, 0.5)
+        best, best_cover = None, 0.5
         for cid, p in persons:
             cover = intersection_over(box, expand_box(p["box"], self.cfg.carry_margin))
             if cover >= best_cover:
-                best, best_cover = (cid, cover)
+                best, best_cover = cid, cover
         return best
 
     def _unattended(self, obs, persons):
-        cfg, t = (self.cfg, obs.t)
+        cfg, t = self.cfg, obs.t
         visible = {cid: p for cid, p in persons}
         events = []
         for it in obs.items:
+            if it["cls"] in cfg.item_rule_skip:
+                continue
             entry = next(
                 (
                     e
@@ -1383,8 +1747,8 @@ class RuleEngine:
                 None,
             )
             if entry is None:
-                known = any((iou(k, it["box"]) >= 0.3 for k in self.known_item_spots))
-                late = t - self.t0 >= cfg.item_warmup_s and (not known)
+                known = any(iou(k, it["box"]) >= 0.3 for k in self.known_item_spots)
+                late = t - self.t0 >= cfg.item_warmup_s and not known
                 alone = self._carrier(it["box"], persons) is None
                 entry = {
                     "raw_id": it["raw_id"],
@@ -1403,21 +1767,20 @@ class RuleEngine:
                     "max_conf": 0.0,
                     "scenery": cfg.item_scenery
                     and alone
-                    and (
-                        self._nearest_person(it["box"], persons, cfg.owner_leave_h)
-                        is None
-                    ),
+                    and self._nearest_person(it["box"], persons, cfg.owner_leave_h)
+                    is None,
                 }
                 self.items.append(entry)
             entry.update(box=it["box"], last_t=t, raw_id=it["raw_id"])
             entry["seen"] += 1
             entry["max_conf"] = max(entry["max_conf"], it["conf"])
-            if not any((iou(k, it["box"]) >= 0.3 for k in self.known_item_spots)):
+            if not any(iou(k, it["box"]) >= 0.3 for k in self.known_item_spots):
                 self.known_item_spots = (self.known_item_spots + [it["box"]])[-200:]
             carrier = self._carrier(it["box"], persons)
-            if entry["scenery"] and (not entry["moved"]):
-                carrier = None
+            if entry["scenery"] and not entry["moved"]:
+                carrier = None  # scenery: nobody brought it, so nobody can leave it
             if carrier is not None:
+                # someone is holding or wearing it: attended, and it is theirs
                 entry.update(
                     origin=it["box"],
                     owner=carrier,
@@ -1428,14 +1791,12 @@ class RuleEngine:
                 )
                 continue
             diag = math.hypot(it["box"][2] - it["box"][0], it["box"][3] - it["box"][1])
-            oc, nc = (center(entry["origin"]), center(it["box"]))
+            oc, nc = center(entry["origin"]), center(it["box"])
             if math.hypot(nc[0] - oc[0], nc[1] - oc[1]) > max(10.0, 0.5 * diag):
                 entry.update(
                     origin=it["box"], flagged=False, nobody_since=None, moved=True
                 )
-            if entry["owner"] is None and (
-                not (entry["scenery"] and (not entry["moved"]))
-            ):
+            if entry["owner"] is None and not (entry["scenery"] and not entry["moved"]):
                 entry["owner"] = self._nearest_person(
                     it["box"], persons, cfg.owner_leave_h
                 )
@@ -1459,12 +1820,13 @@ class RuleEngine:
                 entry["nobody_since"] = None
             if entry["seen"] < self.item_min_seen:
                 continue
+            # a landed (thrown / dropped) object stays put; carried objects move with their person
             if (
                 entry["appeared_alone"]
-                and (not entry["appear_flagged"])
-                and (not entry["moved"])
-                and (entry["cls"] in self.appear_classes)
-                and (entry["max_conf"] >= cfg.appear_min_conf)
+                and not entry["appear_flagged"]
+                and not entry["moved"]
+                and entry["cls"] in self.appear_classes
+                and entry["max_conf"] >= cfg.appear_min_conf
             ):
                 entry["appear_flagged"] = True
                 near = self._nearest_person(it["box"], persons, 4.0)
@@ -1489,10 +1851,10 @@ class RuleEngine:
             ownerless = (
                 entry["owner"] is None
                 and entry["late"]
-                and (entry["nobody_since"] is not None)
-                and (t - entry["nobody_since"] >= cfg.unattended_s)
+                and entry["nobody_since"] is not None
+                and t - entry["nobody_since"] >= cfg.unattended_s
             )
-            if (owner_gone or ownerless) and (not entry["flagged"]):
+            if (owner_gone or ownerless) and not entry["flagged"]:
                 entry["flagged"] = True
                 events.append(
                     self._event(
@@ -1510,7 +1872,7 @@ class RuleEngine:
         return events
 
     def _litter(self, obs, persons):
-        cfg, t = (self.cfg, obs.t)
+        cfg, t = self.cfg, obs.t
         fh, fw = obs.frame_hw
         margin = 0.01 * max(fh, fw)
         near_people = [
@@ -1518,38 +1880,37 @@ class RuleEngine:
         ]
         events = []
         for b in obs.blobs:
-            if (
-                b["age_s"] < cfg.litter_static_s
-                or not cfg.litter_min_area <= b["area_frac"] <= cfg.litter_max_area
+            if b["age_s"] < cfg.litter_static_s or not (
+                cfg.litter_min_area <= b["area_frac"] <= cfg.litter_max_area
             ):
                 continue
             if (
-                b.get("novelty", 1000000000.0) < cfg.litter_min_novelty
+                b.get("novelty", 1e9) < cfg.litter_min_novelty
                 or b.get("change", 0.0) > cfg.litter_max_change
             ):
                 continue
             box = b["box"]
-            bw, bh = (box[2] - box[0], box[3] - box[1])
+            bw, bh = box[2] - box[0], box[3] - box[1]
             if max(bw, bh) > cfg.litter_max_aspect * max(1.0, min(bw, bh)):
                 continue
             if (
                 box[0] <= margin
                 or box[1] <= margin
                 or box[2] >= fw - margin
-                or (box[3] >= fh - margin)
+                or box[3] >= fh - margin
             ):
                 continue
-            if any((intersection_over(box, q) > 0 for q in near_people)):
+            # Anything still next to a person is their own body, shadow or bag; litter is only
+            # reported once the person has moved away from it.
+            if any(intersection_over(box, q) > 0 for q in near_people):
                 continue
             if any(
-                (
-                    iou(box, f) > 0.2 or intersection_over(box, f) > 0.5
-                    for f in self.flagged_blobs
-                )
+                iou(box, f) > 0.2 or intersection_over(box, f) > 0.5
+                for f in self.flagged_blobs
             ):
                 continue
             bc = center(box)
-            owner, owner_box, owner_t = (None, None, -1000000000.0)
+            owner, owner_box, owner_t = None, None, -1e9
             for cid, st in self.people.items():
                 for ht, fx, fy, h, pbox, _ in st["hist"]:
                     if (
@@ -1566,7 +1927,7 @@ class RuleEngine:
                         / h
                         <= cfg.litter_owner_dist_h
                     ):
-                        owner, owner_box, owner_t = (cid, pbox, ht)
+                        owner, owner_box, owner_t = cid, pbox, ht
             if owner is None:
                 continue
             self.flagged_blobs.append(box)
@@ -1581,6 +1942,12 @@ class RuleEngine:
                 )
             )
         return events
+
+
+# --------------------------------------------------------------------------- running
+
+
+# --------------------------------------------------------------------------- handoff + summaries
 
 
 class HandoffWriter:
@@ -1631,16 +1998,18 @@ class HandoffWriter:
         """Offer every frame; a sampled subset is kept for later windows (videos only)."""
         if not self.use_buffer:
             return
-        if self.next_buffer_t is not None and t < self.next_buffer_t - 1e-06:
+        if self.next_buffer_t is not None and t < self.next_buffer_t - 1e-6:
             return
         ok, jpg = cv2.imencode(
             ".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, self.jpeg_quality]
         )
         if ok:
             self.buffer.append((t, index, jpg))
+            # Keep the sampling phase instead of resetting it to a rounded source
+            # frame: at 5 fps a strict 0.5 s spacing otherwise degrades to 1.67 fps.
             if self.next_buffer_t is None:
                 self.next_buffer_t = t
-            while self.next_buffer_t <= t + 1e-06:
+            while self.next_buffer_t <= t + 1e-6:
                 self.next_buffer_t += 1.0 / self.buffer_fps
         while self.buffer and self.buffer[0][0] < t - self.buffer_s:
             self.buffer.popleft()
@@ -1651,7 +2020,7 @@ class HandoffWriter:
             if "evidence_window_s" in event
             else t - self.pre_s
         )
-        return (max(0.0, start, t - self.buffer_s), t)
+        return max(0.0, start, t - self.buffer_s), t
 
     @staticmethod
     def _spread(items: list, n: int) -> list:
@@ -1680,21 +2049,23 @@ class HandoffWriter:
         trigger frame. `tag` keeps the files of several windows for the same event apart."""
         w0 = max(0.0, start, t - self.buffer_s)
         n = self.max_window_frames if max_frames is None else max(1, max_frames)
-        eps = 1e-06
+        eps = 1e-6
         paths = getattr(seq, "paths", None)
         if paths:
+            # Image sequences: reference the files that are already on disk.
             pairs = [
                 (ts, p)
                 for p, ts in zip(seq.paths, seq.timestamps)
                 if w0 - eps <= ts <= t + eps
             ]
             pairs = self._spread(pairs, n)
-            return ([p for _, p in pairs], [round(ts, 2) for ts, _ in pairs])
+            return [p for _, p in pairs], [round(ts, 2) for ts, _ in pairs]
+        # Video: buffered earlier frames plus the trigger frame itself.
         earlier = [
             (bt, idx, jpg) for bt, idx, jpg in self.buffer if w0 - eps <= bt < t - eps
         ]
         chosen = self._spread([*earlier, (t, event["frame_index"], None)], n)
-        out_paths, times = ([], [])
+        out_paths, times = [], []
         for k, (bt, idx, jpg) in enumerate(chosen):
             p = self.windows / f"{event['event_id']}{tag}_w{k:02d}_f{idx}.jpg"
             if jpg is None:
@@ -1703,16 +2074,16 @@ class HandoffWriter:
                 p.write_bytes(jpg.tobytes())
             out_paths.append(str(p))
             times.append(round(bt, 2))
-        return (out_paths, times)
+        return out_paths, times
 
     def save(self, event: dict, frame, seq, t: float | None = None) -> None:
         """`t` is the trigger frame's exact time (event timestamps are rounded)."""
         t = float(event["timestamp_s"]) if t is None else float(t)
         h, w = frame.shape[:2]
         x1, y1, x2, y2 = event["roi_box"]
-        px, py = ((x2 - x1) * self.pad_ratio, (y2 - y1) * self.pad_ratio)
-        cx1, cy1 = (max(0, int(x1 - px)), max(0, int(y1 - py)))
-        cx2, cy2 = (min(w, int(x2 + px)), min(h, int(y2 + py)))
+        px, py = (x2 - x1) * self.pad_ratio, (y2 - y1) * self.pad_ratio
+        cx1, cy1 = max(0, int(x1 - px)), max(0, int(y1 - py))
+        cx2, cy2 = min(w, int(x2 + px)), min(h, int(y2 + py))
         crop_path = self.crops / f"{event['event_id']}_crop.jpg"
         cv2.imwrite(str(crop_path), frame[cy1:cy2, cx1:cx2])
         ctx = frame.copy()

@@ -43,6 +43,19 @@ Press Ctrl+C for shutdown. The recorder finalizes its current output, tracking
 flushes pending crop checks and a final scene review, and AI queues drain.
 An active Gemma request can therefore delay graceful shutdown until its timeout.
 
+## Stage 1 candidate service (`--stage1`)
+
+`--stage1` replaces the screening classifier with the resident model workflow
+documented in [Stage 1 reasoning](../docs/stage1_reasoning.md): Stage 1
+candidates go to `data_pipeline.detection.reasoning` (`--vlm none|clip|gemma|cascade`)
+and are journaled under `--candidate-dir`. `stage1_offline.py VIDEO` runs the
+same path on a file without recording or the database, and
+`stage1_offline.py --replay-candidates JOURNAL` replays saved candidates.
+Both default to five FPS and a ten-second periodic scene review; use
+`--safety-scan-seconds 0` to measure the original rule-only gate. The model
+workers (`--vlm` other than `none`) run `anomaly_eval.reasoning.worker`, which
+lives on `feat/stage1-integration`/`main` and is not part of this branch.
+
 ## Recording and frames
 
 Recording and frame selection are independent: segments are registered in
