@@ -98,12 +98,11 @@ def default_config(gate: ModuleType, device: str = "cpu", imgsz: int = 640):
         # Stillness rules re-report a person still present after 45 s. Previously never repeated.
         loiter_repeat_s=45.0,
         inview_repeat_s=45.0,
-        # KEPT AGAINST THE CALIBRATION, deliberately. calib_chosen says None; left at 1.0 because
-        # the sweep optimises 983 incidents of which only 5 are left items, so it trades a bag for
-        # a litter catch without noticing. Measured both ways: 1.0 takes unattended items from 5/6
-        # to 6/6 on the held-out cameras (+5 littering on fit) for +4.6 alerts/h on fit, 9.2 per
-        # recall point - above the 7.7 bar, accepted for bag coverage.
-        reach_refire_move_h=1.0,
+        # Left at the calibrated None. 1.0 was tried and reverted: on the held-out cameras it buys
+        # one event - unattended items 5/6 to 6/6, littering and loitering unchanged - for
+        # +14.1 alerts/h, i.e. 30 per recall point against a 7.7 bar. The +5 littering it gains on
+        # the tuned cameras does not appear on unseen ones (CALIB_LOG.md experiment 32).
+        reach_refire_move_h=None,
         pose_action_cooldown_s=15.0,
         # Smoking: count hand raises to the face (3 in 10 s), then its own crop check.
         smoke_count_raises=True,
