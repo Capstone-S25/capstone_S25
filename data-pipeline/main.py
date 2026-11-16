@@ -10,19 +10,24 @@ from uuid import uuid4
 from dotenv import load_dotenv
 
 from data_pipeline.database.session import create_engine_and_session_factory
-from data_pipeline.pipeline.runner import run_pipeline
+from data_pipeline.pipeline.processing import process_frame
+from data_pipeline.pipeline.runner import MAX_CAMERA_COUNT, run_pipeline
 from data_pipeline.video_ingestion.sources import SourceType, VideoSource
+from data_pipeline.video_ingestion.streaming.frame_queue import DEFAULT_FRAME_QUEUE_SIZE
+
+DEFAULT_RTSP_URL = "rtsp://localhost:8554/camera_01"
 
 
 def _parse_args(project_dir: Path) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Record, schedule, and decode a local video or CCTV RTSP stream."
+        description="Record up to four cameras (or one video file), share one "
+        "round-robin frame consumer, and screen each camera's frames."
     )
     parser.add_argument(
         "--source",
         choices=[SourceType.FILE.value, SourceType.RTSP.value],
         default=SourceType.FILE.value,
-        help="Input type: file (default) or rtsp for a CCTV stream.",
+        help="Input type: file (default) or rtsp for CCTV streams.",
     )
     parser.add_argument(
         "--video",
@@ -32,22 +37,29 @@ def _parse_args(project_dir: Path) -> argparse.Namespace:
     )
     parser.add_argument(
         "--rtsp-url",
-        default="rtsp://localhost:8554/camera_01",
-        help="CCTV stream URL; defaults to the local mock camera.",
+        action="append",
+        help="CCTV stream URL; repeat for up to four cameras. Defaults to the local mock camera.",
     )
     parser.add_argument(
         "--target-fps",
         type=float,
         default=5,
-        help="Maximum selected frames per second of video time (default: 5).",
+        help="Maximum selected frames per second per camera/file (default: 5).",
+    )
+    parser.add_argument(
+        "--queue-size",
+        type=int,
+        default=DEFAULT_FRAME_QUEUE_SIZE,
+        help="Maximum waiting frames per camera/file; drops the oldest when full "
+        f"(default: {DEFAULT_FRAME_QUEUE_SIZE}).",
     )
     parser.add_argument(
         "--verbose",
         action="store_true",
-        help="Show detailed recording, scheduling, and decoding messages.",
+        help="Show detailed recording and streaming messages.",
     )
     parser.add_argument(
-        "--record-only", action="store_true", help="Record/decode without AI models"
+        "--record-only", action="store_true", help="Record and stream without AI models"
     )
     parser.add_argument(
         "--model",
@@ -63,7 +75,11 @@ def _parse_args(project_dir: Path) -> argparse.Namespace:
         help="Screening classifier; default: the newest installed ensemble",
     )
     parser.add_argument("--device", default="cpu")
-    parser.add_argument("--source-id", default="camera_01")
+    parser.add_argument(
+        "--source-id",
+        default="camera_01",
+        help="Camera ID; with several --rtsp-url, IDs are this plus _1, _2, ...",
+    )
     parser.add_argument("--segment-seconds", type=int, default=2)
     parser.add_argument(
         "--gemma-url",
@@ -85,34 +101,44 @@ def _parse_args(project_dir: Path) -> argparse.Namespace:
         help="Journal AI events only; do not write incidents to the database",
     )
     args = parser.parse_args()
-    if args.source == "file" and args.video is None:
+    if args.source == SourceType.FILE and args.video is None:
         parser.error("Provide --video for a file source")
     if args.segment_seconds < 1:
         parser.error("segment-seconds must be positive")
     if not math.isfinite(args.target_fps) or args.target_fps <= 0:
         parser.error("--target-fps must be positive and finite")
+    if args.queue_size <= 0:
+        parser.error("--queue-size must be a positive integer")
+    if args.rtsp_url and len(args.rtsp_url) > MAX_CAMERA_COUNT:
+        parser.error(f"--rtsp-url supports at most {MAX_CAMERA_COUNT} cameras")
+    if args.source != SourceType.RTSP and args.rtsp_url:
+        parser.error("--rtsp-url requires --source rtsp")
     return args
 
 
-def _build_video_source(args: argparse.Namespace) -> VideoSource:
+def _build_video_sources(args: argparse.Namespace) -> list[VideoSource]:
     if args.source == SourceType.FILE:
         video_path = args.video.resolve()
         if not video_path.is_file():
             raise FileNotFoundError(f"Video not found: {video_path}")
-        source = VideoSource(
-            source_id=args.source_id,
-            name="Local sample video",
-            source_type=SourceType.FILE,
-            location=str(video_path),
-        )
-    else:
-        source = VideoSource(
-            source_id=args.source_id,
-            name="CCTV RTSP stream",
+        return [
+            VideoSource(
+                source_id=args.source_id,
+                name="Local video",
+                source_type=SourceType.FILE,
+                location=str(video_path),
+            )
+        ]
+    urls = args.rtsp_url or [DEFAULT_RTSP_URL]
+    return [
+        VideoSource(
+            source_id=args.source_id if len(urls) == 1 else f"{args.source_id}_{index}",
+            name=f"CCTV RTSP stream {index}",
             source_type=SourceType.RTSP,
-            location=args.rtsp_url,
+            location=url,
         )
-    return source
+        for index, url in enumerate(urls, start=1)
+    ]
 
 
 def _load_database_url(project_dir: Path) -> str:
@@ -121,6 +147,58 @@ def _load_database_url(project_dir: Path) -> str:
     if not database_url:
         raise RuntimeError("Set DATABASE_URL in data-pipeline/.env or your environment")
     return database_url
+
+
+def _build_vision(args, sources, session_factory, storage_root, cleanup):
+    """One VisionPipeline per camera behind a single frame handler."""
+    from vision_runtime.classifier import load_classifier
+    from vision_runtime.config import configure_runtime, runtime_root
+    from vision_runtime.gemma import GemmaClient
+    from vision_runtime.service import ConfirmationQueue
+
+    from data_pipeline.detection.integration import (
+        CameraRouter,
+        SerializedClassifier,
+        VisionPipeline,
+    )
+
+    configure_runtime()
+    classifier = load_classifier(args.model, args.device)
+    if len(sources) > 1:
+        classifier = SerializedClassifier(classifier)
+    confirmation = None
+    if args.gemma_url:
+        confirmation = ConfirmationQueue(GemmaClient(args.gemma_url, args.gemma_model))
+        cleanup.callback(confirmation.close)
+    recorder = None
+    if not args.no_incidents:
+        from data_pipeline.detection.incidents import IncidentRecorder
+
+        recorder = IncidentRecorder(session_factory, storage_root)
+    run = uuid4().hex
+    pipelines = {}
+    for source in sources:
+        if args.out and len(sources) == 1:
+            output = args.out
+        elif args.out:
+            output = args.out / source.source_id
+        else:
+            output = runtime_root() / "cameras" / source.source_id / run
+        pipelines[source.source_id] = VisionPipeline(
+            source.source_id,
+            output,
+            classifier,
+            confirmation,
+            fps=args.target_fps,
+            device=args.device,
+            on_event=recorder,
+        )
+        logging.info(
+            "AI event journal | %s | %s", source.source_id, output / "events.jsonl"
+        )
+    router = CameraRouter(pipelines)
+    cleanup.callback(router.close)
+    return router
 
 
 def main() -> None:
@@ -134,7 +212,7 @@ def main() -> None:
     )
     database_url = _load_database_url(project_dir)
 
-    source = _build_video_source(args)
+    sources = _build_video_sources(args)
 
     storage_root = args.recordings_dir or project_dir / "recordings"
     engine, session_factory = create_engine_and_session_factory(database_url)
@@ -142,50 +220,19 @@ def main() -> None:
     sys.path.insert(0, str(project_dir.parent))
     with ExitStack() as cleanup:
         cleanup.callback(engine.dispose)
-        on_frame = None
+        handler = process_frame
         if not args.record_only:
-            from vision_runtime.classifier import load_classifier
-            from vision_runtime.config import configure_runtime, runtime_root
-            from vision_runtime.gemma import GemmaClient
-            from vision_runtime.service import ConfirmationQueue
-
-            from data_pipeline.detection.integration import VisionPipeline
-
-            configure_runtime()
-            classifier = load_classifier(args.model, args.device)
-            confirmation = None
-            if args.gemma_url:
-                confirmation = ConfirmationQueue(
-                    GemmaClient(args.gemma_url, args.gemma_model)
-                )
-                cleanup.callback(confirmation.close)
-            output = (
-                args.out or runtime_root() / "cameras" / args.source_id / uuid4().hex
+            handler = _build_vision(
+                args, sources, session_factory, storage_root, cleanup
             )
-            recorder = None
-            if not args.no_incidents:
-                from data_pipeline.detection.incidents import IncidentRecorder
-
-                recorder = IncidentRecorder(session_factory, storage_root)
-            vision = VisionPipeline(
-                source.source_id,
-                output,
-                classifier,
-                confirmation,
-                fps=args.target_fps,
-                device=args.device,
-                on_event=recorder,
-            )
-            cleanup.callback(vision.close)
-            on_frame = vision.on_frame
-            logging.info("AI event journal | %s", output / "events.jsonl")
         run_pipeline(
-            source,
+            sources,
             storage_root,
             session_factory=session_factory,
+            frame_handler=handler,
             target_fps=args.target_fps,
+            queue_size=args.queue_size,
             segment_seconds=args.segment_seconds,
-            on_frame=on_frame,
         )
 
 

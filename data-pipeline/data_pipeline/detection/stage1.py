@@ -1,11 +1,33 @@
 """Backend frame adapter for the production YOLO/ByteTrack runtime."""
 
 import math
+from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
+from typing import Any
 from uuid import UUID
 
-from data_pipeline.video_ingestion.decoding.decoder import DecodedFrame
+
+@dataclass(frozen=True)
+class Stage1Frame:
+    """One frame for the tracker, with the session it belongs to.
+
+    Attributes:
+        segment_id: Recording segment of the frame, or None for live frames.
+        source_id: Camera or file source identifier.
+        session_id: Tracking session; a new one restarts tracking.
+        frame_index: Zero-based decoded frame index.
+        timestamp_ms: Approximate UTC epoch milliseconds (media time for uploads).
+        image: BGR uint8 pixel array with shape (height, width, 3).
+    """
+
+    segment_id: int | None
+    source_id: str
+    session_id: UUID
+    frame_index: int
+    timestamp_ms: int
+    image: Any
+
 
 # Which VLM objectives to ask about for each Stage 1 rule.
 TASKS_BY_EVENT = {
@@ -126,7 +148,7 @@ class Stage1Detector:
         self.next_review_s = None
         self.reference_path = None
 
-    def _save_reference(self, frame: DecodedFrame) -> None:
+    def _save_reference(self, frame: Stage1Frame) -> None:
         import cv2
 
         self.reference_dir.mkdir(parents=True, exist_ok=True)
@@ -138,7 +160,7 @@ class Stage1Detector:
             raise OSError(f"Could not write reference frame {path}")
         self.reference_path = str(path)
 
-    def process(self, frame: DecodedFrame) -> list[dict]:
+    def process(self, frame: Stage1Frame) -> list[dict]:
         """Observe one selected frame and return the candidates it triggers.
 
         Each candidate is a Stage 1 event (event_type, roi_box, crop_path,

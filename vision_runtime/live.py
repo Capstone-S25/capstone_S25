@@ -220,7 +220,7 @@ class LiveSession:
             detector = self.detector_factory(
                 self.source_id, self.folder, self.fps, self.scan_seconds
             )
-            from data_pipeline.video_ingestion.decoding.decoder import DecodedFrame
+            from data_pipeline.detection.stage1 import Stage1Frame
 
             worker = ScreeningQueue(
                 self.reviewer.classifier,
@@ -257,7 +257,7 @@ class LiveSession:
                         else self.first_selected_ms
                     )
                 candidates = detector.process(
-                    DecodedFrame(
+                    Stage1Frame(
                         0, self.source_id, self.ident, sequence, stamp_ms, image
                     )
                 )
