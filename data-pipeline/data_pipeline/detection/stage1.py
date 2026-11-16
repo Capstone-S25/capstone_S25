@@ -1,11 +1,15 @@
 """Backend frame adapter for the production YOLO/ByteTrack runtime."""
 
+import logging
 import math
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
 from typing import Any
 from uuid import UUID
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -38,8 +42,11 @@ TASKS_BY_EVENT = {
         "rough_sleeping",
         "unattended_items",
     ),
-    "reach_down": ("littering",),
-    "pose_action": ("littering",),
+    # Putting something down is littering or leaving an item: often the bag itself is never
+    # detected (dark bags, odd shapes), so the person's alert is the only chance to ask
+    # about an unattended item.
+    "reach_down": ("littering", "unattended_items"),
+    "pose_action": ("littering", "unattended_items"),
     "fast_motion": ("littering",),
     "static_object_left": ("littering", "unattended_items"),
     "object_appeared": ("littering", "unattended_items"),
@@ -47,7 +54,10 @@ TASKS_BY_EVENT = {
     "sustained_presence": ("loitering", "smoking", "rough_sleeping"),
     "long_presence": ("loitering", "rough_sleeping"),
     "near_camera": ("loitering",),
-    "hand_to_face": ("smoking",),
+    # Littering too: the person dedup can let a smoking alert stand in for a reach-down
+    # one on the same person (8 ICVL held-out littering incidents caught only this way,
+    # 2026-11-10).
+    "hand_to_face": ("smoking", "littering"),
     "periodic_review": (
         "smoking",
         "littering",
@@ -69,17 +79,69 @@ def load_gate():
     return gate
 
 
-def default_config(gate, device="cpu"):
-    from vision_runtime.config import model_paths, models_root
+def default_config(gate, device="cpu", imgsz=640):
+    """The calibrated Stage 1 settings (feat/stage1-integration a51198d).
 
-    weights = models_root() / "detectors"
+    imgsz 1280 for wide shots where people are small: far lying people are only
+    detected at 1280, at roughly 3x the CPU cost. STAGE1_MODEL_DIR and
+    STAGE1_CROP_ENCODER override the bundled detector weights and crop-check
+    encoder.
+    """
+    from vision_runtime.config import model_paths, models_root
+    from vision_runtime.tracking.crop_check import weights_for
+
+    weights = Path(os.environ.get("STAGE1_MODEL_DIR") or models_root() / "detectors")
+    # The calibration also crop-checks hand_to_face, but its weights
+    # (crop_check_hand_to_face.npz) are not in the repository yet; skip a check
+    # whose weights are missing instead of failing to start.
+    checked = ("reach_down", "pose_action", "hand_to_face")
+    missing = [rule for rule in checked if not weights_for(rule).is_file()]
+    if missing:
+        logger.warning(
+            "Stage 1 crop check skipped (no weights): %s", ", ".join(missing)
+        )
     return gate.GateConfig(
         det_weights=str(weights / "yolo26s.pt"),
         pose_weights=str(weights / "yolo26s-pose.pt"),
-        rules=gate.DEFAULT_RULES + ("pose_action",),
+        rules=gate.DEFAULT_RULES + ("pose_action", "smoking"),
         inview_s=60.0,
+        # Calibrated on the camera-disjoint split (notebooks/exp/eval/calib_chosen.json,
+        # CALIB_LOG.md experiments 1-31 on feat/stage1-integration): 90.3 % of events on
+        # the tuned cameras, 94.8 % on cameras never tuned on, at 98.5 alerts/h on
+        # footage with no incident. Every change was priced at an equal alert rate; the
+        # cheapest buy on the front is 7.7 alerts/h per point.
+        loiter_s=30.0,
+        loiter_radius_h=0.45,
+        # Guards: a reach or pose cue needs a person at least 0.12 of frame height whose
+        # hand has been tracked 1.5 s. Both were unset, which let tiny and half-second
+        # detections fire.
+        reach_min_h=0.12,
+        hand_min_age_s=1.5,
+        # Crop checks are stricter than the thresholds stored with the weights (0.2).
+        pose_action_thr=0.4,
+        crop_check_thr=0.3,
+        # Stillness rules re-report a person still present after 45 s.
+        loiter_repeat_s=45.0,
+        inview_repeat_s=45.0,
+        # Kept against the calibration, deliberately: 1.0 takes unattended items from
+        # 5/6 to 6/6 on the held-out cameras for +4.6 alerts/h on fit.
+        reach_refire_move_h=1.0,
+        pose_action_cooldown_s=15.0,
+        # Smoking: count hand raises to the face (3 in 10 s), then its own crop check.
+        smoke_count_raises=True,
+        smoke_min_hits=3,
+        crop_check_rules=tuple(rule for rule in checked if rule not in missing),
+        item_rule_skip=("umbrella",),  # cafe parasols, not left items
+        still_lying_wh=1.1,  # people lying down are short boxes: skip the height guard
+        # Stillness rules measure body size by the box's longer side (lying people in
+        # any pose), and a person pass at 1280 px once a second feeds them far / lying
+        # people the 640 px pass misses (CHAD lying 1/4 -> 3/4, ~+30 % CPU).
+        still_size_longer_side=True,
+        hires_every_s=1.0,
+        imgsz=imgsz,
         device=device,
-        crop_check_encoder="local-dir:" + str(model_paths().base),
+        crop_check_encoder=os.environ.get("STAGE1_CROP_ENCODER")
+        or "local-dir:" + str(model_paths().base),
     )
 
 
@@ -96,6 +158,8 @@ class Stage1Detector:
         fps: Rate of the frames passed to process(); the tracker and rules use it.
         cfg: A stage1_gate.GateConfig; defaults to default_config().
         gate: The stage1_gate module; defaults to load_gate().
+        reference_frames: Save each session's first frame as the reference scene
+            (needs OpenCV); off only for tests with a fake gate.
     """
 
     def __init__(
@@ -107,6 +171,7 @@ class Stage1Detector:
         cfg=None,
         gate: ModuleType | None = None,
         safety_scan_seconds: float = 0,
+        reference_frames: bool = True,
     ) -> None:
         if fps <= 0 or not math.isfinite(fps):
             raise ValueError("Stage 1 fps must be positive and finite")
@@ -128,6 +193,7 @@ class Stage1Detector:
         # the ensemble classifier compares loitering/unattended windows with it.
         self.reference_dir = Path(out_dir) / source_id / "reference"
         self.reference_path: str | None = None
+        self.reference_frames = reference_frames
         self.session_id: UUID | None = None
         self.last_timestamp_ms: int | None = None
         self.continuity_epoch = 0
@@ -183,7 +249,7 @@ class Stage1Detector:
         if self.start_ms is None:
             self.start_ms = frame.timestamp_ms
         t = (frame.timestamp_ms - self.start_ms) / 1000
-        if self.reference_path is None:
+        if self.reference_frames and self.reference_path is None:
             self._save_reference(frame)
         obs = self.perception.observe(frame.image, self.index, t)
         self.writer.observe(frame.image, t, self.index)

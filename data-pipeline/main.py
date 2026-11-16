@@ -100,7 +100,26 @@ def _parse_args(project_dir: Path) -> argparse.Namespace:
         action="store_true",
         help="Journal AI events only; do not write incidents to the database",
     )
+    parser.add_argument(
+        "--stage1",
+        action="store_true",
+        help="Instead of the screening classifier, send Stage 1 candidates to the "
+        "--vlm candidate service (data_pipeline.detection.reasoning).",
+    )
+    parser.add_argument(
+        "--candidate-dir",
+        type=Path,
+        default=project_dir / "candidates",
+        help="Candidate journals for --stage1",
+    )
+    from data_pipeline.detection.reasoning import add_arguments
+
+    add_arguments(parser, project_dir.parent)
     args = parser.parse_args()
+    if args.vlm != "none" and not args.stage1:
+        parser.error("--vlm requires --stage1")
+    if args.stage1 and args.record_only:
+        parser.error("Choose --stage1 or --record-only")
     if args.source == SourceType.FILE and args.video is None:
         parser.error("Provide --video for a file source")
     if args.segment_seconds < 1:
@@ -147,6 +166,59 @@ def _load_database_url(project_dir: Path) -> str:
     if not database_url:
         raise RuntimeError("Set DATABASE_URL in data-pipeline/.env or your environment")
     return database_url
+
+
+def _build_stage1_hook(args, sources, out_dir):
+    """Stage 1 per camera, all candidates into one service from build_service().
+
+    The returned frame handler has a close() that flushes the service.
+    """
+    # Imported here so the pipeline runs without the YOLO dependencies.
+    from data_pipeline.detection.reasoning import build_service
+    from data_pipeline.detection.stage1 import (
+        Stage1Detector,
+        Stage1Frame,
+        default_config,
+        load_gate,
+    )
+
+    gate = load_gate()
+    detectors = {
+        source.source_id: Stage1Detector(
+            source.source_id,
+            out_dir,
+            fps=args.target_fps,
+            cfg=default_config(gate, args.stage1_device, args.stage1_imgsz),
+            gate=gate,
+            safety_scan_seconds=args.safety_scan_seconds,
+        )
+        for source in sources
+    }
+    sessions = {source_id: uuid4() for source_id in detectors}
+    service = build_service(args, Path(__file__).resolve().parents[1], out_dir)
+    service.start()
+
+    def on_frame(frame) -> None:
+        frame = Stage1Frame(
+            None,
+            frame.source_id,
+            sessions[frame.source_id],
+            frame.frame_index,
+            frame.timestamp_ms,
+            frame.image,
+        )
+        for candidate in detectors[frame.source_id].process(frame):
+            service.submit(candidate)
+
+    def close() -> None:
+        try:
+            service.close()
+        finally:
+            for detector in detectors.values():
+                detector._close_pool()
+
+    on_frame.close = close
+    return on_frame
 
 
 def _build_vision(args, sources, session_factory, storage_root, cleanup):
@@ -221,7 +293,10 @@ def main() -> None:
     with ExitStack() as cleanup:
         cleanup.callback(engine.dispose)
         handler = process_frame
-        if not args.record_only:
+        if args.stage1:
+            handler = _build_stage1_hook(args, sources, args.candidate_dir)
+            cleanup.callback(handler.close)
+        elif not args.record_only:
             handler = _build_vision(
                 args, sources, session_factory, storage_root, cleanup
             )
