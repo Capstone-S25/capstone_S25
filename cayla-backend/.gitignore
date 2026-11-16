@@ -1,0 +1,4 @@
+*.dump
+venv/
+.DS_Store
+
