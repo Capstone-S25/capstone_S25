@@ -356,6 +356,182 @@ class CandidateService:
         )
 
 
+class GroupedCandidateService:
+    """One VLM call per tracked person per window: send the first, follow up once.
+
+    Stage 1 names the person (or object) behind each alert in entity_id. The
+    first alert for an entity goes to the inner service at once, unchanged
+    apart from its group labels. Later alerts for the same entity within
+    window_s of that first one are held, and one follow-up candidate carries
+    all of them when the window closes (or at close()). This trades a
+    follow-up that may arrive up to window_s late for no delay on any first
+    verdict.
+
+    Time is the media clock (candidate["timestamp_s"]), never the wall clock,
+    so replaying a recording in milliseconds groups exactly as live video
+    does. Each source and session has its own clock, advanced by the newest
+    candidate seen on it; a held follow-up of a camera that goes quiet waits
+    for that camera's next candidate or for close(). A new session of a
+    source closes the source's groups from earlier sessions, since their
+    entities can never alert again.
+
+    Candidates without an entity_id (periodic and final scene reviews) are
+    never grouped. If the inner service rejects a first alert, no group is
+    opened, so the person's next alert is sent as a first.
+    """
+
+    def __init__(self, inner, out_dir, *, window_s=30.0):
+        if not math.isfinite(window_s) or window_s <= 0:
+            raise ValueError("Group window must be positive and finite")
+        self.inner = inner
+        self.out_dir = Path(out_dir)
+        self.window_s = float(window_s)
+        self.lock = threading.Lock()
+        self.groups = {}  # key -> {"first": candidate, "opened_s": t, "held": [...]}
+        self.clocks = {}  # (source_id, session_id) -> newest timestamp_s
+        self.sessions = {}  # source_id -> latest session_id
+        self.counts = {
+            "received": 0,
+            "ungrouped": 0,
+            "first": 0,
+            "held": 0,
+            "follow_ups": 0,
+            "inner_calls": 0,
+            "inner_rejected": 0,
+        }
+
+    @staticmethod
+    def group_key(candidate):
+        """(source_id, session_id, continuity_epoch, entity_id), or None.
+
+        entity_id is only unique within one detector run, and _reset()
+        restarts the numbering, hence the session and continuity epoch.
+        """
+        entity = candidate.get("entity_id")
+        if not entity:
+            return None
+        return (
+            candidate["source_id"],
+            candidate["session_id"],
+            candidate["continuity_epoch"],
+            entity,
+        )
+
+    def start(self):
+        self.inner.start()
+
+    def _send(self, candidate):
+        self.counts["inner_calls"] += 1
+        admitted = self.inner.submit(candidate)
+        if not admitted:
+            self.counts["inner_rejected"] += 1
+        return admitted
+
+    def submit(self, candidate) -> bool:
+        with self.lock:
+            self.counts["received"] += 1
+            key = self.group_key(candidate)
+            if key is None:
+                self.counts["ungrouped"] += 1
+                return self._send(candidate)
+            source, session = key[0], key[1]
+            t = float(candidate["timestamp_s"])
+            if self.sessions.get(source, session) != session:
+                self._flush(lambda k: k[0] == source and k[1] != session)
+            self.sessions[source] = session
+            clock = max(t, self.clocks.get((source, session), t))
+            self.clocks[(source, session)] = clock
+            self._expire(source, session, clock)
+            group = self.groups.get(key)
+            if group is not None:
+                group["held"].append(candidate)
+                self.counts["held"] += 1
+                return True
+            self.counts["first"] += 1
+            first = {**candidate, "group_key": list(key), "group_role": "first"}
+            admitted = self._send(first)
+            if admitted:
+                self.groups[key] = {"first": first, "opened_s": t, "held": []}
+            return admitted
+
+    def _expire(self, source, session, clock):
+        """Send the follow-ups of this clock's groups whose window has passed."""
+        self._flush(
+            lambda k: (
+                k[0] == source
+                and k[1] == session
+                and clock > self.groups[k]["opened_s"] + self.window_s
+            )
+        )
+
+    def _flush(self, chosen):
+        for key in [k for k in self.groups if chosen(k)]:
+            group = self.groups.pop(key)
+            if group["held"]:
+                self.counts["follow_ups"] += 1
+                self._send(self.follow_up(key, group["first"], group["held"]))
+
+    @staticmethod
+    def follow_up(key, first, held):
+        """One candidate standing in for every held alert of a group."""
+        last = held[-1]
+        views = {}
+        for name in dict.fromkeys(v for c in held for v in c.get("views", {})):
+            pairs = sorted(
+                (
+                    (time_s, path)
+                    for c in held
+                    for path, time_s in zip(
+                        c["views"].get(name, {}).get("paths", []),
+                        c["views"].get(name, {}).get("times_s", []),
+                    )
+                ),
+                key=lambda pair: pair[0],
+            )
+            seen, merged = set(), {"paths": [], "times_s": []}
+            for time_s, path in pairs:
+                if path not in seen:
+                    seen.add(path)
+                    merged["paths"].append(path)
+                    merged["times_s"].append(time_s)
+            views[name] = merged
+        return {
+            **last,
+            "event_id": f"{first['event_id']}_followup",
+            "tasks": sorted({task for c in held for task in c["tasks"]}),
+            "views": views,
+            "roi_box": last.get("roi_box"),
+            "roi_boxes": [c.get("roi_box") for c in held],
+            "event_type": last["event_type"],
+            "grouped_event_types": [c["event_type"] for c in held],
+            "group_key": list(key),
+            "grouped_event_ids": [c["event_id"] for c in held],
+            "group_size": len(held),
+            "group_role": "follow_up",
+        }
+
+    def close(self):
+        try:
+            with self.lock:
+                self._flush(lambda k: True)
+        finally:
+            self.inner.close()
+        self.out_dir.mkdir(parents=True, exist_ok=True)
+        (self.out_dir / "grouping_summary.json").write_text(
+            json.dumps(
+                {
+                    "window_s": self.window_s,
+                    "counts": self.counts,
+                    "calls_saved": self.counts["received"] - self.counts["inner_calls"],
+                    "scope": "Media-clock grouping by (source, session, continuity "
+                    "epoch, entity); first alert sent at once, one follow-up per group.",
+                },
+                indent=2,
+            )
+            + "\n"
+        )
+
+
 class RecordOnly:
     def start(self):
         pass
@@ -420,6 +596,18 @@ def add_arguments(parser, repo_root):
     parser.add_argument("--output-format", choices=["auto", "prompt"], default="auto")
     parser.add_argument("--queue-capacity", type=int, default=16)
     parser.add_argument("--inference-timeout", type=float, default=120)
+    parser.add_argument(
+        "--group-alerts",
+        action="store_true",
+        help="Send a person's first alert at once and their later alerts within "
+        "--group-window-seconds as one follow-up call (off by default)",
+    )
+    parser.add_argument(
+        "--group-window-seconds",
+        type=float,
+        default=30.0,
+        help="Media-time window after a person's first alert (default: 30)",
+    )
 
 
 def build_service(args, repo_root, out_dir):
@@ -467,4 +655,9 @@ def build_service(args, repo_root, out_dir):
             resident("clip", args.clip_model, args.clip_python),
             resident("gemma", args.vlm_model, args.vlm_python),
         )
-    return CandidateService(out_dir, client, max_pending=args.queue_capacity)
+    service = CandidateService(out_dir, client, max_pending=args.queue_capacity)
+    if getattr(args, "group_alerts", False):
+        service = GroupedCandidateService(
+            service, out_dir, window_s=args.group_window_seconds
+        )
+    return service
