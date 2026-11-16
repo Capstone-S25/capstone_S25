@@ -7,7 +7,6 @@ import sys
 import tempfile
 import threading
 import time
-from contextlib import closing
 from pathlib import Path
 from uuid import uuid4
 
@@ -230,19 +229,35 @@ class Reviewer:
         backend = str(ROOT / "data-pipeline")
         if backend not in sys.path:
             sys.path.insert(0, backend)
-        from data_pipeline.detection.stage1 import Stage1Detector
-        from data_pipeline.video_ingestion.decoding.decoder import decode_segment
-        from data_pipeline.video_ingestion.decoding.selection import select_frames
-        from data_pipeline.video_ingestion.scheduling.worker import SegmentJob
+        from data_pipeline.detection.stage1 import Stage1Detector, Stage1Frame
+        from data_pipeline.video_ingestion.streaming.selection import FrameSelector
 
-        with av.open(str(source)) as container:
-            duration = container.duration / av.time_base if container.duration else None
+        def frames(container):
+            # Media time from the start of the file, at most 5 frames per second.
+            selector, session, last = FrameSelector(target_fps=5), uuid4(), None
+            for index, picture in enumerate(
+                container.decode(container.streams.video[0])
+            ):
+                if picture.pts is None or not picture.time_base:
+                    continue
+                ms = round(float(picture.pts * picture.time_base) * 1000)
+                if last is not None and ms < last:
+                    continue
+                last = ms
+                if selector.should_select(ms):
+                    image = picture.to_ndarray(format="bgr24")
+                    yield Stage1Frame(None, "upload", session, index, ms, image)
+
         detector = Stage1Detector("upload", folder, fps=5, safety_scan_seconds=10)
-        job = SegmentJob(0, "upload", uuid4(), source.name, 0, 0)
         previews, count, end = {}, 0, 0.0
         try:
-            with closing(decode_segment(job, source.parent)) as frames:
-                for frame in select_frames(frames, target_fps=5):
+            with av.open(str(source)) as container:
+                if not container.streams.video:
+                    raise ValueError("The file has no video stream")
+                duration = (
+                    container.duration / av.time_base if container.duration else None
+                )
+                for frame in frames(container):
                     candidates = detector.process(frame)
                     count += 1
                     end = (frame.timestamp_ms - detector.start_ms) / 1000

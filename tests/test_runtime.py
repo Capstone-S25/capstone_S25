@@ -196,8 +196,7 @@ def test_image_has_no_invented_temporal_evidence(monkeypatch, tmp_path):
 
 
 def test_crop_delays_keep_trigger_frame_and_decision_availability(tmp_path):
-    from data_pipeline.detection.stage1 import Stage1Detector
-    from data_pipeline.video_ingestion.decoding.decoder import DecodedFrame
+    from data_pipeline.detection.stage1 import Stage1Detector, Stage1Frame
 
     from vision_runtime.tracking.gate import HandoffWriter
 
@@ -241,10 +240,10 @@ def test_crop_delays_keep_trigger_frame_and_decision_availability(tmp_path):
     )
     detector = Stage1Detector("camera", tmp_path, fps=5, cfg=object(), gate=gate)
     session = uuid4()
-    first = DecodedFrame(
+    first = Stage1Frame(
         0, "camera", session, 0, 0, np.full((8, 8, 3), (0, 0, 240), np.uint8)
     )
-    second = DecodedFrame(
+    second = Stage1Frame(
         0, "camera", session, 1, 1000, np.full((8, 8, 3), (240, 0, 0), np.uint8)
     )
     assert detector.process(first) == []
@@ -343,8 +342,7 @@ def test_uploads_wait_for_screening_space(monkeypatch, tmp_path):
 
 def test_long_view_spans_twenty_seconds_with_two_fps_buffer(tmp_path):
     """Drifting ~29.97 fps timestamps at a 2 fps buffer still give a full long view."""
-    from data_pipeline.detection.stage1 import Stage1Detector
-    from data_pipeline.video_ingestion.decoding.decoder import DecodedFrame
+    from data_pipeline.detection.stage1 import Stage1Detector, Stage1Frame
 
     from vision_runtime.features import temporal_support
     from vision_runtime.tracking.gate import HandoffWriter
@@ -380,7 +378,7 @@ def test_long_view_spans_twenty_seconds_with_two_fps_buffer(tmp_path):
     session, events = uuid4(), []
     image = np.zeros((8, 8, 3), np.uint8)
     for index in range(160):  # 32 s at 5 fps, 200.2 ms apart (29.97 fps source)
-        frame = DecodedFrame(0, "camera", session, index, round(index * 200.2), image)
+        frame = Stage1Frame(0, "camera", session, index, round(index * 200.2), image)
         events += detector.process(frame)
     reviews = [e for e in events if e["timestamp_s"] >= 20]
     assert reviews

@@ -540,8 +540,7 @@ def smoke():
 
     settings()
     sys.path.insert(0, str(ROOT / "data-pipeline"))
-    from data_pipeline.detection.stage1 import Stage1Detector
-    from data_pipeline.video_ingestion.decoding.decoder import DecodedFrame
+    from data_pipeline.detection.stage1 import Stage1Detector, Stage1Frame
 
     if torch.version.cuda is not None:
         raise RuntimeError("Expected the pinned CPU-only Torch build")
@@ -579,7 +578,7 @@ def smoke():
             session = uuid4()
             for index in range(2):
                 detector.process(
-                    DecodedFrame(
+                    Stage1Frame(
                         0,
                         "setup",
                         session,
