@@ -1,5 +1,25 @@
 # Application integration audit — 6 November 2026
 
+## Update 16 November 2026: branches merged in
+
+- `feat/cayla-backend`: the login, users and audit-log backend in `cayla-backend/`
+  (self-contained; not yet connected to the dashboard).
+- `feat/frontend`: the Figma v2 restyle; the staff pages keep live incidents.
+- `feat/data-pipeline`: frames now come from a streaming worker per camera (up
+  to four) that runs beside the recorder, through one round-robin consumer. The
+  segment scheduler and decoder below no longer exist; `video_segments` is
+  recording metadata, not an AI job queue. A full per-camera queue drops its
+  oldest waiting frame (`--queue-size`).
+- `feat/stage1-integration`: the calibrated Stage 1 settings (re-extracted gate
+  in `vision_runtime/tracking/gate.py`) and the Stage 1 -> VLM candidate path
+  (`main.py --stage1`, `stage1_offline.py`, `detection/reasoning.py`). Its
+  research tree is left out as before; the `--vlm` model workers need
+  `anomaly_eval` from that branch.
+- `ym-backend`: nothing new for the application (its incidents API was
+  already here); recorded as merged.
+
+The rest of this document describes the branch as of 6 November.
+
 ## Scope and source history
 
 `feat/vision-app-integration` starts at `origin/feat/data-pipeline` commit
