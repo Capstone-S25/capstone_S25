@@ -3,20 +3,21 @@ import { useNavigate } from 'react-router-dom';
 import {
   Eye,
   House,
-  ClipboardList,
-  Search,
+  History,
   Radio,
   Camera,
-  BarChart2,
+  BarChart3,
+  ListChecks,
   SlidersHorizontal,
-  Settings,
-  LogOut,
-  User,
+  PanelLeftClose,
+  PanelLeftOpen,
   ChevronDown,
 } from 'lucide-react';
 import { UserRole } from '../../types';
 import { Toggle } from '../ui/Toggle';
 import InviteStaffModal from '../modals/InviteStaffModal';
+
+// Figma: v2/Sidebar — brand lockup, labelled sections, Settings pinned to the bottom.
 
 interface SidebarProps {
   role: UserRole;
@@ -30,84 +31,56 @@ interface NavItem {
 }
 
 const STAFF_NAV: NavItem[] = [
-  { label: 'Home',           icon: House,         path: '/staff/home' },
-  { label: 'Review History', icon: ClipboardList, path: '/staff/review-history' },
-  { label: 'Search',         icon: Search,        path: '/staff/search' },
-  { label: 'Hotspots',       icon: Radio,         path: '/staff/hotspots' },
-  { label: 'Cameras',        icon: Camera,        path: '/staff/cameras' },
+  { label: 'Home',           icon: House,   path: '/staff/home' },
+  { label: 'Review history', icon: History, path: '/staff/review-history' },
+  { label: 'Cameras',        icon: Camera,  path: '/staff/cameras' },
+  { label: 'Hotspots',       icon: Radio,   path: '/staff/hotspots' },
 ];
 
 const ADMIN_NAV: NavItem[] = [
-  { label: 'Home',     icon: House,             path: '/admin/home' },
-  { label: 'Workload', icon: BarChart2,         path: '/admin/workload' },
-  { label: 'Rules',    icon: SlidersHorizontal, path: '/admin/rules' },
-  { label: 'Cameras',  icon: Camera,            path: '/admin/cameras' },
+  { label: 'Home',             icon: House,      path: '/admin/home' },
+  { label: 'Workload summary', icon: BarChart3,  path: '/admin/workload' },
+  { label: 'Monitoring rules', icon: ListChecks, path: '/admin/rules' },
+  { label: 'Cameras',          icon: Camera,     path: '/admin/cameras' },
 ];
 
-const USER_BY_ROLE: Record<UserRole, { initials: string; name: string; role: string }> = {
-  staff: { initials: 'JT', name: 'Jane Tan', role: 'Staff' },
-  admin: { initials: 'BL', name: 'Ben Lee',  role: 'Admin' },
-};
+const COLLAPSE_KEY = 'insight.sidebarCollapsed';
 
-// ── Admin settings panel helpers ───────────────────────────────────────────
+function readCollapsed(): boolean {
+  try { return localStorage.getItem(COLLAPSE_KEY) === '1'; } catch { return false; }
+}
 
-function SettingsCard({ title, children }: { title?: string; children: React.ReactNode }) {
+// ── Settings panel helpers ─────────────────────────────────────────────────
+
+function SettingsSection({ title, children }: { title?: string; children: React.ReactNode }) {
   return (
-    <div style={{ backgroundColor: '#ffffff', borderRadius: '12px', paddingTop: title ? '14px' : '0', paddingBottom: '4px', paddingLeft: '16px', paddingRight: '16px', flexShrink: 0 }}>
-      {title && <><p style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: '#121726' }}>{title}</p><div style={{ height: '8px' }} /></>}
+    <div className="border-b border-line-soft px-[16px] py-[12px] last:border-b-0">
+      {title && <p className="m-0 mb-[4px] text-[11px] font-medium tracking-[0.02em] text-muted uppercase">{title}</p>}
       {children}
     </div>
   );
 }
 
-function SettingsRow({ label, sub, border = false, children }: { label: string; sub?: string; border?: boolean; children?: React.ReactNode }) {
+function SettingsRow({ label, sub, children }: { label: string; sub?: string; children?: React.ReactNode }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', paddingTop: '11px', paddingBottom: '11px', borderTop: border ? '1px solid #e5e8ed' : 'none' }}>
-      <div style={{ flex: '1 0 0', minWidth: 0, display: 'flex', flexDirection: 'column', gap: sub ? '2px' : 0 }}>
-        <p style={{ margin: 0, fontSize: '14px', fontWeight: 500, color: '#121726' }}>{label}</p>
-        {sub && <p style={{ margin: 0, fontSize: '13px', fontWeight: 400, color: '#6b7380' }}>{sub}</p>}
+    <div className="flex items-center gap-[16px] py-[8px]">
+      <div className="min-w-0 flex-1">
+        <p className="m-0 text-[13px] font-medium text-ink">{label}</p>
+        {sub && <p className="m-0 mt-[1px] text-[12px] text-muted">{sub}</p>}
       </div>
       {children}
     </div>
   );
 }
 
-// ── Staff popover helper ───────────────────────────────────────────────────
-
-interface PopoverItemProps {
-  icon: React.ReactNode;
-  label: string;
-  danger?: boolean;
-  onClick: () => void;
-}
-
-function PopoverItem({ icon, label, danger = false, onClick }: PopoverItemProps) {
-  const [hovered, setHovered] = useState(false);
+function LinkButton({ children, onClick, tone = 'brand' }: { children: React.ReactNode; onClick?: () => void; tone?: 'brand' | 'muted' }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-        width: '100%',
-        padding: '9px 10px',
-        borderRadius: '8px',
-        border: 'none',
-        cursor: 'pointer',
-        backgroundColor: hovered ? '#f9fafb' : 'transparent',
-        color: danger ? '#dc2626' : '#374151',
-        fontSize: '14px',
-        fontWeight: 500,
-        textAlign: 'left',
-        transition: 'background-color 0.1s',
-      }}
+      className={`shrink-0 cursor-pointer border-none bg-transparent p-0 text-[12px] font-medium hover:underline ${tone === 'brand' ? 'text-brand' : 'text-muted'}`}
     >
-      {icon}
-      <span dangerouslySetInnerHTML={{ __html: label }} />
+      {children}
     </button>
   );
 }
@@ -117,282 +90,195 @@ function PopoverItem({ icon, label, danger = false, onClick }: PopoverItemProps)
 export function Sidebar({ role, activePath }: SidebarProps) {
   const navigate = useNavigate();
   const navItems = role === 'staff' ? STAFF_NAV : ADMIN_NAV;
-  const currentUser = USER_BY_ROLE[role];
-  const [popoverOpen, setPopoverOpen] = useState(false);
-  const [popoverPos, setPopoverPos] = useState({ bottom: 0, left: 0 });
+  const [collapsed, setCollapsed] = useState(readCollapsed);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
-  // Admin notification toggles
-  const [notifEscalated,  setNotifEscalated]  = useState(true);
+  const [notifEscalated, setNotifEscalated] = useState(true);
   const [notifCamOffline, setNotifCamOffline] = useState(true);
-  const [notifWeekly,     setNotifWeekly]     = useState(true);
-  const [teamOpen,        setTeamOpen]        = useState(false);
-  const [showInvite,      setShowInvite]      = useState(false);
+  const [notifWeekly, setNotifWeekly] = useState(true);
+  const [notifNewAlert, setNotifNewAlert] = useState(true);
+  const [teamOpen, setTeamOpen] = useState(false);
+  const [showInvite, setShowInvite] = useState(false);
 
   const settingsBtnRef = useRef<HTMLButtonElement>(null);
-  const popoverRef     = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
-  // Close popover on outside click
   useEffect(() => {
-    if (!popoverOpen) return;
-    function handleClick(e: MouseEvent) {
-      const target = e.target as Node;
-      if (
-        popoverRef.current && !popoverRef.current.contains(target) &&
-        settingsBtnRef.current && !settingsBtnRef.current.contains(target)
-      ) {
-        setPopoverOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [popoverOpen]);
+    try { localStorage.setItem(COLLAPSE_KEY, collapsed ? '1' : '0'); } catch { /* storage unavailable */ }
+  }, [collapsed]);
 
-  function togglePopover() {
-    if (popoverOpen) { setPopoverOpen(false); return; }
-    if (settingsBtnRef.current) {
-      const rect = settingsBtnRef.current.getBoundingClientRect();
-      setPopoverPos({ bottom: window.innerHeight - rect.bottom, left: rect.right + 8 });
+  // Close settings on outside click / Escape
+  useEffect(() => {
+    if (!settingsOpen) return;
+    function onDown(e: MouseEvent) {
+      const t = e.target as Node;
+      if (panelRef.current?.contains(t) || settingsBtnRef.current?.contains(t)) return;
+      setSettingsOpen(false);
     }
-    setPopoverOpen(true);
-  }
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') setSettingsOpen(false); }
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey); };
+  }, [settingsOpen]);
 
   const isActive = (path: string) => activePath === path || activePath.startsWith(path);
 
+  const navBtn = (active: boolean) =>
+    `flex w-full cursor-pointer items-center gap-[10px] rounded-[6px] border-none py-[9px] text-[13px] font-medium whitespace-nowrap transition-colors ${
+      collapsed ? 'justify-center px-0' : 'px-[12px]'
+    } ${active ? 'bg-brand-soft text-brand' : 'bg-transparent text-ink-2 hover:bg-head hover:text-ink'}`;
+
   return (
     <>
-    <aside
-      className="flex flex-col items-center flex-shrink-0"
-      style={{
-        width: '72px',
-        minHeight: '100vh',
-        backgroundColor: '#ffffff',
-        borderRight: '1px solid #e5e7eb',
-        paddingTop: '24px',
-        paddingBottom: '24px',
-        position: 'sticky',
-        top: 0,
-        height: '100vh',
-        zIndex: 100,
-      }}
-    >
-      {/* Logo */}
-      <div style={{ marginBottom: '8px' }}>
-        <button
-          type="button"
-          onClick={() => navigate(role === 'staff' ? '/staff/home' : '/admin/home')}
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            width: '50px', height: '50px',
-            backgroundColor: '#1f4fd1', borderRadius: '25px', border: 'none', cursor: 'pointer',
-          }}
-          aria-label="InSight home"
-        >
-          <Eye size={22} color="#ffffff" strokeWidth={2.5} />
-        </button>
-      </div>
+      <aside
+        className="sticky top-0 z-[100] flex h-screen shrink-0 flex-col gap-[4px] border-r border-line bg-white pt-[16px] pb-[14px] transition-[width] duration-200"
+        style={{ width: collapsed ? 64 : 232, paddingLeft: collapsed ? 10 : 12, paddingRight: collapsed ? 10 : 12 }}
+      >
+        {/* Brand lockup */}
+        <div className={`flex items-center gap-[10px] pb-[14px] ${collapsed ? 'flex-col px-0' : 'px-[4px]'}`}>
+          <button
+            type="button"
+            onClick={() => navigate(role === 'staff' ? '/staff/home' : '/admin/home')}
+            aria-label="InSight home"
+            className="flex size-[32px] shrink-0 cursor-pointer items-center justify-center rounded-[8px] border-none bg-brand"
+          >
+            <Eye size={19} color="#ffffff" strokeWidth={2.25} />
+          </button>
+          {!collapsed && (
+            <div className="flex min-w-0 flex-1 flex-col whitespace-nowrap">
+              <span className="text-[15px] font-semibold text-ink">InSight</span>
+              <span className="text-[11px] text-muted">Panasonic · {role === 'staff' ? 'Staff' : 'Admin'}</span>
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={() => setCollapsed((v) => !v)}
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            className="flex size-[24px] shrink-0 cursor-pointer items-center justify-center rounded-[4px] border-none bg-transparent text-muted transition-colors hover:bg-head hover:text-ink"
+          >
+            {collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+          </button>
+        </div>
 
-      {/* Nav items */}
-      <nav className="flex flex-col items-center flex-1" style={{ paddingTop: '32px', gap: '8px' }} aria-label="Main navigation">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const active = isActive(item.path);
-          return (
-            <button
-              key={item.path}
-              type="button"
-              onClick={() => navigate(item.path)}
-              title={item.label}
-              aria-label={item.label}
-              aria-current={active ? 'page' : undefined}
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                width: '72px', height: '52px', borderRadius: '12px', border: 'none', cursor: 'pointer',
-                backgroundColor: active ? '#1f4fd1' : 'transparent',
-                color: active ? '#ffffff' : '#374151',
-                transition: 'background-color 0.15s',
-              }}
-            >
-              <Icon size={22} />
-            </button>
-          );
-        })}
-      </nav>
+        {/* Nav */}
+        <nav className="flex flex-col gap-[4px]" aria-label="Main navigation">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.path);
+            return (
+              <button
+                key={item.path}
+                type="button"
+                onClick={() => navigate(item.path)}
+                title={collapsed ? item.label : undefined}
+                aria-label={collapsed ? item.label : undefined}
+                aria-current={active ? 'page' : undefined}
+                className={navBtn(active)}
+              >
+                <Icon size={18} strokeWidth={1.75} className="shrink-0" />
+                {!collapsed && item.label}
+              </button>
+            );
+          })}
+        </nav>
 
-      {/* Bottom: Settings + Avatar */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+        <div className="flex-1" />
+
+        {/* Settings */}
         <button
           ref={settingsBtnRef}
           type="button"
-          onClick={togglePopover}
-          title="Settings"
-          aria-label="Settings"
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            width: '72px', height: '52px', borderRadius: '12px', border: 'none', cursor: 'pointer',
-            backgroundColor: popoverOpen ? '#1f4fd1' : 'transparent',
-            color: popoverOpen ? '#ffffff' : '#374151',
-            transition: 'background-color 0.15s',
-          }}
+          onClick={() => setSettingsOpen((v) => !v)}
+          title={collapsed ? 'Settings' : undefined}
+          aria-label={collapsed ? 'Settings' : undefined}
+          aria-expanded={settingsOpen}
+          className={navBtn(settingsOpen)}
         >
-          <Settings size={22} />
+          <SlidersHorizontal size={18} strokeWidth={1.75} className="shrink-0" />
+          {!collapsed && 'Settings'}
         </button>
+      </aside>
 
+      {/* ── Settings panel ── */}
+      {settingsOpen && (
         <div
-          title={currentUser.name}
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            width: '36px', height: '36px', borderRadius: '50%',
-            backgroundColor: '#dbe4fb', color: '#1f4fd1', fontSize: '11px', fontWeight: 600,
-          }}
+          ref={panelRef}
+          className="v2-pop-in thin-scroll fixed bottom-[14px] z-[1000] flex max-h-[calc(100vh-28px)] w-[360px] flex-col overflow-y-auto rounded-[10px] border border-line bg-white shadow-[0_12px_32px_rgba(18,26,43,0.16)]"
+          style={{ left: (collapsed ? 64 : 232) + 8 }}
         >
-          {currentUser.initials}
-        </div>
-
-        {/* ── Staff popover ── */}
-        {popoverOpen && role === 'staff' && (
-          <div
-            ref={popoverRef}
-            style={{
-              position: 'fixed',
-              bottom: `${popoverPos.bottom}px`,
-              left: `${popoverPos.left}px`,
-              width: '220px',
-              backgroundColor: '#ffffff',
-              borderRadius: '12px',
-              border: '1px solid #e5e7eb',
-              boxShadow: '0px 8px 24px rgba(0,0,0,0.12)',
-              overflow: 'hidden',
-              zIndex: 1000,
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 16px', borderBottom: '1px solid #f3f4f6' }}>
-              <div style={{ width: '34px', height: '34px', borderRadius: '50%', backgroundColor: '#dbe4fb', color: '#1f4fd1', fontSize: '11px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                {currentUser.initials}
-              </div>
-              <div style={{ minWidth: 0 }}>
-                <p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#111827', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{currentUser.name}</p>
-                <p style={{ margin: 0, fontSize: '12px', color: '#6b7280', fontWeight: 400 }}>{currentUser.role}</p>
-              </div>
-            </div>
-            <div style={{ padding: '6px' }}>
-              <PopoverItem icon={<User size={15} />} label="Profile &amp; settings" onClick={() => setPopoverOpen(false)} />
-              <div style={{ height: '1px', backgroundColor: '#f3f4f6', margin: '4px 0' }} />
-              <PopoverItem icon={<LogOut size={15} />} label="Sign out" danger onClick={() => { setPopoverOpen(false); navigate('/login'); }} />
-            </div>
+          <div className="border-b border-line-soft px-[16px] pt-[14px] pb-[12px]">
+            <p className="m-0 text-[15px] font-medium text-ink">Settings</p>
           </div>
-        )}
 
-        {/* ── Admin settings panel ── */}
-        {popoverOpen && role === 'admin' && (
-          <div
-            ref={popoverRef}
-            style={{
-              position: 'fixed',
-              bottom: `${popoverPos.bottom}px`,
-              left: `${popoverPos.left}px`,
-              width: '380px',
-              backgroundColor: '#f3f4f6',
-              borderRadius: '16px',
-              border: '1px solid #e0e3e8',
-              boxShadow: '0px 12px 32px 0px rgba(18,23,38,0.16)',
-              zIndex: 1000,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px',
-              padding: '8px',
-              maxHeight: `calc(100vh - ${popoverPos.bottom + 16}px)`,
-              overflowY: 'auto',
-            }}
-          >
-            <SettingsCard title="Notifications">
-              <SettingsRow label="Escalated cases" sub="Desktop and email, as soon as staff escalate">
-                <Toggle checked={notifEscalated} onChange={setNotifEscalated} label="Escalated cases notifications" />
-              </SettingsRow>
-              <SettingsRow label="Camera goes offline" sub="Desktop alert after 5 min without signal" border>
-                <Toggle checked={notifCamOffline} onChange={setNotifCamOffline} label="Camera offline notifications" />
-              </SettingsRow>
-              <SettingsRow label="Weekly workload report" sub="Emailed every Monday, 9:00 AM" border>
-                <Toggle checked={notifWeekly} onChange={setNotifWeekly} label="Weekly report notifications" />
-              </SettingsRow>
-            </SettingsCard>
+          <SettingsSection title="Notifications">
+            {role === 'admin' ? (
+              <>
+                <SettingsRow label="Escalated cases" sub="Desktop and email, as soon as staff escalate">
+                  <Toggle checked={notifEscalated} onChange={setNotifEscalated} label="Escalated cases notifications" />
+                </SettingsRow>
+                <SettingsRow label="Camera goes offline" sub="Desktop alert after 5 min without signal">
+                  <Toggle checked={notifCamOffline} onChange={setNotifCamOffline} label="Camera offline notifications" />
+                </SettingsRow>
+                <SettingsRow label="Weekly workload report" sub="Emailed every Monday, 9:00 AM">
+                  <Toggle checked={notifWeekly} onChange={setNotifWeekly} label="Weekly report notifications" />
+                </SettingsRow>
+              </>
+            ) : (
+              <>
+                <SettingsRow label="New clips to review" sub="Desktop alert when a clip is flagged">
+                  <Toggle checked={notifNewAlert} onChange={setNotifNewAlert} label="New clip notifications" />
+                </SettingsRow>
+                <SettingsRow label="Camera goes offline" sub="Desktop alert after 5 min without signal">
+                  <Toggle checked={notifCamOffline} onChange={setNotifCamOffline} label="Camera offline notifications" />
+                </SettingsRow>
+              </>
+            )}
+          </SettingsSection>
 
-            {/* Team — collapsible */}
-            <div style={{ backgroundColor: '#ffffff', borderRadius: '12px', paddingLeft: '16px', paddingRight: '16px', flexShrink: 0 }}>
+          {role === 'admin' && (
+            <SettingsSection title="Team">
               <button
                 type="button"
                 onClick={() => setTeamOpen((v) => !v)}
-                style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '14px 0 10px' }}
+                aria-expanded={teamOpen}
+                className="flex w-full cursor-pointer items-center gap-[10px] border-none bg-transparent py-[8px] text-left"
               >
-                <span style={{ fontSize: '16px', fontWeight: 600, color: '#121726', marginRight: 'auto' }}>Team</span>
-                {/* Stacked member avatars */}
-                <div style={{ display: 'flex' }}>
-                  {[{ initials: 'JT', bg: '#dbe4fb', color: '#1f4fd1' }, { initials: 'RK', bg: '#d1fae5', color: '#065f46' }].map((m, i) => (
-                    <div key={m.initials} style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: m.bg, color: m.color, fontSize: '9px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #ffffff', marginLeft: i === 0 ? 0 : '-6px' }}>
-                      {m.initials}
-                    </div>
+                <span className="flex-1 text-[13px] font-medium text-ink">2 staff members</span>
+                <span className="flex">
+                  {[{ i: 'JT', bg: 'var(--color-brand-soft)', fg: 'var(--color-brand)' }, { i: 'RK', bg: 'var(--color-success-soft)', fg: 'var(--color-success)' }].map((m, idx) => (
+                    <span
+                      key={m.i}
+                      className="flex size-[24px] items-center justify-center rounded-full border-2 border-white text-[9px] font-semibold"
+                      style={{ backgroundColor: m.bg, color: m.fg, marginLeft: idx === 0 ? 0 : -6 }}
+                    >
+                      {m.i}
+                    </span>
                   ))}
-                </div>
-                <ChevronDown size={16} color="#6b7280" style={{ transform: teamOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s', flexShrink: 0 }} />
+                </span>
+                <ChevronDown size={16} className="shrink-0 text-muted transition-transform" style={{ transform: teamOpen ? 'rotate(180deg)' : undefined }} />
               </button>
               {teamOpen && (
                 <>
-                  <SettingsRow label="Jane Tan" sub="Staff · jane.tan@towera.sg">
-                    <button type="button" style={{ color: '#6b7380', fontSize: '14px', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}>Remove</button>
-                  </SettingsRow>
-                  <SettingsRow label="Ravi K." sub="Staff · ravi.k@towera.sg" border>
-                    <button type="button" style={{ color: '#6b7380', fontSize: '14px', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}>Remove</button>
-                  </SettingsRow>
+                  <SettingsRow label="Jane Tan" sub="Staff · jane.tan@towera.sg"><LinkButton tone="muted">Remove</LinkButton></SettingsRow>
+                  <SettingsRow label="Ravi K." sub="Staff · ravi.k@towera.sg"><LinkButton tone="muted">Remove</LinkButton></SettingsRow>
                 </>
               )}
-              <SettingsRow label="Invite staff" border>
-                <button type="button" onClick={() => setShowInvite(true)} style={{ color: '#1f4fd1', fontSize: '14px', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}>+ Invite</button>
+              <SettingsRow label="Invite staff">
+                <LinkButton onClick={() => setShowInvite(true)}>+ Invite</LinkButton>
               </SettingsRow>
-              <div style={{ height: '4px' }} />
-            </div>
+            </SettingsSection>
+          )}
 
-            <SettingsCard>
-              <SettingsRow label="Customise layout" sub="Choose which cards show on Home">
-                <button type="button" style={{ color: '#1f4fd1', fontSize: '14px', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}>Edit</button>
-              </SettingsRow>
-            </SettingsCard>
+          <SettingsSection title="Account">
+            <SettingsRow label="Change password">
+              <LinkButton>Change</LinkButton>
+            </SettingsRow>
+          </SettingsSection>
+        </div>
+      )}
 
-            <SettingsCard>
-              <SettingsRow label="Sam Lee" sub="sam.lee@towera.sg">
-                <span style={{ color: '#6b7380', fontSize: '14px', fontWeight: 400, flexShrink: 0 }}>Admin</span>
-              </SettingsRow>
-              <SettingsRow label="Change password" border>
-                <button type="button" style={{ color: '#1f4fd1', fontSize: '14px', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', flexShrink: 0 }}>Change</button>
-              </SettingsRow>
-            </SettingsCard>
-
-            <button
-              type="button"
-              onClick={() => { setPopoverOpen(false); navigate('/login'); }}
-              style={{
-                backgroundColor: '#ffffff',
-                border: '1px solid #edbfba',
-                borderRadius: '10px',
-                padding: '10px 18px',
-                width: '100%',
-                color: '#b22921',
-                fontSize: '14px',
-                fontWeight: 500,
-                cursor: 'pointer',
-                flexShrink: 0,
-              }}
-            >
-              Sign out
-            </button>
-          </div>
-        )}
-      </div>
-    </aside>
-
-    <InviteStaffModal
-      isOpen={showInvite}
-      onClose={() => setShowInvite(false)}
-      onInvite={() => setShowInvite(false)}
-    />
+      <InviteStaffModal isOpen={showInvite} onClose={() => setShowInvite(false)} onInvite={() => setShowInvite(false)} />
     </>
   );
 }

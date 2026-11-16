@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { MonitoringRule, IncidentType, Severity } from '../../types/index';
-import { Modal } from '../ui/Modal';
+import { Modal, INPUT_CLASS, LABEL_CLASS } from '../ui/Modal';
 import { Button } from '../ui/Button';
 
 interface AddRuleModalProps {
@@ -22,10 +22,7 @@ const LOCATION_CAMERAS = [
 const DETECT_TYPES: IncidentType[] = ['Smoking', 'Littering', 'Loitering', 'Unattended item'];
 const SEVERITIES: Severity[] = ['Critical', 'Moderate', 'Minor'];
 
-const INPUT_CLASS =
-  'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500';
 
-const LABEL_CLASS = 'block text-sm font-medium text-gray-700 mb-1.5';
 
 export default function AddRuleModal({ isOpen, onClose, onAdd }: AddRuleModalProps) {
   const [locationCam, setLocationCam] = useState('');
@@ -65,15 +62,27 @@ export default function AddRuleModal({ isOpen, onClose, onAdd }: AddRuleModalPro
   const isValid = Boolean(locationCam && detectType && severity);
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Add monitoring rule" width="520px">
-      <div className="space-y-4">
-        {/* Subtitle */}
-        <p className="text-sm text-gray-500 -mt-2">
-          The AI will flag matching behaviour on these cameras.
-        </p>
+    <Modal isOpen={isOpen} onClose={handleClose} title="Add monitoring rule" width="520px"
+      subtitle="The AI will flag matching behaviour on these cameras."
+      footer={
+        <>
+          <Button variant="secondary" onClick={handleClose}>
+          Cancel
+          </Button>
+          <Button
+          variant="primary"
+          onClick={handleAdd}
+          disabled={!isValid}
+          >
+          Add rule
+          </Button>
+        </>
+      }
+    >
+      <div className="flex flex-col gap-[16px]">
 
         {/* Location + Detect row */}
-        <div className="flex gap-3">
+        <div className="flex gap-[12px]">
           <div className="flex-1">
             <label className={LABEL_CLASS}>Location</label>
             <select
@@ -103,7 +112,7 @@ export default function AddRuleModal({ isOpen, onClose, onAdd }: AddRuleModalPro
         </div>
 
         {/* Active hours + Severity row */}
-        <div className="flex gap-3">
+        <div className="flex gap-[12px]">
           <div className="flex-1">
             <label className={LABEL_CLASS}>Active hours</label>
             <input
@@ -130,7 +139,7 @@ export default function AddRuleModal({ isOpen, onClose, onAdd }: AddRuleModalPro
         </div>
 
         {/* Min. confidence + Status row */}
-        <div className="flex gap-3">
+        <div className="flex gap-[12px]">
           <div className="flex-1">
             <label className={LABEL_CLASS}>Min. confidence</label>
             <div className="flex items-center gap-2">
@@ -142,7 +151,7 @@ export default function AddRuleModal({ isOpen, onClose, onAdd }: AddRuleModalPro
                 value={minConfidence}
                 onChange={(e) => setMinConfidence(Number(e.target.value))}
               />
-              <span className="text-sm text-gray-500 flex-shrink-0">%</span>
+              <span className="shrink-0 text-[13px] text-muted">%</span>
             </div>
           </div>
           <div className="flex-1">
@@ -156,21 +165,6 @@ export default function AddRuleModal({ isOpen, onClose, onAdd }: AddRuleModalPro
               <option value="Off">Off</option>
             </select>
           </div>
-        </div>
-
-        {/* Footer buttons */}
-        <div className="flex gap-3 pt-2">
-          <Button variant="secondary" className="flex-1" onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            className="flex-1"
-            onClick={handleAdd}
-            disabled={!isValid}
-          >
-            Add rule
-          </Button>
         </div>
       </div>
     </Modal>
