@@ -52,7 +52,18 @@ and are journaled under `--candidate-dir`. `stage1_offline.py VIDEO` runs the
 same path on a file without recording or the database, and
 `stage1_offline.py --replay-candidates JOURNAL` replays saved candidates.
 Both default to five FPS and a ten-second periodic scene review; use
-`--safety-scan-seconds 0` to measure the original rule-only gate. The model
+`--safety-scan-seconds 0` to measure the original rule-only gate.
+
+`--group-alerts` (off by default) cuts model calls by using Stage 1's
+`entity_id`: a person's (or object's) first alert is sent at once, and their
+later alerts within `--group-window-seconds` (default 30) of it go out as one
+follow-up candidate (`<first event_id>_followup`) that asks every task the held
+alerts asked, with their views merged. The window runs on media time, so
+`--replay-candidates` groups exactly as live video does. Groups are keyed by
+source, session, continuity epoch and entity; scene reviews are never grouped.
+Counts are written to `grouping_summary.json` next to `reasoning_summary.json`.
+
+The model
 workers (`--vlm` other than `none`) run `anomaly_eval.reasoning.worker`, which
 lives on `feat/stage1-integration`/`main` and is not part of this branch.
 
