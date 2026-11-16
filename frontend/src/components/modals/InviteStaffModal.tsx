@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Modal } from '../ui/Modal';
+import { Modal, INPUT_CLASS, LABEL_CLASS } from '../ui/Modal';
 import { Button } from '../ui/Button';
 
 interface InviteStaffModalProps {
@@ -8,10 +8,7 @@ interface InviteStaffModalProps {
   onInvite: (email: string, name: string) => void;
 }
 
-const INPUT_CLASS =
-  'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500';
 
-const LABEL_CLASS = 'block text-sm font-medium text-gray-700 mb-1.5';
 
 export default function InviteStaffModal({ isOpen, onClose, onInvite }: InviteStaffModalProps) {
   const [fullName, setFullName] = useState('');
@@ -34,15 +31,27 @@ export default function InviteStaffModal({ isOpen, onClose, onInvite }: InviteSt
   const isValid = Boolean(fullName.trim() && email.trim());
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Invite staff" width="480px">
-      <div className="space-y-4">
-        {/* Subtitle */}
-        <p className="text-sm text-gray-500 -mt-2">
-          They'll get an email with a temporary password and set their own when they first sign in.
-        </p>
+    <Modal isOpen={isOpen} onClose={handleClose} title="Invite staff" width="480px"
+      subtitle="They'll get an email with a temporary password and set their own when they first sign in."
+      footer={
+        <>
+          <Button variant="secondary" onClick={handleClose}>
+          Cancel
+          </Button>
+          <Button
+          variant="primary"
+          onClick={handleInvite}
+          disabled={!isValid}
+          >
+          Send invite
+          </Button>
+        </>
+      }
+    >
+      <div className="flex flex-col gap-[16px]">
 
         {/* Name + Role row */}
-        <div className="flex gap-3">
+        <div className="flex gap-[12px]">
           <div className="flex-1">
             <label className={LABEL_CLASS}>Name</label>
             <input
@@ -76,21 +85,6 @@ export default function InviteStaffModal({ isOpen, onClose, onInvite }: InviteSt
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-        </div>
-
-        {/* Footer buttons */}
-        <div className="flex gap-3 pt-2">
-          <Button variant="secondary" className="flex-1" onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            className="flex-1"
-            onClick={handleInvite}
-            disabled={!isValid}
-          >
-            Send invite
-          </Button>
         </div>
       </div>
     </Modal>

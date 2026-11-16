@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import type { CSSProperties } from 'react';
-import { Search, Download, ChevronDown } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { AppLayout } from '../../components/layout/AppLayout';
 import { SeverityBadge, OutcomeDot, OutcomeTabs } from '../../components/ui/Badge';
+import { Button } from '../../components/ui/Button';
+import { FilterSelect } from '../../components/ui/FilterSelect';
+import { ClipThumb, EmptyState, PageHeader } from '../../components/ui/Primitives';
 import { MOCK_STAFF } from '../../data/mock';
 import { useIncidents } from '../../data/useIncidents';
 import type { Incident, IncidentOutcome } from '../../types';
@@ -14,158 +16,21 @@ const TABS: Tab[] = ['All', 'Accepted', 'Dismissed', 'Escalated'];
 
 const STAFF_MAP: Record<string, string> = Object.fromEntries(MOCK_STAFF.map((s) => [s.id, s.name]));
 
+const LOCATIONS = ['Carpark B2', 'Lift Lobby 1', 'Corridor 2', 'Main entrance', 'Meeting Room 1', 'Staircase B', 'Pantry L3'];
+
 function formatDateTime(iso: string) {
   const d = new Date(iso);
   return {
-    date: d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-    time: d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+    date: d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }),
+    time: d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+    reviewed: new Date(d.getTime() + 3 * 60 * 1000).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
   };
 }
 
-// ── Style helpers ─────────────────────────────────────────────────────────────
+const camLabel = (camId: string) => 'Cam ' + camId.replace('cam-', '').padStart(2, '0');
 
-/** Row container: flex, 16px outer padding, 16px gap — matches Figma's gap-[16px] px-[16px] */
-function rowStyle(isData: boolean): CSSProperties {
-  return {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-    paddingLeft: '16px',
-    paddingRight: '16px',
-    paddingTop: isData ? '8px' : '14px',
-    paddingBottom: isData ? '8px' : '14px',
-    borderTop: isData ? '1px solid #eef0f3' : undefined,
-  };
-}
-
-/** Fixed-width column */
-function colStyle(width: number): CSSProperties {
-  return { width: `${width}px`, flexShrink: 0 };
-}
-
-const TH: CSSProperties = { fontSize: '12px', fontWeight: 500, color: '#6b7280' };
-
-// ── IncidentRow ───────────────────────────────────────────────────────────────
-
-interface IncidentRowProps {
-  inc: Incident;
-  date: string;
-  time: string;
-  assignee: string;
-  onSelect: (inc: Incident) => void;
-}
-
-function IncidentRow({ inc, date, time, assignee, onSelect }: IncidentRowProps) {
-  const [hovered, setHovered] = useState(false);
-  return (
-    <div
-      style={{ ...rowStyle(true), backgroundColor: hovered ? '#f9fafb' : 'transparent', cursor: 'pointer' }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onClick={() => onSelect(inc)}
-    >
-      {/* Clip thumbnail */}
-      <div style={colStyle(112)}>
-        <div style={{ position: 'relative', width: '96px', height: '54px' }}>
-          {inc.thumbnailUrl ? (
-            <img src={inc.thumbnailUrl} alt="" style={{ width: '96px', height: '54px', objectFit: 'cover', borderRadius: '4px', backgroundColor: '#d1d5db' }} />
-          ) : (
-            <div style={{ width: '96px', height: '54px', backgroundColor: '#d1d5db', borderRadius: '4px' }} />
-          )}
-          <span
-            style={{
-              position: 'absolute',
-              bottom: '3px',
-              right: '3px',
-              backgroundColor: 'rgba(0,0,0,0.55)',
-              color: '#ffffff',
-              fontSize: '11px',
-              padding: '1px 4px',
-              borderRadius: '3px',
-            }}
-          >
-            {inc.duration ?? '—'}
-          </span>
-        </div>
-      </div>
-      {/* Incident — flex: 1 fills remaining space */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{inc.type} · {inc.location}</p>
-        <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: '#6b7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{inc.description}</p>
-      </div>
-      {/* Camera */}
-      <div style={colStyle(90)}>
-        <span style={{ fontSize: '14px', color: '#374151' }}>
-          {'Cam ' + inc.camId.replace('cam-', '').padStart(2, '0')}
-        </span>
-      </div>
-      {/* Date & time */}
-      <div style={colStyle(180)}>
-        <p style={{ margin: 0, fontSize: '14px', color: '#374151', whiteSpace: 'nowrap' }}>{date}, {time}</p>
-      </div>
-      {/* Severity */}
-      <div style={colStyle(110)}>
-        <SeverityBadge severity={inc.severity} />
-      </div>
-      {/* Outcome */}
-      <div style={colStyle(120)}>
-        <OutcomeDot outcome={inc.outcome} />
-      </div>
-      {/* Reviewed by */}
-      <div style={colStyle(120)}>
-        <p style={{ margin: 0, fontSize: '14px', color: '#374151' }}>{assignee}</p>
-        <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: '#6b7280' }}>{time}</p>
-      </div>
-    </div>
-  );
-}
-
-// ── FilterDropdown ─────────────────────────────────────────────────────────────
-
-interface FilterDropdownProps {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  children: React.ReactNode;
-}
-
-function FilterDropdown({ label, value, onChange, children }: FilterDropdownProps) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-      <span style={{ fontSize: '14px', color: '#4b5563', flexShrink: 0 }}>{label}</span>
-      <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          style={{
-            appearance: 'none',
-            backgroundColor: '#ffffff',
-            border: '1px solid #d0d5dd',
-            borderRadius: '8px',
-            paddingLeft: '12px',
-            paddingRight: '32px',
-            paddingTop: '9px',
-            paddingBottom: '9px',
-            fontSize: '14px',
-            color: '#101828',
-            boxShadow: '0px 1px 2px 0px rgba(16,24,40,0.05)',
-            cursor: 'pointer',
-            outline: 'none',
-          }}
-        >
-          {children}
-        </select>
-        <ChevronDown
-          size={14}
-          color="#6b7280"
-          style={{ position: 'absolute', right: '10px', pointerEvents: 'none' }}
-        />
-      </div>
-    </div>
-  );
-}
-
-// ── Page ──────────────────────────────────────────────────────────────────────
+// Column widths from Figma: History table
+const COLS = 'grid grid-cols-[84px_minmax(0,1fr)_80px_170px_100px_100px_150px] gap-[16px]';
 
 export default function ReviewHistoryPage() {
   const { incidents } = useIncidents();
@@ -173,149 +38,96 @@ export default function ReviewHistoryPage() {
   const [severity, setSeverity] = useState('all');
   const [location, setLocation] = useState('all');
   const [period, setPeriod] = useState('7d');
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedInc, setSelectedInc] = useState<Incident | null>(null);
 
+  const reviewed = incidents.filter((i) => i.outcome !== 'Pending');
+
   const tabCounts: Partial<Record<Tab, number>> = {
-    All: incidents.length,
-    Accepted: incidents.filter((i) => i.outcome === 'Accepted').length,
-    Dismissed: incidents.filter((i) => i.outcome === 'Dismissed').length,
-    Escalated: incidents.filter((i) => i.outcome === 'Escalated').length,
+    All: reviewed.length,
+    Accepted: reviewed.filter((i) => i.outcome === 'Accepted').length,
+    Dismissed: reviewed.filter((i) => i.outcome === 'Dismissed').length,
+    Escalated: reviewed.filter((i) => i.outcome === 'Escalated').length,
   };
 
-  const filtered = incidents.filter((inc) => {
+  const filtered = reviewed.filter((inc) => {
     if (activeTab !== 'All' && inc.outcome !== activeTab) return false;
     if (severity !== 'all' && inc.severity !== severity) return false;
     if (location !== 'all' && inc.location !== location) return false;
-    if (searchQuery && !inc.type.toLowerCase().includes(searchQuery.toLowerCase()) && !inc.location.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });
 
   return (
     <AppLayout role="staff" activePath="/staff/review-history">
-      <div
-        style={{
-          padding: '28px 28px 28px 20px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '20px',
-        }}
-      >
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <h1 style={{ fontSize: '22px', fontWeight: 600, color: '#111827', margin: 0 }}>Review History</h1>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                backgroundColor: '#ffffff',
-                paddingLeft: '14px',
-                paddingRight: '16px',
-                paddingTop: '12px',
-                paddingBottom: '12px',
-                borderRadius: '10px',
-                width: '360px',
-                border: '1px solid #e5e7eb',
-              }}
-            >
-              <Search size={16} color="#6b7280" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search incidents…"
-                style={{
-                  flex: 1,
-                  border: 'none',
-                  outline: 'none',
-                  fontSize: '14px',
-                  color: '#111827',
-                  backgroundColor: 'transparent',
-                }}
-              />
-            </div>
-            <button
-              type="button"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                backgroundColor: '#ffffff',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                padding: '10px 16px',
-                fontSize: '14px',
-                fontWeight: 500,
-                color: '#111827',
-                cursor: 'pointer',
-              }}
-            >
-              <Download size={14} />
-              Export
-            </button>
-          </div>
-        </div>
+      <PageHeader
+        title="Review history"
+        subtitle="Every clip your team has reviewed, with its outcome."
+        actions={<Button variant="secondary" icon={<Download size={16} strokeWidth={1.75} />} onClick={() => window.print()}>Export PDF</Button>}
+      />
 
-        {/* Tabs + filter row */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-          <OutcomeTabs<Tab>
-            tabs={TABS}
-            active={activeTab}
-            counts={tabCounts}
-            onChange={setActiveTab}
-          />
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-            <FilterDropdown label="Severity" value={severity} onChange={setSeverity}>
-              <option value="all">All</option>
-              <option value="Critical">Critical</option>
-              <option value="Moderate">Moderate</option>
-              <option value="Minor">Minor</option>
-            </FilterDropdown>
-            <FilterDropdown label="Location" value={location} onChange={setLocation}>
-              <option value="all">All locations</option>
-              <option value="Carpark B2">Carpark B2</option>
-              <option value="Lift Lobby 1">Lift Lobby 1</option>
-              <option value="Corridor 2">Corridor 2</option>
-              <option value="Main entrance">Main entrance</option>
-              <option value="Meeting Room 1">Meeting Room 1</option>
-              <option value="Staircase B">Staircase B</option>
-              <option value="Pantry L3">Pantry L3</option>
-            </FilterDropdown>
-            <FilterDropdown label="Date" value={period} onChange={setPeriod}>
-              <option value="7d">Last 7 days</option>
-              <option value="30d">Last 30 days</option>
-              <option value="90d">Last 90 days</option>
-            </FilterDropdown>
-          </div>
-        </div>
+      {/* Filters */}
+      <div className="-mt-[2px] flex w-full flex-wrap items-center gap-[8px]">
+        <OutcomeTabs<Tab> tabs={TABS} active={activeTab} counts={tabCounts} onChange={setActiveTab} />
+        <div className="flex-1" />
+        <FilterSelect
+          label="Severity"
+          value={severity}
+          onChange={setSeverity}
+          options={[{ value: 'all', label: 'All' }, { value: 'Critical', label: 'Critical' }, { value: 'Moderate', label: 'Moderate' }, { value: 'Minor', label: 'Minor' }]}
+        />
+        <FilterSelect
+          label="Location"
+          value={location}
+          onChange={setLocation}
+          options={[{ value: 'all', label: 'All locations' }, ...LOCATIONS.map((l) => ({ value: l, label: l }))]}
+        />
+        <FilterSelect
+          label="Date"
+          value={period}
+          onChange={setPeriod}
+          options={[{ value: '7d', label: 'Last 7 days' }, { value: '30d', label: 'Last 30 days' }, { value: '90d', label: 'Last 90 days' }]}
+        />
+      </div>
 
-        {/* Table */}
-        <div style={{ backgroundColor: '#ffffff', borderRadius: '14px', overflow: 'hidden' }}>
-          {/* Header row */}
-          <div style={rowStyle(false)}>
-            <div style={colStyle(112)}><span style={TH}>Clip</span></div>
-            <div style={{ flex: 1, minWidth: 0 }}><span style={TH}>Incident</span></div>
-            <div style={colStyle(90)}><span style={TH}>Camera</span></div>
-            <div style={colStyle(180)}><span style={TH}>Date &amp; Time</span></div>
-            <div style={colStyle(110)}><span style={TH}>Severity</span></div>
-            <div style={colStyle(120)}><span style={TH}>Outcome</span></div>
-            <div style={colStyle(120)}><span style={TH}>Reviewed by</span></div>
+      {/* Table */}
+      <div className="w-full overflow-x-auto" role="table" aria-label="Review history">
+        <div className="min-w-[900px]">
+          <div role="row" className={`${COLS} border-b border-line pb-[8px] text-[11px] font-medium text-muted`}>
+            <span role="columnheader">Clip</span>
+            <span role="columnheader">Incident</span>
+            <span role="columnheader">Camera</span>
+            <span role="columnheader">Date &amp; time</span>
+            <span role="columnheader">Severity</span>
+            <span role="columnheader">Outcome</span>
+            <span role="columnheader">Reviewed by</span>
           </div>
 
-          {/* Data rows */}
-          {filtered.map((inc) => {
-            const { date, time } = formatDateTime(inc.dateTime);
+          {filtered.map((inc, idx) => {
+            const { date, time, reviewed: reviewedAt } = formatDateTime(inc.dateTime);
             const assignee = inc.assignedTo ? STAFF_MAP[inc.assignedTo] ?? '—' : '—';
-            return <IncidentRow key={inc.id} inc={inc} date={date} time={time} assignee={assignee} onSelect={setSelectedInc} />;
+            return (
+              <div
+                key={inc.id}
+                role="row"
+                tabIndex={0}
+                onClick={() => setSelectedInc(inc)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedInc(inc); } }}
+                className={`${COLS} cursor-pointer items-center border-b border-line-soft py-[10px] transition-colors hover:bg-head focus-visible:bg-head ${selectedInc?.id === inc.id ? 'bg-head' : ''}`}
+              >
+                <span role="cell"><ClipThumb seed={idx} src={inc.thumbnailUrl} className="h-[44px] w-[72px] rounded-[4px]" iconSize={14} /></span>
+                <span role="cell" className="flex min-w-0 flex-col gap-[2px]">
+                  <span className="truncate text-[13px] font-medium text-ink">{inc.type} · {inc.location}</span>
+                  <span className="truncate text-[12px] text-muted">{inc.description}</span>
+                </span>
+                <span role="cell" className="text-[12px] text-ink-2">{camLabel(inc.camId)}</span>
+                <span role="cell" className="text-[12px] text-ink-2">{date}, {time}</span>
+                <span role="cell"><SeverityBadge severity={inc.severity} /></span>
+                <span role="cell"><OutcomeDot outcome={inc.outcome} /></span>
+                <span role="cell" className="truncate text-[12px] text-ink-2">{assignee}{assignee !== '—' ? ` · ${reviewedAt}` : ''}</span>
+              </div>
+            );
           })}
 
-          {filtered.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '48px 0', fontSize: '14px', color: '#9ca3af' }}>
-              No incidents match the selected filters.
-            </div>
-          )}
+          {filtered.length === 0 && <EmptyState>No reviewed clips match these filters.</EmptyState>}
         </div>
       </div>
 
