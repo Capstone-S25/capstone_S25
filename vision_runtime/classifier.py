@@ -270,7 +270,14 @@ class ClipStrategy:
 # so that at most 5% of other tasks' out-of-fold windows are flagged. 20261114
 # adds text-described (zero-shot) members, footage from more sites, a smoking
 # detector with its own threshold, and a cap on ordinary footage flagged.
-ENSEMBLES = ("ensemble-20261114", "ensemble-20261113", "ensemble-20261111")
+# 20261116 refits the smoking and littering heads with the fit-side cameras
+# of the ICVL videos added to the team Drive; other tasks are unchanged.
+ENSEMBLES = (
+    "ensemble-20261116",
+    "ensemble-20261114",
+    "ensemble-20261113",
+    "ensemble-20261111",
+)
 ENSEMBLE = ENSEMBLES[0]
 CLASSIFIERS = (*ENSEMBLES, "mobileclip2-s2", "siglip2-b16-224")
 

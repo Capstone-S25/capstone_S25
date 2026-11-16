@@ -131,11 +131,11 @@ def main():
     for item in models["files"]:
         place(ROOT / "models" / item["path"], out / "models" / item["path"])
     ensemble_bundle.build(
-        args.ensemble_export, args.hf_cache, out / "models/ensemble-20261114"
+        args.ensemble_export, args.hf_cache, out / "models/ensemble-20261116"
     )
-    ensemble_bundle.verify(out / "models/ensemble-20261114")
+    ensemble_bundle.verify(out / "models/ensemble-20261116")
     components["models"] = (
-        f"{len(models['files'])} detector/October files and ensemble-20261114"
+        f"{len(models['files'])} detector/October files and ensemble-20261116"
     )
 
     if args.gemma_weights:

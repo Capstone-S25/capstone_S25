@@ -268,7 +268,7 @@ class EnsembleStrategy:
         if threads:
             torch.set_num_threads(int(threads))
         self.torch, self.device = torch, resolve_device(device)
-        self.directory = Path(directory or models_root() / "ensemble-20261114")
+        self.directory = Path(directory or models_root() / "ensemble-20261116")
         self.name = self.directory.name
         bundle = json.loads((self.directory / "ensemble.json").read_text())
         heads_path = self.directory / "heads.npz"

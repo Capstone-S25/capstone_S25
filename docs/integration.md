@@ -40,8 +40,8 @@ or local changes are removed from the original checkout/branches.
 3. A bounded **screening queue** (16 queued events) runs the screening
    classifier. Its results are journaled before optional confirmation. The
    default is the November **SigLIP2-B + MobileCLIP2-B ensemble**
-   (`ensemble-20261114`, `vision_runtime/ensemble.py`; `ensemble-20261113`
-   and `ensemble-20261111` stay selectable); its heads were fitted
+   (`ensemble-20261116`, `vision_runtime/ensemble.py`; `ensemble-20261114`,
+   `ensemble-20261113` and `ensemble-20261111` stay selectable); its heads were fitted
    with whole cameras held out and its thresholds set on those held-out scores,
    capped by how much ordinary footage from other cameras they flag. Smoking
    is decided by two channels (views, and a cigarette detector), each with
@@ -178,7 +178,7 @@ Decisions and limits:
   rules exist (unattended items critical; smoking and rough sleeping moderate;
   littering and loitering minor).
 - **Confidence** shown in the dashboard is the classifier's calibrated
-  probability (`ensemble-20261114`; balanced classes, fitted on out-of-fold
+  probability (`ensemble-20261116`; balanced classes, fitted on out-of-fold
   scores), or a logistic of the margin over the threshold for classifiers
   without one. It is a ranking aid, not a measured precision.
 - **Evidence clip** is the classifier's own input window (4 s or 20 s at the

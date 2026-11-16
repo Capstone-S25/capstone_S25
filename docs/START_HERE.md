@@ -77,7 +77,7 @@ Use one `--source-id` per camera and one camera backend process per camera.
 ## What happens to a window
 
 1. YOLO26s tracking and rules, plus a scan every 10 s, propose windows.
-2. The screening classifier (`ensemble-20261114`, CPU) scores each window for
+2. The screening classifier (`ensemble-20261116`, CPU) scores each window for
    smoking, littering, loitering, rough sleeping and unattended items.
 3. A window scored as an anomaly opens an incident with a short clip.
 4. Gemma reviews that window: it answers per behaviour and writes one or two
