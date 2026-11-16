@@ -358,7 +358,12 @@ def verify_ensemble(directory, *, required=False):
     """Check the newest installed ensemble classifier folder, if any."""
     from tools.ensemble_bundle import verify
 
-    for name in ["ensemble-20261114", "ensemble-20261113", "ensemble-20261111"]:
+    for name in [
+        "ensemble-20261116",
+        "ensemble-20261114",
+        "ensemble-20261113",
+        "ensemble-20261111",
+    ]:
         if (directory / name / "ensemble.json").is_file():
             verify(directory / name)
             return name

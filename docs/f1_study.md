@@ -1,6 +1,6 @@
-# November F1 study and the ensemble classifier — 11 to 14 November 2026
+# November F1 study and the ensemble classifier — 11 to 16 November 2026
 
-> Update 14 November: `ensemble-20261114` is the default. See [Round 3](#round-3--14-november-2026-ensemble-20261114-now-the-default) for the new-site test, what was adopted and what was not, and per-camera calibration. [Round 2](#round-2--13-november-2026-ensemble-20261113) covers `ensemble-20261113` and the Gemma video test.
+> Update 16 November: `ensemble-20261116` is the default. [Round 4](#round-4--16-november-2026-ensemble-20261116-now-the-default) tests the new labelled videos on the team Drive and refits smoking and littering with some of their cameras; the other three behaviours are unchanged from `ensemble-20261114`. See [Round 3](#round-3--14-november-2026-ensemble-20261114) for the new-site test, what was adopted and what was not, and per-camera calibration. [Round 2](#round-2--13-november-2026-ensemble-20261113) covers `ensemble-20261113` and the Gemma video test.
 
 The screening classifier is now a **two-backbone ensemble** (SigLIP2-B/16 and
 MobileCLIP2-B) with heads cross-fitted on camera-held-out folds, plus a small
@@ -267,7 +267,7 @@ CCTV distance and small distant objects it never confirms, so "not confirmed"
 carries no information there. The description is useful to the reviewer in
 every case.
 
-## Round 3 — 14 November 2026 (`ensemble-20261114`, now the default)
+## Round 3 — 14 November 2026 (`ensemble-20261114`)
 
 A field test of `ensemble-20261113` on a new camera flagged a man standing by
 a car as littering and missed that he was smoking. Round 3 therefore measures
@@ -462,6 +462,74 @@ unattended-item flags in 30 windows calibrated to none (threshold 1.70 →
   person at mid distance, behaves differently from all of it.
 - Gemma was not changed in this round. Asking it about every behaviour on a
   flagged window, so that it can relabel an incident, was not built.
+
+## Round 4 — 16 November 2026 (`ensemble-20261116`, now the default)
+
+The team Drive gained curated videos with per-video labels: ICVL smoking (43
+videos, 9 cameras), littering (503, 4 cameras) and loitering (75, 10
+cameras), IITB Corridor loitering, CHAD (lying down), ABODA and D2-CDNet
+(unattended items). They were fetched with
+`scripts/datasets/fetch_drive_videos.py`, shrunk to 640 px at their own frame
+rate, and turned into windows exactly as the runtime builds them. ICVL
+cameras 02, 05, 08 and 11 are held out for every behaviour (never fitted, no
+threshold chosen on them); IITB and CHAD are test-only by their terms, and
+ABODA and D2-CDNet are too small to split.
+
+**`ensemble-20261114` on these cameras, at its shipped thresholds.** It
+mostly misses: 9% of ICVL smoking windows found, no ICVL or IITB loiterer
+and no CHAD lying person found, while 65% of ICVL windows without littering
+are flagged as littering. These sets are 60–85% positive, so flagging every
+window would already score F1 ≈ 0.9; AUC and the share of negatives flagged
+are the numbers to read.
+
+**What was refitted.** The released recipe, fitted again with the fit-side
+ICVL cameras added. Thresholds are still chosen without any ICVL row, so the
+benchmark operating rules are unchanged. Held-out ICVL cameras, balanced
+operating point:
+
+| Held-out source (windows, positives) | `20261114`: AUC / found / negatives flagged | `20261116`: AUC / found / negatives flagged |
+|---|---|---|
+| ICVL smoking (1386, 867) | 0.81 / 9% / 1% | **0.90** / **46%** / 3% |
+| ICVL littering (813, 677) | 0.57 / 64% / 65% | **0.90** / **81%** / **13%** |
+| ICVL loitering (1406, 1197) | 0.52 / 0% / 0% | unchanged (not adopted) |
+
+AUC 95% intervals (whole cameras resampled): smoking 0.87–0.96 against
+0.67–0.95, littering 0.90–0.98 against 0.57–0.89.
+
+On the benchmark (paired bootstrap against the same recipe without ICVL):
+macro F1 −0.010 (95% interval −0.025 to +0.005); HMDB smoking clips +0.094
+(+0.034 to +0.160); IWDD littering −0.067 (−0.140 to +0.004), with the
+littering threshold moving from 0.52 to 0.17 on the new heads; Stanford40 smoking −0.025
+(−0.054 to +0.004). Round 3's new-site recall rose by 0.06 (+0.015 to +0.110)
+with ordinary footage flagged unchanged at 0.6%. The point estimate of
+benchmark macro F1 is 0.723 (balanced) and 0.685 (low false alarm), against
+0.732 and 0.694 for `20261114`.
+
+Smoking alone was the clean win (benchmark +0.004, +0.000 to +0.007).
+Littering was taken as well, trading a non-significant IWDD loss for a large
+cut in false littering alarms on ICVL-like cameras; `VISION_CLASSIFIER=ensemble-20261114`
+restores the earlier heads.
+
+**Not adopted.** Loitering fitted on ICVL reaches AUC 0.93 on the held-out
+ICVL cameras but flags 36% of VIRAT car-park windows (9% before) and lowers
+Street Scene F1. Rough sleeping (CHAD, AUC 0.69) and unattended items (ABODA
+0.70, D2-CDNet 0.27) had nothing to fit on and are unchanged.
+
+**Runtime parity.** The CPU runtime reproduces the study's scores: on
+benchmark held-out windows the largest difference is 0.047 (smoking), and on
+held-out ICVL windows 0.003 (smoking) and 0.12 (littering; person boxes found
+on CPU rather than GPU), with no flag decision changed.
+
+### Limits of round 4
+
+- ICVL is one organisation's cameras; the held-out cameras share scenes and
+  actors with the fitted ones, so the ICVL gain is a site-adaptation result,
+  not evidence about unrelated sites.
+- Fifty-nine of the 647 videos lost 1–3 trailing frames when re-encoded;
+  labels near a video's end can be off by up to 0.2 s.
+- `held_out` in `ensemble.json` counts the round-4 sets among the "new
+  sites", so its new-site recall (0.355) is not comparable with the 0.713 in
+  `20261114`'s file; the paired figures above are.
 
 ## Limits
 
