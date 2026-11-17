@@ -1,0 +1,161 @@
+@import "tailwindcss";
+
+/*
+ * InSight v2 design tokens — "Draft v2 · Panasonic" Figma variable collection.
+ * Flat white surfaces, Panasonic Blue, DM Sans.
+ * Exposed both as Tailwind utilities (bg-brand, text-ink, border-line …)
+ * and as CSS vars (var(--color-brand)) for inline styles.
+ */
+@theme {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand: #0041c0;
+  --color-brand-hover: #00359e;
+  --color-brand-soft: #e6edfb;
+  --color-brand-mid: #9db5ea;
+  --color-brand-faded: #5070b8; /* softened brand for secondary meta text; ~4.8:1 on white */
+
+  --color-ink: #121a2b;
+  --color-ink-2: #354056;
+  --color-muted: #667089;
+  --color-faint: #8a93a8;
+
+  --color-line: #dde3ee;
+  --color-line-soft: #e8ecf3;
+  --color-head: #f4f6fb;
+  --color-track: #e3e8f1;
+  --color-dark: #1b2334;
+
+  --color-danger: #c9302c;
+  --color-danger-soft: #fdecec;
+  --color-warning: #9a5b00;
+  --color-warning-soft: #fff4de;
+  --color-warning-bar: #f5a524;
+  --color-caution: #7a6414;
+  --color-caution-soft: #fbf2d3;
+  --color-caution-dot: #d9b23a;
+  --color-success: #1f7a4d;
+  --color-success-soft: #e6f6ee;
+  --color-neutral: #55607a;
+  --color-neutral-soft: #edeff4;
+
+  /* Remap stock palettes so legacy Tailwind classes follow the v2 theme */
+  --color-gray-50: #f4f6fb;
+  --color-gray-100: #e8ecf3;
+  --color-gray-200: #dde3ee;
+  --color-gray-300: #cdd4e1;
+  --color-gray-400: #8a93a8;
+  --color-gray-500: #667089;
+  --color-gray-600: #4a556c;
+  --color-gray-700: #354056;
+  --color-gray-800: #232c40;
+  --color-gray-900: #121a2b;
+  --color-slate-200: #dde3ee;
+  --color-slate-300: #cdd4e1;
+  --color-zinc-200: #dde3ee;
+  --color-neutral-200: #dde3ee;
+
+  --color-blue-50: #e6edfb;
+  --color-blue-100: #e6edfb;
+  --color-blue-500: #0041c0;
+  --color-blue-600: #0041c0;
+  --color-blue-700: #00359e;
+
+  --color-red-50: #fdecec;
+  --color-red-100: #fdecec;
+  --color-red-500: #c9302c;
+  --color-red-600: #c9302c;
+  --color-red-700: #a92724;
+
+  --color-green-50: #e6f6ee;
+  --color-green-100: #e6f6ee;
+  --color-green-500: #1f7a4d;
+  --color-green-600: #1f7a4d;
+  --color-green-700: #18633e;
+
+  /* Flatter corners across the board */
+  --radius-lg: 6px;
+  --radius-xl: 8px;
+  --radius-2xl: 10px;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-optical-sizing: auto;
+  background-color: #ffffff;
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+@layer base {
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23354056' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 32px !important;
+  }
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+/* Thin scrollbar */
+.thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line) transparent;
+}
+.thin-scroll::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.thin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.thin-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--color-line);
+  border-radius: 10px;
+}
+.thin-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-faint);
+}
+
+/* Drawer / popover motion */
+@keyframes v2-slide-in {
+  from { transform: translateX(24px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes v2-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes v2-pop-in {
+  from { transform: translateY(-4px) scale(0.98); opacity: 0; }
+  to   { transform: translateY(0) scale(1);       opacity: 1; }
+}
+.v2-slide-in { animation: v2-slide-in 0.18s ease-out; }
+.v2-fade-in  { animation: v2-fade-in 0.15s ease-out; }
+.v2-pop-in   { animation: v2-pop-in 0.14s ease-out; transform-origin: top; }
+
+@media (prefers-reduced-motion: reduce) {
+  .v2-slide-in, .v2-fade-in, .v2-pop-in { animation: none; }
+}
