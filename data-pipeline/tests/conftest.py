@@ -26,9 +26,15 @@ def postgres_session():
             transaction = connection.begin()
             try:
                 schema = "test_database_" + uuid4().hex
+                connection.execute(
+                    text("CREATE EXTENSION IF NOT EXISTS vector SCHEMA public")
+                )
                 connection.execute(text(f"CREATE SCHEMA {schema}"))
-                connection.execute(text(f"SET LOCAL search_path TO {schema}"))
-                Base.metadata.create_all(connection)
+                # public is searched second only for the pgvector type.
+                connection.execute(text(f"SET LOCAL search_path TO {schema}, public"))
+                # checkfirst=False: tables already in public must not stop the
+                # test copies being created in the test schema.
+                Base.metadata.create_all(connection, checkfirst=False)
                 with Session(
                     bind=connection, join_transaction_mode="create_savepoint"
                 ) as db:

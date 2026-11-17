@@ -99,6 +99,9 @@ Browse and try the endpoints at
 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs). Login is temporary:
 every request runs as user 1, with the role from `DEV_USER_ROLE`.
 
+Seeded incidents have no video files, so their clip endpoint returns 404
+until a file exists at `recordings/<evidence_clip_path>`.
+
 ## Backend-only development
 
 The retained `uv.lock` covers the lightweight backend and its tests; it does
