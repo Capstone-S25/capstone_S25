@@ -98,11 +98,13 @@ migrations or the app.
 | `DATABASE_URL`      | PostgreSQL connection used by the app and migrations. |
 | `TEST_DATABASE_URL` | PostgreSQL connection used by database tests.         |
 | `DEV_USER_ROLE`     | Temporary API login role, `admin` or `member`.        |
+| `RECORDINGS_DIR`    | Folder the API serves evidence clips from; defaults to `recordings/`. |
 
 ## Setup local development database
 
 Run these commands from the project root (`data-pipeline/`).
-Start the PostgreSQL 18 development container in the background:
+Start the PostgreSQL 18 development container, with the pgvector extension,
+in the background:
 
 ```bash
 npm run db:up
@@ -190,6 +192,9 @@ npm run api
 Browse and try the endpoints at
 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs). Login is temporary:
 every request runs as user 1, with the role from `DEV_USER_ROLE`.
+
+Seeded incidents have no video files, so their clip endpoint returns 404
+until a file exists at `recordings/<evidence_clip_path>`.
 
 ## Mock RTSP camera
 

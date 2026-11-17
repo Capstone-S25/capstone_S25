@@ -3,6 +3,7 @@ from enum import StrEnum
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from data_pipeline.api.schemas.reviews import Review
 from data_pipeline.database import models
 from data_pipeline.database.models import ReviewOutcome, Severity, VLMAssessment
 
@@ -84,30 +85,6 @@ class VLMVerdict(BaseModel):
     processed_at: datetime
 
 
-class Review(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: int
-    incident_id: int
-    outcome: ReviewOutcome
-    notes: str | None
-    corrected_type: str | None
-    reviewer_id: int
-    created_at: datetime
-    updated_at: datetime | None
-    updated_by: int | None
-
-
-class ReviewCreate(BaseModel):
-    """Body for submitting a review (#22); severity cannot be set here."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    outcome: ReviewOutcome
-    notes: str | None = Field(default=None, max_length=5000)
-    corrected_type: str | None = Field(default=None, min_length=1, max_length=64)
-
-
 class IncidentListItem(BaseModel):
     id: int
     camera_id: str
@@ -126,6 +103,20 @@ class IncidentPage(BaseModel):
     page_size: int
 
 
+class SimilarIncident(IncidentListItem):
+    """A look-alike past incident; similarity runs from 1 (identical) down."""
+
+    similarity: float
+
+
+class VLMRerunRequest(BaseModel):
+    """A waiting request for the VLM to check an incident again."""
+
+    incident_id: int
+    requested_at: datetime
+    requested_by: int
+
+
 class IncidentDetail(BaseModel):
     id: int
     camera: CameraRef
@@ -139,6 +130,7 @@ class IncidentDetail(BaseModel):
     created_at: datetime
     detections: list[Detection]
     vlm_verdict: VLMVerdict | None
+    vlm_rerun_requested_at: datetime | None
     review: Review | None
     # TODO: Fill in with the settle (#25) and audit trail work.
     settlement: None = None
