@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   CircleX,
+  Hash,
   TriangleAlert,
   CircleCheck,
   MapPin,
@@ -23,6 +24,14 @@ import { EditWidgetsButton, PanelCloseButton, SidePanel, ViewAll, WidgetEditor, 
 import { useWidgetLayout, type WidgetConfig, type WidgetMeta } from '../../components/ui/useWidgetLayout';
 import { MOCK_CAMERAS } from '../../data/mock';
 import { useIncidents } from '../../data/useIncidents';
+import {
+  ApiError,
+  fetchFlaggedBoxes,
+  fetchReviewQueue,
+  submitReview,
+  type FlaggedBox,
+  type ReviewOutcome,
+} from '../../data/api';
 import DismissModal from '../../components/modals/DismissModal';
 import EscalateModal from '../../components/modals/EscalateModal';
 import type { Incident, IncidentType, Severity } from '../../types';
@@ -178,12 +187,13 @@ const LAYOUT_KEY = 'insight.staffHomeWidgets';
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
-type Toast = { text: string; item: QueueItem; index: number } | null;
+type Toast = { text: string; item: QueueItem; index: number; undoable: boolean } | null;
 
 export default function StaffHomePage() {
   const navigate = useNavigate();
-  // Live pending incidents replace the demo queue once the API answers.
-  const { incidents, source } = useIncidents();
+  // The live review queue (most urgent first) replaces the demo queue once the API answers.
+  const { incidents, source } = useIncidents(5000, fetchReviewQueue);
+  const [saving, setSaving] = useState(false);
   const [handled, setHandled] = useState<string[]>([]);
   const queue = useMemo(
     () =>
@@ -213,18 +223,34 @@ export default function StaffHomePage() {
     return () => clearTimeout(t);
   }, [toast]);
 
-  function resolve(label: string) {
-    if (!featured) return;
+  async function resolve(label: 'Accepted' | 'Dismissed' | 'Escalated', notes = '') {
+    if (!featured || saving) return;
+    const apiId = featured.incident?.apiId;
+    if (apiId !== undefined) {
+      setSaving(true);
+      try {
+        await submitReview(apiId, label.toLowerCase() as ReviewOutcome, notes);
+      } catch (error) {
+        // 409: someone else reviewed it first, so it leaves the queue anyway.
+        if (!(error instanceof ApiError && error.status === 409)) {
+          setToast({ text: 'Could not save the review. Check the API is running and try again.', item: featured, index: 0, undoable: false });
+          return;
+        }
+      } finally {
+        setSaving(false);
+      }
+    }
     const index = queue.findIndex((q) => q.id === featured.id);
     const next = queue.filter((q) => q.id !== featured.id);
     setHandled((h) => [...h, featured.id]);
     setSelectedId(next[Math.min(index, next.length - 1)]?.id ?? '');
-    setToast({ text: `${label} · ${featured.type} · ${featured.location}`, item: featured, index });
+    // A saved review is changed from Review history, so only demo items can be undone here.
+    setToast({ text: `${label} · ${featured.type} · ${featured.location}`, item: featured, index, undoable: apiId === undefined });
     if (label === 'Escalated') setEscalatedToday((n) => n + 1);
   }
 
   function undo() {
-    if (!toast) return;
+    if (!toast?.undoable) return;
     setHandled((h) => h.filter((id) => id !== toast.item.id));
     setSelectedId(toast.item.id);
     if (toast.text.startsWith('Escalated')) setEscalatedToday((n) => Math.max(0, n - 1));
@@ -253,28 +279,25 @@ export default function StaffHomePage() {
               <h1 className="m-0 truncate text-[22px] font-medium text-ink">{featured.type} · {featured.location}</h1>
               <StatusPill tone={SEVERITY_TONE[featured.severity]}>{featured.severity}</StatusPill>
               <div className="flex-1" />
-              <Button variant="secondary" icon={<CircleX size={16} strokeWidth={1.75} />} onClick={() => setModal('dismiss')}>Dismiss</Button>
-              <Button variant="danger" icon={<TriangleAlert size={16} strokeWidth={1.75} />} onClick={() => setModal('escalate')}>Escalate</Button>
-              <Button variant="primary" icon={<CircleCheck size={16} strokeWidth={1.75} />} onClick={() => resolve('Accepted')}>Accept</Button>
+              <Button variant="secondary" icon={<CircleX size={16} strokeWidth={1.75} />} onClick={() => setModal('dismiss')} disabled={saving}>Dismiss</Button>
+              <Button variant="danger" icon={<TriangleAlert size={16} strokeWidth={1.75} />} onClick={() => setModal('escalate')} disabled={saving}>Escalate</Button>
+              <Button variant="primary" icon={<CircleCheck size={16} strokeWidth={1.75} />} onClick={() => resolve('Accepted')} disabled={saving}>Accept</Button>
             </div>
 
             {/* Facts */}
             <div className="flex w-full shrink-0 flex-wrap items-center gap-x-[20px] gap-y-[6px] text-[12px] text-brand-faded">
+              {featured.incident?.apiId !== undefined && <Fact icon={<Hash size={14} />}>Incident {featured.incident.apiId}</Fact>}
               <Fact icon={<MapPin size={14} />}>{featured.place} · {featured.cam}</Fact>
               <Fact icon={<Clock size={14} />}>{featured.window} · {featured.duration}</Fact>
               {featured.people && <Fact icon={<UserRound size={14} />}>{featured.people}</Fact>}
             </div>
 
             {featured.clipUrl ? (
-              <video
+              <LiveClip
                 key={featured.clipUrl}
                 src={featured.clipUrl}
                 poster={featured.thumbnailUrl}
-                controls
-                loop
-                muted
-                playsInline
-                className="aspect-[16/9] w-full shrink-0 rounded-[6px] bg-dark object-contain"
+                apiId={featured.incident?.apiId}
               />
             ) : (
               <ClipPlayer key={featured.id} item={featured} />
@@ -438,15 +461,75 @@ export default function StaffHomePage() {
       {toast && (
         <div role="status" className="v2-pop-in fixed bottom-[24px] left-1/2 z-[400] flex -translate-x-1/2 items-center gap-[16px] rounded-[8px] bg-dark py-[10px] pr-[10px] pl-[16px] text-[13px] text-white shadow-[0_12px_32px_rgba(18,26,43,0.3)]">
           <span>{toast.text}</span>
-          <button type="button" onClick={undo} className="cursor-pointer rounded-[4px] border-none bg-white/15 px-[10px] py-[4px] text-[12px] font-medium text-white hover:bg-white/25">
-            Undo
-          </button>
+          {toast.undoable && (
+            <button type="button" onClick={undo} className="cursor-pointer rounded-[4px] border-none bg-white/15 px-[10px] py-[4px] text-[12px] font-medium text-white hover:bg-white/25">
+              Undo
+            </button>
+          )}
         </div>
       )}
 
-      <DismissModal isOpen={modal === 'dismiss'} onClose={() => setModal(null)} incident={featuredIncident} onConfirm={() => resolve('Dismissed')} />
-      <EscalateModal isOpen={modal === 'escalate'} onClose={() => setModal(null)} incident={featuredIncident} onConfirm={() => resolve('Escalated')} />
+      <DismissModal
+        isOpen={modal === 'dismiss'}
+        onClose={() => setModal(null)}
+        incident={featuredIncident}
+        onConfirm={(reason, notes) => resolve('Dismissed', notes ? `${reason}: ${notes}` : reason)}
+      />
+      <EscalateModal isOpen={modal === 'escalate'} onClose={() => setModal(null)} incident={featuredIncident} onConfirm={(remark) => resolve('Escalated', remark)} />
     </AppLayout>
+  );
+}
+
+// ── LiveClip ──────────────────────────────────────────────────────────────────
+
+/** The evidence clip with the flagged YOLO box drawn at the matching moment. */
+function LiveClip({ src, poster, apiId }: { src: string; poster?: string; apiId?: number }) {
+  const [boxes, setBoxes] = useState<FlaggedBox[]>([]);
+  const [time, setTime] = useState(0);
+  const [missing, setMissing] = useState(false);
+
+  useEffect(() => {
+    if (apiId === undefined) return;
+    const controller = new AbortController();
+    fetchFlaggedBoxes(apiId, controller.signal).then(setBoxes).catch(() => {});
+    return () => controller.abort();
+  }, [apiId]);
+
+  // Show the latest box already reached, from just before the first box to a
+  // second after the last one.
+  const shown =
+    boxes.length > 0 && time >= boxes[0].t - 0.5 && time <= boxes[boxes.length - 1].t + 1
+      ? [...boxes].reverse().find((b) => b.t <= time) ?? boxes[0]
+      : null;
+
+  return (
+    <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden rounded-[6px] bg-dark">
+      <video
+        src={src}
+        poster={poster}
+        controls
+        loop
+        muted
+        playsInline
+        onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)}
+        onError={() => setMissing(true)}
+        className="size-full object-contain"
+      />
+      {missing && (
+        <span className="absolute inset-0 flex items-center justify-center text-[13px] text-faint">Clip not available</span>
+      )}
+      {shown && !missing && (
+        <>
+          <div className="pointer-events-none absolute rounded-[2px] border-2 border-[#7fb2ff]" style={shown.box} />
+          <span
+            className="pointer-events-none absolute -translate-y-full rounded-[3px] bg-brand px-[6px] py-[2px] text-[10px] font-medium text-white"
+            style={{ left: shown.box.left, top: `calc(${shown.box.top} - 4px)` }}
+          >
+            {shown.label}
+          </span>
+        </>
+      )}
+    </div>
   );
 }
 

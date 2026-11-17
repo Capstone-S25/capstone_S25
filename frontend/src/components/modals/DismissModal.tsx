@@ -8,7 +8,7 @@ interface DismissModalProps {
   isOpen: boolean;
   onClose: () => void;
   incident: Incident | null;
-  onConfirm: (reason: string) => void;
+  onConfirm: (reason: string, notes: string) => void;
 }
 
 const DISMISS_REASONS = [
@@ -26,7 +26,7 @@ export default function DismissModal({ isOpen, onClose, incident, onConfirm }: D
   const handleClose = () => { reset(); onClose(); };
   const handleConfirm = () => {
     if (!reason) return;
-    onConfirm(reason);
+    onConfirm(reason, notes.trim());
     reset();
     onClose();
   };

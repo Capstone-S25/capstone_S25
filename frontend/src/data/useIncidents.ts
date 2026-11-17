@@ -12,30 +12,34 @@ export interface IncidentFeed {
 /**
  * Incidents for the dashboard pages. Live data replaces the demo set as soon
  * as the API answers and refreshes every `refreshMs`; if the API is not
- * running the pages keep showing the demo set.
+ * running the pages keep showing the demo set. `load` picks which incidents,
+ * e.g. fetchReviewQueue for the review queue.
  */
-export function useIncidents(refreshMs = 5000): IncidentFeed {
+export function useIncidents(
+  refreshMs = 5000,
+  load: (signal: AbortSignal) => Promise<Incident[]> = fetchIncidents,
+): IncidentFeed {
   const [feed, setFeed] = useState<IncidentFeed>({ incidents: MOCK_INCIDENTS, source: 'demo' });
 
   useEffect(() => {
     const controller = new AbortController();
     let timer: ReturnType<typeof setTimeout> | undefined;
-    const load = async () => {
+    const refresh = async () => {
       try {
-        const incidents = await fetchIncidents(controller.signal);
+        const incidents = await load(controller.signal);
         setFeed({ incidents, source: 'live' });
       } catch {
         if (controller.signal.aborted) return;
         setFeed((previous) => (previous.source === 'live' ? previous : { incidents: MOCK_INCIDENTS, source: 'demo' }));
       }
-      if (!controller.signal.aborted) timer = setTimeout(load, refreshMs);
+      if (!controller.signal.aborted) timer = setTimeout(refresh, refreshMs);
     };
-    load();
+    refresh();
     return () => {
       controller.abort();
       if (timer) clearTimeout(timer);
     };
-  }, [refreshMs]);
+  }, [refreshMs, load]);
 
   return feed;
 }
