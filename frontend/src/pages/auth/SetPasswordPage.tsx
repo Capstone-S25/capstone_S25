@@ -1,17 +1,21 @@
-import { useState, FormEvent } from 'react';
+import { useEffect, useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check } from 'lucide-react';
 import { AuthLayout, AUTH_LABEL, AUTH_SUBMIT, FormError, PasswordInput } from '../../components/layout/AuthLayout';
+import { AuthError, changePassword, getMe, homePath } from '../../data/auth';
 
 interface Requirement {
   label: string;
   test: (pw: string) => boolean;
 }
 
+// Same rules as the backend (cayla-backend/app/password_policy.py).
 const REQUIREMENTS: Requirement[] = [
   { label: 'At least 8 characters', test: (pw) => pw.length >= 8 },
+  { label: 'Includes a lower-case letter', test: (pw) => /[a-z]/.test(pw) },
+  { label: 'Includes a capital letter', test: (pw) => /[A-Z]/.test(pw) },
   { label: 'Includes a number', test: (pw) => /\d/.test(pw) },
-  { label: "Doesn't use personal info", test: (pw) => pw.length > 0 && !/jane|tan|raj|admin|staff|123|password/i.test(pw) },
+  { label: 'Includes a symbol, such as ! @ # or -', test: (pw) => /[^A-Za-z0-9]/.test(pw) },
 ];
 
 function StrengthBar({ password }: { password: string }) {
@@ -31,7 +35,14 @@ export default function SetPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [firstName, setFirstName] = useState('');
 
+  // Only reachable after signing in with the temporary password.
+  useEffect(() => {
+    getMe()
+      .then((user) => setFirstName(user.name.split(' ')[0]))
+      .catch(() => navigate('/login', { replace: true }));
+  }, [navigate]);
   const allRequirementsMet = REQUIREMENTS.every((r) => r.test(newPassword));
   const passwordsMatch = newPassword === confirmPassword && confirmPassword.length > 0;
   const mismatch = confirmPassword.length > 0 && !passwordsMatch;
@@ -42,16 +53,20 @@ export default function SetPasswordPage() {
     if (!allRequirementsMet) { setError('Your password does not meet all requirements yet.'); return; }
     if (!passwordsMatch) { setError("Passwords don't match. Please check and try again."); return; }
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 700));
-    setLoading(false);
-    navigate('/staff/home');
+    try {
+      const user = await changePassword(newPassword, confirmPassword);
+      navigate(homePath(user));
+    } catch (err) {
+      setError(err instanceof AuthError ? err.message : 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <AuthLayout
       title="Set your password"
-      subtitle={<>Welcome, <strong className="font-medium text-ink">Jane</strong>. Replace the temporary password with one only you know.</>}
-      panelTitle="Almost there. Pick your own password."
+      subtitle={<>Welcome{firstName && <>, <strong className="font-medium text-ink">{firstName}</strong></>}. Replace the temporary password with one only you know.</>}      panelTitle="Almost there. Pick your own password."
       panelBody="Your new password replaces the temporary one. Keep it somewhere safe. Your security team can't see it."
       panelVisual={
         <div className="w-[300px] rounded-[10px] border border-white/20 bg-white/10 p-[20px] text-left">

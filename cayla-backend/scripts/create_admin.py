@@ -19,7 +19,7 @@ p = argparse.ArgumentParser()
 p.add_argument("--name", required=True)
 p.add_argument("--email", required=True)
 p.add_argument("--staff-id", required=True)
-p.add_argument("--dob", required=True, help="YYYY-MM-DD")
+p.add_argument("--dob", help="YYYY-MM-DD (optional)")
 a = p.parse_args()
 
 pw = pwinput.pwinput(
