@@ -34,7 +34,7 @@ def test_missing_file_returns_404(client, seeded):
     response = client.get(url(seeded[0].id))
 
     assert response.status_code == 404
-    assert response.json() == {"detail": "Clip not available"}
+    assert response.json() == {"detail": "Evidence file not found"}
 
 
 def test_path_outside_recordings_folder_returns_404(
@@ -47,7 +47,7 @@ def test_path_outside_recordings_folder_returns_404(
     response = client.get(url(seeded[0].id))
 
     assert response.status_code == 404
-    assert response.json() == {"detail": "Clip not available"}
+    assert response.json() == {"detail": "Evidence file not found"}
 
 
 def test_missing_incident_returns_404(client, seeded):
