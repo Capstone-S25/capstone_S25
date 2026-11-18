@@ -278,7 +278,6 @@ export function Sidebar({ role, activePath }: SidebarProps) {
         </div>
       )}
 
-      <InviteStaffModal isOpen={showInvite} onClose={() => setShowInvite(false)} onInvite={() => setShowInvite(false)} />
-    </>
+      <InviteStaffModal isOpen={showInvite} onClose={() => setShowInvite(false)} />    </>
   );
 }

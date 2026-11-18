@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { CircleX, TriangleAlert, CircleCheck } from 'lucide-react';
 import { AuthLayout, AUTH_INPUT, AUTH_LABEL, AUTH_SUBMIT, FormError, PasswordInput } from '../../components/layout/AuthLayout';
 import { StatusPill } from '../../components/ui/Badge';
+import { AuthError, homePath, login } from '../../data/auth';
 
 // Preview of a review-queue item, shown on the brand panel
 function IncidentPreviewCard() {
@@ -40,15 +41,14 @@ export default function LoginPage() {
     }
 
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 600));
-    setLoading(false);
-
-    const e_ = email.trim().toLowerCase();
-    const p_ = password.trim();
-
-    if (e_ === 'admin@insight.sg' && p_ === 'Admin123!') navigate('/admin/home');
-    else if (e_ === 'staff@insight.sg' && p_ === 'Staff123!') navigate('/staff/home');
-    else setError('Incorrect email or password. Please try again.');
+    try {
+      const user = await login(email.trim(), password);
+      navigate(homePath(user));
+    } catch (err) {
+      setError(err instanceof AuthError ? err.message : 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
