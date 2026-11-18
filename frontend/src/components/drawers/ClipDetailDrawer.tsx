@@ -4,9 +4,10 @@ import { SeverityBadge } from '../ui/Badge';
 import { OUTCOME_DOT } from '../ui/tones';
 import { Button } from '../ui/Button';
 import { Drawer } from '../ui/Drawer';
-import { BarMeter, ClipThumb, FieldLabel } from '../ui/Primitives';
+import { BarMeter, ClipId, ClipThumb, FieldLabel } from '../ui/Primitives';
 import type { Incident } from '../../types';
 import { MOCK_STAFF } from '../../data/mock';
+import { clipLabel } from '../../data/clipId';
 
 interface ClipDetailDrawerProps {
   inc: Incident | null;
@@ -43,7 +44,7 @@ export default function ClipDetailDrawer({ inc, onClose }: ClipDetailDrawerProps
       isOpen
       onClose={onClose}
       title={`${inc.type} · ${inc.location}`}
-      titleAdornment={<SeverityBadge severity={inc.severity} />}
+      titleAdornment={<><ClipId id={inc.id} variant="chip" /><SeverityBadge severity={inc.severity} /></>}
       footer={
         <>
           <Button variant="secondary" className="flex-1" icon={<Download size={16} strokeWidth={1.75} />}>Download clip</Button>
@@ -74,7 +75,7 @@ export default function ClipDetailDrawer({ inc, onClose }: ClipDetailDrawerProps
         ) : (
         <ClipThumb seed={inc.id.length} src={inc.thumbnailUrl} className="aspect-[16/9] w-full rounded-[6px]" iconSize={0}>
           <span className="absolute top-[10px] left-[10px] rounded-[4px] bg-[rgba(27,35,52,0.75)] px-[8px] py-[4px] text-[11px] font-medium text-white">
-            {camLabel(inc.camId).toUpperCase()}
+            {camLabel(inc.camId).toUpperCase()} · {clipLabel(inc.id)}
           </span>
           <button
             type="button"

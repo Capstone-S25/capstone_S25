@@ -82,7 +82,7 @@ export function TopBar({ role }: { role: UserRole }) {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search clips, places or incident types…"
+            placeholder="Search clip IDs, places or incident types…"
             aria-label="Search clips"
             className="min-w-0 flex-1 border-none bg-transparent text-[13px] text-ink outline-none placeholder:text-faint"
           />

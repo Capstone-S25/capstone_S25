@@ -3,9 +3,10 @@ import { useSearchParams } from 'react-router-dom';
 import { AppLayout } from '../../components/layout/AppLayout';
 import { OutcomeDot } from '../../components/ui/Badge';
 import { FilterSelect } from '../../components/ui/FilterSelect';
-import { ClipThumb, EmptyState, PageHeader } from '../../components/ui/Primitives';
+import { ClipId, ClipThumb, EmptyState, PageHeader } from '../../components/ui/Primitives';
 import ClipDetailsModal from '../../components/modals/ClipDetailsModal';
 import { useIncidents } from '../../data/useIncidents';
+import { clipLabel, matchesClipId } from '../../data/clipId';
 import type { Incident } from '../../types';
 
 const LOCATIONS = ['Carpark B2', 'Lift Lobby 1', 'Corridor 2', 'Main entrance', 'Meeting Room 1', 'Staircase B', 'Pantry L3'];
@@ -34,7 +35,9 @@ export default function SearchPage() {
         inc.type.toLowerCase().includes(q) ||
         inc.location.toLowerCase().includes(q) ||
         inc.description.toLowerCase().includes(q) ||
-        inc.camId.toLowerCase().includes(q);
+        inc.camId.toLowerCase().includes(q) ||
+        clipLabel(inc.id).includes(q) ||
+        matchesClipId(inc.id, q);
       if (!matches) return false;
     }
     return true;
@@ -90,6 +93,7 @@ export default function SearchPage() {
               className="aspect-[16/9] w-full rounded-[6px] outline-2 outline-offset-2 outline-transparent transition-[outline-color] group-hover:outline-brand-mid"
               iconSize={28}
             >
+              <ClipId id={inc.id} variant="overlay" className="absolute top-[8px] left-[8px]" />
               {inc.duration && (
                 <span className="absolute right-[8px] bottom-[8px] rounded-[4px] bg-[rgba(27,35,52,0.75)] px-[6px] py-[2px] text-[11px] font-medium text-white">
                   {inc.duration}

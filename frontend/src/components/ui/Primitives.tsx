@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { ArrowDown, ArrowUp, Video, VideoOff } from 'lucide-react';
+import { clipLabel } from '../../data/clipId';
 
 // ── PageHeader (Figma: "Page header") ───────────────────────────────────────
 // 22px medium title, 13px muted subtitle, actions on the right.
@@ -85,6 +86,24 @@ export function ClipThumb({ seed = 0, className = '', offline = false, offlineLa
       )}
       {children}
     </div>
+  );
+}
+
+// ── ClipId — the clip's ID number, e.g. "#012" ──────────────────────────────
+// "text" sits inline in meta lines; "chip" is a small bordered tag for titles;
+// "overlay" sits on a thumbnail or video.
+
+export function ClipId({ id, variant = 'text', className = '' }: { id: string; variant?: 'text' | 'chip' | 'overlay'; className?: string }) {
+  const label = clipLabel(id);
+  const styles = {
+    text: 'text-muted',
+    chip: 'rounded-[4px] border border-line bg-head px-[6px] py-[1px] text-ink-2',
+    overlay: 'rounded-[4px] bg-[rgba(27,35,52,0.75)] px-[6px] py-[2px] text-white',
+  }[variant];
+  return (
+    <span title={`Clip ID ${label}`} className={`shrink-0 text-[11px] font-medium whitespace-nowrap tabular-nums ${styles} ${className}`}>
+      {label}
+    </span>
   );
 }
 

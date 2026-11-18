@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   CircleX,
-  Hash,
   TriangleAlert,
   CircleCheck,
   MapPin,
@@ -19,11 +18,12 @@ import { AppLayout } from '../../components/layout/AppLayout';
 import { StatusPill } from '../../components/ui/Badge';
 import { SEVERITY_TONE, SEVERITY_DOT } from '../../components/ui/tones';
 import { Button } from '../../components/ui/Button';
-import { BarMeter, ClipThumb, FieldLabel, Kpi, SectionTitle } from '../../components/ui/Primitives';
+import { BarMeter, ClipId, ClipThumb, FieldLabel, Kpi, SectionTitle } from '../../components/ui/Primitives';
 import { EditWidgetsButton, PanelCloseButton, SidePanel, ViewAll, WidgetEditor, WidgetSection } from '../../components/ui/Widgets';
 import { useWidgetLayout, type WidgetConfig, type WidgetMeta } from '../../components/ui/useWidgetLayout';
 import { MOCK_CAMERAS } from '../../data/mock';
 import { useIncidents } from '../../data/useIncidents';
+import { clipLabel } from '../../data/clipId';
 import {
   ApiError,
   fetchFlaggedBoxes,
@@ -67,7 +67,7 @@ interface QueueItem {
 
 const QUEUE: QueueItem[] = [
   {
-    id: 'q-001', type: 'Smoking', location: 'Carpark B2', severity: 'Critical', cam: 'Cam 04', time: '11:18 PM', confidence: 92,
+    id: 'inc-001', type: 'Smoking', location: 'Carpark B2', severity: 'Critical', cam: 'Cam 04', time: '11:18 PM', confidence: 92,
     place: 'Carpark B2, by the stair door', window: 'Mon 11 Oct, 11:18 – 11:21 PM', duration: '3 min 32 s', durationSec: 212,
     people: '1 adult · Grey hoodie, dark cap',
     description: 'Person smoking a cigarette next to the staircase door, ash dropped on the floor.',
@@ -76,7 +76,7 @@ const QUEUE: QueueItem[] = [
     box: { left: '65%', top: '54%', width: '10.6%', height: '33.7%' },
   },
   {
-    id: 'q-002', type: 'Unattended item', location: 'Meeting Room 1', severity: 'Moderate', cam: 'Cam 01', time: '10:15 AM', confidence: 81,
+    id: 'inc-002', type: 'Unattended item', location: 'Meeting Room 1', severity: 'Moderate', cam: 'Cam 01', time: '10:15 AM', confidence: 81,
     place: 'Meeting Room 1, beside the door', window: 'Mon 11 Oct, 10:15 – 10:31 AM', duration: '16 min 04 s', durationSec: 964,
     people: 'No one in frame',
     description: 'Laptop bag left on a chair after the 9:30 AM meeting ended.',
@@ -85,7 +85,7 @@ const QUEUE: QueueItem[] = [
     box: { left: '38%', top: '58%', width: '12%', height: '18%' },
   },
   {
-    id: 'q-003', type: 'Loitering', location: 'Corridor 2', severity: 'Minor', cam: 'Cam 03', time: '11:02 AM', confidence: 74,
+    id: 'inc-003', type: 'Loitering', location: 'Corridor 2', severity: 'Minor', cam: 'Cam 03', time: '11:02 AM', confidence: 74,
     place: 'Corridor 2, by the fire exit', window: 'Mon 11 Oct, 11:02 – 11:14 AM', duration: '12 min 10 s', durationSec: 730,
     people: '1 adult · Dark jacket, backpack',
     description: 'Person waiting by the fire exit, pacing between the exit and the lift.',
@@ -94,7 +94,7 @@ const QUEUE: QueueItem[] = [
     box: { left: '52%', top: '30%', width: '9%', height: '45%' },
   },
   {
-    id: 'q-004', type: 'Littering', location: 'Lift Lobby 1', severity: 'Minor', cam: 'Cam 05', time: '8:37 PM', confidence: 68,
+    id: 'inc-004', type: 'Littering', location: 'Lift Lobby 1', severity: 'Minor', cam: 'Cam 05', time: '8:37 PM', confidence: 68,
     place: 'Lift Lobby 1, outside lift B', window: 'Mon 11 Oct, 8:37 – 8:38 PM', duration: '0 min 48 s', durationSec: 48,
     people: '1 adult · White shirt',
     description: 'Tissue paper dropped outside the lift doors and left behind.',
@@ -245,7 +245,7 @@ export default function StaffHomePage() {
     setHandled((h) => [...h, featured.id]);
     setSelectedId(next[Math.min(index, next.length - 1)]?.id ?? '');
     // A saved review is changed from Review history, so only demo items can be undone here.
-    setToast({ text: `${label} · ${featured.type} · ${featured.location}`, item: featured, index, undoable: apiId === undefined });
+    setToast({ text: `${label} · Clip ${clipLabel(featured.id)} · ${featured.type} · ${featured.location}`, item: featured, index, undoable: apiId === undefined });
     if (label === 'Escalated') setEscalatedToday((n) => n + 1);
   }
 
@@ -277,6 +277,7 @@ export default function StaffHomePage() {
             {/* Incident header */}
             <div className="flex w-full shrink-0 items-center gap-[10px]">
               <h1 className="m-0 truncate text-[22px] font-medium text-ink">{featured.type} · {featured.location}</h1>
+              <ClipId id={featured.id} variant="chip" className="text-[12px]" />
               <StatusPill tone={SEVERITY_TONE[featured.severity]}>{featured.severity}</StatusPill>
               <div className="flex-1" />
               <Button variant="secondary" icon={<CircleX size={16} strokeWidth={1.75} />} onClick={() => setModal('dismiss')} disabled={saving}>Dismiss</Button>
@@ -286,7 +287,6 @@ export default function StaffHomePage() {
 
             {/* Facts */}
             <div className="flex w-full shrink-0 flex-wrap items-center gap-x-[20px] gap-y-[6px] text-[12px] text-brand-faded">
-              {featured.incident?.apiId !== undefined && <Fact icon={<Hash size={14} />}>Incident {featured.incident.apiId}</Fact>}
               <Fact icon={<MapPin size={14} />}>{featured.place} · {featured.cam}</Fact>
               <Fact icon={<Clock size={14} />}>{featured.window} · {featured.duration}</Fact>
               {featured.people && <Fact icon={<UserRound size={14} />}>{featured.people}</Fact>}
@@ -378,7 +378,8 @@ export default function StaffHomePage() {
                               <span className="truncate text-[12px] font-medium text-ink">{item.type} · {item.location}</span>
                               <span className="flex items-center gap-[6px] text-[11px] text-muted">
                                 <span className="size-[7px] shrink-0 rounded-full" style={{ backgroundColor: SEVERITY_DOT[item.severity] }} />
-                                {item.cam} · {item.time} · {item.confidence}%
+                                <ClipId id={item.id} />
+                                <span className="truncate">· {item.time} · {item.confidence}%</span>
                               </span>
                             </span>
                           </button>
@@ -562,7 +563,7 @@ function ClipPlayer({ item }: { item: QueueItem }) {
       {/* Video */}
       <ClipThumb seed={0} className="aspect-[16/9] w-full shrink-0 rounded-[6px]" iconSize={40}>
         <span className="absolute top-[12px] left-[12px] rounded-[4px] bg-[rgba(27,35,52,0.75)] px-[8px] py-[4px] text-[11px] font-medium text-white">
-          {item.cam.toUpperCase()} · {item.stamp}
+          {item.cam.toUpperCase()} · {item.stamp} · {clipLabel(item.id)}
         </span>
         {/* Detection */}
         {item.box && (
