@@ -2,6 +2,7 @@ import { useState, FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Info, Check } from 'lucide-react';
 import { AuthLayout, AUTH_INPUT, AUTH_LABEL, AUTH_SUBMIT, FormError, PasswordInput } from '../../components/layout/AuthLayout';
+import { AuthError, homePath, login } from '../../data/auth';
 
 const STEPS = [
   { label: 'Verify your invite', state: 'current' },
@@ -50,9 +51,15 @@ export default function FirstTimeLoginPage() {
       return;
     }
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 600));
-    setLoading(false);
-    navigate('/set-password');
+    try {
+      // The temporary password signs them in; the backend then only allows "set your password".
+      const user = await login(email.trim(), tempPassword.trim());
+      navigate(homePath(user));
+    } catch (err) {
+      setError(err instanceof AuthError ? err.message : 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

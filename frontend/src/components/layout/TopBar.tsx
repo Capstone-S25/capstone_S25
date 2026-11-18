@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { logout } from '../../data/auth';
 import { Search, Bell, ChevronDown, LogOut, UserRound } from 'lucide-react';
 import { UserRole } from '../../types';
 
@@ -180,7 +181,7 @@ export function TopBar({ role }: { role: UserRole }) {
             </div>
             <div className="p-[6px]">
               <MenuItem icon={<UserRound size={15} />} onClick={() => setMenuOpen(false)}>Profile</MenuItem>
-              <MenuItem icon={<LogOut size={15} />} danger onClick={() => { setMenuOpen(false); navigate('/login'); }}>Sign out</MenuItem>
+                            <MenuItem icon={<LogOut size={15} />} danger onClick={() => { setMenuOpen(false); logout().finally(() => navigate('/login')); }}>Sign out</MenuItem>
             </div>
           </div>
         )}
