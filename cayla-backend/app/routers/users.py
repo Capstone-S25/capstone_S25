@@ -46,8 +46,8 @@ class UserOut(BaseModel):
 class UserCreate(BaseModel):
     name: str = Field(min_length=1)
     email: EmailStr
-    staff_id: str = Field(min_length=1)
-    date_of_birth: date  # needed later for the password-locked report PDFs
+    staff_id: str | None = Field(default=None, min_length=1)  # optional
+    date_of_birth: date | None = None  # optional
     role: Role = "staff"  # staff by default; no password field: one is emailed
 
 

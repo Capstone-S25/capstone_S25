@@ -5,8 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import FRONTEND_ORIGINS
 from .db import pool
-from .routers import audit_log, auth, locations_cameras, rules, settings, users
-
+from .routers import audit_log, auth, users
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -29,14 +28,7 @@ app.add_middleware(
 )
 
 API = "/api/v1"
-for r in (
-    auth.router,
-    users.router,
-    locations_cameras.router,
-    rules.router,
-    settings.router,
-    audit_log.router,
-):
+for r in (auth.router, users.router, audit_log.router):
     app.include_router(r, prefix=API)
 
 # Yee Mon: add your routers here the same way, e.g.
