@@ -4,7 +4,7 @@ import { AppLayout } from '../../components/layout/AppLayout';
 import { SeverityBadge, OutcomeDot, OutcomeTabs } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { FilterSelect } from '../../components/ui/FilterSelect';
-import { ClipThumb, EmptyState, PageHeader } from '../../components/ui/Primitives';
+import { ClipId, ClipThumb, EmptyState, PageHeader } from '../../components/ui/Primitives';
 import { MOCK_STAFF } from '../../data/mock';
 import { useIncidents } from '../../data/useIncidents';
 import type { Incident, IncidentOutcome } from '../../types';
@@ -30,7 +30,7 @@ function formatDateTime(iso: string) {
 const camLabel = (camId: string) => 'Cam ' + camId.replace('cam-', '').padStart(2, '0');
 
 // Column widths from Figma: History table
-const COLS = 'grid grid-cols-[84px_minmax(0,1fr)_80px_170px_100px_100px_150px] gap-[16px]';
+const COLS = 'grid grid-cols-[52px_84px_minmax(0,1fr)_80px_170px_100px_100px_150px] gap-[16px]';
 
 export default function ReviewHistoryPage() {
   const { incidents } = useIncidents();
@@ -90,8 +90,9 @@ export default function ReviewHistoryPage() {
 
       {/* Table */}
       <div className="w-full overflow-x-auto" role="table" aria-label="Review history">
-        <div className="min-w-[900px]">
+        <div className="min-w-[960px]">
           <div role="row" className={`${COLS} border-b border-line pb-[8px] text-[11px] font-medium text-muted`}>
+            <span role="columnheader">ID</span>
             <span role="columnheader">Clip</span>
             <span role="columnheader">Incident</span>
             <span role="columnheader">Camera</span>
@@ -113,6 +114,7 @@ export default function ReviewHistoryPage() {
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedInc(inc); } }}
                 className={`${COLS} cursor-pointer items-center border-b border-line-soft py-[10px] transition-colors hover:bg-head focus-visible:bg-head ${selectedInc?.id === inc.id ? 'bg-head' : ''}`}
               >
+                <span role="cell"><ClipId id={inc.id} /></span>
                 <span role="cell"><ClipThumb seed={idx} src={inc.thumbnailUrl} className="h-[44px] w-[72px] rounded-[4px]" iconSize={14} /></span>
                 <span role="cell" className="flex min-w-0 flex-col gap-[2px]">
                   <span className="truncate text-[13px] font-medium text-ink">{inc.type} · {inc.location}</span>

@@ -5,9 +5,10 @@ import { AppLayout } from '../../components/layout/AppLayout';
 import { StatusPill } from '../../components/ui/Badge';
 import { SEVERITY_TONE, SEVERITY_DOT } from '../../components/ui/tones';
 import { Button } from '../../components/ui/Button';
-import { BarMeter, ClipThumb, FieldLabel, Kpi, SectionTitle } from '../../components/ui/Primitives';
+import { BarMeter, ClipId, ClipThumb, FieldLabel, Kpi, SectionTitle } from '../../components/ui/Primitives';
 import { INPUT_CLASS } from '../../components/ui/Modal';
 import { MOCK_CAMERAS, MOCK_INCIDENTS, MOCK_STAFF } from '../../data/mock';
+import { clipLabel } from '../../data/clipId';
 import { EditWidgetsButton, PanelCloseButton, SidePanel, ViewAll, WidgetEditor, WidgetSection } from '../../components/ui/Widgets';
 import { useWidgetLayout, type WidgetConfig, type WidgetMeta } from '../../components/ui/useWidgetLayout';
 
@@ -77,6 +78,7 @@ export default function AdminHomePage() {
           <>
             <div className="flex w-full shrink-0 items-center gap-[10px]">
               <h1 className="m-0 truncate text-[22px] font-medium text-ink">{current.type} · {current.location}</h1>
+              <ClipId id={current.id} variant="chip" className="text-[12px]" />
               <StatusPill tone={SEVERITY_TONE[current.severity]}>{current.severity}</StatusPill>
               <StatusPill tone={assignments[current.id] ? 'blue' : 'neutral'}>
                 {assignments[current.id] ? `Assigned · ${STAFF_MAP[assignments[current.id]]}` : 'Unassigned'}
@@ -93,7 +95,7 @@ export default function AdminHomePage() {
 
             <ClipThumb seed={current.id.length} className="aspect-[16/9] w-full shrink-0 rounded-[6px]" iconSize={0}>
               <span className="absolute top-[12px] left-[12px] rounded-[4px] bg-[rgba(27,35,52,0.75)] px-[8px] py-[4px] text-[11px] font-medium text-white">
-                {camLabel(current.camId).toUpperCase()} · {fmtTime(current.dateTime)}
+                {camLabel(current.camId).toUpperCase()} · {fmtTime(current.dateTime)} · {clipLabel(current.id)}
               </span>
               <button type="button" aria-label="Play clip" className="flex size-[56px] cursor-pointer items-center justify-center rounded-full border-none bg-[rgba(27,35,52,0.8)] text-white transition-transform hover:scale-105">
                 <Play size={22} fill="currentColor" className="ml-[3px]" />
@@ -172,7 +174,8 @@ export default function AdminHomePage() {
                             <span className="truncate text-[12px] font-medium text-ink">{inc.type} · {inc.location}</span>
                             <span className="flex items-center gap-[6px] text-[11px] text-muted">
                               <span className="size-[7px] shrink-0 rounded-full" style={{ backgroundColor: SEVERITY_DOT[inc.severity] }} />
-                              {camLabel(inc.camId)} · {fmtDate(inc.dateTime)} · {Math.round(inc.confidence * 100)}%
+                              <ClipId id={inc.id} />
+                              <span className="truncate">{camLabel(inc.camId)} · {fmtDate(inc.dateTime)} · {Math.round(inc.confidence * 100)}%</span>
                             </span>
                           </span>
                         </button>
@@ -189,7 +192,7 @@ export default function AdminHomePage() {
                         <CircleCheck size={15} className="shrink-0 text-success" />
                         <span className="min-w-0 flex-1">
                           <span className="block truncate text-[12px] font-medium text-ink">{inc.type} · {inc.location}</span>
-                          <span className="block text-[11px] text-muted">{fmtDate(inc.dateTime)}</span>
+                          <span className="flex items-center gap-[6px] text-[11px] text-muted"><ClipId id={inc.id} />· {fmtDate(inc.dateTime)}</span>
                         </span>
                       </div>
                     ))}
