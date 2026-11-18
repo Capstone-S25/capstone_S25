@@ -26,6 +26,8 @@ export interface Incident {
   verdict?: string;
   /** True for incidents from the API, absent for demo data. */
   live?: boolean;
+  /** The incident's numeric id in the API, absent for demo data. */
+  apiId?: number;
 }
 
 export interface Camera {

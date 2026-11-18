@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 
-from data_pipeline.api.routers import evidence, incidents
+from data_pipeline.api.routers import evidence, incidents, reviews
 from data_pipeline.database.session import create_engine_and_session_factory
 
 
@@ -75,6 +75,7 @@ def create_app(
     )
     app.include_router(incidents.router)
     app.include_router(evidence.router)
+    app.include_router(reviews.router)
     dashboard = os.environ.get("DASHBOARD_DIR")
     if dashboard and (Path(dashboard) / "index.html").is_file():
         _serve_dashboard(app, Path(dashboard).resolve())

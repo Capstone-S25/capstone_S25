@@ -9,6 +9,7 @@ const TYPE_LABEL: Record<string, IncidentType> = {
   smoking: 'Smoking',
   littering: 'Littering',
   loitering: 'Loitering',
+  unattended_item: 'Unattended item',
   unattended_items: 'Unattended item',
   rough_sleeping: 'Rough sleeping',
 };
@@ -82,9 +83,19 @@ function describe(detail: ApiDetail): { description: string; confidence: number;
   };
 }
 
+/** A failed API call; status is the HTTP status code. */
+export class ApiError extends Error {
+  readonly status: number;
+
+  constructor(path: string, status: number) {
+    super(`${path} returned ${status}`);
+    this.status = status;
+  }
+}
+
 async function getJson<T>(path: string, signal?: AbortSignal): Promise<T> {
   const response = await fetch(`${BASE}${path}`, { signal, headers: { Accept: 'application/json' } });
-  if (!response.ok) throw new Error(`${path} returned ${response.status}`);
+  if (!response.ok) throw new ApiError(path, response.status);
   return (await response.json()) as T;
 }
 
@@ -108,14 +119,65 @@ function toIncident(detail: ApiDetail): Incident {
     clipUrl: `${BASE}/api/v1/incidents/${detail.id}/clip`,
     verdict,
     live: true,
+    apiId: detail.id,
   };
+}
+
+async function withDetails(items: ApiListItem[], signal?: AbortSignal): Promise<Incident[]> {
+  const details = await Promise.all(
+    items.map((item) => getJson<ApiDetail>(`/api/v1/incidents/${item.id}`, signal)),
+  );
+  return details.map(toIncident);
 }
 
 /** Newest incidents with their model verdicts. Throws when the API is down. */
 export async function fetchIncidents(signal?: AbortSignal, limit = 50): Promise<Incident[]> {
   const page = await getJson<{ items: ApiListItem[] }>(`/api/v1/incidents?page_size=${limit}`, signal);
-  const details = await Promise.all(
-    page.items.map((item) => getJson<ApiDetail>(`/api/v1/incidents/${item.id}`, signal)),
-  );
-  return details.map(toIncident);
+  return withDetails(page.items, signal);
+}
+
+/**
+ * Incidents waiting for review (API List #21), most urgent first: critical,
+ * then moderate, then minor, longest waiting first within each.
+ */
+export async function fetchReviewQueue(signal?: AbortSignal, limit = 50): Promise<Incident[]> {
+  const page = await getJson<{ items: ApiListItem[] }>(`/api/v1/reviews/queue?page_size=${limit}`, signal);
+  return withDetails(page.items, signal);
+}
+
+/** A flagged YOLO box: seconds from the start of the clip, corners as CSS percentages. */
+export interface FlaggedBox {
+  t: number;
+  label: string;
+  box: { left: string; top: string; width: string; height: string };
+}
+
+interface ApiDetection {
+  offset_ms: number;
+  class_label: string;
+  bbox: { x1: number; y1: number; x2: number; y2: number };
+}
+
+/** Flagged boxes to draw over the clip (#18), in time order. */
+export async function fetchFlaggedBoxes(apiId: number, signal?: AbortSignal): Promise<FlaggedBox[]> {
+  const detections = await getJson<ApiDetection[]>(`/api/v1/incidents/${apiId}/detections`, signal);
+  const pct = (value: number) => `${(value * 100).toFixed(1)}%`;
+  return detections.map((d) => ({
+    t: d.offset_ms / 1000,
+    label: d.class_label,
+    box: { left: pct(d.bbox.x1), top: pct(d.bbox.y1), width: pct(d.bbox.x2 - d.bbox.x1), height: pct(d.bbox.y2 - d.bbox.y1) },
+  }));
+}
+
+export type ReviewOutcome = 'accepted' | 'dismissed' | 'escalated';
+
+/** Save the review for an incident (#22). Throws ApiError; 409 means already reviewed. */
+export async function submitReview(apiId: number, outcome: ReviewOutcome, notes: string): Promise<void> {
+  const path = `/api/v1/incidents/${apiId}/review`;
+  const response = await fetch(`${BASE}${path}`, {
+    method: 'POST',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ outcome, notes: notes || null }),
+  });
+  if (!response.ok) throw new ApiError(path, response.status);
 }

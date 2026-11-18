@@ -2,6 +2,7 @@ from datetime import datetime
 from enum import StrEnum
 from typing import TYPE_CHECKING
 
+from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
     CheckConstraint,
     DateTime,
@@ -18,6 +19,9 @@ from data_pipeline.database.base import Base
 
 if TYPE_CHECKING:
     from data_pipeline.database.models.incidents import Incident
+
+EMBEDDING_DIMENSIONS = 512
+"""Length of a clip embedding; MobileCLIP and CLIP ViT-B models give 512."""
 
 
 class VLMAssessment(StrEnum):
@@ -43,9 +47,8 @@ class VLMResult(Base):
         description: Optional free-text explanation from the VLM.
         model_version: Model name and version that produced the verdict.
         processed_at: When the VLM finished.
-
-    Note:
-        The pgvector ``embedding`` column is added with similar incidents.
+        embedding: Optional pgvector embedding of the evidence clip, with
+            EMBEDDING_DIMENSIONS values, used to find similar incidents.
     """
 
     __tablename__ = "vlm_results"
@@ -75,5 +78,6 @@ class VLMResult(Base):
     description: Mapped[str | None] = mapped_column(Text)
     model_version: Mapped[str] = mapped_column(String(128))
     processed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    embedding: Mapped[list[float] | None] = mapped_column(Vector(EMBEDDING_DIMENSIONS))
 
     incident: Mapped["Incident"] = relationship(back_populates="vlm_results")

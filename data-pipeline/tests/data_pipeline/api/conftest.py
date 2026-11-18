@@ -23,12 +23,22 @@ def seeded(postgres_session, now):
 
 
 @pytest.fixture
-def client(postgres_session, seeded):
+def recordings_dir(tmp_path):
+    """Empty recordings folder the API reads evidence clips from."""
+    path = tmp_path / "recordings"
+    path.mkdir()
+    return path
+
+
+@pytest.fixture
+def client(postgres_session, seeded, recordings_dir):
     """API client whose requests use the seeded test session."""
-    app = create_app(os.environ["TEST_DATABASE_URL"])
+    app = create_app(os.environ["TEST_DATABASE_URL"], storage_root=recordings_dir)
 
     def override_get_db():
         yield postgres_session
+        # Like a fresh session per request: later reads see the request's writes.
+        postgres_session.expire_all()
 
     app.dependency_overrides[get_db] = override_get_db
     with TestClient(app) as test_client:

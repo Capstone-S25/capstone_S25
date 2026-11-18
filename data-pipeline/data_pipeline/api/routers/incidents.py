@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-from data_pipeline.api.auth import get_current_user
+from data_pipeline.api.auth import CurrentUser, get_current_user
 from data_pipeline.api.database import get_db
 from data_pipeline.api.schemas.incidents import (
     CameraRef,
@@ -14,9 +14,11 @@ from data_pipeline.api.schemas.incidents import (
     IncidentPage,
     LocationRef,
     OutcomeFilter,
-    Review,
+    SimilarIncident,
+    VLMRerunRequest,
     VLMVerdict,
 )
+from data_pipeline.api.schemas.reviews import Review
 from data_pipeline.database.models import Severity
 from data_pipeline.database.repositories import incidents as repository
 
@@ -109,6 +111,7 @@ def get_incident(db: DbSession, incident_id: int) -> IncidentDetail:
         vlm_history=[
             VLMVerdict.model_validate(result) for result in incident.vlm_results
         ],
+        vlm_rerun_requested_at=incident.vlm_rerun_requested_at,
         review=Review.model_validate(incident.review) if incident.review else None,
     )
 
@@ -123,3 +126,59 @@ def list_flagged_detections(db: DbSession, incident_id: int) -> list[Detection]:
         Detection.from_model(detection, clip_start)
         for detection in repository.list_flagged_detections(db, incident_id)
     ]
+
+
+@router.get("/{incident_id}/similar", response_model=list[SimilarIncident])
+def list_similar_incidents(
+    db: DbSession,
+    incident_id: int,
+    limit: Annotated[int, Query(ge=1, le=20)] = 5,
+) -> list[SimilarIncident]:
+    """List look-alike past incidents, most similar first (#19).
+
+    Empty if this incident's clip has no embedding yet.
+    """
+    if not repository.incident_exists(db, incident_id):
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Incident not found")
+    return [
+        SimilarIncident(
+            id=incident.id,
+            camera_id=incident.camera_id,
+            location_id=incident.location_id,
+            event_type=incident.event_type,
+            severity=incident.severity,
+            first_anomaly_at=incident.first_anomaly_at,
+            last_anomaly_at=incident.last_anomaly_at,
+            review_outcome=review_outcome,
+            similarity=round(similarity, 4),
+        )
+        for incident, review_outcome, similarity in repository.find_similar_incidents(
+            db, incident_id, limit=limit
+        )
+    ]
+
+
+@router.post(
+    "/{incident_id}/rerun-vlm",
+    response_model=VLMRerunRequest,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+def rerun_vlm(
+    db: DbSession,
+    user: Annotated[CurrentUser, Depends(get_current_user)],
+    incident_id: int,
+) -> VLMRerunRequest:
+    """Ask for the VLM to check the clip again (#20).
+
+    The VLM worker picks the request up later; asking again while one is
+    waiting returns the waiting request.
+    TODO: Decide whether this is admin-only (Open Items); open to all for now.
+    """
+    incident = repository.request_vlm_rerun(db, incident_id, requested_by=user.id)
+    if incident is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Incident not found")
+    return VLMRerunRequest(
+        incident_id=incident.id,
+        requested_at=incident.vlm_rerun_requested_at,
+        requested_by=incident.vlm_rerun_requested_by,
+    )

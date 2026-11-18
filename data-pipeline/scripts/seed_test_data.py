@@ -31,6 +31,7 @@ from data_pipeline.database.models import (
     VLMAssessment,
     VLMResult,
 )
+from data_pipeline.database.models.vlm_results import EMBEDDING_DIMENSIONS
 from data_pipeline.database.session import create_engine_and_session_factory
 
 SEED_PREFIX = "seed/"
@@ -77,7 +78,9 @@ def seed_test_data(
     Every location, camera, event type and severity appears. About half
     the incidents are reviewed with a mix of outcomes, and two escalated
     ones are settled. Each incident has 2-5 detections; when there are
-    three or more, the last is an unflagged passer-by.
+    three or more, the last is an unflagged passer-by. VLM embeddings of
+    the same event type lie close together, so similar incidents match
+    by type.
 
     Args:
         db: Session whose transaction is managed by the caller.
@@ -91,6 +94,10 @@ def seed_test_data(
     rng = random.Random(seed)
     now = now or datetime.now(UTC)
     reviewed = sorted(rng.sample(range(INCIDENT_COUNT), INCIDENT_COUNT // 2))
+    centres = {
+        event_type: [rng.gauss(0, 1) for _ in range(EMBEDDING_DIMENSIONS)]
+        for event_type in EVENT_TYPES
+    }
     incidents = []
     settled = 0
     for i in range(INCIDENT_COUNT):
@@ -128,6 +135,7 @@ def seed_test_data(
                 ),
                 model_version="seed-vlm-1",
                 processed_at=processed_at,
+                embedding=[value + rng.gauss(0, 0.6) for value in centres[event_type]],
             )
         ]
 

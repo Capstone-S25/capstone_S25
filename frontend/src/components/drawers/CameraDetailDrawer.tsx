@@ -5,7 +5,7 @@ import { MOCK_INCIDENTS, MOCK_RULES } from '../../data/mock';
 import { SeverityBadge, OutcomeDot, StatusPill } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { Drawer } from '../ui/Drawer';
-import { ClipThumb } from '../ui/Primitives';
+import { ClipId, ClipThumb } from '../ui/Primitives';
 
 interface CameraDetailDrawerProps {
   cam: Camera | null;
@@ -104,7 +104,7 @@ export default function CameraDetailDrawer({ cam, onClose }: CameraDetailDrawerP
               <div key={inc.id} className="flex items-center gap-[10px] border-b border-line-soft py-[10px] last:border-b-0">
                 <div className="min-w-0 flex-1">
                   <p className="m-0 truncate text-[13px] font-medium text-ink">{inc.type}</p>
-                  <p className="m-0 mt-[2px] text-[12px] text-muted">{formatTime(inc.dateTime)}</p>
+                  <p className="m-0 mt-[2px] flex items-center gap-[6px] text-[12px] text-muted"><ClipId id={inc.id} />·<span>{formatTime(inc.dateTime)}</span></p>
                 </div>
                 <SeverityBadge severity={inc.severity} />
                 <OutcomeDot outcome={inc.outcome} className="w-[84px]" />
