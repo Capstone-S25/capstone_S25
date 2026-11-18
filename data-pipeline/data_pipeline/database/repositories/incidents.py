@@ -130,17 +130,6 @@ def incident_exists(db: Session, incident_id: int) -> bool:
     return db.scalar(select(exists().where(Incident.id == incident_id)))
 
 
-def get_evidence_clip_path(db: Session, incident_id: int) -> str | None:
-    """Return an incident's clip path relative to the recordings root.
-
-    Returns:
-        The stored path, or None if the incident does not exist.
-    """
-    return db.scalar(
-        select(Incident.evidence_clip_path).where(Incident.id == incident_id)
-    )
-
-
 def request_vlm_rerun(
     db: Session, incident_id: int, *, requested_by: int
 ) -> Incident | None:

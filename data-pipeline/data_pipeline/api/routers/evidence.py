@@ -1,7 +1,4 @@
-"""Evidence files for an incident: a thumbnail.
-
-The clip itself (API List #17) is served by the incidents router.
-"""
+"""Evidence files for an incident: the clip (API List #17) and a thumbnail."""
 
 from pathlib import Path
 from typing import Annotated
@@ -36,6 +33,14 @@ def _evidence(request: Request, db: Session, incident_id: int, suffix: str) -> P
     if not relative or not path.is_relative_to(root) or not path.is_file():
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Evidence file not found")
     return path
+
+
+@router.get("/{incident_id}/clip", response_class=FileResponse)
+def get_clip(request: Request, db: DbSession, incident_id: int) -> FileResponse:
+    """Stream the incident's evidence clip (#17)."""
+    return FileResponse(
+        _evidence(request, db, incident_id, ".mp4"), media_type="video/mp4"
+    )
 
 
 @router.get("/{incident_id}/thumbnail", response_class=FileResponse)

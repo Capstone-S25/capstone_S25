@@ -1,15 +1,11 @@
-import mimetypes
 from datetime import UTC, date, datetime, time, timedelta
-from pathlib import Path
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from data_pipeline.api.auth import CurrentUser, get_current_user
 from data_pipeline.api.database import get_db
-from data_pipeline.api.recordings import get_recordings_dir
 from data_pipeline.api.schemas.incidents import (
     CameraRef,
     Detection,
@@ -130,32 +126,6 @@ def list_flagged_detections(db: DbSession, incident_id: int) -> list[Detection]:
         Detection.from_model(detection, clip_start)
         for detection in repository.list_flagged_detections(db, incident_id)
     ]
-
-
-@router.get(
-    "/{incident_id}/clip",
-    response_class=FileResponse,
-    responses={200: {"content": {"video/mp4": {}}}},
-)
-def get_clip(
-    db: DbSession,
-    recordings_dir: Annotated[Path, Depends(get_recordings_dir)],
-    incident_id: int,
-) -> FileResponse:
-    """Stream the evidence clip, usable directly as a video src (#17).
-
-    Supports range requests, so the player can seek.
-    TODO: Redirect to a signed S3 link once clips are uploaded to S3.
-    """
-    clip_path = repository.get_evidence_clip_path(db, incident_id)
-    if clip_path is None:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "Incident not found")
-    root = recordings_dir.resolve()
-    path = (root / clip_path).resolve()
-    if not path.is_relative_to(root) or not path.is_file():
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "Clip not available")
-    media_type = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
-    return FileResponse(path, media_type=media_type)
 
 
 @router.get("/{incident_id}/similar", response_model=list[SimilarIncident])
