@@ -46,6 +46,10 @@ class Incident(Base):
         evidence_clip_path: Clip path relative to the recordings root (later
             an S3 key), up to 1024 characters.
         created_at: Timezone-aware insertion time, set by the database.
+        vlm_rerun_requested_at: When someone asked for the VLM to check the
+            clip again, or None if no re-run is waiting. The VLM worker
+            clears it after saving a new result.
+        vlm_rerun_requested_by: User who asked for the re-run, or None.
     """
 
     __tablename__ = "incidents"
@@ -79,6 +83,10 @@ class Incident(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
+    vlm_rerun_requested_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True)
+    )
+    vlm_rerun_requested_by: Mapped[int | None]
 
     detections: Mapped[list["Detection"]] = relationship(
         back_populates="incident", order_by="Detection.detected_at"

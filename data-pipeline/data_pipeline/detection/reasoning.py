@@ -7,7 +7,6 @@ import logging
 import math
 import os
 import queue
-import selectors
 import signal
 import subprocess
 import threading
@@ -32,15 +31,28 @@ class ResidentClient:
         self.process = None
         self.log = None
         self.ready = None
+        self.lines = None
         self.lock = threading.Lock()
 
+    @staticmethod
+    def _pump(stream, lines):
+        # A thread reads the worker's output because select() cannot wait on
+        # pipes on Windows. An empty string marks the end of the output.
+        try:
+            for line in iter(stream.readline, ""):
+                lines.put(line)
+        except (OSError, ValueError):
+            pass  # close() closed the pipe while this thread was reading
+        lines.put("")
+
     def _read(self, timeout):
-        with selectors.DefaultSelector() as selector:
-            selector.register(self.process.stdout, selectors.EVENT_READ)
-            if not selector.select(timeout):
-                self.close()
-                raise TimeoutError("Resident inference worker exceeded its deadline")
-            line = self.process.stdout.readline()
+        try:
+            line = self.lines.get(timeout=timeout)
+        except queue.Empty:
+            self.close()
+            raise TimeoutError(
+                "Resident inference worker exceeded its deadline"
+            ) from None
         if not line:
             raise RuntimeError(
                 f"Resident inference worker exited; inspect {self.log_path}"
@@ -68,6 +80,10 @@ class ResidentClient:
             bufsize=1,
             start_new_session=(os.name == "posix"),
         )
+        self.lines = queue.Queue()
+        threading.Thread(
+            target=self._pump, args=(self.process.stdout, self.lines), daemon=True
+        ).start()
         try:
             self.ready = self._read(self.startup_timeout)
             if self.ready.get("type") != "ready":

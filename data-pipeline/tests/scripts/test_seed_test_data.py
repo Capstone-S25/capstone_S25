@@ -30,6 +30,7 @@ def test_seed_detections_and_vlm_verdicts(postgres_session):
 
     assert all(2 <= len(i.detections) <= 5 for i in incidents)
     assert all(len(i.vlm_results) == 1 for i in incidents)
+    assert all(len(i.vlm_results[0].embedding) == 512 for i in incidents)
     assert any(not d.is_flagged for i in incidents for d in i.detections)
     assert all(
         i.evidence_start_at <= d.detected_at <= i.evidence_end_at

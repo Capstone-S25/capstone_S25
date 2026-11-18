@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Literal
 
-from sqlalchemy import func, select
+from sqlalchemy import ColumnElement, exists, func, select
+from sqlalchemy.dialects.postgresql import distinct_on
 from sqlalchemy.orm import Session, joinedload, selectinload
 
 from data_pipeline.database.models import (
@@ -10,9 +11,30 @@ from data_pipeline.database.models import (
     Review,
     ReviewOutcome,
     Severity,
+    VLMResult,
 )
 
 UNREVIEWED = "unreviewed"
+
+
+def incident_filters(
+    *,
+    location_id: int | None = None,
+    camera_id: str | None = None,
+    event_type: str | None = None,
+    severity: Severity | None = None,
+) -> list[ColumnElement[bool]]:
+    """Build WHERE conditions on Incident for each filter that is not None."""
+    conditions = []
+    if location_id is not None:
+        conditions.append(Incident.location_id == location_id)
+    if camera_id is not None:
+        conditions.append(Incident.camera_id == camera_id)
+    if event_type is not None:
+        conditions.append(Incident.event_type == event_type)
+    if severity is not None:
+        conditions.append(Incident.severity == severity)
+    return conditions
 
 
 def list_incidents(
@@ -48,15 +70,12 @@ def list_incidents(
         ordered by first_anomaly_at then id, both descending. total counts
         every match, ignoring limit and offset.
     """
-    conditions = []
-    if location_id is not None:
-        conditions.append(Incident.location_id == location_id)
-    if camera_id is not None:
-        conditions.append(Incident.camera_id == camera_id)
-    if event_type is not None:
-        conditions.append(Incident.event_type == event_type)
-    if severity is not None:
-        conditions.append(Incident.severity == severity)
+    conditions = incident_filters(
+        location_id=location_id,
+        camera_id=camera_id,
+        event_type=event_type,
+        severity=severity,
+    )
     if outcome == UNREVIEWED:
         conditions.append(Review.id.is_(None))
     elif outcome is not None:
@@ -104,6 +123,94 @@ def get_incident(db: Session, incident_id: int) -> Incident | None:
         )
     )
     return db.scalars(statement).one_or_none()
+
+
+def incident_exists(db: Session, incident_id: int) -> bool:
+    """Return True if an incident with this primary key exists."""
+    return db.scalar(select(exists().where(Incident.id == incident_id)))
+
+
+def request_vlm_rerun(
+    db: Session, incident_id: int, *, requested_by: int
+) -> Incident | None:
+    """Ask for the VLM to check an incident again, without committing.
+
+    A request that is already waiting is kept unchanged, so asking twice
+    does not move it back in the VLM worker's queue.
+
+    Args:
+        db: Session whose transaction is managed by the caller.
+        incident_id: Incident primary key.
+        requested_by: User making the request.
+
+    Returns:
+        The incident with vlm_rerun_requested_at set, or None if it does
+        not exist.
+    """
+    incident = db.get(Incident, incident_id)
+    if incident is None:
+        return None
+    if incident.vlm_rerun_requested_at is None:
+        incident.vlm_rerun_requested_at = func.now()
+        incident.vlm_rerun_requested_by = requested_by
+        db.flush()
+        db.refresh(incident)
+    return incident
+
+
+def latest_vlm_results():
+    """Subquery of each incident's newest VLM result (DISTINCT ON incident)."""
+    return (
+        select(VLMResult)
+        .ext(distinct_on(VLMResult.incident_id))
+        .order_by(
+            VLMResult.incident_id,
+            VLMResult.processed_at.desc(),
+            VLMResult.id.desc(),
+        )
+        .subquery()
+    )
+
+
+def find_similar_incidents(
+    db: Session, incident_id: int, *, limit: int
+) -> list[tuple[Incident, ReviewOutcome | None, float]]:
+    """Find past incidents whose clips look most like this one's.
+
+    Compares the embedding on each incident's newest VLM result using
+    pgvector cosine distance. Incidents without an embedding are skipped.
+
+    Args:
+        db: Session whose transaction is managed by the caller.
+        incident_id: Incident to compare against.
+        limit: Maximum number of incidents to return.
+
+    Returns:
+        (incident, review outcome or None, similarity) tuples, most similar
+        first, where similarity is 1 - cosine distance (1 means identical).
+        Empty if the incident has no embedding or does not exist.
+    """
+    latest = latest_vlm_results()
+    target = db.scalar(
+        select(latest.c.embedding).where(
+            latest.c.incident_id == incident_id, latest.c.embedding.is_not(None)
+        )
+    )
+    if target is None:
+        return []
+    distance = latest.c.embedding.cosine_distance(target)
+    statement = (
+        select(Incident, Review.outcome, distance)
+        .join(latest, latest.c.incident_id == Incident.id)
+        .outerjoin(Review, Review.incident_id == Incident.id)
+        .where(Incident.id != incident_id, latest.c.embedding.is_not(None))
+        .order_by(distance, Incident.id)
+        .limit(limit)
+    )
+    return [
+        (incident, outcome, 1 - distance)
+        for incident, outcome, distance in db.execute(statement)
+    ]
 
 
 def get_evidence_start(db: Session, incident_id: int) -> datetime | None:
