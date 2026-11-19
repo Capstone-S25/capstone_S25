@@ -274,8 +274,11 @@ class ClipStrategy:
 # of the ICVL videos added to the team Drive; other tasks are unchanged.
 # 20261119 is the same recipe refitted without the test side of the team
 # split (notebooks/exp/eval/splits.json): ICVL cameras 02 and 10 and the
-# ABODA cameras that have a test video are never fitted.
+# ABODA cameras that have a test video are never fitted. Its unattended head
+# never fires (two fit cameras left); 20261119b refits that head with the
+# split's fit-side D2-CDNet scene "sofa" and adds a high_recall point.
 ENSEMBLES = (
+    "ensemble-20261119b",
     "ensemble-20261119",
     "ensemble-20261116",
     "ensemble-20261114",

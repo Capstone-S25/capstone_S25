@@ -55,6 +55,21 @@ DEFAULT_TOLERANCE = 5.0
 SPAN = {"littering": 4.0}
 DEFAULT_SPAN = 20.0
 QUIET = 30.0  # IncidentRecorder default
+# Duration-defined behaviours on duration rules open an incident whatever the
+# screening classifier says (vision_runtime.service.bypasses_screening); kept
+# here so journals from code before that change score the same way.
+BYPASS = {"loitering", "rough_sleeping"}
+BYPASS_RULES = {"long_presence", "sustained_presence"}
+
+
+def opens(row, task):
+    """True when this window opens or extends an incident for `task`."""
+    p = (row.get("predictions") or {}).get(task)
+    if p is None:
+        return False
+    if p.get("decision") == "anomaly":
+        return True
+    return task in BYPASS and row.get("kind") in BYPASS_RULES
 
 
 def test_videos(splits, datasets):
@@ -227,11 +242,7 @@ def score(args):
         for r in screened:
             kinds[r["kind"]] += 1
         for task in TASKS:
-            alerts = [
-                (r["timestamp_s"], r)
-                for r in screened
-                if (r["predictions"].get(task) or {}).get("decision") == "anomaly"
-            ]
+            alerts = [(r["timestamp_s"], r) for r in screened if opens(r, task)]
             if task not in labelled:
                 unverifiable[task] += len(merge(task, [t for t, _ in alerts]))
                 unverifiable_minutes[task] += duration / 60
@@ -275,17 +286,32 @@ def score(args):
                     for r in asked
                     if r["predictions"][task].get("decision") != "unknown"
                 ]
-                hits = [
-                    r["timestamp_s"]
-                    for r in known
-                    if r["predictions"][task]["decision"] == "anomaly"
+                hits = [r["timestamp_s"] for r in asked if opens(r, task)]
+                flagged = [
+                    t
+                    for t, r in zip(hits, [r for r in asked if opens(r, task)])
+                    if r["predictions"][task].get("decision") == "anomaly"
+                ]
+                # Stricter: the window itself overlaps the event.
+                overlap = [
+                    t for t in hits if t <= b + min(tol, SPAN.get(task, DEFAULT_SPAN))
+                ]
+                reviews = [
+                    r["confirmation"][task].get("decision")
+                    for r in rows
+                    if task in (r.get("confirmation") or {})
+                    and a <= r["timestamp_s"] <= b + tol
                 ]
                 d["events"].append(
                     {
                         "asked": bool(asked),
                         "known": bool(known),
                         "found": bool(hits),
+                        "by_screening": bool(flagged),
+                        "overlap": bool(overlap),
                         "delay": (min(hits) - a) if hits else None,
+                        "gemma_reviewed": bool(reviews),
+                        "gemma_confirmed": "anomaly" in reviews,
                     }
                 )
             # Stage: incidents.
@@ -378,8 +404,8 @@ def report(
         "",
         "## Incidents",
         "",
-        "| Behaviour | Events found | Incidents | Correct incidents | False incidents per hour | Median time to alert |",
-        "|---|---|---|---|---|---|",
+        "| Behaviour | Events found | Found by screening | Window overlaps event | Incidents | Correct incidents | False incidents per hour | Median time to alert |",
+        "|---|---|---|---|---|---|---|---|",
     ]
     for task in TASKS:
         d = per[task]
@@ -389,8 +415,13 @@ def report(
         delays = sorted(e["delay"] for e in ev if e["delay"] is not None)
         hours = sum(d["minutes"]) / 60
         wrong = sum(not ok for ok in d["incidents"])
+
+        def share(key, ev=ev):
+            n = sum(e[key] for e in ev)
+            return f"{n}/{len(ev)} ({pct(n / len(ev))})"
+
         lines.append(
-            f"| {task} | {sum(e['found'] for e in ev)}/{len(ev)} ({pct(sum(e['found'] for e in ev) / len(ev))}) | "
+            f"| {task} | {share('found')} | {share('by_screening')} | {share('overlap')} | "
             f"{len(d['incidents'])} | "
             f"{pct(sum(d['incidents']) / len(d['incidents']) if d['incidents'] else None)} | "
             f"{wrong / hours:.1f} | "
@@ -407,8 +438,13 @@ def report(
         "",
         "## Gemma review",
         "",
-        "| Behaviour | Reviewed | Skipped | Confirms on labelled windows | Confirms on unlabelled windows |",
-        "|---|---|---|---|---|",
+        "Per window: windows Gemma reviewed (screening flagged them, or a duration "
+        "rule bypassed screening) and the share it called an anomaly. Per event: "
+        "labelled events with at least one review, and those with at least one "
+        "confirming review.",
+        "",
+        "| Behaviour | Reviewed | Skipped | Confirms on labelled windows | Confirms on unlabelled windows | Events reviewed | Events confirmed |",
+        "|---|---|---|---|---|---|---|",
     ]
     for task in TASKS:
         d = per[task]
@@ -420,7 +456,10 @@ def report(
         lines.append(
             f"| {task} | {len(g)} | {len(d['gemma_skipped'])} | "
             f"{pct(sum(x == 'anomaly' for x in pos) / len(pos) if pos else None)} of {len(pos)} | "
-            f"{pct(sum(x == 'anomaly' for x in neg) / len(neg) if neg else None)} of {len(neg)} |"
+            f"{pct(sum(x == 'anomaly' for x in neg) / len(neg) if neg else None)} of {len(neg)} | "
+            f"{sum(e['gemma_reviewed'] for e in d['events'])}/{len(d['events'])} | "
+            f"{sum(e['gemma_confirmed'] for e in d['events'])}/"
+            f"{sum(e['gemma_reviewed'] for e in d['events'])} |"
         )
     text = "\n".join(lines) + "\n"
     print(text)
