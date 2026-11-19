@@ -33,6 +33,7 @@ from data_pipeline.database.models import (
     VLMAssessment,
     VLMResult,
 )
+from vision_runtime.service import bypasses_screening
 
 logger = logging.getLogger(__name__)
 
@@ -170,7 +171,12 @@ class IncidentRecorder:
 
     def _screened(self, candidate: dict, predictions: dict) -> None:
         for task, prediction in predictions.items():
-            if prediction.get("decision") != "anomaly":
+            flagged = prediction.get("decision") == "anomaly"
+            # A duration-defined behaviour is not vetoed by a classifier that
+            # cannot see duration; the confirmation model judges it instead.
+            if not flagged and not bypasses_screening(
+                task, candidate.get("event_type")
+            ):
                 continue
             view = candidate["views"]["short" if task in SHORT_VIEW_TASKS else "long"]
             paths, times = list(view["paths"]), [float(t) for t in view["times_s"]]
@@ -219,15 +225,32 @@ class IncidentRecorder:
                     VLMResult(
                         incident_id=incident.id,
                         event_type=task,
-                        assessment=VLMAssessment.CONFIRMED,
+                        assessment=ASSESSMENT.get(
+                            prediction.get("decision"), VLMAssessment.UNCERTAIN
+                        ),
                         confidence=score,
                         description=(
-                            f"Screening classifier flagged {task.replace('_', ' ')} "
-                            f"in the {times[-1] - times[0]:.0f} s window ending "
-                            f"{at:%H:%M:%S} UTC (score {prediction.get('score', 0):.2f}, "
-                            f"threshold {prediction.get('threshold', 0):.2f}"
-                            + (f", from the {channel}" if channel else "")
-                            + "). Awaiting review."
+                            (
+                                f"Screening classifier flagged "
+                                f"{task.replace('_', ' ')} "
+                                f"in the {times[-1] - times[0]:.0f} s window ending "
+                                f"{at:%H:%M:%S} UTC "
+                                f"(score {prediction.get('score', 0):.2f}, "
+                                f"threshold {prediction.get('threshold', 0):.2f}"
+                                + (f", from the {channel}" if channel else "")
+                                + "). Awaiting review."
+                            )
+                            if flagged
+                            else (
+                                f"Stage 1 rule "
+                                f"{candidate.get('event_type', 'rule')} proposed "
+                                f"{task.replace('_', ' ')} in the "
+                                f"{times[-1] - times[0]:.0f} s window ending "
+                                f"{at:%H:%M:%S} UTC. The screening classifier "
+                                f"returned {prediction.get('decision', 'unknown')}; "
+                                "it does not gate this event type because it "
+                                "scores it at chance. Unconfirmed; awaiting review."
+                            )
                         ),
                         model_version=str(prediction.get("strategy", "screening")),
                         processed_at=datetime.now(UTC),

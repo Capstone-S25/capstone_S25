@@ -45,14 +45,18 @@ TASKS_BY_EVENT = {
     # Putting something down is littering or leaving an item: often the bag itself is never
     # detected (dark bags, odd shapes), so the person's alert is the only chance to ask
     # about an unattended item.
-    "reach_down": ("littering", "unattended_items"),
-    "pose_action": ("littering", "unattended_items"),
+    # Smoking too, the mirror of the hand_to_face note below: the person dedup
+    # lets a reach-down or pose-action alert stand in for the smoking one on the
+    # same person, so the smoking question is never asked. 11 ICVL held-out
+    # smoking incidents were lost exactly this way (2026-11-18).
+    "reach_down": ("littering", "unattended_items", "smoking"),
+    "pose_action": ("littering", "unattended_items", "smoking"),
     "fast_motion": ("littering",),
     "static_object_left": ("littering", "unattended_items"),
     "object_appeared": ("littering", "unattended_items"),
     "unattended_object": ("unattended_items", "littering"),
     "sustained_presence": ("loitering", "smoking", "rough_sleeping"),
-    "long_presence": ("loitering", "rough_sleeping"),
+    "long_presence": ("loitering", "rough_sleeping", "smoking"),
     "near_camera": ("loitering",),
     # Littering too: the person dedup can let a smoking alert stand in for a reach-down
     # one on the same person (8 ICVL held-out littering incidents caught only this way,

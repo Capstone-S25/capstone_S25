@@ -2058,11 +2058,19 @@ class HandoffWriter:
                 for p, ts in zip(seq.paths, seq.timestamps)
                 if w0 - eps <= ts <= t + eps
             ]
+            # Times go out rounded to hundredths and the handoff contract wants
+            # them strictly increasing, so keep one frame per hundredth (the
+            # latest) before spreading: frames a few milliseconds apart are the
+            # same moment to the eye, and a collision rejects the candidate.
+            pairs = list({round(ts, 2): (ts, p) for ts, p in pairs}.values())
             pairs = self._spread(pairs, n)
             return [p for _, p in pairs], [round(ts, 2) for ts, _ in pairs]
         # Video: buffered earlier frames plus the trigger frame itself.
+        # Half a hundredth, not eps: a buffered frame nearer than that to the
+        # trigger rounds onto the same recorded time, and the strictly
+        # increasing check then rejects the whole candidate (see above).
         earlier = [
-            (bt, idx, jpg) for bt, idx, jpg in self.buffer if w0 - eps <= bt < t - eps
+            (bt, idx, jpg) for bt, idx, jpg in self.buffer if w0 - eps <= bt < t - 0.005
         ]
         chosen = self._spread([*earlier, (t, event["frame_index"], None)], n)
         out_paths, times = [], []
