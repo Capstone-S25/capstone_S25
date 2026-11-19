@@ -272,7 +272,11 @@ class ClipStrategy:
 # detector with its own threshold, and a cap on ordinary footage flagged.
 # 20261116 refits the smoking and littering heads with the fit-side cameras
 # of the ICVL videos added to the team Drive; other tasks are unchanged.
+# 20261119 is the same recipe refitted without the test side of the team
+# split (notebooks/exp/eval/splits.json): ICVL cameras 02 and 10 and the
+# ABODA cameras that have a test video are never fitted.
 ENSEMBLES = (
+    "ensemble-20261119",
     "ensemble-20261116",
     "ensemble-20261114",
     "ensemble-20261113",
