@@ -16,5 +16,14 @@ services:
       timeout: 5s
       retries: 30
 
+  # Fake email server for development and the demo: catches every email,
+  # sends none. Inbox at http://localhost:8025.
+  mailpit:
+    image: axllent/mailpit
+    container_name: capstone-mailpit
+    ports:
+      - '127.0.0.1:1025:1025'
+      - '127.0.0.1:8025:8025'
+
 volumes:
   postgres_data:
