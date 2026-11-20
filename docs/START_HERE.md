@@ -46,9 +46,20 @@ machine only serves the dashboard (no FFmpeg needed); add `--no-gemma` to skip
 Gemma. If the `models/` folder is missing, setup and start print a warning and
 carry on: the dashboard runs, cameras only record, and no incidents are opened.
 
-## 3. Start
+## 3. Create the first sign-in
 
-The whole system for one camera (Gemma, API, dashboard and camera backend):
+Nobody can open the dashboard until an admin account exists. Once is enough;
+the admin then adds staff from the dashboard. It asks for a password (at least
+8 characters with upper and lower case, a number and a symbol):
+
+```bash
+python3.12 deploy.py create-admin --name "Your Name" --email you@example.com --staff-id S001
+```
+
+## 4. Start
+
+The whole system for one camera (Gemma, the API with login and the dashboard,
+and the camera backend), all supervised by this one command:
 
 ```bash
 python3.12 deploy.py start --dashboard --camera --rtsp-url rtsp://camera-address/stream --source-id camera_01
@@ -71,7 +82,7 @@ reviews, then everything exits.
 Other modes:
 
 ```bash
-python3.12 deploy.py start                      # dashboard and API only
+python3.12 deploy.py start                      # dashboard, API and login only
 python3.12 deploy.py start --camera --video F   # camera backend only (writes incidents)
 ```
 
@@ -110,6 +121,8 @@ CPU, depending on the processor. How much weight its verdict deserves, from
 | `GEMMA_BASE_URL` | bundled server | Point it at another OpenAI-compatible server and remove `GEMMA_LOCAL=1` to use a GPU machine instead. |
 | `VISION_CLASSIFIER` | newest installed | `ensemble-20261113`, `ensemble-20261111` or `mobileclip2-s2` select earlier classifiers. |
 | `VISION_OPERATING_POINT` | `balanced` | `low_false_alarm` flags fewer ordinary windows and misses more unattended items. |
+| `COOKIE_SECURE` | `false` (written by setup) | `true` only behind HTTPS; on plain HTTP away from localhost the browser would drop the login cookie. |
+| `SMTP_HOST`, `SMTP_*`, `APP_URL` | unset | Where staff invite emails go and the sign-in link in them. Unset, the email (with its temporary password) is printed in the start output instead. |
 
 ## If one camera keeps raising the same false alarm
 

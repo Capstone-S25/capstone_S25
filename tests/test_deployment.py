@@ -387,6 +387,65 @@ def test_dashboard_alone_starts_no_model_process(monkeypatch):
     assert planned[0][3] == deploy.ROOT / "data-pipeline"
 
 
+def test_the_started_api_also_serves_login_and_accounts():
+    from data_pipeline.api.app import create_app
+
+    planned = deploy.services(
+        Path("python"), start_args(dashboard=True), {"models_installed": False}
+    )
+    _, role, command, _, _, health = planned[0]
+    factory = command[command.index("--factory") - 1]
+    assert (role, factory) == ("server", "data_pipeline.api.app:create_app")
+    assert health == "http://127.0.0.1:8000/openapi.json"
+    # No separate accounts server: that app has the login and account routes.
+    app = create_app("postgresql+psycopg://nobody:nothing@127.0.0.1:1/none")
+    assert {
+        "/api/v1/auth/login",
+        "/api/v1/me",
+        "/api/v1/users",
+        "/api/v1/audit-log",
+        "/api/v1/incidents",
+    } <= set(app.openapi()["paths"])
+
+
+def test_create_admin_runs_the_account_script_on_the_deployment(tmp_path, monkeypatch):
+    python = deploy.environment_python(tmp_path / "venv")
+    python.parent.mkdir(parents=True)
+    python.write_bytes(b"")
+    steps = []
+    monkeypatch.setattr(
+        deploy,
+        "child",
+        lambda _, action: steps.append(action) or {"database_ready": True, "users": 0},
+    )
+    monkeypatch.setattr(deploy.os, "chdir", lambda path: steps.append(Path(path)))
+
+    def execv(path, argv):
+        raise SystemExit(argv)
+
+    monkeypatch.setattr(deploy.os, "execv", execv)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["deploy.py", "create-admin", "--venv", str(tmp_path / "venv")]
+        + ["--name", "Ada", "--email", "ada@example.com", "--staff-id", "S001"],
+    )
+    with pytest.raises(SystemExit) as started:
+        deploy.main()
+    # Only after setup created the account tables, from cayla-backend/.
+    assert steps == ["_database", deploy.ROOT / "cayla-backend"]
+    assert started.value.code[1:] == [
+        "-m",
+        "scripts.create_admin",
+        "--name",
+        "Ada",
+        "--email",
+        "ada@example.com",
+        "--staff-id",
+        "S001",
+    ]
+
+
 def test_bundled_gemma_needs_server_weights_and_projector(tmp_path, monkeypatch):
     monkeypatch.setattr(deploy, "GEMMA", tmp_path)
     assert deploy.local_gemma() is None

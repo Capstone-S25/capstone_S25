@@ -197,14 +197,16 @@ python data-pipeline/main.py --video /path/to/video.mp4 --source-id camera_01
 
 One command does the same without Node.js once the dashboard is built
 (`npm run build` in `frontend/`, already done in a transfer bundle). It serves
-the API and dashboard on port 8000, runs the camera backend, and starts the
-bundled CPU Gemma server when one is configured:
+the API, the login and account routes and the dashboard from one process on
+port 8000, runs the camera backend, and starts the bundled CPU Gemma server
+when one is configured, supervising them all until Ctrl+C:
 
 ```bash
 python3.12 deploy.py start --dashboard --camera --video /path/to/video.mp4 --source-id camera_01
 ```
 
-`python3.12 deploy.py start` alone serves the API and dashboard. Then open `http://localhost:8000/login`. For a self-contained folder to
+`python3.12 deploy.py start` alone serves the API, login and dashboard. Then open `http://localhost:8000/login`
+(the first admin comes from `deploy.py create-admin`). For a self-contained folder to
 copy to another machine, see
 [the transfer bundle](docs/deployment.md#transfer-bundle-and-full-start-13-november-2026).
 
