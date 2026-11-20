@@ -17,7 +17,7 @@ alembic==1.20.1
 psycopg[binary]==3.3.7
 python-dotenv==1.2.4
 einops==0.8.2
-streamlit==1.66.0
+pgvector==0.5.1
 fastapi==0.162.5
 uvicorn==0.54.0
 requests>=2.32,<3

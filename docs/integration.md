@@ -1,5 +1,25 @@
 # Application integration audit — 6 November 2026
 
+## Update 20 November 2026: what is still not connected
+
+The Streamlit upload/webcam page is retired; `deploy.py start` serves the
+API and dashboard by default. The models are optional: without them setup,
+check and start warn and continue, and the camera backend records without
+screening (`--record-only`). `pgvector` was missing from the root
+`requirements.txt` although the incidents models and migrations import it, so a
+fresh `deploy.py setup` could not start the API; it is now pinned (0.5.1).
+
+| Piece | State |
+|---|---|
+| Incidents, review queue, review history, search, clip, flagged boxes, Accept/Dismiss/Escalate | Live through the incidents API (`data-pipeline`). |
+| Login, invites, set password | Frontend calls `cayla-backend` (`/api/v1/auth`, `/me`, `/users`). Works in development via Vite's proxy to port 8001. |
+| `cayla-backend` in the one-command start | **Not started** by `deploy.py`, so on port 8000 the login page cannot sign in. It uses its own database (`cctv`, port 5433) with its own `cameras`/`locations` tables, separate from the incidents database. |
+| Authorisation on the incidents API | **Not connected.** `data_pipeline/api/auth.py` returns a fixed development user; it does not read the `cayla-backend` session cookie. Reviews are saved as user 1. |
+| Route guard in the dashboard | None: staff and admin pages open without signing in. |
+| Cameras, monitoring rules, hotspots, workload, admin home, escalation staff list | Demo data from `frontend/src/data/mock.ts`. Cameras in incidents are also mapped to demo camera names. |
+| Upload of a file for analysis, local webcam | No dashboard page; the services remain in `vision_runtime/`. |
+
+
 ## Update 16 November 2026: branches merged in
 
 - `feat/cayla-backend`: the login, users and audit-log backend in `cayla-backend/`

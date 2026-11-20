@@ -4,10 +4,17 @@
 model importer; it contains no dataset acquisition, training or evaluation code.
 Run it from a complete checkout of `feat/vision-app-integration`.
 
-## Default upload demo
+## Default start: the dashboard
+
+> **20 November 2026.** The Streamlit upload/webcam page is retired; plain
+> `start` now serves the API and dashboard on port 8000, and setup always
+> prepares the database. The models are optional: without them every command
+> warns and continues, and camera backends record only. Notes further down
+> that mention port 8501, Streamlit or uploads describe the earlier page.
 
 Prerequisites: Python **3.12** with `venv`/`ensurepip`, an **x86_64 Linux**
-machine, network access for Python package installation, and the separately
+machine, network access for Python package installation, PostgreSQL with
+`pgvector` (or Docker Compose), and, for detection, the separately
 transferred model archive. The pinned wheel configuration also accepts x86_64
 Windows, but Linux is the tested platform. macOS/ARM and other Python versions
 require a separately validated dependency set. A GPU is not required.
@@ -17,21 +24,12 @@ python3.12 deploy.py setup --bundle /path/to/capstone-mobileclip2-s2-cpu-2026110
 python3.12 deploy.py start
 ```
 
-Open `http://localhost:8501`. Startup runs headlessly without Streamlit's
-first-run email prompt. Stop it with Ctrl+C. To change the localhost port:
+Open `http://localhost:8000/staff/home`. Stop it with Ctrl+C. To change the
+port:
 
 ```bash
-python3.12 deploy.py start --port 8502
+python3.12 deploy.py start --api-port 8080
 ```
-
-For a built-in/USB webcam, select **Live camera**, select an index (usually 0),
-then **Start camera**. The device belongs to the Streamlit host; this is not
-browser webcam streaming from a remote client. Local webcam capture uses the
-already installed OpenCV and needs no PostgreSQL/Docker/FFmpeg executable.
-Stop/Clear controls, bounded latest-frame work, evidence age, temporary rolling
-evidence and disconnect shutdown are described in the README. Operating-system
-camera permissions/device access must be available. Physical camera hardware
-has not been validated on this development host.
 
 Setup performs the following steps:
 
@@ -46,10 +44,12 @@ Setup performs the following steps:
 4. Imports only the 15 allowlisted model files, verifying sizes, hashes,
    pretrained revision, completeness and training definitions. Existing model
    storage is verified and preserved; it is never silently replaced.
+   Without `--bundle` and without installed models, it warns and continues.
 5. Runs actual CPU classifier inference and checks temporal abstention, YOLO,
    pose, ByteTrack and the fitted proposal checks on small synthetic inputs.
-   This is execution validation, not a model accuracy benchmark.
-6. If requested, prepares the camera database and verifies its migration head.
+   This is execution validation, not a model accuracy benchmark. Skipped
+   when no models are installed.
+6. Prepares the database and verifies its migration head.
 
 The archive checksum is taken from `--sha256`, the adjacent `.sha256` sidecar,
 or the tool's pinned checksum for the original 3 November archive, in that order.
@@ -183,8 +183,7 @@ What `deploy.py` does with such a folder:
   camera backend together. Ctrl+C stops the camera backend first so queued
   Gemma reviews can finish, then the rest. The Gemma server's output goes to
   `.local/deploy/logs/gemma_server.log`.
-- `start --dashboard` alone serves the API and dashboard; plain `start` is
-  still the Streamlit upload page.
+- `start` (or `start --dashboard`) alone serves the API and dashboard.
 
 Gemma reviews only windows the screening classifier flags, and one behaviour
 on one camera at most once per `GEMMA_CONFIRM_INTERVAL_S` (30 s of video) and

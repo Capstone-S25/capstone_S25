@@ -8,12 +8,11 @@ import argparse
 
 import psycopg
 import pwinput
+from app import audit
 from app.config import DATABASE_URL
 from app.password_policy import password_problem
 from app.security import hash_password
 from psycopg.rows import dict_row
-
-from app import audit
 
 p = argparse.ArgumentParser()
 p.add_argument("--name", required=True)

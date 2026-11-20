@@ -1,6 +1,6 @@
 # Scene review application
 
-Minimal upload/live-camera application and camera backend for five anomaly objectives:
+Camera backend and review dashboard for five anomaly objectives:
 smoking, littering, loitering, apparent public sleeping, and unattended items.
 MobileCLIP2-S2 screens evidence on CPU. An optional separately served Gemma
 model reviews the same evidence asynchronously.
@@ -15,9 +15,6 @@ flowchart LR
     C[Camera / local video] --> F[FFmpeg segments]
     F --> DB[(PostgreSQL segment jobs)]
     DB --> D[Decode and select frames]
-    U[Streamlit video upload] --> D
-    W[Built-in / USB webcam] --> L[Latest-frame capture worker]
-    L --> T
     D --> T[YOLO + ByteTrack + temporal rules]
     T --> S[Bounded screening queue]
     S --> M[Trained MobileCLIP]
@@ -25,7 +22,9 @@ flowchart LR
     M --> Q[Bounded confirmation queue]
     Q --> G[Optional Gemma endpoint]
     G --> R[Evidence-based review / journal]
-    I[Image upload] --> S
+    P --> X[(Incidents)]
+    R --> X
+    X --> UI[React dashboard]
 ```
 
 ## One-command setup
@@ -37,22 +36,29 @@ python3.12 deploy.py setup --bundle /path/to/capstone-mobileclip2-s2-cpu-2026110
 python3.12 deploy.py start
 ```
 
-Open `http://localhost:8501`. Setup creates `.venv`, installs the CPU packages,
-verifies/imports weights, creates configuration if absent, and runs real CPU
-classifier/tracker checks. It preserves existing configuration/models and can
-be rerun after a failed step. Startup does not install anything. A repeat setup
-without `--bundle` works once model files have been verified/imported.
+Open `http://localhost:8000/staff/home`. Setup creates `.venv`, installs the CPU
+packages, verifies/imports weights, creates configuration if absent, runs real
+CPU classifier/tracker checks, and prepares the database: it starts the local
+PostgreSQL Compose service unless an external `DATABASE_URL` is configured, and
+applies migrations. It preserves existing configuration/models and can be rerun
+after a failed step. Startup does not install anything. A repeat setup without
+`--bundle` works once model files have been verified/imported. The dashboard
+must be built (`npm run build` in `frontend/`, already done in a transfer bundle).
 
-For camera support, install FFmpeg and use `setup --with-camera`; the tool
-starts the existing local PostgreSQL Compose service unless an external
-`DATABASE_URL` is configured, and applies migrations. Gemma stays optional:
+The models are optional. Without them (`setup` with no `--bundle`, or an empty
+`VISION_MODELS_DIR`), setup, `check` and `start` print a warning and carry on:
+the dashboard and API run, and a camera backend records but does not screen,
+so no new incidents are opened. Import the models later and restart.
+
+For camera support, install FFmpeg and use `setup --with-camera`. Gemma stays optional:
 `setup --gemma-url http://server:8080/v1` configures a separately served model.
 See [deployment commands, prerequisites and recovery](docs/deployment.md).
 
 ## Manual install
 
-Use Python 3.12 and run these commands from this checkout. Camera recording
-also needs `ffmpeg` on `PATH` and PostgreSQL. File uploads do not need PostgreSQL.
+Use Python 3.12 and run these commands from this checkout. The dashboard needs
+PostgreSQL with the `pgvector` extension; camera recording also needs `ffmpeg`
+on `PATH`.
 
 ```bash
 python3.12 -m venv .venv
@@ -107,16 +113,7 @@ Small fitted tracking checks live in `vision_runtime/tracking/weights/` and
 are included in this branch. SigLIP2 inference is supported by the backend,
 but needs its corresponding trained assets; the importer supplies MobileCLIP.
 
-## Upload interface
-
-```bash
-python -m streamlit run app.py
-```
-
-Open `http://localhost:8501`, upload one image or video, and choose **Analyze
-file**. The UI shows provisional signals, supporting frames and raw scores,
-and downloads a JSON report. Single images bypass tracking; temporal objectives
-remain unknown when their required history is absent.
+## Gemma confirmation
 
 To enable background Gemma confirmation, serve a compatible vision model
 separately and configure its OpenAI-compatible endpoint, including `/v1`:
@@ -126,51 +123,24 @@ GEMMA_BASE_URL=http://127.0.0.1:8080/v1
 GEMMA_MODEL=gemma4-26b-a4b
 ```
 
-Restart Streamlit after changing configuration. The server must support image
-messages and JSON-schema responses. Optional `GEMMA_API_KEY` authenticates
-requests. Gemma inference runs wherever that endpoint is hosted; it may be a
-separate GPU machine. Without an endpoint, the application runs on CPU and
-does not attempt to load Gemma. Gemma receives selected frames and timestamps,
-not the entire encoded video. When enabled, uploaded evidence is sent to that
-configured endpoint.
+Restart the camera backend after changing configuration. The server must
+support image messages and JSON-schema responses. Optional `GEMMA_API_KEY`
+authenticates requests. Gemma inference runs wherever that endpoint is hosted;
+it may be a separate GPU machine. Without an endpoint, the application runs on
+CPU and does not attempt to load Gemma. Gemma receives selected frames and
+timestamps, not the entire encoded video. When enabled, camera evidence is
+sent to that configured endpoint.
 
-Provisional results remain visible while Gemma runs. Disagreement, missing
-history, malformed output, overflow, and timeout are explicit review/unknown
-states. No external alert delivery is implemented. Scores are raw classifier
-outputs, not probabilities.
+Disagreement, missing history, malformed output, overflow, and timeout are
+explicit review/unknown states. No external alert delivery is implemented.
+Scores are raw classifier outputs, not probabilities.
+
+The Streamlit upload and local-webcam page was retired on 20 November 2026;
+the dashboard is the application. Its upload and webcam services remain in
+`vision_runtime/review.py` and `vision_runtime/live.py` (with their tests) for
+a future dashboard upload page; the page itself is in Git history at `d2672fd`.
 
 ## Camera backend
-
-### Built-in or USB camera in Streamlit
-
-Start the normal application with `python3.12 deploy.py start`, select **Live
-camera**, choose a camera index (usually **0**, or **1/2** for a USB device), and
-select **Start camera**. **Stop camera** releases capture while in-flight model
-work finishes. **Clear camera** also discards its temporary evidence. Switching
-back to uploads stops capture. There is no extra Python dependency or database
-requirement for a local webcam.
-
-The camera must be attached to the **machine running Streamlit**. A remote
-browser does not capture its own webcam through this interface. Permit camera
-access in the operating system and close applications holding the device.
-Resolution is requested at 640 × 480; the driver may choose another supported
-resolution. Camera hardware was not available on the development host; simulated
-capture and a paced video fixture exercise lifecycle and real-model inference.
-
-Capture and preview are independent of tracking/classification. Tracking selects
-up to 5 FPS from a single latest-frame slot, using actual host monotonic read
-timestamps. Periodic scene review defaults to 3 seconds, alongside rule-triggered
-events. The screening queue keeps at most one waiting candidate, replacing it
-with newer live evidence during overload. Skipped windows remain explicit.
-Gemma, when configured, runs through the same separate confirmation queue.
-
-The view shows tracking lag and scored-evidence age. Live signals use the most
-recent completed window per objective. It keeps the newest 30 evidence windows
-plus in-flight work, compacts its rolling journal and deletes retired event
-images only after screening/confirmation releases them. No full video is
-recorded. A live view that stops polling for about 20 seconds stops capture and
-discards temporary evidence; uninterruptible driver calls can delay release.
-This path does not establish a two-second anomaly-detection guarantee.
 
 ### RTSP and recorded-segment backend
 
@@ -200,8 +170,8 @@ rule-triggered events. FFmpeg keyframes can make actual segments longer.
 The CLI writes camera evidence and `events.jsonl` under `runtime/cameras/`.
 Every window the screening classifier calls an anomaly also becomes an
 **incident** in PostgreSQL, with a short evidence clip and thumbnail under
-`<recordings>/evidence/`; `--no-incidents` turns this off.
-Streamlit's local webcam view is independent of this backend.
+`<recordings>/evidence/`; `--no-incidents` turns this off. Without installed
+models the backend logs a warning and records only, as with `--record-only`.
 
 ### Dashboard (React) and incidents API
 
@@ -231,7 +201,7 @@ bundled CPU Gemma server when one is configured:
 python3.12 deploy.py start --dashboard --camera --video /path/to/video.mp4 --source-id camera_01
 ```
 
-Then open `http://localhost:8000/staff/home`. For a self-contained folder to
+`python3.12 deploy.py start` alone serves the API and dashboard. Then open `http://localhost:8000/staff/home`. For a self-contained folder to
 copy to another machine, see
 [the transfer bundle](docs/deployment.md#transfer-bundle-and-full-start-13-november-2026).
 
@@ -246,9 +216,13 @@ The dev server proxies `/api` to the API (`VITE_API_PROXY` overrides the
 address). Set `RECORDINGS_DIR` for the API if `--recordings-dir` was used.
 While the API is not running, the pages fall back to built-in demo data.
 
-Not connected yet: login, Accept/Dismiss/Escalate (the review endpoint is not
-implemented), cameras, rules, hotspots and reports still show demo data. See
-[the integration notes](docs/integration.md#dashboard-integration-13-november-2026).
+Login, invites and set-password talk to the accounts backend in
+`cayla-backend/` (port 8001 behind the dev server's proxy; see its README). It
+is not started by `deploy.py` yet and keeps its own database, so in the
+one-command start the login page cannot sign in, and the incidents API still
+uses a fixed development user. Cameras, rules, hotspots, workload and the admin
+home page still show demo data. See
+[the integration notes](docs/integration.md#update-20-november-2026-what-is-still-not-connected).
 
 See [backend operations](data-pipeline/README.md) and the
 [integration audit, state transitions, and validation](docs/integration.md).

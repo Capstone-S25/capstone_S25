@@ -13,7 +13,7 @@ needs to be copied or downloaded.
 | x86_64 Linux, Python 3.12 with `venv` | everything | Validated on Ubuntu 24.04. |
 | About 12 GB free disk beyond this folder | everything | The Python environment takes about 3 GB; recordings need the rest. |
 | FFmpeg on `PATH` | cameras and video files | `sudo apt install ffmpeg` |
-| PostgreSQL | cameras and the dashboard | Any one of: Docker Compose (setup starts a database); or `sudo apt install postgresql` followed by `sudo -u postgres psql -c "CREATE USER capstone PASSWORD 'password'" -c "CREATE DATABASE capstone OWNER capstone"`; or an existing server, with `DATABASE_URL=postgresql+psycopg://user:password@host:5432/dbname` in `.env` before setup. |
+| PostgreSQL | cameras and the dashboard | Any one of: Docker Compose (setup starts a database); or `sudo apt install postgresql postgresql-16-pgvector` followed by `sudo -u postgres psql -c "CREATE USER capstone PASSWORD 'password'" -c "CREATE DATABASE capstone OWNER capstone"` and `sudo -u postgres psql -d capstone -c "CREATE EXTENSION IF NOT EXISTS vector"`; or an existing server, with `DATABASE_URL=postgresql+psycopg://user:password@host:5432/dbname` in `.env` before setup. |
 | glibc 2.38 or newer, `libgomp1`, `libssl3` | bundled Gemma only | Ubuntu 24.04 has them. On an older system setup says so and continues without Gemma. |
 | RAM | everything | Screening about 2.5 GB, Gemma about 9 GB; 32 GB is ample. |
 
@@ -41,8 +41,10 @@ python3.12 deploy.py check --camera --dashboard --smoke
 Setup creates `.venv` from the bundled wheels, creates `.env`, verifies the
 models, runs a real CPU inference, prepares the database and, if this system
 can run it, configures the bundled Gemma. It can be rerun after a failed step
-and never overwrites existing settings. Leave out `--with-camera` if you only
-want the upload page; add `--no-gemma` to skip Gemma.
+and never overwrites existing settings. Leave out `--with-camera` if this
+machine only serves the dashboard (no FFmpeg needed); add `--no-gemma` to skip
+Gemma. If the `models/` folder is missing, setup and start print a warning and
+carry on: the dashboard runs, cameras only record, and no incidents are opened.
 
 ## 3. Start
 
@@ -67,8 +69,7 @@ reviews, then everything exits.
 Other modes:
 
 ```bash
-python3.12 deploy.py start                      # upload page on http://localhost:8501
-python3.12 deploy.py start --dashboard          # dashboard and API only
+python3.12 deploy.py start                      # dashboard and API only
 python3.12 deploy.py start --camera --video F   # camera backend only (writes incidents)
 ```
 

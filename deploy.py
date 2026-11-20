@@ -29,6 +29,13 @@ WHEELS = ROOT / "wheels"
 GEMMA = ROOT / "gemma"
 DASHBOARD = ROOT / "frontend/dist"
 LOCAL_GEMMA_URL = "http://127.0.0.1:8090/v1"
+# The models are optional: without them the dashboard runs and cameras record,
+# but nothing is screened, so no incidents are opened.
+MODELS_MISSING = (
+    "No models are installed in {}. The dashboard runs, but cameras only record "
+    "and no incidents are detected. Install them with: "
+    "python3.12 deploy.py setup --bundle /path/to/transfer.tar.gz"
+)
 
 
 def local_gemma():
@@ -48,6 +55,10 @@ def gemma_environment():
         os.pathsep + env["LD_LIBRARY_PATH"] if env.get("LD_LIBRARY_PATH") else ""
     )
     return env
+
+
+def warn(message):
+    print("Warning: " + message, file=sys.stderr, flush=True)
 
 
 def digest(path):
@@ -274,13 +285,19 @@ def packages():
 def settings():
     from dotenv import load_dotenv
 
-    from vision_runtime.config import configure_runtime, models_root, runtime_root
+    from vision_runtime.config import (
+        configure_runtime,
+        models_installed,
+        models_root,
+        runtime_root,
+    )
 
     configure_runtime()
     load_dotenv(ROOT / "data-pipeline/.env", override=False)
     database = os.environ.get("DATABASE_URL")
     return {
         "models": str(models_root()),
+        "models_installed": models_installed(),
         "runtime": str(runtime_root()),
         "database": "unset"
         if not database
@@ -414,10 +431,11 @@ def configure_local_gemma(python, args):
 
 
 def prepare_models(config, archive):
+    """Verify or import the models; False when none are installed (allowed)."""
     from tools.import_models import import_models, verify_models
 
     directory = Path(config["models"])
-    if directory.exists():
+    if config["models_installed"]:
         verify_models(directory)
         name = verify_ensemble(directory)
         print(
@@ -425,17 +443,17 @@ def prepare_models(config, archive):
             + (f" (classifier: {name})" if name else ""),
             flush=True,
         )
-    else:
-        if archive is None:
-            raise FileNotFoundError(
-                "Models are not installed; rerun setup with --bundle /path/to/transfer.tar.gz"
-            )
+    elif archive is not None:
         import_models(archive, directory)
         verify_models(directory)
         print("Imported and verified 15 model files", flush=True)
+    else:
+        warn(MODELS_MISSING.format(directory))
+        return False
+    return True
 
 
-def camera_setup(python):
+def database_setup(python):
     config = child(python, "_settings")
     if config["database"] == "unset":
         append_setting(python, "DATABASE_URL", LOCAL_DATABASE)
@@ -450,11 +468,12 @@ def camera_setup(python):
             raise FileNotFoundError(
                 "No database found. Either install Docker Compose, or install "
                 "PostgreSQL and create the default account:\n"
-                "  sudo apt install postgresql\n"
+                "  sudo apt install postgresql postgresql-16-pgvector\n"
                 "  sudo -u postgres psql -c \"CREATE USER capstone PASSWORD 'password'\" "
                 '-c "CREATE DATABASE capstone OWNER capstone"\n'
+                '  sudo -u postgres psql -d capstone -c "CREATE EXTENSION IF NOT EXISTS vector"\n'
                 "or put DATABASE_URL=postgresql+psycopg://user:password@host:5432/name "
-                "in .env. Then rerun setup --with-camera."
+                "in .env. Then rerun setup."
             )
         run(["docker", "compose", "version"], "Checking Docker Compose")
         run(
@@ -478,7 +497,7 @@ def camera_setup(python):
         cwd=ROOT / "data-pipeline",
     )
     child(python, "_database")
-    print("Camera database schema is ready", flush=True)
+    print("Database schema is ready", flush=True)
 
 
 def database_check():
@@ -489,7 +508,7 @@ def database_check():
 
     settings()
     if not os.environ.get("DATABASE_URL"):
-        raise RuntimeError("Camera mode needs DATABASE_URL; run setup --with-camera")
+        raise RuntimeError("The dashboard needs DATABASE_URL; run setup")
     engine = create_engine(
         os.environ["DATABASE_URL"], connect_args={"connect_timeout": 5}
     )
@@ -502,9 +521,7 @@ def database_check():
             ).get_heads()
         )
         if actual != expected:
-            raise RuntimeError(
-                "Database migrations are not current; run setup --with-camera"
-            )
+            raise RuntimeError("Database migrations are not current; run setup")
     finally:
         engine.dispose()
     return {"database_ready": True}
@@ -633,9 +650,12 @@ def check(python, *, camera=False, dashboard=False, full_hashes=True):
     config = child(python, "_settings")
     from tools.import_models import verify_models
 
-    verify_models(Path(config["models"]), hashes=full_hashes)
-    if full_hashes:
-        config["classifier"] = verify_ensemble(Path(config["models"]))
+    if config["models_installed"]:
+        verify_models(Path(config["models"]), hashes=full_hashes)
+        if full_hashes:
+            config["classifier"] = verify_ensemble(Path(config["models"]))
+    else:
+        warn(MODELS_MISSING.format(config["models"]))
     if camera and not shutil.which("ffmpeg"):
         raise FileNotFoundError("Camera recording needs ffmpeg on PATH")
     if camera or dashboard:
@@ -660,8 +680,8 @@ def services(python, args, config):
     """
     planned = []
     local = config.get("gemma_local")
-    uses_models = args.camera or not args.dashboard
-    if local and uses_models:
+    # Gemma reviews what the camera backend's classifier flags.
+    if local and args.camera and config["models_installed"]:
         server, weights, projector = local_gemma()
         planned.append(
             (
@@ -723,12 +743,14 @@ def services(python, args, config):
                 f"http://{args.host}:{args.api_port}/openapi.json",
             )
         )
-    if uses_models:
+    if args.camera:
         planned.append(
             (
-                "Camera backend" if args.camera else "Upload interface",
-                "job" if args.camera and args.video else "server",
-                startup_command(python, args),
+                "Camera backend",
+                "job" if args.video else "server",
+                camera_command(
+                    python, args, record_only=not config["models_installed"]
+                ),
                 ROOT,
                 environment(),
                 None,
@@ -830,40 +852,23 @@ def supervise(planned):
         stop()
 
 
-def startup_command(python, args):
-    if args.camera:
-        if not args.rtsp_url and not args.video:
-            raise ValueError("Camera mode requires --rtsp-url or --video")
-        command = [
-            python,
-            ROOT / "data-pipeline/main.py",
-            "--device",
-            "cpu",
-            "--source-id",
-            args.source_id,
-        ]
-        return command + (
-            ["--source", "rtsp", "--rtsp-url", args.rtsp_url]
-            if args.rtsp_url
-            else ["--video", str(args.video.resolve(strict=True))]
-        )
-    if args.rtsp_url or args.video:
-        raise ValueError(
-            "Use --camera for a recording backend source; uploads use the UI"
-        )
-    return [
+def camera_command(python, args, *, record_only=False):
+    if not args.rtsp_url and not args.video:
+        raise ValueError("Camera mode requires --rtsp-url or --video")
+    command = [
         python,
-        "-m",
-        "streamlit",
-        "run",
-        ROOT / "app.py",
-        "--server.headless",
-        "true",
-        "--server.address",
-        args.host,
-        "--server.port",
-        str(args.port),
+        ROOT / "data-pipeline/main.py",
+        "--device",
+        "cpu",
+        "--source-id",
+        args.source_id,
     ]
+    command += (
+        ["--source", "rtsp", "--rtsp-url", args.rtsp_url]
+        if args.rtsp_url
+        else ["--video", str(args.video.resolve(strict=True))]
+    )
+    return command + (["--record-only"] if record_only else [])
 
 
 def main():
@@ -916,7 +921,11 @@ def main():
             )
         elif name == "check":
             p.add_argument("--camera", action="store_true")
-            p.add_argument("--dashboard", action="store_true")
+            p.add_argument(
+                "--dashboard",
+                action="store_true",
+                help="Always checked; kept for old commands",
+            )
             p.add_argument("--smoke", action="store_true")
             p.add_argument(
                 "--gemma",
@@ -935,7 +944,8 @@ def main():
             p.add_argument(
                 "--dashboard",
                 action="store_true",
-                help="Serve the incidents API and the dashboard; combine with --camera",
+                help="Serve the incidents API and the dashboard (the default without "
+                "--camera); combine with --camera for both",
             )
             p.add_argument("--api-port", type=int, default=8000)
             source = p.add_mutually_exclusive_group()
@@ -943,7 +953,6 @@ def main():
             source.add_argument("--video", type=Path)
             p.add_argument("--source-id", default="camera_01")
             p.add_argument("--host", default="127.0.0.1")
-            p.add_argument("--port", type=int, default=8501)
     args = parser.parse_args()
     args.venv = args.venv.expanduser().resolve()
     python = environment_python(args.venv)
@@ -960,21 +969,21 @@ def main():
             raise ValueError("--sha256 requires --bundle")
         if args.with_camera and not shutil.which("ffmpeg"):
             raise FileNotFoundError(
-                "Install ffmpeg before camera setup; uploads do not require its executable"
+                "Install ffmpeg before camera setup; the dashboard alone does not need it"
             )
         with setup_lock():
             archive = verify_archive(args.bundle, args.sha256) if args.bundle else None
             python = install_dependencies(args.venv)
             config = configure(python, args)
-            prepare_models(config, archive)
-            configure_local_gemma(python, args)
-            run(
-                [python, ROOT / "deploy.py", "_smoke"],
-                "Testing real CPU inference and tracking",
-                timeout=180,
-            )
-            if args.with_camera:
-                camera_setup(python)
+            if prepare_models(config, archive):
+                configure_local_gemma(python, args)
+                run(
+                    [python, ROOT / "deploy.py", "_smoke"],
+                    "Testing real CPU inference and tracking",
+                    timeout=180,
+                )
+            # The dashboard keeps its incidents and reviews in the database.
+            database_setup(python)
             print(
                 "Setup complete. Start with: python deploy.py start"
                 + (" --venv " + str(args.venv) if args.venv != ROOT / ".venv" else "")
@@ -995,8 +1004,10 @@ def main():
         os.chdir(ROOT)
         os.execv(str(command[0]), [str(c) for c in command])
     elif args.action == "check":
-        config = check(python, camera=args.camera, dashboard=args.dashboard)
-        if args.smoke:
+        config = check(python, camera=args.camera, dashboard=True)
+        if args.smoke and not config["models_installed"]:
+            warn("Skipping the CPU inference test: no models are installed")
+        elif args.smoke:
             run(
                 [python, ROOT / "deploy.py", "_smoke"],
                 "Testing CPU inference",
@@ -1005,8 +1016,13 @@ def main():
         if args.gemma:
             child(python, "_gemma")
         print(
-            "Ready: CPU application and verified model files; classifier "
-            + (config.get("classifier") or "mobileclip2-s2 (no ensemble installed)")
+            "Ready: CPU application and dashboard; "
+            + (
+                "classifier "
+                + (config.get("classifier") or "mobileclip2-s2 (no ensemble installed)")
+                if config["models_installed"]
+                else "no models installed (cameras record only)"
+            )
             + "; Gemma "
             + (
                 "bundled, on this machine's CPU"
@@ -1017,10 +1033,13 @@ def main():
             )
         )
     else:
-        if not 1 <= args.port <= 65535:
-            raise ValueError("--port must be between 1 and 65535")
         if not 1 <= args.api_port <= 65535:
             raise ValueError("--api-port must be between 1 and 65535")
+        if not args.camera and (args.rtsp_url or args.video):
+            raise ValueError("--rtsp-url and --video need --camera")
+        # The dashboard is the application; --camera alone runs just a camera
+        # backend (one per camera), next to a dashboard started separately.
+        args.dashboard = args.dashboard or not args.camera
         config = check(
             python, camera=args.camera, dashboard=args.dashboard, full_hashes=False
         )
@@ -1030,9 +1049,11 @@ def main():
                 f"Dashboard: http://{args.host}:{args.api_port}/staff/home", flush=True
             )
         if args.camera:
-            print("Starting camera backend", flush=True)
-        elif not args.dashboard:
-            print(f"Upload UI: http://{args.host}:{args.port}", flush=True)
+            print(
+                "Starting camera backend"
+                + ("" if config["models_installed"] else " (recording only)"),
+                flush=True,
+            )
         if len(planned) == 1:
             # One process and nothing to coordinate: become it, in its folder.
             _, _, command, cwd, env, _ = planned[0]

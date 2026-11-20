@@ -299,9 +299,19 @@ def main() -> None:
             handler = _build_stage1_hook(args, sources, args.candidate_dir)
             cleanup.callback(handler.close)
         elif not args.record_only:
-            handler = _build_vision(
-                args, sources, session_factory, storage_root, cleanup
-            )
+            from vision_runtime.config import models_installed, models_root
+
+            # The models are optional: without them the camera still records.
+            if models_installed():
+                handler = _build_vision(
+                    args, sources, session_factory, storage_root, cleanup
+                )
+            else:
+                logging.warning(
+                    "No models installed in %s: recording only, no incidents will "
+                    "be detected. Import them with tools/import_models.py.",
+                    models_root(),
+                )
         run_pipeline(
             sources,
             storage_root,

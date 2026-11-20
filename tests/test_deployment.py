@@ -65,7 +65,9 @@ def test_import_verify_and_reuse_without_overwrite(tmp_path, archive):
     assert len(entries) == 15
     assert len(models.verify_models(destination)["files"]) == 15
     before = (destination / "manifest.json").read_bytes()
-    deploy.prepare_models({"models": str(destination)}, archive)
+    deploy.prepare_models(
+        {"models": str(destination), "models_installed": True}, archive
+    )
     assert (destination / "manifest.json").read_bytes() == before
     with pytest.raises(FileExistsError):
         models.import_models(archive, destination)
@@ -227,7 +229,7 @@ def test_external_database_does_not_start_or_reset_local_compose(tmp_path, monke
     monkeypatch.setattr(
         deploy, "run", lambda command, *a, **kw: calls.append((command, kw))
     )
-    deploy.camera_setup(Path(sys.executable))
+    deploy.database_setup(Path(sys.executable))
     assert len(calls) == 1
     assert calls[0][0][1:] == ["-m", "alembic", "upgrade", "head"]
     assert calls[0][1]["cwd"] == tmp_path / "data-pipeline"
@@ -238,11 +240,11 @@ def test_child_failure_has_actionable_message_without_traceback(monkeypatch):
         raise subprocess.CalledProcessError(
             1,
             ["private action"],
-            output='{"error":"Database migrations are not current; run setup --with-camera"}',
+            output='{"error":"Database migrations are not current; run setup"}',
         )
 
     monkeypatch.setattr(deploy, "run", fail)
-    with pytest.raises(RuntimeError, match="run setup --with-camera"):
+    with pytest.raises(RuntimeError, match="not current; run setup"):
         deploy.child(Path(sys.executable), "_database")
 
 
@@ -289,7 +291,6 @@ def start_args(**changes):
         rtsp_url=None,
         source_id="camera_01",
         host="127.0.0.1",
-        port=8501,
         api_port=8000,
     )
     return SimpleNamespace(**{**values, **changes})
@@ -305,7 +306,7 @@ def test_full_start_plans_gemma_api_and_camera_in_stop_order(tmp_path, monkeypat
     planned = deploy.services(
         Path("python"),
         start_args(camera=True, dashboard=True, video=video),
-        {"gemma_local": local},
+        {"gemma_local": local, "models_installed": True},
     )
     assert [(name, role) for name, role, *_ in planned] == [
         ("Gemma (CPU)", "helper"),
@@ -318,9 +319,52 @@ def test_full_start_plans_gemma_api_and_camera_in_stop_order(tmp_path, monkeypat
     assert planned[1][4]["DASHBOARD_DIR"].endswith("frontend/dist")
     # A live camera never ends by itself.
     live = deploy.services(
-        Path("python"), start_args(camera=True, rtsp_url="rtsp://x/y"), {}
+        Path("python"),
+        start_args(camera=True, rtsp_url="rtsp://x/y"),
+        {"models_installed": True},
     )
     assert [(name, role) for name, role, *_ in live] == [("Camera backend", "server")]
+    assert "--record-only" not in live[0][2]
+
+
+def test_without_models_the_dashboard_starts_and_cameras_only_record(
+    tmp_path, monkeypatch
+):
+    video = tmp_path / "clip.mp4"
+    video.write_bytes(b"0")
+    monkeypatch.setattr(
+        deploy, "local_gemma", lambda: (Path("s"), Path("w"), Path("p"))
+    )
+    planned = deploy.services(
+        Path("python"),
+        start_args(camera=True, dashboard=True, video=video),
+        {"gemma_local": {"port": 8090}, "models_installed": False},
+    )
+    # Nothing is screened, so Gemma would have nothing to review.
+    assert [name for name, *_ in planned] == ["Dashboard and API", "Camera backend"]
+    assert planned[1][2][-1] == "--record-only"
+
+
+def test_setup_without_models_warns_and_continues(tmp_path, capsys):
+    config = {"models": str(tmp_path / "models"), "models_installed": False}
+    assert deploy.prepare_models(config, None) is False
+    assert "No models are installed" in capsys.readouterr().err
+
+
+def test_check_without_models_warns_instead_of_failing(tmp_path, monkeypatch, capsys):
+    python = tmp_path / "python"
+    python.write_bytes(b"")
+    settings = {"models": str(tmp_path / "models"), "models_installed": False}
+    answers = {
+        "_packages": {"ready": True, "python": [3, 12, 0], "problems": []},
+        "_settings": settings,
+        "_database": {"database_ready": True},
+    }
+    monkeypatch.setattr(deploy, "child", lambda _, action: dict(answers[action]))
+    monkeypatch.setattr(deploy, "DASHBOARD", tmp_path)
+    (tmp_path / "index.html").write_text("")
+    assert deploy.check(python, dashboard=True)["models_installed"] is False
+    assert "No models are installed" in capsys.readouterr().err
 
 
 def test_dashboard_alone_starts_no_model_process(monkeypatch):
@@ -328,13 +372,13 @@ def test_dashboard_alone_starts_no_model_process(monkeypatch):
         deploy, "local_gemma", lambda: (Path("s"), Path("w"), Path("p"))
     )
     planned = deploy.services(
-        Path("python"), start_args(dashboard=True), {"gemma_local": {"port": 8090}}
+        Path("python"),
+        start_args(dashboard=True),
+        {"gemma_local": {"port": 8090}, "models_installed": True},
     )
     assert [name for name, *_ in planned] == ["Dashboard and API"]
     # The API package lives in data-pipeline/, so it must start there.
     assert planned[0][3] == deploy.ROOT / "data-pipeline"
-    upload = deploy.services(Path("python"), start_args(), {})
-    assert [name for name, *_ in upload] == ["Upload interface"]
 
 
 def test_bundled_gemma_needs_server_weights_and_projector(tmp_path, monkeypatch):
@@ -365,9 +409,9 @@ def test_local_database_is_used_when_running_else_instructions(
     calls = []
     monkeypatch.setattr(deploy, "run", lambda command, *a, **kw: calls.append(command))
     if reachable:
-        deploy.camera_setup(Path(sys.executable))
+        deploy.database_setup(Path(sys.executable))
         assert [c[1:] for c in calls] == [["-m", "alembic", "upgrade", "head"]]
     else:
         with pytest.raises(FileNotFoundError, match="sudo apt install postgresql"):
-            deploy.camera_setup(Path(sys.executable))
+            deploy.database_setup(Path(sys.executable))
         assert not calls

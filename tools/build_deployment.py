@@ -33,9 +33,7 @@ from tools.import_models import verify_models  # noqa: E402
 # dashboard's sources stay in the repository.
 INCLUDE = (
     ".env.example",
-    ".streamlit/",
     "README.md",
-    "app.py",
     "deploy.py",
     "pyproject.toml",
     "requirements.txt",

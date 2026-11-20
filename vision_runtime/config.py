@@ -12,6 +12,11 @@ def models_root():
     return (path if path.is_absolute() else ROOT / path).resolve()
 
 
+def models_installed():
+    """Whether a model bundle has been imported; the importer writes the manifest."""
+    return (models_root() / "manifest.json").is_file()
+
+
 def runtime_root():
     path = Path(os.environ.get("VISION_RUNTIME_DIR", "runtime")).expanduser()
     return (path if path.is_absolute() else ROOT / path).resolve()
