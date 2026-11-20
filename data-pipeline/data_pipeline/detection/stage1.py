@@ -95,9 +95,7 @@ def default_config(gate, device="cpu", imgsz=640):
     from vision_runtime.tracking.crop_check import weights_for
 
     weights = Path(os.environ.get("STAGE1_MODEL_DIR") or models_root() / "detectors")
-    # The calibration also crop-checks hand_to_face, but its weights
-    # (crop_check_hand_to_face.npz) are not in the repository yet; skip a check
-    # whose weights are missing instead of failing to start.
+    # Skip a crop check whose weights are missing instead of failing to start.
     checked = ("reach_down", "pose_action", "hand_to_face")
     missing = [rule for rule in checked if not weights_for(rule).is_file()]
     if missing:
@@ -127,9 +125,11 @@ def default_config(gate, device="cpu", imgsz=640):
         # Stillness rules re-report a person still present after 45 s.
         loiter_repeat_s=45.0,
         inview_repeat_s=45.0,
-        # Kept against the calibration, deliberately: 1.0 takes unattended items from
-        # 5/6 to 6/6 on the held-out cameras for +4.6 alerts/h on fit.
-        reach_refire_move_h=1.0,
+        # Left at the calibrated None. 1.0 was tried and reverted: on the held-out cameras it buys
+        # one event - unattended items 5/6 to 6/6, littering and loitering unchanged - for
+        # +14.1 alerts/h, i.e. 30 per recall point against a 7.7 bar. The +5 littering it gains on
+        # the tuned cameras does not appear on unseen ones (CALIB_LOG.md experiment 32).
+        reach_refire_move_h=None,
         pose_action_cooldown_s=15.0,
         # Smoking: count hand raises to the face (3 in 10 s), then its own crop check.
         smoke_count_raises=True,
