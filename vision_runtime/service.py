@@ -19,6 +19,25 @@ from .evidence import unknown
 
 logger = logging.getLogger(__name__)
 
+# Duration-defined behaviours. The screening classifier judges a handful of
+# stills, so elapsed time is invisible to it: on labelled CCTV it separates
+# real loiterers from ordinary windows at AUC 0.47 (chance) and confirmed none
+# of 49 labelled loitering events, and no threshold recovers them (24 of 40
+# events costs 45% of all other windows). Stage 1 tracks the person over time
+# and does find them, so for these tasks the screening verdict is recorded but
+# does not veto the event: the question goes to the confirmation model, which
+# can read intent from the window instead of appearance alone.
+BYPASS_SCREENING = frozenset({"loitering", "rough_sleeping"})
+# Only where the alert's own evidence is elapsed time. A reach-down or pose cue
+# carries no duration claim, and those rules route to nearly every alert, so
+# bypassing on them would switch screening off rather than scope it.
+BYPASS_RULES = frozenset({"long_presence", "sustained_presence"})
+
+
+def bypasses_screening(task, event_type):
+    """True when this task on this rule is decided by duration, not appearance."""
+    return task in BYPASS_SCREENING and event_type in BYPASS_RULES
+
 
 class EventStore:
     def __init__(self, directory, cleanup=None, on_write=None):
@@ -303,8 +322,9 @@ class ScreeningQueue:
     producer wait for space (wait_for_space, uploads with no real-time deadline).
 
     confirm="flagged" (default; GEMMA_CONFIRM overrides) sends a window to the
-    confirmation model only for the tasks screening called an anomaly, and at
-    most once per `confirm_interval` seconds of video for the same source and
+    confirmation model for the tasks screening called an anomaly, plus the
+    duration-defined ones screening cannot judge (see bypasses_screening), and
+    at most once per `confirm_interval` seconds of video for the same source and
     task (GEMMA_CONFIRM_INTERVAL_S, default 30), and never while an earlier
     review of that source and task is still queued or running. A slow CPU
     model is therefore asked as often as it can answer and no faster, and an
@@ -412,7 +432,10 @@ class ScreeningQueue:
         now = float(candidate["timestamp_s"])
         chosen = []
         for task in candidate["tasks"]:
-            if predictions[task].get("decision") != "anomaly":
+            flagged = predictions[task].get("decision") == "anomaly"
+            if not flagged and not bypasses_screening(
+                task, candidate.get("event_type")
+            ):
                 continue
             key = (candidate.get("source_id"), task)
             if self.confirmation.busy(*key):

@@ -101,6 +101,44 @@ def prompt_style(style: str | None = None, view: str = "long") -> str:
     return style
 
 
+def measured_facts(candidate: dict, view: dict) -> str:
+    """What Stage 1 measured by tracking, which the frames cannot show.
+
+    Loitering and rough sleeping are defined by elapsed time, and the window a
+    model sees is 20 s wide. The gate tracked the person for longer than that
+    and wrote the number down; without it the model is asked to judge a
+    duration it cannot observe, and answers "people are walking" - correct for
+    20 s of footage and wrong about the event. The measurement is stated as an
+    observation, not as a verdict: the model still decides whether what it can
+    see, together with it, meets the definition.
+    """
+    metrics = candidate.get("metrics") or {}
+    seen = []
+    in_view = metrics.get("time_in_view_s")
+    if isinstance(in_view, (int, float)):
+        seen.append(f"tracked continuously in view for {float(in_view):.0f} s")
+    radius = metrics.get("norm_radius")
+    window = candidate.get("evidence_window_s") or []
+    if isinstance(radius, (int, float)) and len(window) == 2:
+        span = float(window[1]) - float(window[0])
+        seen.append(
+            f"stayed within {float(radius):.2f} of their own body height "
+            f"of one spot for {span:.0f} s"
+        )
+    if not seen:
+        return ""
+    times = view.get("times_s") or []
+    shown = (times[-1] - times[0]) if len(times) >= 2 else 0.0
+    return (
+        "Stage 1 tracked this person across frames you cannot see and measured: "
+        + "; ".join(seen)
+        + f". The {shown:.0f} s of frames below are the end of that period. "
+        "Treat the measurement as given rather than inferring it from the frames, "
+        "and judge whether the measurement together with what is visible meets "
+        "the definition. "
+    )
+
+
 def prompt(
     candidate: dict,
     tasks: list[str],
@@ -130,7 +168,9 @@ def prompt(
     if style == "strict":
         guidance = (
             "Stage 1 is only a candidate generator; its trigger does not prove an anomaly. "
-            "Describe only visible evidence. Do not invent elapsed time, persistent identity, ownership, housing status or a medical condition. "
+            + measured_facts(candidate, view)
+            + "Describe only visible evidence. Do not invent elapsed time beyond any "
+            "measurement stated above, nor persistent identity, ownership, housing status or a medical condition. "
             "A hand near a face does not prove smoking; ordinary waiting is not automatically loitering; "
             "an isolated bag does not establish abandonment; existing rubbish alone does not prove littering. "
             + " ".join(f"{t}: {definitions[t]}" for t in tasks)
@@ -142,7 +182,9 @@ def prompt(
     else:
         guidance = (
             "An automatic screening step selected these frames for a second look; judge for yourself from what is visible. "
-            "Do not invent elapsed time, ownership, housing status or a medical condition. "
+            + measured_facts(candidate, view)
+            + "Do not invent elapsed time beyond any measurement stated above, "
+            "nor ownership, housing status or a medical condition. "
             + " ".join(f"{t}: {definitions[t]} Answer {CRITERIA[t]}" for t in tasks)
         )
         rule = (

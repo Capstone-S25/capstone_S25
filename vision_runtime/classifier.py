@@ -272,8 +272,14 @@ class ClipStrategy:
 # detector with its own threshold, and a cap on ordinary footage flagged.
 # 20261116 refits the smoking and littering heads with the fit-side cameras
 # of the ICVL videos added to the team Drive; other tasks are unchanged.
+# 20261119b refits unattended items with D2-CDNet "sofa" as a third training
+# camera (20261119's head scored every ordinary window above every real one and
+# so fired on nothing), and adds a third operating point, "high_recall". It is
+# listed but NOT first: ENSEMBLES[0] is the default, and 20261119b has not been
+# measured on the team test set yet. Promote it once it has.
 ENSEMBLES = (
     "ensemble-20261116",
+    "ensemble-20261119b",
     "ensemble-20261114",
     "ensemble-20261113",
     "ensemble-20261111",
