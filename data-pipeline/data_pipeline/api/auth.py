@@ -9,6 +9,9 @@ temporary password answers 403 "Password change required".
 
 from dataclasses import dataclass
 from enum import StrEnum
+from typing import Annotated
+
+from fastapi import Depends, HTTPException, status
 
 from data_pipeline.api.accounts import SignedInUser
 
@@ -36,3 +39,12 @@ class CurrentUser:
 def get_current_user(user: SignedInUser) -> CurrentUser:
     """Return the user of this request's session, or answer 401 or 403."""
     return CurrentUser(id=user.user_id, name=user.name, role=Role(user.role))
+
+
+def require_admin(
+    user: Annotated[CurrentUser, Depends(get_current_user)],
+) -> CurrentUser:
+    """For admin-only routes (settle, edit settlement): 403 for staff."""
+    if user.role is not Role.ADMIN:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Admins only")
+    return user
