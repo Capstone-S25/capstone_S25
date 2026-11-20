@@ -359,6 +359,8 @@ def verify_ensemble(directory, *, required=False):
     from tools.ensemble_bundle import verify
 
     for name in [
+        "ensemble-20261119b",
+        "ensemble-20261119",
         "ensemble-20261116",
         "ensemble-20261114",
         "ensemble-20261113",
