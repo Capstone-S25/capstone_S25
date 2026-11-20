@@ -70,7 +70,14 @@ A recorded file instead of a camera (played at its real speed):
 ```bash
 python3.12 deploy.py start --dashboard --camera --video /path/to/video.mp4 --source-id camera_01
 ```
+To show staff invite emails (for example in a demo), start the email inbox
+first; the email settings in `.env.example` already point at it:
 
+```bash
+docker compose -f data-pipeline/infra/compose.yaml up -d mailpit
+```
+
+Invites then arrive at <http://localhost:8025> instead of the start output.
 Open <http://localhost:8000/login> and sign in. Incidents appear in the review queue
 with their evidence clip. Add `--host 0.0.0.0` to reach the dashboard from
 another machine. Sign-in is required, but the server speaks plain HTTP, so
