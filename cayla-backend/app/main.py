@@ -7,6 +7,7 @@ from .config import FRONTEND_ORIGINS
 from .db import pool
 from .routers import audit_log, auth, users
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     pool.open()

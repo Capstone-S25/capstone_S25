@@ -25,6 +25,7 @@ from pathlib import Path
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, sessionmaker
+from vision_runtime.service import bypasses_screening
 
 from data_pipeline.database.models import (
     Detection,
@@ -33,7 +34,6 @@ from data_pipeline.database.models import (
     VLMAssessment,
     VLMResult,
 )
-from vision_runtime.service import bypasses_screening
 
 logger = logging.getLogger(__name__)
 
