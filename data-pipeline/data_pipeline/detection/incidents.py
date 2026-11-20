@@ -34,6 +34,7 @@ from data_pipeline.database.models import (
     VLMAssessment,
     VLMResult,
 )
+from vision_runtime.service import bypasses_screening
 
 logger = logging.getLogger(__name__)
 
@@ -128,6 +129,64 @@ def flagged_box(candidate: dict, frame_path: str) -> tuple[float, ...] | None:
         clip(max(x1, x2) / width),
         clip(max(y1, y2) / height),
     )
+
+
+def changed_box(paths: list[str], reference: str | None) -> tuple[float, ...] | None:
+    """Where a new, static thing appeared, as 0-1 fractions of the frame.
+
+    A scheduled scene review has no region of its own: the classifier judged the
+    whole frame, so the reviewer would get a clip and nothing to look at. The
+    gate already keeps the camera's reference scene, so anything that differs
+    from it has arrived since; anything that also holds still across the window
+    is not a person. The largest such region is almost always the left item.
+
+    This is a hint, not a detection. It runs only on windows the classifier has
+    already flagged, where a reviewer is looking anyway, and it gives up when
+    the change is too small, too large or too scattered to be worth drawing.
+    """
+    import cv2
+    import numpy as np
+
+    if not reference or len(paths) < 2:
+        return None
+    try:
+        ref = cv2.imread(str(reference), cv2.IMREAD_GRAYSCALE)
+        frames = [cv2.imread(str(q), cv2.IMREAD_GRAYSCALE) for q in paths]
+    except Exception:
+        return None
+    frames = [f for f in frames if f is not None]
+    if ref is None or not frames or any(f.shape != ref.shape for f in frames):
+        return None
+    blur = lambda f: cv2.GaussianBlur(f, (5, 5), 0)  # noqa: E731
+    last = blur(frames[-1])
+    height, width = last.shape
+    area = float(height * width)
+    # arrived since the camera's reference scene
+    _, new = cv2.threshold(cv2.absdiff(last, blur(ref)), 25, 255, cv2.THRESH_BINARY)
+    # and held still across the window: people move, a left bag does not
+    motion = np.zeros_like(last)
+    for f in frames[:-1]:
+        motion = np.maximum(motion, cv2.absdiff(last, blur(f)))
+    _, moving = cv2.threshold(motion, 25, 255, cv2.THRESH_BINARY)
+    mask = cv2.bitwise_and(new, cv2.bitwise_not(moving))
+    kernel = np.ones((3, 3), np.uint8)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=2)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel, iterations=3)
+    if mask.sum() / 255.0 > 0.25 * area:
+        return None  # the whole frame changed: lighting, exposure or the camera
+    count, _, stats, _ = cv2.connectedComponentsWithStats(mask, connectivity=8)
+    best, best_area = None, 0.0
+    for index in range(1, count):
+        x, y, w, h, blob = (float(v) for v in stats[index])
+        if not (0.0002 * area <= blob <= 0.05 * area):
+            continue
+        if max(w, h) > 6.0 * max(1.0, min(w, h)):
+            continue  # a streak, not an object
+        if blob > best_area:
+            best, best_area = (x, y, x + w, y + h), blob
+    if best is None:
+        return None
+    return (best[0] / width, best[1] / height, best[2] / width, best[3] / height)
 
 
 class IncidentRecorder:
@@ -257,13 +316,22 @@ class IncidentRecorder:
                     )
                 )
                 box = flagged_box(candidate, paths[-1])
+                hint = box is None
+                if hint:
+                    # Whole-scene review: no rule region, so point the reviewer
+                    # at what changed instead of handing them a bare clip.
+                    box = changed_box(paths, candidate.get("reference_frame_path"))
                 if box is not None:
                     db.add(
                         Detection(
                             incident_id=incident.id,
                             segment_id=candidate.get("segment_id"),
                             detected_at=at,
-                            class_label=str(candidate.get("event_type", "region")),
+                            class_label=(
+                                "changed region"
+                                if hint
+                                else str(candidate.get("event_type", "region"))
+                            ),
                             confidence=score if score is not None else 0.0,
                             bbox_x1=box[0],
                             bbox_y1=box[1],
@@ -302,6 +370,19 @@ class IncidentRecorder:
             # into "unknown" (for example, no tracked owner for an unattended
             # item); the reviewer still wants the model's own reading.
             seen = value.get("model_decision_before_guard", value.get("decision"))
+            # A duration-defined behaviour is not refuted by a model that cannot
+            # see duration. Gemma reads a 20 s window; loitering is 30-60 s of
+            # tracking. Measured on the test split, it declined 153 of 159
+            # bypassed loitering windows, and every decline described motion
+            # ("people are walking through the hallway") rather than absence of
+            # dwell. Its "normal" is recorded as uncertain with its own words
+            # kept, exactly as screening's is, so a reviewer is not told the
+            # event was ruled out by evidence that could not bear on it.
+            undecidable = seen == "normal" and bypasses_screening(
+                task, candidate.get("event_type")
+            )
+            if undecidable:
+                seen = "unknown"
             verdict = {
                 "anomaly": "Confirmed",
                 "normal": "Not confirmed",
@@ -312,6 +393,12 @@ class IncidentRecorder:
                 or "no evidence text"
             ).rstrip(". ")
             description = f"{verdict} by {model}: {evidence}."
+            if undecidable:
+                description = (
+                    f"{model} saw no anomaly in its window ({evidence}), but this "
+                    "event type is decided by elapsed time, which the window does "
+                    "not show. Stage 1's measurement stands; awaiting review."
+                )
             if summary:
                 description += f" {summary}"
             if guarded and value.get("evidence"):
