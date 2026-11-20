@@ -1,11 +1,24 @@
-"""Settings read from environment variables (see .env.example)."""
+"""Settings read from environment variables (see .env.example).
+
+In the one-command deployment (deploy.py) these routes run inside the
+incidents API, so the repository's .env and data-pipeline/.env are read as
+well. Variables already set in the environment win.
+"""
 
 import os
+from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from dotenv import load_dotenv
+
+_REPOSITORY = Path(__file__).resolve().parents[2]
+load_dotenv(_REPOSITORY / ".env", override=False)
+load_dotenv(_REPOSITORY / "data-pipeline/.env", override=False)
+
+# Also accepts the incidents API's SQLAlchemy form, postgresql+psycopg://.
 DATABASE_URL = os.environ.get(
     "DATABASE_URL", "postgresql://cctv:cctv@localhost:5433/cctv"
-)
+).replace("postgresql+psycopg://", "postgresql://", 1)
 
 # Session lifetime. Lockout/timeout policy is deferred (Open Items), so keep it simple for now.
 SESSION_HOURS = int(os.environ.get("SESSION_HOURS", "12"))

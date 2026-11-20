@@ -8,14 +8,22 @@ check and start warn and continue, and the camera backend records without
 screening (`--record-only`). `pgvector` was missing from the root
 `requirements.txt` although the incidents models and migrations import it, so a
 fresh `deploy.py setup` could not start the API; it is now pinned (0.5.1).
+Later the same day, login was connected (rows below): the account routes run in
+the incidents API, on the incidents database. Checked with a fresh
+`deploy.py setup`, `create-admin` and `start`: the admin signed in at
+`/login`, invited a staff member, who set a password and accepted an incident,
+and the review was stored with that staff member's user id. Offline bundles
+built from older wheels need the new account packages (`argon2-cffi`,
+`psycopg-pool`, `email-validator`, `pwinput`).
 
 | Piece | State |
 |---|---|
 | Incidents, review queue, review history, search, clip, flagged boxes, Accept/Dismiss/Escalate | Live through the incidents API (`data-pipeline`). |
-| Login, invites, set password | Frontend calls `cayla-backend` (`/api/v1/auth`, `/me`, `/users`). Works in development via Vite's proxy to port 8001. |
-| `cayla-backend` in the one-command start | **Not started** by `deploy.py`, so on port 8000 the login page cannot sign in. It uses its own database (`cctv`, port 5433) with its own `cameras`/`locations` tables, separate from the incidents database. |
-| Authorisation on the incidents API | **Not connected.** `data_pipeline/api/auth.py` returns a fixed development user; it does not read the `cayla-backend` session cookie. Reviews are saved as user 1. |
-| Route guard in the dashboard | None: staff and admin pages open without signing in. |
+| Login, invites, set password | **Connected.** `cayla-backend`'s routers (`/api/v1/auth`, `/me`, `/users`, `/audit-log`) are mounted on the incidents API by `data_pipeline/api/accounts.py`, so `deploy.py start` serves them on port 8000 and the Vite dev server proxies all of `/api` to that one server. Their SQL runs on the request's own SQLAlchemy connection and transaction. |
+| Accounts database | **The incidents database.** Migration `e7b3c9a41f02` adds `users`, `sessions` and `audit_log` (columns as in `cayla-backend/db/migrations/002` and `004`), so `deploy.py setup` creates them. `cayla-backend`'s `cameras`, `locations`, rules and settings tables were not brought over; their routers return 501 anyway. `cayla-backend` still runs on its own (`docker compose up`, database `cctv`) for its own development. |
+| First admin | `python3.12 deploy.py create-admin --name ... --email ... --staff-id ...` runs `cayla-backend/scripts/create_admin.py`, which now reads `DATABASE_URL` from the repository's `.env` (and accepts the `postgresql+psycopg://` form). `setup`, `check` and `start` warn while no account exists. Setup writes `COOKIE_SECURE=false` to `.env`, because the server speaks plain HTTP. |
+| Authorisation on the incidents API | **Connected.** `get_current_user` in `data_pipeline/api/auth.py` is `cayla-backend`'s session check (cookie `cctv_session` or `Authorization: Bearer`): 401 without a valid session, 403 while on a temporary password. Reviews, review edits and VLM re-run requests record the signed-in user's id. `reviewer_id` and the other user columns are not foreign keys yet; reviews written before this change carry user 1. |
+| Route guard in the dashboard | `RequireAuth` (`frontend/src/components/layout/RequireAuth.tsx`) checks `/me` on every navigation: signed-out users go to `/login`, temporary passwords to `/set-password`, staff on admin pages to `/staff/home`. The top bar shows the signed-in user. |
 | Cameras, monitoring rules, hotspots, workload, admin home, escalation staff list | Demo data from `frontend/src/data/mock.ts`. Cameras in incidents are also mapped to demo camera names. |
 | Upload of a file for analysis, local webcam | No dashboard page; the services remain in `vision_runtime/`. |
 

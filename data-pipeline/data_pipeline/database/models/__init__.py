@@ -1,3 +1,4 @@
+from data_pipeline.database.models.accounts import AuditLogEntry, User, UserSession
 from data_pipeline.database.models.detections import Detection
 from data_pipeline.database.models.incidents import Incident, Severity
 from data_pipeline.database.models.reviews import Review, ReviewOutcome
@@ -6,6 +7,7 @@ from data_pipeline.database.models.video_segments import SegmentStatus, VideoSeg
 from data_pipeline.database.models.vlm_results import VLMAssessment, VLMResult
 
 __all__ = [
+    "AuditLogEntry",
     "Detection",
     "Incident",
     "Review",
@@ -14,6 +16,8 @@ __all__ = [
     "Settlement",
     "SettlementOutcome",
     "Severity",
+    "User",
+    "UserSession",
     "VLMAssessment",
     "VLMResult",
     "VideoSegment",

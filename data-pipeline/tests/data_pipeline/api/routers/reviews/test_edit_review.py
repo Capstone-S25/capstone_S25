@@ -32,7 +32,7 @@ def test_changes_only_the_fields_sent(client, seeded):
     assert body["reviewer_id"] == before["reviewer_id"]
 
 
-def test_records_who_edited_and_when(client, seeded):
+def test_records_who_edited_and_when(client, seeded, account):
     review = unsettled_review(seeded)
     created_at = client.get(f"/api/v1/incidents/{review.incident_id}").json()["review"][
         "created_at"
@@ -41,7 +41,7 @@ def test_records_who_edited_and_when(client, seeded):
     body = client.patch(url(review.id), json={"outcome": "escalated"}).json()
 
     assert body["outcome"] == "escalated"
-    assert body["updated_by"] == 1
+    assert body["updated_by"] == account.user_id
     assert body["updated_at"] is not None
     assert body["created_at"] == created_at
 

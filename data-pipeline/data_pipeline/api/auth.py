@@ -1,19 +1,21 @@
-"""Temporary login used until Person A's real login and role check exist.
+"""The signed-in user, for every incidents and reviews route.
 
-TODO(Person A): Replace this module's get_current_user with the real login
-and role check. Every route imports get_current_user from here and nowhere
-else, so the swap is one line: import the real dependency in place of the
-fake one below (keeping the name get_current_user).
+Every route imports get_current_user from here. The session check is
+cayla-backend's (app/deps.py): the cctv_session cookie that login sets, or
+"Authorization: Bearer <token>", must belong to an unexpired, unrevoked
+session of an active user. No session answers 401; a user still on an emailed
+temporary password answers 403 "Password change required".
 """
 
-import os
 from dataclasses import dataclass
 from enum import StrEnum
+
+from data_pipeline.api.accounts import SignedInUser
 
 
 class Role(StrEnum):
     ADMIN = "admin"
-    MEMBER = "member"
+    STAFF = "staff"
 
 
 @dataclass(frozen=True)
@@ -21,9 +23,9 @@ class CurrentUser:
     """The logged-in user.
 
     Attributes:
-        id: User primary key, stored as reviewer_id, settled_by and updated_by.
+        id: users.user_id, stored as reviewer_id, settled_by and updated_by.
         name: Display name.
-        role: Role.ADMIN or Role.MEMBER.
+        role: Role.ADMIN or Role.STAFF.
     """
 
     id: int
@@ -31,15 +33,6 @@ class CurrentUser:
     role: Role
 
 
-def get_current_user() -> CurrentUser:
-    """Return a hard-coded user for development.
-
-    TODO(Person A): Replace with the real login and role check.
-
-    The role comes from DEV_USER_ROLE ("admin" or "member"), defaulting to
-    admin, so member-only behaviour can be tried without a login.
-    """
-    role = os.environ.get("DEV_USER_ROLE", Role.ADMIN)
-    if role not in Role:
-        raise RuntimeError(f"DEV_USER_ROLE must be admin or member, not {role!r}")
-    return CurrentUser(id=1, name="Dev User", role=Role(role))
+def get_current_user(user: SignedInUser) -> CurrentUser:
+    """Return the user of this request's session, or answer 401 or 403."""
+    return CurrentUser(id=user.user_id, name=user.name, role=Role(user.role))

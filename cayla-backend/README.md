@@ -4,6 +4,18 @@ The backend API for **InSight**, a CCTV incident platform. It handles login and 
 
 **Stack:** Python 3.12 · FastAPI · psycopg 3 · PostgreSQL 16 with pgvector · Docker Compose · Mailpit (fake email server for development)
 
+> **In the one-command deployment** (`deploy.py` at the repository root) this
+> backend does not run as its own server. Its login, user and audit-log
+> routers are mounted on the incidents API (`data-pipeline/data_pipeline/api/accounts.py`)
+> on port 8000, and its `users`, `sessions` and `audit_log` tables are created
+> in the incidents database by data-pipeline's alembic migration `e7b3c9a41f02`.
+> If you change those tables here, change that migration and
+> `data_pipeline/database/models/accounts.py` too. Create the first admin with
+> `python3.12 deploy.py create-admin ...`. `app/config.py` also reads the
+> repository's `.env` and `data-pipeline/.env` (environment variables win), so
+> `python -m scripts.create_admin` writes to the same database. The rest of this
+> README describes running it on its own with Docker Compose.
+
 ---
 
 ## Contents
@@ -164,7 +176,7 @@ pip install -r requirements.txt
 
 ### Step 3: Set environment variables
 
-The app reads **real environment variables only**. It does not load a `.env` file by itself. The minimum for local development:
+The app reads environment variables, then the repository's `.env` and `data-pipeline/.env` (without overriding variables already set). It does not load `cayla-backend/.env`. The minimum for local development:
 
 ```bash
 export DATABASE_URL=postgresql://cctv:cctv@localhost:5433/cctv

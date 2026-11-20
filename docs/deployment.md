@@ -184,6 +184,11 @@ What `deploy.py` does with such a folder:
   Gemma reviews can finish, then the rest. The Gemma server's output goes to
   `.local/deploy/logs/gemma_server.log`.
 - `start` (or `start --dashboard`) alone serves the API and dashboard.
+- `create-admin --name ... --email ... --staff-id ...` creates the first
+  dashboard account (it asks for the password); `setup`, `check` and `start`
+  warn while no account exists. A bundle built with `--wheels-from` an older
+  bundle lacks the account packages (`argon2-cffi`, `psycopg-pool`,
+  `email-validator`, `pwinput`); rebuild its wheels with `--wheels`.
 
 Gemma reviews only windows the screening classifier flags, and one behaviour
 on one camera at most once per `GEMMA_CONFIRM_INTERVAL_S` (30 s of video) and

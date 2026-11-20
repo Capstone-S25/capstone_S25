@@ -179,6 +179,7 @@ def config_checkout(tmp_path, monkeypatch):
         "DATABASE_URL",
         "VISION_MODELS_DIR",
         "VISION_RUNTIME_DIR",
+        "COOKIE_SECURE",
     ]:
         monkeypatch.delenv(name, raising=False)
     return root
@@ -191,7 +192,8 @@ def test_real_dotenv_roundtrip_preserves_existing_configuration(config_checkout)
     args = SimpleNamespace(gemma_url=None, gemma_model=None)
     settings = deploy.configure(Path(sys.executable), args)
     assert settings["models"] == str(root / "a model folder")
-    assert (root / ".env").read_text() == content
+    # Only the plain-HTTP login cookie setting is added, once.
+    assert (root / ".env").read_text() == content + '\nCOOKIE_SECURE="false"\n'
     args.gemma_url = "http://127.0.0.1:8080/v1"
     args.gemma_model = "local-model"
     deploy.configure(Path(sys.executable), args)
@@ -222,7 +224,7 @@ def test_external_database_does_not_start_or_reset_local_compose(tmp_path, monke
         lambda _, action: (
             {"database": "external"}
             if action == "_settings"
-            else {"database_ready": True}
+            else {"database_ready": True, "users": 1}
         ),
     )
     calls = []
@@ -358,13 +360,17 @@ def test_check_without_models_warns_instead_of_failing(tmp_path, monkeypatch, ca
     answers = {
         "_packages": {"ready": True, "python": [3, 12, 0], "problems": []},
         "_settings": settings,
-        "_database": {"database_ready": True},
+        "_database": {"database_ready": True, "users": 1},
     }
     monkeypatch.setattr(deploy, "child", lambda _, action: dict(answers[action]))
     monkeypatch.setattr(deploy, "DASHBOARD", tmp_path)
     (tmp_path / "index.html").write_text("")
     assert deploy.check(python, dashboard=True)["models_installed"] is False
     assert "No models are installed" in capsys.readouterr().err
+    # Nobody can sign in yet: say how to create the first admin.
+    answers["_database"]["users"] = 0
+    deploy.check(python, dashboard=True)
+    assert "deploy.py create-admin" in capsys.readouterr().err
 
 
 def test_dashboard_alone_starts_no_model_process(monkeypatch):
@@ -402,7 +408,7 @@ def test_local_database_is_used_when_running_else_instructions(
     answers = {
         "_settings": {"database": "compose"},
         "_database_ping": {"reachable": reachable},
-        "_database": {"database_ready": True},
+        "_database": {"database_ready": True, "users": 1},
     }
     monkeypatch.setattr(deploy, "child", lambda _, action: answers[action])
     monkeypatch.setattr(deploy.shutil, "which", lambda name: None)  # no Docker

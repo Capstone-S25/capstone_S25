@@ -19,5 +19,10 @@ python-dotenv==1.2.4
 einops==0.8.2
 pgvector==0.5.1
 fastapi==0.162.5
+# Login and staff accounts (cayla-backend/, mounted on the incidents API)
+argon2-cffi==25.1.0
+psycopg-pool==3.3.3
+email-validator==2.4.0
+pwinput==1.0.3
 uvicorn==0.54.0
 requests>=2.32,<3

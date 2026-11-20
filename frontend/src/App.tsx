@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { RequireAuth } from './components/layout/RequireAuth';
 
 // Auth
 import LoginPage from './pages/auth/LoginPage';
@@ -27,18 +28,22 @@ export default function App() {
         <Route path="/first-login"  element={<FirstTimeLoginPage />} />
         <Route path="/set-password" element={<SetPasswordPage />} />
 
-        {/* Staff */}
-        <Route path="/staff/home"           element={<StaffHomePage />} />
-        <Route path="/staff/review-history" element={<ReviewHistoryPage />} />
-        <Route path="/staff/search"         element={<SearchPage />} />
-        <Route path="/staff/hotspots"       element={<HotspotsPage />} />
-        <Route path="/staff/cameras"        element={<StaffCamerasPage />} />
+        {/* Staff: anyone signed in */}
+        <Route element={<RequireAuth />}>
+          <Route path="/staff/home"           element={<StaffHomePage />} />
+          <Route path="/staff/review-history" element={<ReviewHistoryPage />} />
+          <Route path="/staff/search"         element={<SearchPage />} />
+          <Route path="/staff/hotspots"       element={<HotspotsPage />} />
+          <Route path="/staff/cameras"        element={<StaffCamerasPage />} />
+        </Route>
 
-        {/* Admin */}
-        <Route path="/admin/home"     element={<AdminHomePage />} />
-        <Route path="/admin/workload" element={<WorkloadSummaryPage />} />
-        <Route path="/admin/rules"    element={<MonitoringRulesPage />} />
-        <Route path="/admin/cameras"  element={<AdminCamerasPage />} />
+        {/* Admin: admins only */}
+        <Route element={<RequireAuth role="admin" />}>
+          <Route path="/admin/home"     element={<AdminHomePage />} />
+          <Route path="/admin/workload" element={<WorkloadSummaryPage />} />
+          <Route path="/admin/rules"    element={<MonitoringRulesPage />} />
+          <Route path="/admin/cameras"  element={<AdminCamerasPage />} />
+        </Route>
 
         {/* Default */}
         <Route path="*" element={<Navigate to="/login" replace />} />

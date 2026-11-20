@@ -31,8 +31,14 @@ def recordings_dir(tmp_path):
 
 
 @pytest.fixture
-def client(postgres_session, seeded, recordings_dir):
-    """API client whose requests use the seeded test session."""
+def account(make_account):
+    """The staff member the client is signed in as."""
+    return make_account()
+
+
+@pytest.fixture
+def client(postgres_session, seeded, recordings_dir, account):
+    """API client, signed in as account, whose requests use the test session."""
     app = create_app(os.environ["TEST_DATABASE_URL"], storage_root=recordings_dir)
 
     def override_get_db():
@@ -42,4 +48,5 @@ def client(postgres_session, seeded, recordings_dir):
 
     app.dependency_overrides[get_db] = override_get_db
     with TestClient(app) as test_client:
+        test_client.cookies.update(account.cookies)
         yield test_client

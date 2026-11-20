@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { logout } from '../../data/auth';
+import { useSessionUser } from './session';
 import { Search, Bell, ChevronDown, LogOut, UserRound } from 'lucide-react';
 import { UserRole } from '../../types';
 
 // Figma: v2/Top bar — global search, notifications and account.
 
+// Shown only outside the signed-in pages (RequireAuth supplies the real user).
 const USER_BY_ROLE: Record<UserRole, { initials: string; name: string; email: string; role: string }> = {
   staff: { initials: 'JT', name: 'Jane Tan', email: 'jane.tan@towera.sg', role: 'Staff' },
   admin: { initials: 'SL', name: 'Sam Lee', email: 'sam.lee@towera.sg', role: 'Admin' },
@@ -50,7 +52,15 @@ export function TopBar({ role }: { role: UserRole }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [params] = useSearchParams();
-  const user = USER_BY_ROLE[role];
+  const session = useSessionUser();
+  const user = session
+    ? {
+        initials: session.name.split(/\s+/).map((part) => part[0]).join('').slice(0, 2).toUpperCase(),
+        name: session.name,
+        email: session.email,
+        role: session.role === 'admin' ? 'Admin' : 'Staff',
+      }
+    : USER_BY_ROLE[role];
   const onSearchPage = location.pathname === '/staff/search';
 
   const [query, setQuery] = useState(onSearchPage ? params.get('q') ?? '' : '');

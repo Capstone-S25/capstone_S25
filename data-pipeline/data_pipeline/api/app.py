@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 
+from data_pipeline.api import accounts
 from data_pipeline.api.routers import evidence, incidents, reviews
 from data_pipeline.database.session import create_engine_and_session_factory
 
@@ -76,6 +77,11 @@ def create_app(
     app.include_router(incidents.router)
     app.include_router(evidence.router)
     app.include_router(reviews.router)
+    # Login, staff accounts and the audit log (cayla-backend), on this
+    # database: its connection dependency uses this request's session.
+    for router in accounts.ROUTERS:
+        app.include_router(router, prefix=accounts.PREFIX)
+    app.dependency_overrides[accounts.get_conn] = accounts.get_request_connection
     dashboard = os.environ.get("DASHBOARD_DIR")
     if dashboard and (Path(dashboard) / "index.html").is_file():
         _serve_dashboard(app, Path(dashboard).resolve())

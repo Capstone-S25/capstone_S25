@@ -1,5 +1,6 @@
-// Login and staff accounts, from cayla-backend (/api/v1/auth, /me, /users).
-// The login is an httpOnly cookie that the browser sends by itself; Vite's proxy
+// Login and staff accounts (/api/v1/auth, /me, /users): cayla-backend's routes,
+// served by the dashboard API. The login is an httpOnly cookie that the browser
+// sends by itself, also with the incidents requests; in development Vite's proxy
 // (vite.config.ts) keeps every request on the dashboard's own address.
 
 export type Role = 'admin' | 'staff';

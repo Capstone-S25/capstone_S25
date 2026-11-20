@@ -60,9 +60,11 @@ A recorded file instead of a camera (played at its real speed):
 python3.12 deploy.py start --dashboard --camera --video /path/to/video.mp4 --source-id camera_01
 ```
 
-Open <http://localhost:8000/staff/home>. Incidents appear in the review queue
+Open <http://localhost:8000/login> and sign in. Incidents appear in the review queue
 with their evidence clip. Add `--host 0.0.0.0` to reach the dashboard from
-another machine; there is no login yet, so do that only on a trusted network.
+another machine. Sign-in is required, but the server speaks plain HTTP, so
+passwords and the session cookie cross the network unencrypted: use a trusted
+network, or put an HTTPS proxy in front and set `COOKIE_SECURE=true` in `.env`.
 Press Ctrl+C once to stop: the camera backend finishes its queued Gemma
 reviews, then everything exits.
 
@@ -131,8 +133,8 @@ not everywhere.
 
 ## Limits
 
-- Review buttons, login, cameras, rules and reports in the dashboard are not
-  connected yet; they show demonstration data.
+- Cameras, rules, hotspots and reports in the dashboard are not connected yet;
+  they show demonstration data. Review buttons and login are connected.
 - Scores and "confidence" rank windows; they are not measured precision.
 - Model licences differ: see `docs/model_sources.md`. The MobileCLIP2 encoders
   are under Apple's research licence (non-commercial research use).

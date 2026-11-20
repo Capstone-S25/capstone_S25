@@ -33,14 +33,17 @@ With Python 3.12 on an x86_64 Linux machine, transfer the model archive and run:
 
 ```bash
 python3.12 deploy.py setup --bundle /path/to/capstone-mobileclip2-s2-cpu-20261103.tar.gz
+python3.12 deploy.py create-admin --name "Admin" --email you@example.com --staff-id S001
 python3.12 deploy.py start
 ```
 
-Open `http://localhost:8000/staff/home`. Setup creates `.venv`, installs the CPU
+Open `http://localhost:8000/login` and sign in with that email and the password
+`create-admin` asked for (once is enough; admins add staff from the dashboard).
+Setup creates `.venv`, installs the CPU
 packages, verifies/imports weights, creates configuration if absent, runs real
 CPU classifier/tracker checks, and prepares the database: it starts the local
 PostgreSQL Compose service unless an external `DATABASE_URL` is configured, and
-applies migrations. It preserves existing configuration/models and can be rerun
+applies migrations, including the login and staff-account tables. It preserves existing configuration/models and can be rerun
 after a failed step. Startup does not install anything. A repeat setup without
 `--bundle` works once model files have been verified/imported. The dashboard
 must be built (`npm run build` in `frontend/`, already done in a transfer bundle).
@@ -201,11 +204,11 @@ bundled CPU Gemma server when one is configured:
 python3.12 deploy.py start --dashboard --camera --video /path/to/video.mp4 --source-id camera_01
 ```
 
-`python3.12 deploy.py start` alone serves the API and dashboard. Then open `http://localhost:8000/staff/home`. For a self-contained folder to
+`python3.12 deploy.py start` alone serves the API and dashboard. Then open `http://localhost:8000/login`. For a self-contained folder to
 copy to another machine, see
 [the transfer bundle](docs/deployment.md#transfer-bundle-and-full-start-13-november-2026).
 
-With the development servers above, open `http://localhost:5173/staff/home`. The review queue, review history and
+With the development servers above, open `http://localhost:5173/login`. The review queue, review history and
 search pages show live incidents, their evidence clip, the screening score
 and, when Gemma is configured, its verdict and a short description of the
 scene. Gemma reviews only windows the screening classifier flagged.
@@ -216,12 +219,18 @@ The dev server proxies `/api` to the API (`VITE_API_PROXY` overrides the
 address). Set `RECORDINGS_DIR` for the API if `--recordings-dir` was used.
 While the API is not running, the pages fall back to built-in demo data.
 
-Login, invites and set-password talk to the accounts backend in
-`cayla-backend/` (port 8001 behind the dev server's proxy; see its README). It
-is not started by `deploy.py` yet and keeps its own database, so in the
-one-command start the login page cannot sign in, and the incidents API still
-uses a fixed development user. Cameras, rules, hotspots, workload and the admin
-home page still show demo data. See
+Login, invites and set-password are the routes of the accounts backend in
+`cayla-backend/`, mounted on the same API (`/api/v1/auth`, `/me`, `/users`,
+`/audit-log`) and stored in the same database (migration `e7b3c9a41f02`). Every
+incidents and reviews route needs a signed-in session, and reviews are saved
+under the signed-in user's id. Signed-out visitors to a dashboard page are sent
+to `/login`, and staff opening an admin page to their own home page. Create the
+first admin with `deploy.py create-admin`, or in development with
+`python -m scripts.create_admin ...` from `cayla-backend/`, which reads
+`DATABASE_URL` from the same `.env` files. On plain HTTP away from localhost,
+`COOKIE_SECURE=false` (which setup writes to `.env`) is needed for the login
+cookie; set it to `true` behind HTTPS. Cameras, rules, hotspots, workload and
+the admin home page still show demo data. See
 [the integration notes](docs/integration.md#update-20-november-2026-what-is-still-not-connected).
 
 See [backend operations](data-pipeline/README.md) and the

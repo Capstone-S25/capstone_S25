@@ -9,7 +9,7 @@ def unreviewed(seeded):
     return next(i for i in seeded if i.review is None)
 
 
-def test_creates_the_review(client, seeded):
+def test_creates_the_review(client, seeded, account):
     incident = unreviewed(seeded)
 
     response = client.post(
@@ -27,7 +27,7 @@ def test_creates_the_review(client, seeded):
     assert body["outcome"] == "dismissed"
     assert body["notes"] == "Just a delivery driver."
     assert body["corrected_type"] == "loitering"
-    assert body["reviewer_id"] == 1
+    assert body["reviewer_id"] == account.user_id
     assert body["created_at"] is not None
     assert body["updated_at"] is None
     assert body["updated_by"] is None

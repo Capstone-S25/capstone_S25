@@ -38,6 +38,14 @@ MODELS_MISSING = (
 )
 
 
+# Nobody can sign in to the dashboard until the first admin exists.
+NO_ACCOUNTS = (
+    "No dashboard accounts exist yet. Create the first admin with: "
+    'python3.12 deploy.py create-admin --name "Admin" --email you@example.com '
+    "--staff-id S001"
+)
+
+
 def local_gemma():
     """(server, weights, projector) of the bundled CPU Gemma, or None."""
     server = GEMMA / "llama/llama-server"
@@ -319,7 +327,12 @@ def settings():
         else None,
         "values": {
             key: hashlib.sha256(os.environ[key].encode()).hexdigest()
-            for key in ["DATABASE_URL", "GEMMA_BASE_URL", "GEMMA_MODEL"]
+            for key in [
+                "DATABASE_URL",
+                "GEMMA_BASE_URL",
+                "GEMMA_MODEL",
+                "COOKIE_SECURE",
+            ]
             if os.environ.get(key)
         },
     }
@@ -366,6 +379,9 @@ def configure(python, args):
             args.gemma_model or "gemma4-26b-a4b",
             preserve=args.gemma_model is None,
         )
+    # The server speaks plain HTTP, and browsers drop a Secure login cookie
+    # there (except on localhost). Behind an HTTPS proxy, set it to true.
+    append_setting(python, "COOKIE_SECURE", "false", preserve=True)
     config = child(python, "_settings")
     Path(config["runtime"]).mkdir(parents=True, exist_ok=True)
     return config
@@ -496,15 +512,17 @@ def database_setup(python):
         "Applying database migrations",
         cwd=ROOT / "data-pipeline",
     )
-    child(python, "_database")
+    database = child(python, "_database")
     print("Database schema is ready", flush=True)
+    if not database["users"]:
+        warn(NO_ACCOUNTS)
 
 
 def database_check():
     from alembic.config import Config
     from alembic.migration import MigrationContext
     from alembic.script import ScriptDirectory
-    from sqlalchemy import create_engine
+    from sqlalchemy import create_engine, text
 
     settings()
     if not os.environ.get("DATABASE_URL"):
@@ -522,9 +540,11 @@ def database_check():
         )
         if actual != expected:
             raise RuntimeError("Database migrations are not current; run setup")
+        with engine.connect() as connection:
+            users = connection.execute(text("SELECT count(*) FROM users")).scalar()
     finally:
         engine.dispose()
-    return {"database_ready": True}
+    return {"database_ready": True, "users": users}
 
 
 def database_ping():
@@ -659,7 +679,9 @@ def check(python, *, camera=False, dashboard=False, full_hashes=True):
     if camera and not shutil.which("ffmpeg"):
         raise FileNotFoundError("Camera recording needs ffmpeg on PATH")
     if camera or dashboard:
-        child(python, "_database")
+        database = child(python, "_database")
+        if dashboard and not database["users"]:
+            warn(NO_ACCOUNTS)
     if dashboard and not (DASHBOARD / "index.html").is_file():
         raise FileNotFoundError(
             "The dashboard is not built; run `npm install && npm run build` in frontend/"
@@ -897,7 +919,7 @@ def main():
         return
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="action", required=True)
-    for name in ["setup", "check", "start", "calibrate"]:
+    for name in ["setup", "check", "start", "calibrate", "create-admin"]:
         p = sub.add_parser(name)
         p.add_argument(
             "--venv",
@@ -939,6 +961,12 @@ def main():
             p.add_argument("--share", type=float, default=0.02)
             p.add_argument("--journal", type=Path, nargs="*")
             p.add_argument("--clear", action="store_true")
+        elif name == "create-admin":
+            # The first dashboard account; it then adds staff from the dashboard.
+            p.add_argument("--name", required=True)
+            p.add_argument("--email", required=True)
+            p.add_argument("--staff-id", required=True)
+            p.add_argument("--dob", help="YYYY-MM-DD (optional)")
         else:
             p.add_argument("--camera", action="store_true")
             p.add_argument(
@@ -1003,6 +1031,18 @@ def main():
             command.append("--clear")
         os.chdir(ROOT)
         os.execv(str(command[0]), [str(c) for c in command])
+    elif args.action == "create-admin":
+        if not python.is_file():
+            raise FileNotFoundError("Environment is missing; run deploy.py setup")
+        # Setup creates the account tables with the others.
+        child(python, "_database")
+        command = [python, "-m", "scripts.create_admin", "--name", args.name]
+        command += ["--email", args.email, "--staff-id", args.staff_id]
+        if args.dob:
+            command += ["--dob", args.dob]
+        # It reads DATABASE_URL from the same .env, and asks for the password.
+        os.chdir(ROOT / "cayla-backend")
+        os.execv(str(command[0]), [str(c) for c in command])
     elif args.action == "check":
         config = check(python, camera=args.camera, dashboard=True)
         if args.smoke and not config["models_installed"]:
@@ -1045,9 +1085,7 @@ def main():
         )
         planned = services(python, args, config)
         if args.dashboard:
-            print(
-                f"Dashboard: http://{args.host}:{args.api_port}/staff/home", flush=True
-            )
+            print(f"Dashboard: http://{args.host}:{args.api_port}/login", flush=True)
         if args.camera:
             print(
                 "Starting camera backend"

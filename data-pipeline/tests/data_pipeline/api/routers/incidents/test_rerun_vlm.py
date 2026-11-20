@@ -2,13 +2,13 @@ def url(incident_id):
     return f"/api/v1/incidents/{incident_id}/rerun-vlm"
 
 
-def test_queues_a_rerun(client, seeded):
+def test_queues_a_rerun(client, seeded, account):
     response = client.post(url(seeded[0].id))
 
     assert response.status_code == 202
     body = response.json()
     assert body["incident_id"] == seeded[0].id
-    assert body["requested_by"] == 1
+    assert body["requested_by"] == account.user_id
     assert body["requested_at"] is not None
 
 

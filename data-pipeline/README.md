@@ -96,8 +96,12 @@ npm run api
 ```
 
 Browse and try the endpoints at
-[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs). Login is temporary:
-every request runs as user 1, with the role from `DEV_USER_ROLE`.
+[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs). Every incidents and
+reviews endpoint needs a signed-in session: create an account with
+`python -m scripts.create_admin` from `cayla-backend/`, then call
+`POST /api/v1/auth/login` (in `/docs` the cookie it sets signs in the other
+calls; scripts send `Authorization: Bearer <token>`). The login, user and
+audit-log routes are cayla-backend's, mounted by `data_pipeline/api/accounts.py`.
 
 Seeded incidents have no video files, so their clip endpoint returns 404
 until a file exists at `recordings/<evidence_clip_path>`.

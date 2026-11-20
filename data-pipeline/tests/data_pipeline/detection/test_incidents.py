@@ -135,7 +135,7 @@ def test_gap_longer_than_quiet_time_opens_a_new_incident(
 
 
 def test_evidence_endpoints_serve_only_files_under_the_recordings_root(
-    postgres_session, recorder, tmp_path
+    postgres_session, recorder, tmp_path, make_account
 ):
     recorder(candidate(tmp_path, "event_a", 40.0), screened("anomaly"))
     incident = postgres_session.scalars(select(Incident)).one()
@@ -145,7 +145,7 @@ def test_evidence_endpoints_serve_only_files_under_the_recordings_root(
         yield postgres_session
 
     app.dependency_overrides[get_db] = override_get_db
-    with TestClient(app) as client:
+    with TestClient(app, cookies=make_account().cookies) as client:
         clip = client.get(f"/api/v1/incidents/{incident.id}/clip")
         assert clip.status_code == 200
         assert clip.headers["content-type"] == "video/mp4"
