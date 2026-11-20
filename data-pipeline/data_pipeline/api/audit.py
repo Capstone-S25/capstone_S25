@@ -4,9 +4,9 @@ Writes on the request's own transaction, so an edit and its audit entry
 are saved together or not at all.
 """
 
-from typing import Any, Mapping
+from collections.abc import Mapping
+from typing import Any
 
-from app import audit as _audit  # noqa: E402  (cayla-backend/app, loaded by accounts.py)
 from sqlalchemy.orm import Session
 
 from data_pipeline.api.accounts import RequestConnection
@@ -23,7 +23,11 @@ def record(
     new: Mapping[str, Any] | None = None,
 ) -> bool:
     """Write one audit row; False (nothing written) for an update that changed nothing."""
-    return _audit.record(
+    # cayla-backend/app becomes importable as "app" once accounts.py has loaded it
+    # (imported above), so this import stays inside the function.
+    from app import audit
+
+    return audit.record(
         RequestConnection(db),
         actor_id=actor_id,
         action=action,
