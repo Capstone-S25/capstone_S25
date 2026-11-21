@@ -34,7 +34,6 @@ from data_pipeline.database.models import (
     VLMAssessment,
     VLMResult,
 )
-from vision_runtime.service import bypasses_screening
 
 logger = logging.getLogger(__name__)
 

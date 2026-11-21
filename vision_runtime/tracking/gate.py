@@ -1696,9 +1696,7 @@ class RuleEngine:
                         metrics={
                             "person_h_frac": round(bh / max(1.0, obs.frame_hw[0]), 4),
                             "box_aspect": round(bh / max(1.0, b[2] - b[0]), 3),
-                            "track_age_s": round(
-                                float(obs.t - st["first_t"]), 2
-                            )
+                            "track_age_s": round(float(obs.t - st["first_t"]), 2)
                             if st is not None
                             else None,
                         },
