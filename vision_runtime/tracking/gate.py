@@ -316,7 +316,7 @@ class GateConfig:
     # lost). The pose cue's own check at 0.2 on top: 25.2 -> 23.9 %, lingering 81 -> 80/81, tune sets unchanged.
     crop_check: bool = True
     crop_check_rules: tuple[str, ...] = ("reach_down", "pose_action")
-    crop_check_thr: float | None = (
+    crop_check_thr: float | dict | None = (
         None  # None = each rule's threshold stored with its weights (0.2 both)
     )
     crop_check_weights: str | None = (
@@ -923,8 +923,21 @@ class RuleEngine:
                 "checks": checks,
                 "frames": deque(),
                 "pending": [],
+                # crop_check_thr: None keeps each rule's own stored threshold, a float
+                # applies one value to every rule, and a mapping sets them per rule and
+                # falls back to the stored one. Per rule matters: on quiet fit-side
+                # footage, raising it to 0.45 removes 5 of 7 pose_action and 3 of 4
+                # reach_down false alerts and costs littering nothing, while the same
+                # value on hand_to_face costs 16 of 49 fit smoking events and removes
+                # no false alerts at all (2026-11-21).
                 "thr": {
-                    r: c.threshold if cfg.crop_check_thr is None else cfg.crop_check_thr
+                    r: (
+                        c.threshold
+                        if cfg.crop_check_thr is None
+                        else cfg.crop_check_thr.get(r, c.threshold)
+                        if isinstance(cfg.crop_check_thr, dict)
+                        else cfg.crop_check_thr
+                    )
                     for r, c in checks.items()
                 },
                 "keep_s": max((c.dt for c in checks.values()), default=0.0) + 0.5,
@@ -1613,7 +1626,34 @@ class RuleEngine:
                         min(fh, wy + r),
                     ],
                 )
-            return [self._event("reach_down", f"person{cid}", obs, roi)]
+            # Geometry the rule already computed, recorded so a later stage can
+            # judge it, the way the dwell rules record norm_radius. Measured on
+            # the camera-disjoint split (2026-11-21): none of these separate a
+            # true reach from a false one on held-out cameras. wrist_below_knee_h
+            # is AUC 0.69 on fit and 0.57 on test, person_h_frac 0.67 -> 0.48,
+            # and speed_h_s changes sign between the two. They are kept because
+            # they cost nothing and the dwell rules' equivalents DO transfer
+            # (norm_radius 0.69 -> 0.75), so the distinction is worth being able
+            # to re-measure; do not build a guard on them without redoing that.
+            return [
+                self._event(
+                    "reach_down",
+                    f"person{cid}",
+                    obs,
+                    roi,
+                    metrics={
+                        "speed_h_s": None if v is None else round(float(v), 3),
+                        "person_h_frac": round(h / max(1.0, obs.frame_hw[0]), 4),
+                        "wrist_below_knee_h": round(
+                            (max(w[1] for w in wrists) - knee_y) / h, 3
+                        ),
+                        "reach_hits": len(hits),
+                        "hit_span_s": round(float(hits[-1] - hits[0]), 2)
+                        if len(hits) > 1
+                        else 0.0,
+                    },
+                )
+            ]
         return []
 
     def _pose_action(self, obs, cid_of):
@@ -1639,13 +1679,29 @@ class RuleEngine:
                 and obs.t - pa["last"].get(rid, -1e9) >= self.cfg.pose_action_cooldown_s
             ):
                 pa["last"][rid] = obs.t
+                b = w["box"]
+                bh = max(1.0, b[3] - b[1])
+                # Geometry alongside the learned score, as for reach_down.
+                # track_age_s looks strong on test (AUC 0.76) but it is
+                # confounded: the labelled events that get caught are the long
+                # ones, so it re-detects dwell rather than judging the pose. It
+                # is 0.57 on fit smoking clips and 0.95 on fit loitering ones.
                 out.append(
                     self._event(
                         "pose_action",
                         f"person{cid_of[rid]}",
                         obs,
-                        w["box"],
+                        b,
                         score=round(float(prob), 3),
+                        metrics={
+                            "person_h_frac": round(bh / max(1.0, obs.frame_hw[0]), 4),
+                            "box_aspect": round(bh / max(1.0, b[2] - b[0]), 3),
+                            "track_age_s": round(
+                                float(obs.t - st["first_t"]), 2
+                            )
+                            if st is not None
+                            else None,
+                        },
                     )
                 )
         return out
