@@ -335,13 +335,30 @@ class EnsembleStrategy:
     def _key(self, path):
         return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
-    def _boxes(self, source, paths, keys):
-        need = [p for p in paths if self.cache.get(("boxes", source, keys[p])) is None]
+    def _cached_frames(self, prefix, paths, keys, compute):
+        """Run each distinct cache miss once, even if a recipe repeats a view."""
+        representatives = {}
+        for path in paths:
+            representatives.setdefault(keys[path], path)
+        values = {}
+        need = []
+        for key, path in representatives.items():
+            value = self.cache.get((*prefix, key))
+            if value is None:
+                need.append(path)
+            else:
+                values[key] = value
         if need:
-            found = self._frcnn(need) if source == "frcnn" else self._yolo(need)
+            found = compute(need)
             for p in need:
-                self.cache.put(("boxes", source, keys[p]), found[p])
-        return {p: self.cache.get(("boxes", source, keys[p])) for p in paths}
+                key = keys[p]
+                values[key] = found[p]
+                self.cache.put((*prefix, key), found[p])
+        return {p: values[keys[p]] for p in paths}
+
+    def _boxes(self, source, paths, keys):
+        detector = self._frcnn if source == "frcnn" else self._yolo
+        return self._cached_frames(("boxes", source), paths, keys, detector)
 
     def _frcnn(self, paths):
         from PIL import Image, ImageOps
@@ -468,8 +485,8 @@ class EnsembleStrategy:
 
     def _embed(self, backbone, stage, paths, keys):
         """stage: 'full', 'crop:frcnn' or 'crop:yolo'."""
-        need = [p for p in paths if self.cache.get((backbone, stage, keys[p])) is None]
-        if need:
+
+        def encode(need):
             boxes = (
                 self._boxes(stage.split(":")[1], need, keys)
                 if stage != "full"
@@ -480,11 +497,13 @@ class EnsembleStrategy:
                 model.tensor(view_image(p, crop_box(boxes[p]) if boxes else None))
                 for p in need
             ]
+            result = {}
             for start in range(0, len(need), 16):
                 values = model.encode(tensors[start : start + 16])
-                for p, v in zip(need[start : start + 16], values):
-                    self.cache.put((backbone, stage, keys[p]), v)
-        return {p: self.cache.get((backbone, stage, keys[p])) for p in paths}
+                result.update(zip(need[start : start + 16], values))
+            return result
+
+        return self._cached_frames((backbone, stage), paths, keys, encode)
 
     # ---- the study's representation, for one window ------------------------
     def _vector(self, recipe, views, reference, keys):

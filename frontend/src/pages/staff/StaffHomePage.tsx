@@ -136,7 +136,7 @@ function fromIncident(i: Incident): QueueItem {
     durationSec: 0,
     people: '',
     description: i.description,
-    reason: i.description,
+    reason: i.screeningReason ?? 'Screening evidence is unavailable for this incident.',
     rule: i.verdict ?? '—',
     ruleLabel: 'Model verdict',
     stamp: timeLabel(i.dateTime),
@@ -192,7 +192,7 @@ type Toast = { text: string; item: QueueItem; index: number; undoable: boolean }
 export default function StaffHomePage() {
   const navigate = useNavigate();
   // The live review queue (most urgent first) replaces the demo queue once the API answers.
-  const { incidents, source } = useIncidents(5000, fetchReviewQueue);
+  const { incidents, source } = useIncidents(1000, fetchReviewQueue);
   const [saving, setSaving] = useState(false);
   const [handled, setHandled] = useState<string[]>([]);
   const queue = useMemo(
@@ -315,10 +315,10 @@ export default function StaffHomePage() {
                   <FieldLabel>Reason for flagging</FieldLabel>
                   <span className="ml-[4px] inline-flex items-center gap-[8px] rounded-full bg-brand-soft px-[10px] py-[4px]">
                     <BarMeter pct={featured.confidence} tone="soft" className="w-[44px]" />
-                    <span className="text-[11px] font-semibold text-brand">{featured.confidence}% confidence</span>
+                    <span className="text-[11px] font-semibold text-brand">{featured.confidence}% {featured.incident?.apiId === undefined ? 'confidence' : 'screening confidence'}</span>
                   </span>
                 </div>
-                <p className="m-0 text-[13px] text-ink">{featured.reason}</p>
+                {featured.reason !== featured.description && <p className="m-0 text-[13px] text-ink">{featured.reason}</p>}
                 <div className="flex items-center gap-[6px]">
                   <span className="text-[11px] text-muted">{featured.ruleLabel ?? 'Matched rule'}</span>
                   <span className="text-[12px] font-medium text-brand">{featured.rule}</span>

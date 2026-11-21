@@ -3,6 +3,7 @@ from enum import StrEnum
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from data_pipeline.api.incident_cards import IncidentCard
 from data_pipeline.api.schemas.reviews import Review
 from data_pipeline.database import models
 from data_pipeline.database.models import ReviewOutcome, Severity, VLMAssessment
@@ -94,6 +95,7 @@ class IncidentListItem(BaseModel):
     first_anomaly_at: datetime
     last_anomaly_at: datetime
     review_outcome: ReviewOutcome | None
+    card: IncidentCard | None = None
 
 
 class IncidentPage(BaseModel):

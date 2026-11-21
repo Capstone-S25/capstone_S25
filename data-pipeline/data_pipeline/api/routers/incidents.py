@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from data_pipeline.api.auth import CurrentUser, get_current_user
 from data_pipeline.api.database import get_db
+from data_pipeline.api.incident_cards import incident_cards
 from data_pipeline.api.schemas.incidents import (
     CameraRef,
     Detection,
@@ -36,7 +37,7 @@ def _start_of_day(day: date) -> datetime:
     return datetime.combine(day, time.min, tzinfo=UTC)
 
 
-@router.get("", response_model=IncidentPage)
+@router.get("", response_model=IncidentPage, response_model_exclude_unset=True)
 def list_incidents(
     db: DbSession,
     location_id: int | None = None,
@@ -48,6 +49,7 @@ def list_incidents(
     date_to: Annotated[date | None, Query(description="Last day, inclusive")] = None,
     page: Annotated[int, Query(ge=1)] = 1,
     page_size: Annotated[int, Query(ge=1, le=100)] = 20,
+    include_card: bool = False,
 ) -> IncidentPage:
     """List incidents, newest first (API List #15)."""
     if date_from and date_to and date_from > date_to:
@@ -69,6 +71,11 @@ def list_incidents(
         limit=page_size,
         offset=(page - 1) * page_size,
     )
+    cards = (
+        incident_cards(db, [incident for incident, _ in rows], include_notes=True)
+        if include_card
+        else {}
+    )
     items = [
         IncidentListItem(
             id=incident.id,
@@ -79,6 +86,7 @@ def list_incidents(
             first_anomaly_at=incident.first_anomaly_at,
             last_anomaly_at=incident.last_anomaly_at,
             review_outcome=review_outcome,
+            **({"card": cards[incident.id]} if include_card else {}),
         )
         for incident, review_outcome in rows
     ]

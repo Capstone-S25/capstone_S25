@@ -21,6 +21,7 @@ from .evidence import (
     prompt_style,
     qualify,
     spread,
+    unattended_review_view,
     unknown,
     validated_views,
 )
@@ -53,10 +54,14 @@ class GemmaClient:
             views, output, raw, summaries = validated_views(candidate), {}, [], []
             for name in dict.fromkeys(VIEW_FOR_TASK[t] for t in candidate["tasks"]):
                 tasks = [t for t in candidate["tasks"] if VIEW_FOR_TASK[t] == name]
-                view = spread(views[name], 8 if name == "short" else 4)
+                view = (
+                    unattended_review_view(views[name], candidate)
+                    if tasks == ["unattended_items"]
+                    else spread(views[name], 8 if name == "short" else 4)
+                )
                 active = []
                 for task in tasks:
-                    problem = history_problem(task, view)
+                    problem = history_problem(task, views[name])
                     if problem:
                         output[task] = unknown(problem)
                     else:
@@ -121,10 +126,24 @@ class GemmaClient:
                 answer = response.json()["choices"][0]["message"].get("content") or ""
                 parsed = parse_answer(answer, active, len(view["paths"]))
                 summary = parse_summary(answer)
-                if summary:
-                    summaries.append(summary)
+                final_state_unsupported = False
                 for task in active:
-                    output[task] = qualify(task, parsed[task], candidate, view)
+                    verdict = parsed[task]
+                    if (
+                        task == "unattended_items"
+                        and verdict["decision"] != "unknown"
+                        and len(view["paths"]) not in verdict["frame_refs"]
+                    ):
+                        verdict = {
+                            **unknown(
+                                "Gemma did not cite the final frame for the item's state"
+                            ),
+                            "response_valid": True,
+                        }
+                        final_state_unsupported = True
+                    output[task] = qualify(task, verdict, candidate, views[name])
+                if summary and not final_state_unsupported:
+                    summaries.append(summary)
                 raw.append(
                     {
                         "tasks": active,

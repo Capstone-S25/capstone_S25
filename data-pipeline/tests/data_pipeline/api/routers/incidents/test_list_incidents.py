@@ -2,6 +2,8 @@ from datetime import timedelta
 
 import pytest
 
+from data_pipeline.database.models import VLMAssessment, VLMResult
+
 URL = "/api/v1/incidents"
 
 
@@ -49,6 +51,46 @@ def test_unreviewed_item_has_no_outcome(client, seeded):
 
     item = next(i for i in items.json()["items"] if i["id"] == unreviewed.id)
     assert item["review_outcome"] is None
+
+
+def test_card_keeps_latest_score_and_prefers_confirmed_review(
+    client, seeded, now, postgres_session
+):
+    incident = next(item for item in seeded if item.review is None)
+    original = [result for result in incident.vlm_results if result.confidence is None]
+    for index, (assessment, score, description) in enumerate(
+        [
+            (VLMAssessment.CONFIRMED, 0.75, "screened"),
+            (VLMAssessment.CONFIRMED, None, "confirmed review"),
+            (VLMAssessment.REJECTED, None, "later rejected review"),
+        ]
+    ):
+        postgres_session.add(
+            VLMResult(
+                incident_id=incident.id,
+                event_type=incident.event_type,
+                assessment=assessment,
+                confidence=score,
+                description=description,
+                model_version="fixture",
+                processed_at=now + timedelta(days=1, seconds=index),
+            )
+        )
+    postgres_session.flush()
+    for url in [URL, "/api/v1/reviews/queue"]:
+        page = client.get(url, params={"include_card": True, "page_size": 100})
+        assert page.status_code == 200, page.text
+        card = next(
+            item["card"] for item in page.json()["items"] if item["id"] == incident.id
+        )
+        assert card["screening"]["confidence"] == 0.75
+        assert card["confirmation"]["description"] == "confirmed review"
+        assert card["review_count"] == len(original) + 2
+        assert (
+            card["confirmation_count"]
+            == sum(result.assessment == VLMAssessment.CONFIRMED for result in original)
+            + 1
+        )
 
 
 @pytest.mark.parametrize(

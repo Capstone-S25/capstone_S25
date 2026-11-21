@@ -78,6 +78,25 @@ def test_offset_is_window_minus_reference(tmp_path):
     assert np.allclose(shifted, plain - reference)
 
 
+def test_shared_reference_runs_once_even_with_small_cache():
+    strategy = object.__new__(EnsembleStrategy)
+    strategy.cache = LRU(1)
+    processed = []
+
+    def detect(paths):
+        processed.extend(paths)
+        return {path: [path] for path in paths}
+
+    strategy._frcnn = detect
+    keys = {"reference": "same", "reference-copy": "same", "other": "other"}
+    found = strategy._boxes(
+        "frcnn", ["reference", "reference", "reference-copy", "other"], keys
+    )
+    assert processed == ["reference", "other"]
+    assert found["reference-copy"] == found["reference"] == ["reference"]
+    assert found["other"] == ["other"]
+
+
 def bare_strategy(tasks, vectors=None, smoking=0.0):
     """An EnsembleStrategy with stand-in encoders, for the scoring rules."""
     strategy = object.__new__(EnsembleStrategy)

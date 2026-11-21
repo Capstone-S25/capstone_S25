@@ -3,6 +3,7 @@ from typing import Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from data_pipeline.api.incident_cards import IncidentCard
 from data_pipeline.database.models import ReviewOutcome, Severity, VLMAssessment
 
 
@@ -70,6 +71,7 @@ class ReviewQueueItem(BaseModel):
     first_anomaly_at: datetime
     last_anomaly_at: datetime
     vlm_hint: VLMHint | None
+    card: IncidentCard | None = None
 
 
 class ReviewQueuePage(BaseModel):

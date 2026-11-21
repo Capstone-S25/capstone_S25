@@ -32,6 +32,11 @@ BYPASS_SCREENING = frozenset({"loitering", "rough_sleeping"})
 # carries no duration claim, and those rules route to nearly every alert, so
 # bypassing on them would switch screening off rather than scope it.
 BYPASS_RULES = frozenset({"long_presence", "sustained_presence"})
+SCREENING_ORDER = (
+    {"smoking", "rough_sleeping"},
+    {"littering"},
+    {"loitering", "unattended_items"},
+)
 
 
 def bypasses_screening(task, event_type):
@@ -326,9 +331,9 @@ class ScreeningQueue:
     duration-defined ones screening cannot judge (see bypasses_screening), and
     at most once per `confirm_interval` seconds of video for the same source and
     task (GEMMA_CONFIRM_INTERVAL_S, default 30), and never while an earlier
-    review of that source and task is still queued or running. A slow CPU
-    model is therefore asked as often as it can answer and no faster, and an
-    incident that starts on a weak window is looked at again on later ones.
+    review of that source and task is still queued or running. A newer tracked
+    unattended-item window can follow an earlier scene-only review once
+    within that interval. The confirmation worker still runs jobs serially.
     confirm="all" reviews every window and task, which needs a fast (GPU)
     model server.
     """
@@ -343,6 +348,7 @@ class ScreeningQueue:
         wait_for_space=False,
         confirm=None,
         confirm_interval=None,
+        publish_task_results=False,
     ):
         if capacity < 1:
             raise ValueError("Queue capacity must be positive")
@@ -361,6 +367,7 @@ class ScreeningQueue:
         self.queue = queue.Queue(maxsize=capacity)
         self.latest_only = latest_only
         self.wait_for_space = wait_for_space
+        self.publish_task_results = publish_task_results
         self.closed = False
         self.fatal_error = None
         self.thread = threading.Thread(
@@ -380,7 +387,7 @@ class ScreeningQueue:
         )
         self.store.retain(candidate["event_id"])
         try:
-            self._enqueue(copy.deepcopy(candidate))
+            self._enqueue((copy.deepcopy(candidate), time.monotonic()))
         except queue.Full:
             try:
                 self.store.write(
@@ -399,10 +406,10 @@ class ScreeningQueue:
             raise
         return True
 
-    def _enqueue(self, candidate):
+    def _enqueue(self, item):
         if self.latest_only and self.queue.full():
             try:
-                previous = self.queue.get_nowait()
+                previous, _ = self.queue.get_nowait()
             except queue.Empty:
                 pass
             else:
@@ -422,9 +429,9 @@ class ScreeningQueue:
         if self.wait_for_space:
             # The worker always drains (including after release or a journal
             # failure), so this wait ends when the current window is screened.
-            self.queue.put(candidate)
+            self.queue.put(item)
         else:
-            self.queue.put_nowait(candidate)
+            self.queue.put_nowait(item)
 
     def _tasks_to_confirm(self, candidate, predictions):
         if self.confirm == "all":
@@ -438,41 +445,99 @@ class ScreeningQueue:
             ):
                 continue
             key = (candidate.get("source_id"), task)
-            if self.confirmation.busy(*key):
+            previous = self.last_confirmed.get(key)
+            last, tracked, continuity = previous or (None, False, None)
+            same_recording = continuity == self._recording(candidate)
+            follow_up = (
+                last is not None
+                and same_recording
+                and now > last
+                and not tracked
+                and self._tracked_item(candidate, task)
+            )
+            if self.confirmation.busy(*key) and not follow_up:
                 continue
-            last = self.last_confirmed.get(key)
             # A restarted clock (new session) is treated as a new observation.
             # Half a second of slack: 10 s scans land at 40.2 s, 70.1 s, ...
-            if last is None or now < last or now - last >= self.confirm_interval - 0.5:
-                self.last_confirmed[key] = now
+            if (
+                last is None
+                or not same_recording
+                or now < last
+                or now - last >= self.confirm_interval - 0.5
+                or follow_up
+            ):
                 chosen.append(task)
         return chosen
 
+    @staticmethod
+    def _recording(candidate):
+        return candidate.get("session_id"), candidate.get("continuity_epoch")
+
+    @staticmethod
+    def _tracked_item(candidate, task):
+        return (
+            task == "unattended_items"
+            and candidate.get("event_type") == "unattended_object"
+        )
+
+    def _screen(self, candidate, predictions, queued_seconds):
+        tasks = candidate["tasks"]
+        groups = [tasks]
+        if (
+            self.publish_task_results
+            and tasks
+            and set(tasks) <= set.union(*SCREENING_ORDER)
+        ):
+            parts = [
+                [task for task in tasks if task in group] for group in SCREENING_ORDER
+            ]
+            groups = [part for part in parts if part]
+        inference_seconds = 0.0
+        for index, group in enumerate(groups):
+            result = self.classifier.classify({**candidate, "tasks": group})
+            if set(result["predictions"]) != set(group):
+                raise ValueError("Classifier omitted or added tasks")
+            predictions.update(result["predictions"])
+            inference_seconds += result["seconds"]
+            final = index + 1 == len(groups)
+            ordered = {task: predictions[task] for task in tasks if task in predictions}
+            self.store.write(
+                candidate,
+                "screened" if final else "screening_partial",
+                predictions=ordered,
+                inference_seconds=inference_seconds,
+                screening_queue_seconds=queued_seconds,
+                **({"newly_screened_tasks": group} if len(groups) > 1 else {}),
+            )
+        return {**result, "predictions": ordered, "seconds": inference_seconds}
+
     def _consume(self):
         while True:
-            candidate = self.queue.get()
+            item = self.queue.get()
+            candidate = None
+            predictions = {}
             try:
-                if candidate is None:
+                if item is None:
                     return
+                candidate, queued_at = item
                 if self.store.released:
                     continue
                 if self.fatal_error:
                     continue
-                result = self.classifier.classify(candidate)
-                if set(result["predictions"]) != set(candidate["tasks"]):
-                    raise ValueError("Classifier omitted or added tasks")
-                self.store.write(
-                    candidate,
-                    "screened",
-                    predictions=result["predictions"],
-                    inference_seconds=result["seconds"],
+                result = self._screen(
+                    candidate, predictions, time.monotonic() - queued_at
                 )
                 if self.confirmation is not None:
                     tasks = self._tasks_to_confirm(candidate, result["predictions"])
-                    if tasks:
-                        self.confirmation.submit(
-                            candidate, result, self.store, tasks=tasks
-                        )
+                    if tasks and self.confirmation.submit(
+                        candidate, result, self.store, tasks=tasks
+                    ):
+                        for task in tasks:
+                            self.last_confirmed[candidate.get("source_id"), task] = (
+                                float(candidate["timestamp_s"]),
+                                self._tracked_item(candidate, task),
+                                self._recording(candidate),
+                            )
             except Exception as exc:
                 logger.exception("Classifier failed")
                 try:
@@ -481,7 +546,8 @@ class ScreeningQueue:
                         "screening_error",
                         reason=str(exc),
                         predictions={
-                            t: unknown("Classifier failed") for t in candidate["tasks"]
+                            task: predictions.get(task, unknown("Classifier failed"))
+                            for task in candidate["tasks"]
                         },
                     )
                 except BaseException as journal_error:

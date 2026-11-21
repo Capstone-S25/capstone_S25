@@ -53,7 +53,9 @@ class VisionPipeline:
             gate=gate,
             safety_scan_seconds=10,
         )
-        self.worker = ScreeningQueue(classifier, self.store, confirmation)
+        self.worker = ScreeningQueue(
+            classifier, self.store, confirmation, publish_task_results=True
+        )
         # One tracking session per pipeline run; the streaming worker's frames
         # carry no recording session or segment.
         self.session_id = uuid4()

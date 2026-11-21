@@ -49,6 +49,43 @@ def candidate(tmp_path, ident="one"):
     }
 
 
+def test_endpoint_result_is_published_before_long_window_finishes(tmp_path):
+    long_started = threading.Event()
+    finish = threading.Event()
+
+    class Classifier:
+        def classify(self, event):
+            if event["tasks"] == ["unattended_items"]:
+                long_started.set()
+                assert finish.wait(3)
+            return {
+                "predictions": {
+                    task: {"decision": "anomaly"} for task in event["tasks"]
+                },
+                "seconds": 0.01,
+            }
+
+    store = EventStore(tmp_path)
+    worker = ScreeningQueue(Classifier(), store, publish_task_results=True)
+    event = candidate(tmp_path)
+    event["tasks"] = ["unattended_items", "smoking"]
+    try:
+        worker.submit(event)
+        assert long_started.wait(3)
+        partial = store.snapshot()[0]
+        assert partial["status"] == "screening_partial"
+        assert partial["newly_screened_tasks"] == ["smoking"]
+        assert list(partial["predictions"]) == ["smoking"]
+        assert partial["screening_queue_seconds"] >= 0
+    finally:
+        finish.set()
+        worker.close()
+    final = store.snapshot()[0]
+    assert final["status"] == "screened"
+    assert final["newly_screened_tasks"] == ["unattended_items"]
+    assert list(final["predictions"]) == event["tasks"]
+
+
 def test_confirmation_does_not_block_second_screening(tmp_path):
     entered, finish = threading.Event(), threading.Event()
 
@@ -467,6 +504,118 @@ def test_gemma_answer_carries_a_scene_summary():
     assert headline(
         {"unattended_items": guarded, "smoking": {"decision": "normal"}}
     ) == ("confirmed unattended items; did not see smoking")
+
+
+def test_unattended_review_uses_late_frames_and_rejects_early_only_evidence(
+    tmp_path, monkeypatch
+):
+    from vision_runtime.gemma import GemmaClient
+
+    paths = []
+    for index in range(8):
+        path = tmp_path / f"frame-{index}.jpg"
+        path.touch()
+        paths.append(str(path))
+    event = {
+        **candidate(tmp_path),
+        "tasks": ["unattended_items"],
+        "event_type": "unattended_object",
+        "timestamp_s": 49.05,
+        "views": {
+            "long": {
+                "paths": paths,
+                "times_s": [28.63, 31.63, 34.63, 37.64, 40.04, 43.04, 46.05, 49.05],
+            },
+        },
+        "metrics": {"owner_last_near_s": 39.0},
+    }
+    monkeypatch.setattr(GemmaClient, "image_url", staticmethod(str))
+
+    class Response:
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {
+                "choices": [
+                    {
+                        "message": {
+                            "content": (
+                                '{"summary":"The person always holds the bag.",'
+                                '"unattended_items":{"decision":"normal","frame_refs":[1],'
+                                '"evidence":"Person carrying bag"}}'
+                            )
+                        }
+                    }
+                ],
+            }
+
+    def post(_url, *, json, **_):
+        parts = json["messages"][0]["content"]
+        assert [part["image_url"]["url"] for part in parts[:-1]] == [
+            paths[index] for index in (6, 7)
+        ]
+        assert "inspect the final time point F2" in parts[-1]["text"]
+        assert "39.00s" in parts[-1]["text"]
+        return Response()
+
+    monkeypatch.setattr("vision_runtime.gemma.requests.post", post)
+    result = GemmaClient("http://127.0.0.1:8090/v1").classify(event)
+    verdict = result["predictions"]["unattended_items"]
+    assert verdict["decision"] == "unknown"
+    assert "final frame" in verdict["evidence"]
+    assert result["summary"] is None
+    assert '"decision":"normal"' in result["raw_responses"][0]["text"]
+
+
+def test_tracked_item_gets_one_follow_up_while_scene_review_is_running(tmp_path):
+    entered, finish, asked = threading.Event(), threading.Event(), []
+
+    class Flags:
+        def classify(self, event):
+            return {
+                "predictions": {"unattended_items": {"decision": "anomaly"}},
+                "seconds": 0.0,
+            }
+
+    class Gemma:
+        def classify(self, event):
+            asked.append(event["event_id"])
+            if event["event_id"] == "scene":
+                entered.set()
+                assert finish.wait(5)
+            return {"predictions": {"unattended_items": {"decision": "anomaly"}}}
+
+    review = ConfirmationQueue(Gemma())
+    store = EventStore(tmp_path)
+    screening = ScreeningQueue(Flags(), store, review, confirm_interval=30)
+    try:
+        for ident, kind, at in [
+            ("scene", "periodic_review", 40.04),
+            ("tracked", "unattended_object", 49.05),
+            ("repeat", "unattended_object", 50.0),
+        ]:
+            event = candidate(tmp_path, ident)
+            event.update(
+                tasks=["unattended_items"],
+                event_type=kind,
+                timestamp_s=at,
+                session_id="same recording",
+            )
+            screening.submit(event)
+            screening.queue.join()
+            assert entered.wait(2)
+        assert asked == ["scene"]
+    finally:
+        finish.set()
+        screening.close()
+        review.close()
+    assert asked == ["scene", "tracked"]
+    assert [row["status"] for row in store.snapshot()] == [
+        "reviewed",
+        "reviewed",
+        "screened",
+    ]
 
 
 def test_no_second_review_while_the_first_is_still_running(tmp_path):

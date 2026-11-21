@@ -26,3 +26,5 @@ htmlcov/
 .idea/
 .vscode/
 *.log
+# Local Gemma weights and server from the model transfer bundle.
+/gemma

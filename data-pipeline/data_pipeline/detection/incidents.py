@@ -218,8 +218,13 @@ class IncidentRecorder:
 
     def __call__(self, candidate: dict, row: dict) -> None:
         with self.lock:
-            if row["status"] == "screened":
-                self._screened(candidate, row.get("predictions") or {})
+            if row["status"] in {"screened", "screening_partial"}:
+                predictions = row.get("predictions") or {}
+                newly_screened = row.get("newly_screened_tasks", predictions)
+                self._screened(
+                    candidate,
+                    {task: predictions[task] for task in newly_screened},
+                )
             elif row["status"] == "reviewed":
                 self._reviewed(
                     candidate,

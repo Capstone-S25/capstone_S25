@@ -1920,6 +1920,11 @@ class RuleEngine:
                         if entry["owner"] is not None
                         else None,
                         item_class=it["cls"],
+                        metrics={"owner_last_near_s": round(entry["owner_near_t"], 2)}
+                        if owner_gone
+                        else {
+                            "no_person_near_since_s": round(entry["nobody_since"], 2)
+                        },
                     )
                 )
         self.items = [e for e in self.items if t - e["last_t"] <= cfg.object_grace_s]

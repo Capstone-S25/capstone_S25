@@ -16,6 +16,7 @@ export interface Incident {
   outcome: IncidentOutcome;
   confidence: number;
   description: string;
+  screeningReason?: string;
   assignedTo?: string;
   remark?: string;
   thumbnailUrl?: string;

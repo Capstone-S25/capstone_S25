@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from data_pipeline.api.auth import CurrentUser, get_current_user
 from data_pipeline.api.database import get_db
+from data_pipeline.api.incident_cards import incident_cards
 from data_pipeline.api.schemas.reviews import (
     Review,
     ReviewCreate,
@@ -27,7 +28,9 @@ DbSession = Annotated[Session, Depends(get_db)]
 User = Annotated[CurrentUser, Depends(get_current_user)]
 
 
-@router.get("/reviews/queue", response_model=ReviewQueuePage)
+@router.get(
+    "/reviews/queue", response_model=ReviewQueuePage, response_model_exclude_unset=True
+)
 def list_review_queue(
     db: DbSession,
     location_id: int | None = None,
@@ -36,6 +39,7 @@ def list_review_queue(
     severity: Severity | None = None,
     page: Annotated[int, Query(ge=1)] = 1,
     page_size: Annotated[int, Query(ge=1, le=100)] = 20,
+    include_card: bool = False,
 ) -> ReviewQueuePage:
     """List incidents waiting for review, most urgent first (API List #21).
 
@@ -51,6 +55,11 @@ def list_review_queue(
         limit=page_size,
         offset=(page - 1) * page_size,
     )
+    cards = (
+        incident_cards(db, [incident for incident, _ in rows], include_notes=False)
+        if include_card
+        else {}
+    )
     items = [
         ReviewQueueItem(
             id=incident.id,
@@ -61,6 +70,7 @@ def list_review_queue(
             first_anomaly_at=incident.first_anomaly_at,
             last_anomaly_at=incident.last_anomaly_at,
             vlm_hint=VLMHint.model_validate(vlm) if vlm else None,
+            **({"card": cards[incident.id]} if include_card else {}),
         )
         for incident, vlm in rows
     ]

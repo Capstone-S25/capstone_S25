@@ -1,6 +1,6 @@
 from sqlalchemy import case, func, select
 from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.orm import Session, aliased, joinedload
+from sqlalchemy.orm import Session, joinedload
 
 from data_pipeline.database.models import (
     Incident,
@@ -9,10 +9,7 @@ from data_pipeline.database.models import (
     Severity,
     VLMResult,
 )
-from data_pipeline.database.repositories.incidents import (
-    incident_filters,
-    latest_vlm_results,
-)
+from data_pipeline.database.repositories.incidents import incident_filters
 
 SEVERITY_RANK = case(
     (Incident.severity == Severity.CRITICAL, 0),
@@ -47,7 +44,14 @@ def list_review_queue(
         None). Critical incidents come first, then moderate, then minor;
         within a severity the longest-waiting incident comes first.
     """
-    latest_vlm = aliased(VLMResult, latest_vlm_results())
+    latest_vlm_id = (
+        select(VLMResult.id)
+        .where(VLMResult.incident_id == Incident.id)
+        .order_by(VLMResult.processed_at.desc(), VLMResult.id.desc())
+        .limit(1)
+        .correlate(Incident)
+        .scalar_subquery()
+    )
     conditions = [
         Review.id.is_(None),
         *incident_filters(
@@ -63,9 +67,9 @@ def list_review_queue(
         .where(*conditions)
     )
     statement = (
-        select(Incident, latest_vlm)
+        select(Incident, VLMResult)
         .outerjoin(Review, Review.incident_id == Incident.id)
-        .outerjoin(latest_vlm, latest_vlm.incident_id == Incident.id)
+        .outerjoin(VLMResult, VLMResult.id == latest_vlm_id)
         .where(*conditions)
         .order_by(SEVERITY_RANK, Incident.first_anomaly_at, Incident.id)
         .limit(limit)
