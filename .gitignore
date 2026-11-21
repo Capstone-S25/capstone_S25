@@ -28,3 +28,6 @@ htmlcov/
 *.log
 # Local Gemma weights and server from the model transfer bundle.
 /gemma
+
+# Local report drafts (LaTeX source, figures and build output)
+/report/
