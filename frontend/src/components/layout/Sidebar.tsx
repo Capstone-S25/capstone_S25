@@ -16,6 +16,7 @@ import {
 import { UserRole } from '../../types';
 import { Toggle } from '../ui/Toggle';
 import InviteStaffModal from '../modals/InviteStaffModal';
+import ChangePasswordModal from '../modals/ChangePasswordModal';
 
 // Figma: v2/Sidebar — brand lockup, labelled sections, Settings pinned to the bottom.
 
@@ -99,6 +100,8 @@ export function Sidebar({ role, activePath }: SidebarProps) {
   const [notifNewAlert, setNotifNewAlert] = useState(true);
   const [teamOpen, setTeamOpen] = useState(false);
   const [showInvite, setShowInvite] = useState(false);
+
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   const settingsBtnRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -272,12 +275,14 @@ export function Sidebar({ role, activePath }: SidebarProps) {
 
           <SettingsSection title="Account">
             <SettingsRow label="Change password">
-              <LinkButton>Change</LinkButton>
+              <LinkButton onClick={() => setShowChangePassword(true)}>Change</LinkButton>
             </SettingsRow>
           </SettingsSection>
         </div>
       )}
 
-      <InviteStaffModal isOpen={showInvite} onClose={() => setShowInvite(false)} />    </>
+      <InviteStaffModal isOpen={showInvite} onClose={() => setShowInvite(false)} />
+      <ChangePasswordModal isOpen={showChangePassword} onClose={() => setShowChangePassword(false)} />
+      </>
   );
 }

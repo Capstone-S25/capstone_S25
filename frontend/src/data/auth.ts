@@ -68,10 +68,16 @@ export function getMe(): Promise<SessionUser> {
   return send<SessionUser>('GET', '/me');
 }
 
-export function changePassword(newPassword: string, confirmPassword: string): Promise<SessionUser> {
+/** First sign-in: new + confirm only. From Settings: the current password too. */
+export function changePassword(
+  newPassword: string,
+  confirmPassword: string,
+  currentPassword?: string,
+): Promise<SessionUser> {
   return send<SessionUser>('POST', '/auth/change-password', {
     new_password: newPassword,
     confirm_password: confirmPassword,
+    ...(currentPassword !== undefined && { current_password: currentPassword }),
   });
 }
 
