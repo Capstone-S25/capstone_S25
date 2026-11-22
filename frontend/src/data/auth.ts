@@ -81,6 +81,20 @@ export function changePassword(
   });
 }
 
+/** "Forgot password?": resolves the same way whether or not the email has an account. */
+export async function requestPasswordReset(email: string): Promise<void> {
+  await send<unknown>('POST', '/auth/forgot-password', { email });
+}
+
+/** Sets a new password with the token from the emailed link; signs out every session. */
+export function resetPassword(token: string, newPassword: string, confirmPassword: string): Promise<void> {
+  return send<void>('POST', '/auth/reset-password', {
+    token,
+    new_password: newPassword,
+    confirm_password: confirmPassword,
+  });
+}
+
 export async function logout(): Promise<void> {
   try {
     await send<void>('POST', '/auth/logout');

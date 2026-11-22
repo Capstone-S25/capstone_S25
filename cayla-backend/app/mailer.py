@@ -179,3 +179,51 @@ def reset_email(
         text,
         _html(title, greeting, intro, email, temp_password, login_url, footer),
     )
+
+
+def _link_html(
+    title: str,
+    greeting: str,
+    intro: str,
+    button_label: str,
+    url: str,
+    footer: str,
+) -> str:
+    """Same card as _html, with a button in place of the credentials box."""
+    e = html.escape
+    return f"""<!doctype html>
+<html><body style="margin:0;padding:32px 16px;background:#f3f4f6;font-family:Inter,Arial,sans-serif;color:#111827;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td align="center">
+<table role="presentation" width="432" cellspacing="0" cellpadding="0" style="max-width:432px;width:100%;background:#ffffff;border-radius:12px;">
+<tr><td style="padding:28px 32px;">
+  <div style="font-size:20px;font-weight:600;margin:0 0 20px;">{e(title)}</div>
+  <div style="font-size:20px;font-weight:700;font-style:italic;color:#1d4ed8;margin:0 0 20px;">{e(APP_NAME)}</div>
+  <p style="font-size:14px;line-height:22px;margin:0 0 16px;">{e(greeting)}</p>
+  <p style="font-size:14px;line-height:22px;margin:0 0 16px;">{e(intro)}</p>
+  <a href="{e(url)}" style="display:inline-block;margin:4px 0 16px;padding:10px 16px;background:#1d4ed8;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;border-radius:8px;">{e(button_label)}</a>
+  <p style="font-size:12px;line-height:18px;color:#6b7280;margin:0 0 8px;">{e(footer)}</p>
+  <p style="font-size:11px;line-height:16px;color:#9ca3af;margin:0;word-break:break-all;">{e(url)}</p>
+</td></tr></table>
+</td></tr></table>
+</body></html>"""
+
+
+def reset_link_email(name: str, reset_url: str, expires_minutes: int) -> Email:
+    """Self-service "Forgot password?": a one-time link to choose a new password."""
+    title = f"Reset your {APP_NAME} password"
+    greeting = f"Hi {_first_name(name)},"
+    intro = (
+        f"Someone asked to reset the password for your {APP_NAME} account. "
+        f"Choose a new password with the button below. "
+        f"Your current password keeps working until you do."
+    )
+    footer = (
+        f"This link works once, for {expires_minutes} minutes. "
+        f"If you didn't ask for this, you can ignore this email."
+    )
+    text = f"{greeting}\n\n{intro}\n\nChoose a new password: {reset_url}\n\n{footer}\n"
+    return Email(
+        title,
+        text,
+        _link_html(title, greeting, intro, "Choose a new password", reset_url, footer),
+    )

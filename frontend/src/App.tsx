@@ -5,6 +5,8 @@ import { RequireAuth } from './components/layout/RequireAuth';
 import LoginPage from './pages/auth/LoginPage';
 import FirstTimeLoginPage from './pages/auth/FirstTimeLoginPage';
 import SetPasswordPage from './pages/auth/SetPasswordPage';
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 
 // Staff
 import StaffHomePage from './pages/staff/StaffHomePage';
@@ -27,6 +29,8 @@ export default function App() {
         <Route path="/login"        element={<LoginPage />} />
         <Route path="/first-login"  element={<FirstTimeLoginPage />} />
         <Route path="/set-password" element={<SetPasswordPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password"  element={<ResetPasswordPage />} />
 
         {/* Staff: anyone signed in */}
         <Route element={<RequireAuth />}>

@@ -142,3 +142,30 @@ class AuditLogEntry(Base):
     entity_id: Mapped[str] = mapped_column(Text)
     old_values: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     new_values: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+
+
+class PasswordReset(Base):
+    """One emailed "Forgot password?" link. Only the SHA-256 of its token is stored.
+
+    Attributes:
+        reset_id: Auto-generated primary key.
+        token_hash: SHA-256 digest of the link's token.
+        user_id: Whose password it resets; deleted with them.
+        created_at: When it was requested, set by the database.
+        expires_at: When the link stops working.
+        used_at: When it was used, or replaced by a newer link; None while open.
+    """
+
+    __tablename__ = "password_resets"
+    __table_args__ = (Index("password_resets_user_idx", "user_id"),)
+
+    reset_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    token_hash: Mapped[bytes] = mapped_column(LargeBinary, unique=True)
+    user_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("users.user_id", ondelete="CASCADE")
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
