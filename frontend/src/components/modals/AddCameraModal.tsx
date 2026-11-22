@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Modal, INPUT_CLASS, LABEL_CLASS } from '../ui/Modal';
 import { Button } from '../ui/Button';
+import { RULE_TYPES } from '../../data/rules';
 
 interface AddCameraModalProps {
   isOpen: boolean;
@@ -18,7 +19,7 @@ const LOCATIONS = [
   'Pantry L3',
 ];
 
-const LOOKS_FOR_OPTIONS = ['Smoking', 'Littering', 'Loitering', 'Unattended item'];
+const LOOKS_FOR_OPTIONS: readonly string[] = RULE_TYPES;
 
 
 

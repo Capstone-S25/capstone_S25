@@ -5,6 +5,7 @@ import { AppLayout } from '../../components/layout/AppLayout';
 import { FilterSelect } from '../../components/ui/FilterSelect';
 import { StatusPill } from '../../components/ui/Badge';
 import { BarMeter, FieldLabel, PageHeader, SectionTitle } from '../../components/ui/Primitives';
+import { RULE_TYPES } from '../../data/rules';
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
@@ -23,10 +24,10 @@ interface Place {
 
 const PLACES: Place[] = [
   { name: 'Carpark B2', count: 22, floor: 'Basement 2', x: 0, y: 0, w: 5, d: 4, summary: 'Mostly smoking near the staircase doors late at night. Up slightly from last week.', types: ['Smoking', 'Loitering'], times: [0, 1, 6, 15] },
-  { name: 'Lift Lobby 1', count: 16, floor: 'Level 1–3', x: 5, y: 0.5, w: 2.4, d: 3, summary: 'Littering outside the lifts, mostly in the evening rush. 35% more than last week.', types: ['Littering', 'Unattended item'], times: [2, 3, 9, 2] },
+  { name: 'Lift Lobby 1', count: 16, floor: 'Level 1–3', x: 5, y: 0.5, w: 2.4, d: 3, summary: 'Littering outside the lifts, mostly in the evening rush. 35% more than last week.', types: ['Littering'], times: [2, 3, 9, 2] },
   { name: 'Corridor 2', count: 11, floor: 'Level 1–3', x: 7.6, y: 0.5, w: 2.4, d: 3, summary: 'People waiting by the fire exit for lifts. Steady week on week.', types: ['Loitering'], times: [1, 4, 5, 1] },
-  { name: 'Main entrance', count: 7, floor: 'Level 1–3', x: 0, y: 0, w: 3, d: 4, summary: 'Bags left by the gantry and smoking at the drop-off point.', types: ['Unattended item', 'Smoking'], times: [3, 2, 2, 0] },
-  { name: 'Meeting Room 1', count: 5, floor: 'Basement 2', x: 7.6, y: 0.5, w: 2.4, d: 3, summary: 'Laptops and bags left behind after meetings end.', types: ['Unattended item'], times: [2, 3, 0, 0] },
+  { name: 'Main entrance', count: 7, floor: 'Level 1–3', x: 0, y: 0, w: 3, d: 4, summary: 'People lingering by the gantry and smoking at the drop-off point.', types: ['Loitering', 'Smoking'], times: [3, 2, 2, 0] },
+  { name: 'Meeting Room 1', count: 5, floor: 'Basement 2', x: 7.6, y: 0.5, w: 2.4, d: 3, summary: 'Cups and wrappers left behind after meetings end.', types: ['Littering'], times: [2, 3, 0, 0] },
   { name: 'Staircase B', count: 4, floor: 'Basement 2', x: 5.2, y: 0.5, w: 2.2, d: 3, summary: 'Smoking on the landing with the fire door propped open.', types: ['Smoking'], times: [0, 0, 1, 3] },
   { name: 'Pantry L3', count: 3, floor: 'Level 1–3', x: 3.2, y: 0.5, w: 1.6, d: 3, summary: 'Wrappers and cups left beside the bins after lunch.', types: ['Littering'], times: [0, 3, 0, 0] },
 ];
@@ -35,10 +36,7 @@ const TIME_LABELS = ['Morning · 6 AM–12 PM', 'Afternoon · 12–6 PM', 'Eveni
 
 const TYPE_OPTIONS = [
   { value: 'all', label: 'All types' },
-  { value: 'Smoking', label: 'Smoking' },
-  { value: 'Loitering', label: 'Loitering' },
-  { value: 'Littering', label: 'Littering' },
-  { value: 'Unattended item', label: 'Unattended item' },
+  ...RULE_TYPES.map((t) => ({ value: t, label: t })),
 ];
 
 const PERIOD_OPTIONS = [

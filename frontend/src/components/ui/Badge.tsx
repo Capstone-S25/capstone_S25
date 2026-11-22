@@ -8,7 +8,7 @@ import { SEVERITY_TONE, OUTCOME_DOT, type PillTone } from './tones';
 //        Yellow (minor), Green (accepted / live), Neutral.
 
 
-const TONE: Record<PillTone, { bg: string; fg: string; dot: string }> = {
+export const TONE: Record<PillTone, { bg: string; fg: string; dot: string }> = {
   blue:    { bg: 'var(--color-brand-soft)',   fg: 'var(--color-brand)',   dot: 'var(--color-brand)' },
   red:     { bg: 'var(--color-danger-soft)',  fg: 'var(--color-danger)',  dot: 'var(--color-danger)' },
   amber:   { bg: 'var(--color-warning-soft)', fg: 'var(--color-warning)', dot: 'var(--color-warning-bar)' },

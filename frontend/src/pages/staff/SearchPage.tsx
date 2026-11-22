@@ -7,6 +7,7 @@ import { ClipId, ClipThumb, EmptyState, PageHeader } from '../../components/ui/P
 import ClipDetailsModal from '../../components/modals/ClipDetailsModal';
 import { useIncidents } from '../../data/useIncidents';
 import { clipLabel, matchesClipId } from '../../data/clipId';
+import { RULE_TYPES } from '../../data/rules';
 import type { Incident } from '../../types';
 
 const LOCATIONS = ['Carpark B2', 'Lift Lobby 1', 'Corridor 2', 'Main entrance', 'Meeting Room 1', 'Staircase B', 'Pantry L3'];
@@ -57,7 +58,7 @@ export default function SearchPage() {
           label="Type"
           value={typeFilter}
           onChange={setTypeFilter}
-          options={[{ value: 'all', label: 'All types' }, ...['Smoking', 'Littering', 'Loitering', 'Unattended item'].map((t) => ({ value: t, label: t }))]}
+          options={[{ value: 'all', label: 'All types' }, ...RULE_TYPES.map((t) => ({ value: t, label: t }))]}
         />
         <FilterSelect
           label="Location"

@@ -17,10 +17,9 @@ const DAILY_DATA = [
 ];
 
 const BY_TYPE = [
-  { type: 'Smoking', count: 30 },
-  { type: 'Littering', count: 26 },
-  { type: 'Loitering', count: 25 },
-  { type: 'Unattended item', count: 16 },
+  { type: 'Smoking', count: 36 },
+  { type: 'Littering', count: 33 },
+  { type: 'Loitering', count: 28 },
 ];
 const MAX_COUNT = Math.max(...BY_TYPE.map((t) => t.count));
 

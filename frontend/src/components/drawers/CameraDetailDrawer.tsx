@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { Pencil, Clapperboard } from 'lucide-react';
 import type { Camera } from '../../types';
-import { MOCK_INCIDENTS, MOCK_RULES } from '../../data/mock';
+import { MOCK_INCIDENTS } from '../../data/mock';
+import { formatHours, useRules } from '../../data/rules';
 import { SeverityBadge, OutcomeDot, StatusPill } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { Drawer } from '../ui/Drawer';
@@ -22,6 +23,7 @@ const formatTime = (iso: string) => new Date(iso).toLocaleTimeString('en-US', { 
 
 export default function CameraDetailDrawer({ cam, onClose }: CameraDetailDrawerProps) {
   const navigate = useNavigate();
+  const rules = useRules();
   if (!cam) return null;
 
   const online = cam.status === 'online';
@@ -29,7 +31,8 @@ export default function CameraDetailDrawer({ cam, onClose }: CameraDetailDrawerP
     .filter((i) => i.camId === cam.id)
     .sort((a, b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime())
     .slice(0, 5);
-  const camRules = MOCK_RULES.filter((r) => cam.rules.includes(r.id));
+  // The camera's rules as saved on Admin › Monitoring rules.
+  const camRules = rules.filter((r) => r.cameraIds.includes(cam.id));
 
   return (
     <Drawer
@@ -86,7 +89,7 @@ export default function CameraDetailDrawer({ cam, onClose }: CameraDetailDrawerP
               <div key={rule.id} className="flex items-center gap-[10px] rounded-[6px] border border-line px-[12px] py-[10px]">
                 <div className="min-w-0 flex-1">
                   <p className={`m-0 text-[13px] font-medium ${rule.enabled ? 'text-ink' : 'text-faint'}`}>{rule.detectType}</p>
-                  <p className="m-0 mt-[2px] text-[12px] text-muted">{rule.activeFrom} – {rule.activeTo} · {rule.severity}</p>
+                  <p className="m-0 mt-[2px] text-[12px] text-muted">{formatHours(rule.activeFrom, rule.activeTo)} · {rule.severity}</p>
                 </div>
                 <StatusPill tone={rule.enabled ? 'green' : 'neutral'}>{rule.enabled ? 'Active' : 'Off'}</StatusPill>
               </div>

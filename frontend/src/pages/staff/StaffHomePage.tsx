@@ -24,6 +24,7 @@ import { useWidgetLayout, type WidgetConfig, type WidgetMeta } from '../../compo
 import { MOCK_CAMERAS } from '../../data/mock';
 import { useIncidents } from '../../data/useIncidents';
 import { clipLabel } from '../../data/clipId';
+import { matchRule, ruleLine, useRules } from '../../data/rules';
 import {
   ApiError,
   fetchFlaggedBoxes,
@@ -72,16 +73,16 @@ const QUEUE: QueueItem[] = [
     people: '1 adult · Grey hoodie, dark cap',
     description: 'Person smoking a cigarette next to the staircase door, ash dropped on the floor.',
     reason: 'Repeated hand-to-mouth motion with visible smoke in a no-smoking zone.',
-    rule: 'Carpark B2 · No Smoking · 10 PM – 6 AM', stamp: '23:18:48', flagged: [0.4, 0.85],
+    rule: '', stamp: '23:18:48', flagged: [0.4, 0.85],
     box: { left: '65%', top: '54%', width: '10.6%', height: '33.7%' },
   },
   {
-    id: 'inc-002', type: 'Unattended item', location: 'Meeting Room 1', severity: 'Moderate', cam: 'Cam 01', time: '10:15 AM', confidence: 81,
-    place: 'Meeting Room 1, beside the door', window: 'Mon 11 Oct, 10:15 – 10:31 AM', duration: '16 min 04 s', durationSec: 964,
-    people: 'No one in frame',
-    description: 'Laptop bag left on a chair after the 9:30 AM meeting ended.',
-    reason: 'Object stationary for more than 15 minutes with no owner in view.',
-    rule: 'Meeting rooms · Unattended item · All day', stamp: '10:15:22', flagged: [0.3, 1],
+    id: 'inc-002', type: 'Littering', location: 'Meeting Room 1', severity: 'Minor', cam: 'Cam 01', time: '10:15 AM', confidence: 81,
+    place: 'Meeting Room 1, by the table', window: 'Mon 11 Oct, 10:15 – 10:16 AM', duration: '1 min 04 s', durationSec: 64,
+    people: '2 adults · Office wear',
+    description: 'Drink cans and wrappers left on the table after the 9:30 AM meeting ended.',
+    reason: 'Items put down and the people left the room without taking them.',
+    rule: '', stamp: '10:15:22', flagged: [0.3, 1],
     box: { left: '38%', top: '58%', width: '12%', height: '18%' },
   },
   {
@@ -90,7 +91,7 @@ const QUEUE: QueueItem[] = [
     people: '1 adult · Dark jacket, backpack',
     description: 'Person waiting by the fire exit, pacing between the exit and the lift.',
     reason: 'Same person in a restricted corridor for more than 10 minutes.',
-    rule: 'Corridor 2 · Loitering · 10 min', stamp: '11:02:05', flagged: [0.2, 0.9],
+    rule: '', stamp: '11:02:05', flagged: [0.2, 0.9],
     box: { left: '52%', top: '30%', width: '9%', height: '45%' },
   },
   {
@@ -99,7 +100,7 @@ const QUEUE: QueueItem[] = [
     people: '1 adult · White shirt',
     description: 'Tissue paper dropped outside the lift doors and left behind.',
     reason: 'Object dropped and person left the frame without picking it up.',
-    rule: 'Lobbies · Littering · All day', stamp: '20:37:14', flagged: [0.35, 0.6],
+    rule: '', stamp: '20:37:14', flagged: [0.35, 0.6],
     box: { left: '44%', top: '40%', width: '10%', height: '40%' },
   },
 ];
@@ -195,12 +196,23 @@ export default function StaffHomePage() {
   const { incidents, source } = useIncidents(1000, fetchReviewQueue);
   const [saving, setSaving] = useState(false);
   const [handled, setHandled] = useState<string[]>([]);
+  // Demo alerts follow Admin › Monitoring rules: one shows only while an enabled rule
+  // covers its place, behaviour and time, and takes that rule's severity.
+  const rules = useRules();
+  const demoQueue = useMemo(
+    () =>
+      QUEUE.flatMap((q) => {
+        const rule = matchRule(rules, q.location, q.type, q.stamp);
+        return rule ? [{ ...q, severity: rule.severity, rule: ruleLine(rule) }] : [];
+      }),
+    [rules],
+  );
   const queue = useMemo(
     () =>
-      (source === 'live' ? incidents.filter((i) => i.outcome === 'Pending').map(fromIncident) : QUEUE).filter(
+      (source === 'live' ? incidents.filter((i) => i.outcome === 'Pending').map(fromIncident) : demoQueue).filter(
         (q) => !handled.includes(q.id),
       ),
-    [incidents, source, handled],
+    [incidents, source, handled, demoQueue],
   );
   const [selectedId, setSelectedId] = useState<string>(QUEUE[0].id);
   const [panelOpen, setPanelOpen] = useState(true);

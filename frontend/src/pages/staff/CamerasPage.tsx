@@ -5,18 +5,7 @@ import { ClipThumb, EmptyState, PageHeader } from '../../components/ui/Primitive
 import { MOCK_CAMERAS, MOCK_INCIDENTS } from '../../data/mock';
 import type { Camera } from '../../types';
 import CameraDetailDrawer from '../../components/drawers/CameraDetailDrawer';
-
-// Camera rules lookup (mocked — in real app would join via MOCK_RULES)
-const CAMERA_RULE_LABELS: Record<string, string[]> = {
-  'cam-01': ['Smoking', 'Littering'],
-  'cam-02': ['Loitering'],
-  'cam-03': ['Unattended item'],
-  'cam-04': ['Unattended item'],
-  'cam-05': ['Unattended item'],
-  'cam-06': ['Smoking'],
-  'cam-07': ['Littering'],
-  'cam-09': ['Unattended item', 'Smoking'],
-};
+import { cameraLooksFor, useRules } from '../../data/rules';
 
 const DISPLAY_CAMERAS = MOCK_CAMERAS.slice(0, 8);
 
@@ -27,7 +16,7 @@ function formatTime(iso?: string) {
 
 export function CameraCard({ cam, seed, onSelect }: { cam: Camera; seed: number; onSelect: (c: Camera) => void }) {
   const isOffline = cam.status === 'offline';
-  const rules = CAMERA_RULE_LABELS[cam.id] ?? [];
+  const rules = cameraLooksFor(useRules(), cam.id);
   const today = MOCK_INCIDENTS.filter((i) => i.camId === cam.id).length;
   return (
     <button
