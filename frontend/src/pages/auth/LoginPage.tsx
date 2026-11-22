@@ -1,5 +1,5 @@
 import { useState, FormEvent } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { CircleX, TriangleAlert, CircleCheck } from 'lucide-react';
 import { AuthLayout, AUTH_INPUT, AUTH_LABEL, AUTH_SUBMIT, FormError, PasswordInput } from '../../components/layout/AuthLayout';
 import { StatusPill } from '../../components/ui/Badge';
@@ -25,6 +25,9 @@ function IncidentPreviewCard() {
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  // Arrived from the reset-password page after choosing a new password.
+  const [searchParams] = useSearchParams();
+  const passwordReset = searchParams.get('reset') === '1';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [keepSignedIn, setKeepSignedIn] = useState(false);
@@ -66,6 +69,12 @@ export default function LoginPage() {
         </div>
       }
     >
+      {passwordReset && !error && (
+        <div role="status" className="mb-[16px] flex items-start gap-[8px] rounded-[6px] bg-brand-soft p-[12px] text-[13px] text-ink-2">
+          <CircleCheck size={16} className="mt-[1px] shrink-0 text-success" />
+          <span>Your password has been changed. Sign in with your new password.</span>
+        </div>
+      )}
       {error && <FormError>{error}</FormError>}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-[16px]" noValidate>
@@ -84,7 +93,7 @@ export default function LoginPage() {
             <input id="keep-signed-in" type="checkbox" checked={keepSignedIn} onChange={(e) => setKeepSignedIn(e.target.checked)} className="size-[15px] cursor-pointer accent-[var(--color-brand)]" />
             Keep me signed in
           </label>
-          <a href="#" className="text-[13px] font-medium text-brand no-underline hover:underline">Forgot password?</a>
+          <Link to="/forgot-password" className="text-[13px] font-medium text-brand no-underline hover:underline">Forgot password?</Link>
         </div>
 
         <button type="submit" disabled={loading} className={`${AUTH_SUBMIT} mt-[4px]`}>

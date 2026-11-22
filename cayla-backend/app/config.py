@@ -7,6 +7,7 @@ well. Variables already set in the environment win.
 
 import os
 from pathlib import Path
+from urllib.parse import urljoin
 from zoneinfo import ZoneInfo
 
 from dotenv import load_dotenv
@@ -33,6 +34,12 @@ TEMP_PASSWORD_HOURS = int(
 APP_URL = os.environ.get(
     "APP_URL", "http://localhost:8000/docs"
 )  # Where to redirect users after login -- change to dashboard once it exists
+# Self-service "Forgot password?": how long the emailed reset link works, and the
+# dashboard page it opens. Defaults to /reset-password on the same server as APP_URL.
+RESET_LINK_MINUTES = int(os.environ.get("RESET_LINK_MINUTES", "60"))
+PASSWORD_RESET_URL = os.environ.get("PASSWORD_RESET_URL") or urljoin(
+    APP_URL, "/reset-password"
+)
 APP_NAME = os.environ.get("APP_NAME", "InSight")
 SITE_NAME = os.environ.get(
     "SITE_NAME", "Tower A"

@@ -1,7 +1,12 @@
-PUBLIC = {("POST", "/api/v1/auth/login")}
+PUBLIC = {
+    ("POST", "/api/v1/auth/login"),
+    # "Forgot password?" is for people who can't sign in.
+    ("POST", "/api/v1/auth/forgot-password"),
+    ("POST", "/api/v1/auth/reset-password"),
+}
 
 
-def test_every_route_but_login_needs_a_session(client, seeded):
+def test_every_route_but_signing_in_needs_a_session(client, seeded):
     paths = client.get("/openapi.json").json()["paths"]
     routes = [
         (
@@ -15,8 +20,8 @@ def test_every_route_but_login_needs_a_session(client, seeded):
     ]
     client.cookies.clear()
 
-    # 9 from Person B plus the thumbnail; 9 login, user and audit-log routes.
-    assert len(routes) == 19
+    # 9 from Person B plus the thumbnail; 11 login, user and audit-log routes.
+    assert len(routes) == 21
     for method, path in routes:
         if (method, path) in PUBLIC:
             continue

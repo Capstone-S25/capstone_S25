@@ -1,4 +1,9 @@
-from data_pipeline.database.models.accounts import AuditLogEntry, User, UserSession
+from data_pipeline.database.models.accounts import (
+    AuditLogEntry,
+    PasswordReset,
+    User,
+    UserSession,
+)
 from data_pipeline.database.models.detections import Detection
 from data_pipeline.database.models.incidents import Incident, Severity
 from data_pipeline.database.models.reviews import Review, ReviewOutcome
@@ -10,6 +15,7 @@ __all__ = [
     "AuditLogEntry",
     "Detection",
     "Incident",
+    "PasswordReset",
     "Review",
     "ReviewOutcome",
     "SegmentStatus",
