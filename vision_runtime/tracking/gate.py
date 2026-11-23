@@ -115,6 +115,19 @@ class GateConfig:
     # puffs repeatedly; a phone call or a hand resting on the chin is one raise
     smoke_away_h: float = 0.35  # the hand counts as away again beyond this many body heights from the face
 
+    # "approach_and_pause", fit in notebooks/exp/integration/specific_action_cues.py (2026-11-21):
+    # a wrist that arrives from OUTSIDE the face radius and then rests there. The approach test is
+    # what separates raising a cigarette from a hand already resting on the chin, so it fires where
+    # hand_to_face does not. Offline on the 148-video test set it took smoking from 35 to 41 at the
+    # gate. Distances are per wrist, in body heights. Ported 2026-11-23; see the note in stage1.py
+    # about person dedup standing in for the smoking question.
+    approach_radius_h: float = 0.22
+    approach_dwell_s: float = 0.4
+    approach_exit_h: float = 0.06  # how far outside the radius the wrist must have been first
+    approach_gap_s: float = 0.45  # a longer break than this restarts the dwell
+    approach_history_s: float = 1.1
+    approach_cooldown_s: float = 4.0
+
     reach_margin_h: float = (
         -0.15
     )  # wrist within 0.15 body-heights above the knee counts
@@ -834,6 +847,7 @@ HINTS = {
     "sustained_presence": "Person stayed in a small area for a long time. Decide: loitering, rough sleeping, smoking, or normal waiting.",
     "fast_motion": "Person moving unusually fast. Check for running, chasing, fleeing or fighting.",
     "hand_to_face": "Person repeatedly raised a hand to the face. Check for smoking (cigarette or vape at mouth, smoke) versus eating, drinking or a phone call.",
+    "approach_and_pause": "Person brought a hand up to the face and held it there. Check for smoking (cigarette or vape at mouth, smoke) versus eating, drinking or a phone call.",
     "reach_down": "Person reached toward the ground. Check whether they discarded litter or set down an item.",
     "static_object_left": "A new stationary object appeared where a person just was. Check for littering or a dropped item.",
     "unattended_object": "Item has been away from its owner for a while. Check whether it is unattended.",
@@ -1154,6 +1168,8 @@ class RuleEngine:
             if p.get("kpts") is not None:
                 if "smoking" in cfg.rules:
                     events += self._smoking(cid, st, p, obs)
+                if "approach_pause" in cfg.rules:
+                    events += self._approach_pause(cid, st, p, obs)
                 if "reach_down" in cfg.rules:
                     new = self._reach(cid, st, p, obs)
                     if self.verifier:
@@ -1332,6 +1348,9 @@ class RuleEngine:
                 "speed_armed": True,
                 "smoke_hits": deque(),
                 "last_smoke": -1e9,
+                "last_approach": -1e9,
+                "approach": {},
+                "approach_hist": {},
                 "last_reach": -1e9,
                 "last_near": -1e9,
                 "view_pts": deque(),
@@ -1512,6 +1531,59 @@ class RuleEngine:
                 )
             ]
         return []
+
+    def _approach_pause(self, cid, st, p, obs):
+        """A wrist that enters the face radius from outside and then pauses there."""
+        cfg, t, k = self.cfg, obs.t, p["kpts"]
+        face_pts = [f for f in (_kp(k, i) for i in (NOSE, L_EYE, R_EYE, L_EAR, R_EAR)) if f]
+        if not face_pts:
+            return []
+        face = tuple(np.mean(face_pts, axis=0))
+        h = max(1.0, p["box"][3] - p["box"][1])
+        events = []
+        for side, index in ((0, L_WRIST), (1, R_WRIST)):
+            samples = st["approach_hist"].setdefault(side, deque())
+            while samples and t - samples[0][0] > cfg.approach_history_s:
+                samples.popleft()
+            wrist = _kp(k, index)
+            if wrist is None:
+                # An unseen wrist neither advances nor breaks the dwell; it adds no sample.
+                continue
+            d = math.hypot(wrist[0] - face[0], wrist[1] - face[1]) / h
+            if d > cfg.approach_radius_h:
+                st["approach"].pop(side, None)
+            else:
+                previous = st["approach"].get(side)
+                started = (
+                    previous[0]
+                    if previous and t - previous[1] <= cfg.approach_gap_s
+                    else t
+                )
+                st["approach"][side] = (started, t)
+                entered = any(
+                    at <= started and away >= cfg.approach_radius_h + cfg.approach_exit_h
+                    for at, away in samples
+                )
+                if (
+                    t - started >= cfg.approach_dwell_s
+                    and entered
+                    and t - st["last_approach"] >= cfg.approach_cooldown_s
+                ):
+                    st["last_approach"] = t
+                    events.append(
+                        self._event(
+                            "approach_and_pause",
+                            f"person{cid}",
+                            obs,
+                            p["box"],
+                            metrics={
+                                "wrist_face_h": round(d, 3),
+                                "dwell_s": round(t - started, 2),
+                            },
+                        )
+                    )
+            samples.append((t, d))
+        return events
 
     def _reach(self, cid, st, p, obs):
         cfg, t, k = self.cfg, obs.t, p["kpts"]

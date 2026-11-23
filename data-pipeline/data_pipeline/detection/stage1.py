@@ -64,6 +64,10 @@ TASKS_BY_EVENT = {
     # one on the same person (8 ICVL held-out littering incidents caught only this way,
     # 2026-11-10).
     "hand_to_face": ("smoking", "littering"),
+    # Littering too, for the reason given above hand_to_face: this cue wins the person
+    # dedup against reach_down and pose_action, and asking only about smoking silently
+    # dropped the littering question on 2 held-out events (2026-11-23).
+    "approach_and_pause": ("smoking", "littering"),
     "periodic_review": (
         "smoking",
         "littering",
@@ -107,7 +111,7 @@ def default_config(gate, device="cpu", imgsz=640):
     return gate.GateConfig(
         det_weights=str(weights / "yolo26s.pt"),
         pose_weights=str(weights / "yolo26s-pose.pt"),
-        rules=gate.DEFAULT_RULES + ("pose_action", "smoking"),
+        rules=gate.DEFAULT_RULES + ("pose_action", "smoking", "approach_pause"),
         inview_s=60.0,
         # Calibrated on the camera-disjoint split (notebooks/exp/eval/calib_chosen.json,
         # CALIB_LOG.md experiments 1-31 on feat/stage1-integration): 90.3 % of events on
