@@ -198,8 +198,9 @@ python data-pipeline/main.py --video /path/to/video.mp4 --source-id camera_01
 One command does the same without Node.js once the dashboard is built
 (`npm run build` in `frontend/`, already done in a transfer bundle). It serves
 the API, the login and account routes and the dashboard from one process on
-port 8000, runs the camera backend, and starts the bundled CPU Gemma server
-when one is configured, supervising them all until Ctrl+C:
+port 8000, runs the camera backend, and starts the bundled CPU review model
+server when one is configured (Qwen 3.5-4B by default; its settings still say
+"Gemma"), supervising them all until Ctrl+C:
 
 ```bash
 python3.12 deploy.py start --dashboard --camera --video /path/to/video.mp4 --source-id camera_01

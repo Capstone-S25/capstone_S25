@@ -2,7 +2,9 @@
 
 This is the CPU deployment of `feat/vision-app-integration`. It contains the
 application, every model file, the built dashboard, Python packages for an
-offline install, and Gemma 4 E4B with a CPU server. `DEPLOYMENT_MANIFEST.json`
+offline install, and a review model (Qwen 3.5-4B unless this copy's
+`gemma/gemma.json` says otherwise) with a CPU server. Settings and folders
+still say "Gemma" for either model. `DEPLOYMENT_MANIFEST.json`
 lists what this copy includes and the commit it was built from. Nothing else
 needs to be copied or downloaded.
 
@@ -15,7 +17,7 @@ needs to be copied or downloaded.
 | FFmpeg on `PATH` | cameras and video files | `sudo apt install ffmpeg` |
 | PostgreSQL | cameras and the dashboard | Any one of: Docker Compose (setup starts a database); or `sudo apt install postgresql postgresql-16-pgvector` followed by `sudo -u postgres psql -c "CREATE USER capstone PASSWORD 'password'" -c "CREATE DATABASE capstone OWNER capstone"` and `sudo -u postgres psql -d capstone -c "CREATE EXTENSION IF NOT EXISTS vector"`; or an existing server, with `DATABASE_URL=postgresql+psycopg://user:password@host:5432/dbname` in `.env` before setup. |
 | glibc 2.38 or newer, `libgomp1`, `libssl3` | bundled Gemma only | Ubuntu 24.04 has them. On an older system setup says so and continues without Gemma. |
-| RAM | everything | Screening about 2.5 GB, Gemma about 9 GB; 32 GB is ample. |
+| RAM | everything | Screening about 2.5 GB, the review model about 11 GB (Qwen 3.5-4B or Gemma E4B); 32 GB is ample. |
 
 No GPU, Node.js or internet connection is required.
 

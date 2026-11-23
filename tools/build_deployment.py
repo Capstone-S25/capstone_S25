@@ -3,13 +3,15 @@
     python tools/build_deployment.py dist/capstone-cpu-deployment-YYYYMMDD \
         --ensemble-export results/.../bundle_v10 \
         --hf-cache ~/.cache/huggingface/hub \
-        --gemma-weights data/models/gemma4_gguf/gemma-4-E4B-it-qat-q4_0 \
+        --reviewer qwen35-4b --gemma-weights <folder with the reviewer's two .gguf files> \
         --llama data/tools/llama_gemma4/b11925/llama-b11925 \
         --wheels --archive
 
 The folder holds the application at the current commit, every model file, the
 built dashboard, and optionally Python wheels (offline install) and a CPU
-Gemma server with its weights. Run it from a clean checkout of the branch,
+llama.cpp server with the review model's weights (Qwen 3.5-4B by default, or
+Gemma 4 E4B). The GEMMA_* settings and the gemma/ folder keep their names for
+either model. Run it from a clean checkout of the branch,
 with `npm install` already done in frontend/ and the models imported.
 """
 
@@ -23,6 +25,7 @@ import subprocess
 import sys
 import tarfile
 from pathlib import Path
+from re import sub
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -47,11 +50,25 @@ EXCLUDE = ("data-pipeline/tests/", "data-pipeline/uv.lock", "docs/api_list.xlsx"
 # needs only these.
 LLAMA_SKIP = ("cuda", "rpc", "bench", "perplexity", "quantize", "cli-impl")
 LLAMA_SKIP += ("completion-impl", "fit-params")
-GEMMA_SOURCE = {
-    "repository": "https://huggingface.co/google/gemma-4-E4B-it-qat-q4_0-gguf",
-    "revision": "4b4a2c1d584be7264f87aac328a1bc739ce81b6c",
-    "license": "apache-2.0 (as stated on the model card)",
-    "alias": "gemma4-e4b",
+# The review model's source, recorded in gemma/gemma.json. Qwen 3.5-4B gave
+# better review verdicts than Gemma 4 E4B on the same 592 held-out windows
+# (macro F1 0.600 against 0.406). Both run with the same server flags; Qwen
+# reads a 640x360 frame as about 220 tokens and Gemma about 120, so a Qwen
+# review takes about 1.3 times as long on the CPU (docs/deployment.md).
+REVIEWERS = {
+    "qwen35-4b": {
+        "repository": "https://huggingface.co/ggml-org/Qwen3.5-4B-GGUF",
+        "revision": "8d43d974efc48399cb58957ad49c8b26bf5a109c",
+        "source_files": "Qwen3.5-4B-Q4_K_M.gguf, mmproj-Qwen3.5-4B-Q8_0.gguf",
+        "license": "apache-2.0 (as stated on the model card)",
+        "alias": "qwen35-4b",
+    },
+    "gemma4-e4b": {
+        "repository": "https://huggingface.co/google/gemma-4-E4B-it-qat-q4_0-gguf",
+        "revision": "4b4a2c1d584be7264f87aac328a1bc739ce81b6c",
+        "license": "apache-2.0 (as stated on the model card)",
+        "alias": "gemma4-e4b",
+    },
 }
 
 
@@ -87,7 +104,13 @@ def main():
     parser.add_argument("output", type=Path)
     parser.add_argument("--ensemble-export", type=Path, required=True)
     parser.add_argument("--hf-cache", type=Path, required=True)
-    parser.add_argument("--gemma-weights", type=Path)
+    parser.add_argument(
+        "--gemma-weights",
+        "--reviewer-weights",
+        type=Path,
+        help="Folder holding the review model's weights and mmproj .gguf files",
+    )
+    parser.add_argument("--reviewer", choices=list(REVIEWERS), default="qwen35-4b")
     parser.add_argument("--llama", type=Path)
     parser.add_argument("--wheels", action="store_true")
     parser.add_argument(
@@ -149,13 +172,17 @@ def main():
                     place(source, out / "gemma/llama" / source.name)
         weights = sorted(args.gemma_weights.glob("*.gguf"))
         if len(weights) != 2:
-            raise SystemExit("Expected the Gemma weights and its mmproj file")
+            raise SystemExit("Expected the review model's weights and its mmproj file")
+        source_info = REVIEWERS[args.reviewer]
+        family = source_info["alias"].split("-")[0]
+        if not all(family in sub("[-_.]", "", w.name.lower()) for w in weights):
+            raise SystemExit(f"Those .gguf files are not {args.reviewer}'s")
         for source in weights:
             place(source, out / "gemma/models" / source.name)
         (out / "gemma/gemma.json").write_text(
             json.dumps(
                 {
-                    **GEMMA_SOURCE,
+                    **source_info,
                     "files": {w.name: sha256(w) for w in weights},
                     "server": "llama.cpp CPU build; see gemma/llama/LICENSE",
                 },
@@ -164,7 +191,7 @@ def main():
             + "\n"
         )
         components["gemma"] = (
-            f"{GEMMA_SOURCE['alias']} 4-bit weights and a CPU llama.cpp server"
+            f"{source_info['alias']} 4-bit weights and a CPU llama.cpp server"
         )
     else:
         components["gemma"] = "not included; configure a server with --gemma-url"

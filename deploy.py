@@ -24,7 +24,9 @@ KNOWN_BUNDLE_SHA256 = "efabaddee92e5036918932ba0e4eb3840292124f50a8fe2b8bcb95f27
 LOCAL_DATABASE = "postgresql+psycopg://capstone:password@127.0.0.1:5432/capstone"
 INSTALL_REVISION = "cpu-setup-v1"
 # A transfer bundle may carry Python wheels (offline install), a CPU build of
-# the llama.cpp server with Gemma weights, and the built dashboard.
+# the llama.cpp server with the review model's weights (Qwen 3.5-4B or Gemma 4
+# E4B; the gemma/ folder and GEMMA_* settings keep their names), and the built
+# dashboard.
 WHEELS = ROOT / "wheels"
 GEMMA = ROOT / "gemma"
 DASHBOARD = ROOT / "frontend/dist"
@@ -47,7 +49,7 @@ NO_ACCOUNTS = (
 
 
 def local_gemma():
-    """(server, weights, projector) of the bundled CPU Gemma, or None."""
+    """(server, weights, projector) of the bundled CPU review model, or None."""
     server = GEMMA / "llama/llama-server"
     files = sorted((GEMMA / "models").glob("*.gguf")) if GEMMA.is_dir() else []
     weights = [f for f in files if "mmproj" not in f.name]
@@ -408,7 +410,7 @@ def verify_ensemble(directory, *, required=False):
 
 
 def configure_local_gemma(python, args):
-    """Point the application at the bundled CPU Gemma server, if it can run here."""
+    """Point the application at the bundled CPU review server, if it can run here."""
     bundle = local_gemma()
     if bundle is None or args.gemma_url or args.no_gemma:
         return
@@ -424,9 +426,9 @@ def configure_local_gemma(python, args):
         )
     except (OSError, subprocess.SubprocessError):
         print(
-            "The bundled Gemma server cannot run on this system (it needs x86_64 "
+            "The bundled review server cannot run on this system (it needs x86_64 "
             "Linux with glibc 2.38 or newer, e.g. Ubuntu 24.04). Continuing without "
-            "Gemma; screening is unaffected.",
+            "the review model; screening is unaffected.",
             flush=True,
         )
         return
@@ -443,7 +445,10 @@ def configure_local_gemma(python, args):
         ("GEMMA_MAX_WAIT_S", "900"),
     ]:
         append_setting(python, key, value, preserve=True)
-    print("Bundled Gemma configured: " + alias + " on this machine's CPU", flush=True)
+    print(
+        "Bundled review model configured: " + alias + " on this machine's CPU",
+        flush=True,
+    )
 
 
 def prepare_models(config, archive):
@@ -707,7 +712,7 @@ def services(python, args, config):
         server, weights, projector = local_gemma()
         planned.append(
             (
-                "Gemma (CPU)",
+                "Review model (CPU)",
                 "helper",
                 [
                     server,

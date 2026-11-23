@@ -311,7 +311,7 @@ def test_full_start_plans_gemma_api_and_camera_in_stop_order(tmp_path, monkeypat
         {"gemma_local": local, "models_installed": True},
     )
     assert [(name, role) for name, role, *_ in planned] == [
-        ("Gemma (CPU)", "helper"),
+        ("Review model (CPU)", "helper"),
         ("Dashboard and API", "server"),
         ("Camera backend", "job"),
     ]

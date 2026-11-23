@@ -154,14 +154,24 @@ variant. Existing model licenses and measured runtime limitations still apply.
 
 `tools/build_deployment.py` assembles one folder with the application at the
 current commit, all models (including `ensemble-20261116`), the built
-dashboard, Python wheels for an offline install, and optionally Gemma 4 E4B
-(4-bit) with a CPU build of the llama.cpp server. Its `START_HERE.md`
+dashboard, Python wheels for an offline install, and optionally a 4-bit
+review model with a CPU build of the llama.cpp server: Qwen 3.5-4B by default
+(`--reviewer qwen35-4b`), or Gemma 4 E4B (`--reviewer gemma4-e4b`). The
+`gemma/` folder and the `GEMMA_*` settings keep their names for either model.
+On 592 held-out windows asked the application's way, Qwen 3.5-4B reached macro
+F1 0.600 against Gemma E4B's 0.406. It is slower: on 30 reviews replayed from
+the application (8 CPU threads, one review at a time) the median was 22.3 s
+against Gemma's 17.3 s, because Qwen reads a 640x360 frame as about 220 image
+tokens and Gemma as about 120; both servers peaked near 11 GiB. If reviews fall
+behind on a slower machine, set `GEMMA_LOCAL_IMAGE_TOKENS=160` in `.env`
+(18.2 s, macro F1 0.554). Its `START_HERE.md`
 (`docs/START_HERE.md` here) is the operator guide.
 
 ```bash
 python tools/build_deployment.py dist/capstone-cpu-deployment-20261116 \
     --ensemble-export /path/to/bundle_v11 --hf-cache ~/.cache/huggingface/hub \
-    --gemma-weights /path/to/gemma-4-E4B-it-qat-q4_0 --llama /path/to/llama-b11925 \
+    --reviewer qwen35-4b --gemma-weights /path/to/Qwen3.5-4B-GGUF \
+    --llama /path/to/llama-b11925 \
     --wheels --archive
 ```
 
