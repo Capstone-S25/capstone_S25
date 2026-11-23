@@ -7,7 +7,7 @@ import sys
 from functools import cache
 
 import numpy as np
-from common import DATA, OUT, ROOT
+from common import DATA, OUT, ROOT, detector_half
 
 sys.path.insert(0, str(ROOT))
 from anomaly_eval.training.strategies import geometry
@@ -17,6 +17,8 @@ TAGS = ["main", "historical", "hmdb", "meva", "rough"]
 # "" = detectors trained on the two non-test cameras; "x" = the same plus the
 # second CCTV site (smoking_detector.py --extra).
 DETECTOR_SUFFIX = ""
+# How each round-3 detector family split the fit-side rows between its folds.
+HALVES = {"f": "video", "g": "camera"}
 
 
 @cache
@@ -51,9 +53,12 @@ def detections(source="frcnn"):
         for line in (DATA / name).read_text().splitlines():
             row = json.loads(line)
             found[row["path"]] = row["detections"]
-    for line in (OUT / "frcnn_reference_detections.jsonl").read_text().splitlines():
-        row = json.loads(line)
-        found.setdefault(row["path"], row["detections"])
+    for name in ["frcnn_reference_detections.jsonl", "round3/frcnn_detections.jsonl"]:
+        if not (OUT / name).exists():
+            continue
+        for line in (OUT / name).read_text().splitlines():
+            row = json.loads(line)
+            found.setdefault(row["path"], row["detections"])
     return found
 
 
@@ -67,12 +72,34 @@ def smoking_detector_features(row):
     fold = {"smoking_camera:c4": "c2", "smoking_camera:c2": "c4"}.get(
         row["group_id"], "all"
     )
+    if DETECTOR_SUFFIX in {"f", "g"} and row.get("split") == "site_fit":
+        # Fit-side rows the fold detectors trained on, half each.
+        trained = {"smoking_site2", "virat", "meva"} | (
+            {"xrf55"} if DETECTOR_SUFFIX == "g" else set()
+        )
+        if row["source"] in trained:
+            fold = "c2" if detector_half(row, HALVES[DETECTOR_SUFFIX]) == "a" else "c4"
     scores = smoking_detector_scores()[fold + DETECTOR_SUFFIX]
-    values = np.array([scores[p] for p in row["views"]])
+    values = np.array([scores[p][:3] for p in row["views"]])
     return np.array(
         [values[:, 0].max(), values[:, 1].max(), min(values[:, 2].max(), 4) / 4],
         np.float32,
     )
+
+
+def smoking_detector_far(row):
+    """Top smoking confidence among CCTV-distance boxes (smoking_scores.py)."""
+    fold = {"smoking_camera:c4": "c2", "smoking_camera:c2": "c4"}.get(
+        row["group_id"], "all"
+    )
+    if row.get("split") == "site_fit" and row["source"] in {
+        "smoking_site2",
+        "virat",
+        "meva",
+    } | ({"xrf55"} if DETECTOR_SUFFIX == "g" else set()):
+        fold = "c2" if detector_half(row, HALVES[DETECTOR_SUFFIX]) == "a" else "c4"
+    scores = smoking_detector_scores()[fold + DETECTOR_SUFFIX]
+    return float(max(scores[p][3] for p in row["views"]))
 
 
 def iou(a, b):

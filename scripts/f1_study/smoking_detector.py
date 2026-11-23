@@ -54,6 +54,104 @@ def add_extra(root):
             ).write_text("\n".join(lines))
 
 
+def place(source, target, side=640):
+    """Copy a frame for training, shrunk to the training size: decoding
+    full-HD frames every epoch made training several times slower."""
+    from PIL import Image, ImageOps
+
+    target = target.with_suffix(".jpg")
+    if target.exists():
+        return
+    with Image.open(source) as image:
+        image = ImageOps.exif_transpose(image).convert("RGB")
+        image.thumbnail((side, side))
+        image.save(target, quality=95)
+
+
+def add_site_fit(root, half=None, background=600, hard_negatives=False):
+    """Second-site smokers from the fit-side cameras only, plus ordinary
+    footage as label-free background: frames of the fit-side ordinary
+    windows and a sample of the other tasks' training frames. Without
+    background a detector that has only seen smokers on HD cameras calls
+    every head on an HD camera a smoker."""
+    import random
+
+    os.environ["F1_ROUND3"] = "1"
+    from common import detector_half, load_rows
+
+    rows = [
+        r
+        for r in load_rows()
+        if r["split"] != "site_fit"
+        or half is None
+        or detector_half(r, "camera" if hard_negatives else "video") == half
+    ]
+    fit = {
+        Path(r["views"][0]).name
+        for r in rows
+        if r["source"] == "smoking_site2" and r["split"] == "site_fit"
+    }
+    for kind in ["images", "labels"]:
+        (root / kind / "train").mkdir(parents=True, exist_ok=True)
+    for split in ["train", "valid", "test"]:
+        coco = json.loads((EXTRA / split / "_annotations.coco.json").read_text())
+        names = {c["id"]: c["name"] for c in coco["categories"]}
+        by_image = {}
+        for a in coco["annotations"]:
+            by_image.setdefault(a["image_id"], []).append(a)
+        for image in coco["images"]:
+            if image["file_name"] not in fit:
+                continue
+            place(
+                EXTRA / split / image["file_name"],
+                root / "images/train" / image["file_name"],
+            )
+            w, h = image["width"], image["height"]
+            lines = []
+            for a in by_image.get(image["id"], []):
+                if names[a["category_id"]] not in CLASSES:
+                    continue
+                x, y, bw, bh = a["bbox"]
+                lines.append(
+                    f"0 {(x + bw / 2) / w:.6f} {(y + bh / 2) / h:.6f} {bw / w:.6f} {bh / h:.6f}"
+                )
+            (
+                root / "labels/train" / (Path(image["file_name"]).stem + ".txt")
+            ).write_text("\n".join(lines))
+    ordinary = sorted(
+        {
+            r["views"][-1]
+            for r in rows
+            if r["task"] == "smoking"
+            and r["split"] == "site_fit"
+            and r["source"] in {"virat", "meva"}
+        }
+    )
+    if hard_negatives:
+        # People phoning, drinking and eating at CCTV distance: a hand at the
+        # face without a cigarette. Two mid-clip frames per clip.
+        ordinary += sorted(
+            {
+                r["views"][k]
+                for r in rows
+                if r["source"] == "xrf55" and r["split"] == "site_fit"
+                for k in (2, 5)
+            }
+        )
+    others = sorted(
+        {
+            r["views"][-1]
+            for r in rows
+            if r["task"] != "smoking" and r["split"] in {"train", "dev"}
+        }
+    )
+    random.Random(0).shuffle(others)
+    for n, name in enumerate(ordinary + others[:background]):
+        stem = f"background_{n:05d}"
+        place(ROOT / name, root / "images/train" / (stem + ".jpg"))
+        (root / "labels/train" / (stem + ".txt")).write_text("")
+
+
 def build(name, cameras):
     root = WORK / f"data_{name}"
     for split in ["train", "valid"]:
@@ -98,6 +196,22 @@ def main():
     parser.add_argument("--epochs", type=int, default=60)
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--extra", action="store_true")
+    parser.add_argument(
+        "--site-fit",
+        action="store_true",
+        help="Add fit-side second-site smokers and ordinary background (suffix f)",
+    )
+    parser.add_argument(
+        "--no-site1",
+        action="store_true",
+        help="With --site-fit and --fold all: leave site 1 out (name s2f)",
+    )
+    parser.add_argument(
+        "--hard-negatives",
+        action="store_true",
+        help="With --site-fit: also hand-to-face clips as background (suffix g)",
+    )
+    parser.add_argument("--imgsz", type=int, default=640)
     args = parser.parse_args()
     from ultralytics import YOLO
 
@@ -105,9 +219,21 @@ def main():
     base_fold = args.fold
     if args.extra:
         args.fold += "x"
-    data = build(args.fold, cameras)
+    if args.site_fit:
+        letter = "g" if args.hard_negatives else "f"
+        args.fold = "s2" + letter if args.no_site1 else args.fold + letter
+    if args.imgsz != 640:
+        args.fold += str(args.imgsz)
+    data = build(args.fold, set() if args.no_site1 else cameras)
     if args.extra:
         add_extra(WORK / f"data_{args.fold}")
+    if args.site_fit:
+        # Fold detectors take half of the fit-side new-site rows each.
+        add_site_fit(
+            WORK / f"data_{args.fold}",
+            {"c4": "a", "c2": "b"}.get(base_fold),
+            hard_negatives=args.hard_negatives,
+        )
     if base_fold == "all":
         # No held-out camera remains; validate on c2 only to monitor training.
         val = WORK / f"data_{args.fold}" / "images" / "val"
@@ -131,13 +257,13 @@ def main():
     model.train(
         data=str(data),
         epochs=args.epochs,
-        imgsz=640,
-        batch=32,
+        imgsz=args.imgsz,
+        batch=32 if args.imgsz == 640 else 16,
         device=0,
         project=str(WORK / "runs"),
         name=args.fold,
         exist_ok=True,
-        workers=8,
+        workers=16,
         patience=0,
         seed=0,
         deterministic=True,

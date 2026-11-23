@@ -9,6 +9,7 @@ transfer, never a selection rule.
 from __future__ import annotations
 
 import json
+import os
 from collections import defaultdict
 from pathlib import Path
 
@@ -35,8 +36,67 @@ TEST_SOURCES = {
 }
 
 
+def detector_half(row, by="video"):
+    """Which smoking-detector fold a fit-side new-site row trains: the c4
+    detector takes half "a", the c2 detector half "b", so each row can be
+    scored by a detector that has not seen it.
+
+    by="video" (the first round-3 detectors, suffix f) splits a camera's
+    recordings between the halves, so the other detector has still seen the
+    camera and its scores on those rows are too low to calibrate a threshold.
+    by="camera" (suffix g) keeps each camera, room subject or cluster whole.
+    """
+    import hashlib
+
+    unit = (row.get("video") if by == "video" else None) or row["group_id"]
+    digest = hashlib.sha1(f"detector|{row['source']}|{unit}".encode()).hexdigest()
+    return "a" if int(digest, 16) % 2 == 0 else "b"
+
+
 def read_jsonl(path):
     return [json.loads(line) for line in Path(path).read_text().splitlines() if line]
+
+
+# F1_SPLIT=ian: the team's fit / test split (notebooks/exp/eval/splits.json on
+# feat/vision-app-integration), held out by camera or scene. Its test side
+# must never be fitted: ICVL cameras 02 and 10 move to the shift side for
+# every ICVL task (and 05, 08, 11 join the fit), and fitting rows from its
+# ABODA test scenes are dropped. Benchmark test rows stay, since they are
+# only ever scored.
+IAN_TEST_ICVL = {"02", "10"}
+# The split treats each ABODA video as its own scene, but they share cameras:
+# walkway 2-4, entrance 5-6, classroom 7-10 (lobby 1 stands alone). Its test
+# side holds 2, 3, 5, 7, 8 and 10, so every video on those three cameras is
+# kept out of fitting, or the "unseen camera" would have been seen.
+IAN_TEST_ABODA = {f"video{n}" for n in range(2, 11)}
+# F1_FIT_ENTRANCE=1: the team drops ABODA video5 from its test side, so the
+# entrance camera (videos 5 and 6, already in the October dev pool) is fitted.
+if os.environ.get("F1_FIT_ENTRANCE"):
+    IAN_TEST_ABODA -= {"video5", "video6"}
+# Round 4 kept every D2-CDNet video for scoring, but the split puts "sofa"
+# (its own indoor scene, four left items) on the fit side.
+IAN_FIT_SCENES = {("d2cdnet", "sofa")}
+
+
+def ian_site(row):
+    if (row["source"], row.get("camera")) in IAN_FIT_SCENES:
+        return "fit"
+    if not row["source"].startswith("icvl_"):
+        return row["site"]
+    return "shift" if row["camera"] in IAN_TEST_ICVL else "fit"
+
+
+def in_ian_test(row):
+    """True for a fitting row whose footage is on the team split's test side."""
+    if row.get("split") not in {"train", "dev"}:
+        return False
+    import re
+
+    text = row.get("source_id", "") + " " + " ".join(row.get("views", [])[:1])
+    if "aboda" not in text.lower():
+        return False
+    video = re.search(r"(video\d+)\b", text)
+    return bool(video) and video.group(1) in IAN_TEST_ABODA
 
 
 def load_rows():
@@ -48,6 +108,19 @@ def load_rows():
         rows.append({**row, "split": "test"})
     for name in ["hmdb_screened", "meva_screened", "rough_screened"]:
         rows.extend(read_jsonl(DATA / f"{name}.jsonl"))
+    if os.environ.get("F1_ROUND3"):
+        # New-site rows (round3_sources.py). Their split is "site_fit" or
+        # "site_shift", so the earlier protocols ignore them.
+        for row in read_jsonl(OUT / "round3/rows.jsonl"):
+            rows.append({**row, "split": "site_" + row["site"]})
+    if os.environ.get("F1_ROUND3") and os.environ.get("F1_ROUND4"):
+        # The Drive's new labelled videos (round4_sources.py), same splits.
+        for row in read_jsonl(OUT / "round4/rows.jsonl"):
+            if os.environ.get("F1_SPLIT") == "ian":
+                row = {**row, "site": ian_site(row)}
+            rows.append({**row, "split": "site_" + row["site"]})
+    if os.environ.get("F1_SPLIT") == "ian":
+        rows = [r for r in rows if not in_ian_test(r)]
     ids = [r["id"] for r in rows]
     if len(ids) != len(set(ids)):
         raise ValueError("Duplicate sample ids across manifests")
