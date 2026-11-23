@@ -297,7 +297,8 @@ class Stage1Detector:
         candidates = []
         for original in events:
             tasks = [
-                task for task in TASKS_BY_EVENT.get(original["event_type"], ())
+                task
+                for task in TASKS_BY_EVENT.get(original["event_type"], ())
                 if task in self.enabled_tasks
             ]
             if not tasks:

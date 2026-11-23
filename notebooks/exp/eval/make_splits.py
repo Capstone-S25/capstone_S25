@@ -54,6 +54,7 @@ rebuild_littering_clips.py merged some of those into one clip ("dropping_v05_2+v
 from v05 and v06). The groups are built by union-find over the vNN ids in the names, so if you make
 your own dev split inside fit, group on `scene` and the two halves of a recording stay together.
 """
+
 import hashlib
 import json
 import re
@@ -64,26 +65,35 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "splits.json"
 VID = {".mp4", ".mkv", ".avi", ".mov", ".webm"}
-FP_BYTES = 8 << 20          # fingerprint = size + first and last 8 MB, unless --full-hash
+FP_BYTES = 8 << 20  # fingerprint = size + first and last 8 MB, unless --full-hash
 
 # ---------------------------------------------------------------- the split itself
 # Every scene key not listed here is fit. Chosen once and then left alone; see the notes per line.
 TEST_SCENES = {
     # ICVL. 02 and 10 together hold 111 littering / 41 loitering / 44 smoking events - roughly a
     # quarter to a third of each anomaly, and 02 is the one camera carrying all three.
-    "icvl/02", "icvl/10",
+    "icvl/02",
+    "icvl/10",
     # IITB Corridor is a single indoor camera and nothing was ever fitted on it, so all 8 clips are
     # test. It cannot be split by camera; there is only the one.
     "iitb/corridor",
     # Unattended items is 18 events over 14 scenes, so it is split scene-wise rather than given
     # entirely to one side - Yuchuan needs something to develop prompts against, and prompts
     # developed on a test scene are fitted on it whether or not any gradient was involved.
-    "aboda/video2", "aboda/video3", "aboda/video5", "aboda/video7", "aboda/video8", "aboda/video10",
-    "d2cdnet/PETS2006", "d2cdnet/abandonedBox", "d2cdnet/tramstop",
+    "aboda/video2",
+    "aboda/video3",
+    "aboda/video5",
+    "aboda/video7",
+    "aboda/video8",
+    "aboda/video10",
+    "d2cdnet/PETS2006",
+    "d2cdnet/abandonedBox",
+    "d2cdnet/tramstop",
     # Rough sleeping is 4 clips on CHAD's 4 cameras: two each side. Treat either side as a demo
     # rather than a measurement, and note CHAD normal footage did inform one gate default
     # (item_rule_skip), so CHAD is not a clean held-out set in the way ICVL 02 / 10 is.
-    "chad/2", "chad/4",
+    "chad/2",
+    "chad/4",
 }
 
 
@@ -100,7 +110,7 @@ def scene_of(ds, stem, label):
     if ds.startswith("IITB"):
         return "iitb/corridor"
     if "Roboflow" in ds:
-        return "roboflow/" + stem          # refined into source groups by roboflow_groups()
+        return "roboflow/" + stem  # refined into source groups by roboflow_groups()
     return None
 
 
@@ -157,7 +167,9 @@ def video_for(label_path, root):
         c = base / (label_path.stem + ext)
         if c.exists():
             return c
-    hits = sorted(c for c in base.glob(label_path.stem + ".*") if c.suffix.lower() in VID)
+    hits = sorted(
+        c for c in base.glob(label_path.stem + ".*") if c.suffix.lower() in VID
+    )
     return hits[0] if hits else None
 
 
@@ -183,12 +195,20 @@ def build(root, full=False):
         if vp is None:
             problems.append(f"no video for {lp.relative_to(root)}")
             continue
-        clips.append({"anomaly": rel[0], "subset": rel[1], "dataset": ds, "scene": scene,
-                      "stem": stem, "video": str(vp.relative_to(root)).replace("\\", "/"),
-                      "label": str(lp.relative_to(root)).replace("\\", "/"),
-                      "events": len(lab.get("events", [])),
-                      "duration_s": round(float(lab.get("duration_s") or 0), 2),
-                      "_path": vp})
+        clips.append(
+            {
+                "anomaly": rel[0],
+                "subset": rel[1],
+                "dataset": ds,
+                "scene": scene,
+                "stem": stem,
+                "video": str(vp.relative_to(root)).replace("\\", "/"),
+                "label": str(lp.relative_to(root)).replace("\\", "/"),
+                "events": len(lab.get("events", [])),
+                "duration_s": round(float(lab.get("duration_s") or 0), 2),
+                "_path": vp,
+            }
+        )
 
     # Roboflow clips get their source-recording key, replacing the per-stem placeholder.
     rg = roboflow_groups([c["stem"] for c in clips if "Roboflow" in c["dataset"]])
@@ -206,7 +226,9 @@ def build(root, full=False):
         if f in first:
             c["same_video_as"] = first[f]["video"]
             if c["scene"] != first[f]["scene"]:
-                problems.append(f"same footage in two scenes: {c['video']} vs {first[f]['video']}")
+                problems.append(
+                    f"same footage in two scenes: {c['video']} vs {first[f]['video']}"
+                )
         else:
             first[f] = c
             c["same_video_as"] = None
@@ -219,7 +241,7 @@ def build(root, full=False):
 
 def digest(clips):
     """One short token over (video -> side). Two people compare this instead of diffing a file."""
-    body = "\n".join(sorted(f'{c["label"]}\t{c["split"]}' for c in clips))
+    body = "\n".join(sorted(f"{c['label']}\t{c['split']}" for c in clips))
     return hashlib.sha256(body.encode()).hexdigest()[:12]
 
 
@@ -235,7 +257,9 @@ def check(clips):
                 bad.append(f"{field} {k!r} is in both fit and test")
     missing = sorted(s for s in TEST_SCENES if not any(c["scene"] == s for c in clips))
     if missing:
-        bad.append("test scenes named but not found in the download: " + ", ".join(missing))
+        bad.append(
+            "test scenes named but not found in the download: " + ", ".join(missing)
+        )
     return bad
 
 
@@ -245,26 +269,54 @@ def summarise(clips):
         s = c["split"]
         rows[c["anomaly"]][s + "_events"] += c["events"]
         rows[c["anomaly"]][s + "_labelled"] += 1
-    print("\n%-18s %10s %9s %10s %9s" % ("anomaly", "fit videos", "fit evts", "test videos", "test evts"))
+    print(
+        "\n%-18s %10s %9s %10s %9s"
+        % ("anomaly", "fit videos", "fit evts", "test videos", "test evts")
+    )
     tot = Counter()
     for a in sorted(rows):
         r = rows[a]
         tot.update(r)
-        print("%-18s %10d %9d %10d %9d" % (a, r["fit_labelled"], r["fit_events"],
-                                           r["test_labelled"], r["test_events"]))
-    print("%-18s %10d %9d %10d %9d" % ("TOTAL", tot["fit_labelled"], tot["fit_events"],
-                                       tot["test_labelled"], tot["test_events"]))
+        print(
+            "%-18s %10d %9d %10d %9d"
+            % (
+                a,
+                r["fit_labelled"],
+                r["fit_events"],
+                r["test_labelled"],
+                r["test_events"],
+            )
+        )
+    print(
+        "%-18s %10d %9d %10d %9d"
+        % (
+            "TOTAL",
+            tot["fit_labelled"],
+            tot["fit_events"],
+            tot["test_labelled"],
+            tot["test_events"],
+        )
+    )
     dups = [c for c in clips if c["same_video_as"]]
-    print("\n%d label files over %d distinct videos; %d videos annotated twice "
-          "(same footage, different anomaly)" % (len(clips), len({c["video_key"] for c in clips}), len(dups)))
+    print(
+        "\n%d label files over %d distinct videos; %d videos annotated twice "
+        "(same footage, different anomaly)"
+        % (len(clips), len({c["video_key"] for c in clips}), len(dups))
+    )
     for c in sorted(dups, key=lambda c: c["video"])[:3]:
         print("   e.g. %s  ==  %s" % (c["video"], c["same_video_as"]))
     if len(dups) > 3:
-        print("   ... and %d more, all loitering <-> smoking, all on cameras that stay on one side" % (len(dups) - 3))
+        print(
+            "   ... and %d more, all loitering <-> smoking, all on cameras that stay on one side"
+            % (len(dups) - 3)
+        )
     scenes = defaultdict(set)
     for c in clips:
         scenes[c["split"]].add(c["scene"])
-    print("\nscenes: %d fit, %d test (disjoint)" % (len(scenes["fit"]), len(scenes["test"])))
+    print(
+        "\nscenes: %d fit, %d test (disjoint)"
+        % (len(scenes["fit"]), len(scenes["test"]))
+    )
     print("test scenes:", ", ".join(sorted(scenes["test"])))
     mins = defaultdict(float)
     seen = set()
@@ -292,16 +344,23 @@ def main():
         clips, problems = build(root, full="--full-hash" in flags)
         for p in problems:
             print("WARNING:", p)
-        OUT.write_text(json.dumps({
-            "_how": "fit / test split of capstone_datasets, held out by camera or scene. Rebuild with "
+        OUT.write_text(
+            json.dumps(
+                {
+                    "_how": "fit / test split of capstone_datasets, held out by camera or scene. Rebuild with "
                     "make_splits.py <dataset root>; the assignment is a fixed table, so any copy of the "
                     "download yields this same file. One record per LABEL FILE; 'scene' is the unit "
                     "held out, so group on it for any further split. Records with 'same_video_as' set "
                     "share byte-identical footage with that video in another anomaly folder and carry "
                     "a different annotation of it - group on 'video_key' to decode each video once and "
                     "score it against the union of its label files.",
-            "root_as_built": str(root), "test_scenes": sorted(TEST_SCENES),
-            "clips": clips}, indent=1))
+                    "root_as_built": str(root),
+                    "test_scenes": sorted(TEST_SCENES),
+                    "clips": clips,
+                },
+                indent=1,
+            )
+        )
         print("wrote", OUT)
 
     bad = check(clips)
@@ -312,7 +371,9 @@ def main():
         for b in bad:
             print("  -", b)
         sys.exit(1)
-    print("\nleak check passed: no scene, no video and no byte-identical copy appears on both sides.")
+    print(
+        "\nleak check passed: no scene, no video and no byte-identical copy appears on both sides."
+    )
 
 
 if __name__ == "__main__":

@@ -293,7 +293,19 @@ def test_crop_delays_keep_trigger_frame_and_decision_availability(tmp_path):
     # The session's first frame is the camera reference for every candidate.
     with Image.open(event["reference_frame_path"]) as image:
         assert image.getpixel((4, 4))[0] > 200
-    assert detector.finish()[-1]["event_type"] == "final_scene_review"
+    # The end-of-clip scene review follows the safety-scan switch (2026-11-23),
+    # which is off unless a caller asks for it.
+    assert detector.finish() == []
+    scanning = Stage1Detector(
+        "camera",
+        tmp_path / "scanning",
+        fps=5,
+        cfg=object(),
+        gate=gate,
+        safety_scan_seconds=10,
+    )
+    scanning.process(first)
+    assert scanning.finish()[-1]["event_type"] == "final_scene_review"
 
 
 def test_release_and_journaling_failure_do_not_hang_worker(tmp_path, monkeypatch):

@@ -20,7 +20,9 @@ def enabled_tasks() -> tuple[str, ...]:
     selected = {part.strip() for part in configured.split(",") if part.strip()}
     invalid = selected.difference(TASKS)
     if not selected or invalid:
-        raise ValueError(f"VISION_ENABLED_TASKS must list supported tasks from {', '.join(TASKS)}")
+        raise ValueError(
+            f"VISION_ENABLED_TASKS must list supported tasks from {', '.join(TASKS)}"
+        )
     return tuple(task for task in TASKS if task in selected)
 
 

@@ -123,7 +123,9 @@ class GateConfig:
     # about person dedup standing in for the smoking question.
     approach_radius_h: float = 0.22
     approach_dwell_s: float = 0.4
-    approach_exit_h: float = 0.06  # how far outside the radius the wrist must have been first
+    approach_exit_h: float = (
+        0.06  # how far outside the radius the wrist must have been first
+    )
     approach_gap_s: float = 0.45  # a longer break than this restarts the dwell
     approach_history_s: float = 1.1
     approach_cooldown_s: float = 4.0
@@ -1535,7 +1537,9 @@ class RuleEngine:
     def _approach_pause(self, cid, st, p, obs):
         """A wrist that enters the face radius from outside and then pauses there."""
         cfg, t, k = self.cfg, obs.t, p["kpts"]
-        face_pts = [f for f in (_kp(k, i) for i in (NOSE, L_EYE, R_EYE, L_EAR, R_EAR)) if f]
+        face_pts = [
+            f for f in (_kp(k, i) for i in (NOSE, L_EYE, R_EYE, L_EAR, R_EAR)) if f
+        ]
         if not face_pts:
             return []
         face = tuple(np.mean(face_pts, axis=0))
@@ -1561,7 +1565,8 @@ class RuleEngine:
                 )
                 st["approach"][side] = (started, t)
                 entered = any(
-                    at <= started and away >= cfg.approach_radius_h + cfg.approach_exit_h
+                    at <= started
+                    and away >= cfg.approach_radius_h + cfg.approach_exit_h
                     for at, away in samples
                 )
                 if (
