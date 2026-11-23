@@ -88,3 +88,6 @@ notebooks/exp/**/*_sheets/
 /reports/evaluation*/
 /reports/**/previews/
 /reports/**/logs/
+
+# Local papers and report drafts; kept out of git.
+/paper/
