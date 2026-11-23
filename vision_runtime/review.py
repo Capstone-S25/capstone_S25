@@ -248,7 +248,7 @@ class Reviewer:
                     image = picture.to_ndarray(format="bgr24")
                     yield Stage1Frame(None, "upload", session, index, ms, image)
 
-        detector = Stage1Detector("upload", folder, fps=5, safety_scan_seconds=10)
+        detector = Stage1Detector("upload", folder, fps=5, safety_scan_seconds=0)
         previews, count, end = {}, 0, 0.0
         try:
             with av.open(str(source)) as container:

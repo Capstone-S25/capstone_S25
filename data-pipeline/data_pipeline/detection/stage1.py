@@ -348,17 +348,26 @@ class Stage1Detector:
         t = (frame.timestamp_ms - self.start_ms) / 1000
         try:
             events = self.engine.flush()
-            h, w = frame.image.shape[:2]
-            events.append(
-                {
-                    "event_id": "final_scene",
-                    "event_type": "final_scene_review",
-                    "candidate_origin": "scheduled_scene_review",
-                    "timestamp_s": t,
-                    "frame_index": self.index - 1,
-                    "roi_box": [0, 0, w, h],
-                }
-            )
+            # The end-of-clip whole-frame look is a scheduled scene review just
+            # like periodic_review, so one switch governs both. On the 148 test
+            # videos with littering, loitering and smoking enabled it caught no
+            # incident a tracked rule missed, and 86 of the 88 windows that
+            # reached review matched no label. With unattended_items enabled it
+            # is the only route to 6 of the 9 labelled items, but as a
+            # whole-frame window with no tracked target or established
+            # ownership, which the strict standard does not count (3/9).
+            if self.safety_scan_seconds:
+                h, w = frame.image.shape[:2]
+                events.append(
+                    {
+                        "event_id": "final_scene",
+                        "event_type": "final_scene_review",
+                        "candidate_origin": "scheduled_scene_review",
+                        "timestamp_s": t,
+                        "frame_index": self.index - 1,
+                        "roi_box": [0, 0, w, h],
+                    }
+                )
             return self._events(events, frame, t)
         finally:
             self._close_pool()

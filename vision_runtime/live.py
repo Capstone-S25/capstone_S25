@@ -59,7 +59,7 @@ class LiveSession:
         width=640,
         height=480,
         fps=5,
-        scan_seconds=3,
+        scan_seconds=0,
         idle_timeout=20,
         keep_events=30,
         capture_factory=None,
@@ -67,10 +67,11 @@ class LiveSession:
     ):
         if not isinstance(device, int) or not 0 <= device <= 15:
             raise ValueError("Camera index must be an integer between 0 and 15")
-        if not all(
-            math.isfinite(v) and v > 0 for v in (fps, scan_seconds, idle_timeout)
-        ):
+        if not all(math.isfinite(v) and v > 0 for v in (fps, idle_timeout)):
             raise ValueError("Camera rates and timeouts must be positive and finite")
+        # 0 turns scheduled whole-frame scene review off; it is not a rate.
+        if not math.isfinite(scan_seconds) or scan_seconds < 0:
+            raise ValueError("Scene scan interval must be zero or positive and finite")
         if keep_events < 1 or width < 1 or height < 1:
             raise ValueError(
                 "Camera dimensions and retained event count must be positive"

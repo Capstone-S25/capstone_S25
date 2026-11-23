@@ -51,7 +51,7 @@ class VisionPipeline:
             fps=fps,
             cfg=default_config(gate, device),
             gate=gate,
-            safety_scan_seconds=10,
+            safety_scan_seconds=0,
         )
         self.worker = ScreeningQueue(
             classifier, self.store, confirmation, publish_task_results=True
