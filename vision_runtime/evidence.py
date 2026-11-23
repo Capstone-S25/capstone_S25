@@ -13,6 +13,17 @@ VIEW_FOR_TASK = {t: "short" if t == "littering" else "long" for t in TASKS}
 DEFINITIONS = Path(__file__).resolve().parent / "definitions.json"
 
 
+def enabled_tasks() -> tuple[str, ...]:
+    configured = os.environ.get("VISION_ENABLED_TASKS")
+    if configured is None:
+        return TASKS
+    selected = {part.strip() for part in configured.split(",") if part.strip()}
+    invalid = selected.difference(TASKS)
+    if not selected or invalid:
+        raise ValueError(f"VISION_ENABLED_TASKS must list supported tasks from {', '.join(TASKS)}")
+    return tuple(task for task in TASKS if task in selected)
+
+
 def unknown(reason: str) -> dict:
     return {"decision": "unknown", "evidence": reason, "frame_refs": [], "alert": False}
 

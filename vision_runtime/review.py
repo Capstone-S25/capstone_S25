@@ -13,7 +13,7 @@ from uuid import uuid4
 from PIL import Image, ImageOps
 
 from .config import ROOT, configure_runtime, runtime_root
-from .evidence import TASKS
+from .evidence import enabled_tasks
 from .gemma import GemmaClient
 from .service import ConfirmationQueue, EventStore, ScreeningQueue
 
@@ -35,7 +35,7 @@ MAX_UPLOAD_BYTES = 200 * 1024**2
 def summarize(events):
     """Select strongest model signals without treating unsupported windows as normal."""
     output = {}
-    for task in TASKS:
+    for task in enabled_tasks():
         values = [
             {**e["predictions"][task], "timestamp_s": e["timestamp_s"]}
             for e in events
@@ -90,7 +90,7 @@ def event_report(report, events, gemma_enabled):
                     "evidence": "Screening not completed",
                     "alert": False,
                 }
-                for t in TASKS
+                for t in enabled_tasks()
             },
         )
     return {
@@ -215,7 +215,7 @@ class Reviewer:
             "event_id": "image_scene",
             "event_type": "image_review",
             "timestamp_s": 0.0,
-            "tasks": list(TASKS),
+            "tasks": list(enabled_tasks()),
             "views": {"short": view, "long": view},
             "context_frame_path": str(path),
         }

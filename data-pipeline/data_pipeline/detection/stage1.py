@@ -9,6 +9,8 @@ from types import ModuleType, SimpleNamespace
 from typing import Any
 from uuid import UUID
 
+from vision_runtime.evidence import enabled_tasks
+
 logger = logging.getLogger(__name__)
 
 
@@ -182,6 +184,7 @@ class Stage1Detector:
         if not math.isfinite(safety_scan_seconds) or safety_scan_seconds < 0:
             raise ValueError("Safety scan interval must be finite and nonnegative")
         self.safety_scan_seconds = safety_scan_seconds
+        self.enabled_tasks = frozenset(enabled_tasks())
         self.next_review_s = None
         self.gate = gate or load_gate()
         self.cfg = cfg or default_config(self.gate)
@@ -289,6 +292,12 @@ class Stage1Detector:
     def _events(self, events, frame, observed_t):
         candidates = []
         for original in events:
+            tasks = [
+                task for task in TASKS_BY_EVENT.get(original["event_type"], ())
+                if task in self.enabled_tasks
+            ]
+            if not tasks:
+                continue
             event = dict(original)
             image = event.pop("_frame", frame.image)
             event_t = float(event.pop("_t", event["timestamp_s"]))
@@ -326,9 +335,8 @@ class Stage1Detector:
                     event, image, self.stream, event_t - span, event_t, tag="_" + name
                 )
                 event["views"][name] = {"paths": paths, "times_s": times}
-            event["tasks"] = list(TASKS_BY_EVENT.get(event["event_type"], ()))
-            if event["tasks"]:
-                candidates.append(event)
+            event["tasks"] = tasks
+            candidates.append(event)
         self.writer.manifest.clear()
         return candidates
 
