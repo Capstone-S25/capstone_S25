@@ -9,8 +9,6 @@ from types import ModuleType, SimpleNamespace
 from typing import Any
 from uuid import UUID
 
-from vision_runtime.evidence import enabled_tasks
-
 logger = logging.getLogger(__name__)
 
 
@@ -188,6 +186,11 @@ class Stage1Detector:
         if not math.isfinite(safety_scan_seconds) or safety_scan_seconds < 0:
             raise ValueError("Safety scan interval must be finite and nonnegative")
         self.safety_scan_seconds = safety_scan_seconds
+        # Imported here, like this module's other vision_runtime imports: the data
+        # pipeline's own environment does not install vision_runtime, so a top-level
+        # import breaks collection of tests that only need the detector.
+        from vision_runtime.evidence import enabled_tasks
+
         self.enabled_tasks = frozenset(enabled_tasks())
         self.next_review_s = None
         self.gate = gate or load_gate()

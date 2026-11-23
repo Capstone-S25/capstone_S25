@@ -45,5 +45,9 @@ line-ending = "auto"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["."]
+# ".." puts the repository root on the path so the sibling vision_runtime package
+# imports during tests. incidents.py and stage1.py both read from it, and the
+# modules they touch (evidence, service) are standard library only, so this adds
+# no dependency to the pipeline's own environment.
+pythonpath = [".", ".."]
 addopts = "-ra --import-mode=importlib"
